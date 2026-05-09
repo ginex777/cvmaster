@@ -1,6 +1,53 @@
-<main id="main" class="legal-page" lang="de">
-  <h1>Impressum</h1>
-  <p class="legal-page__placeholder">
-    Angaben gemäß § 5 TMG / § 18 Abs. 2 MStV — vor Go-Live befüllen.
-  </p>
+<lba-navbar />
+
+<main id="main" class="legal-page" lang="de" aria-labelledby="imprint-title">
+  <header class="legal-page__header">
+    <p class="legal-page__eyebrow">Rechtliches</p>
+    <h1 id="imprint-title">Impressum</h1>
+    <p>
+      Angaben gem&auml;&szlig; &sect; 5 DDG und &sect; 18 Abs. 2 MStV. Die Betreiberangaben werden vor dem
+      produktiven Start vollst&auml;ndig eingetragen.
+    </p>
+  </header>
+
+  <article class="legal-page__content">
+    <section aria-labelledby="imprint-provider">
+      <h2 id="imprint-provider">Anbieter</h2>
+      <address>
+        Lebenslauf-Agent<br />
+        [Name / Firma]<br />
+        [Stra&szlig;e und Hausnummer]<br />
+        [PLZ und Ort]<br />
+        Deutschland
+      </address>
+    </section>
+
+    <section aria-labelledby="imprint-contact">
+      <h2 id="imprint-contact">Kontakt</h2>
+      <p>
+        E-Mail: <a href="mailto:kontakt@example.com">kontakt&#64;example.com</a><br />
+        Telefon: [Telefonnummer]
+      </p>
+    </section>
+
+    <section aria-labelledby="imprint-represented">
+      <h2 id="imprint-represented">Vertretungsberechtigt</h2>
+      <p>[Name der vertretungsberechtigten Person]</p>
+    </section>
+
+    <section aria-labelledby="imprint-vat">
+      <h2 id="imprint-vat">Umsatzsteuer</h2>
+      <p>Umsatzsteuer-Identifikationsnummer gem&auml;&szlig; &sect; 27a UStG: [USt-IdNr.]</p>
+    </section>
+
+    <section aria-labelledby="imprint-dispute">
+      <h2 id="imprint-dispute">Verbraucherstreitbeilegung</h2>
+      <p>
+        Wir sind nicht verpflichtet und nicht bereit, an Streitbeilegungsverfahren vor einer
+        Verbraucherschlichtungsstelle teilzunehmen.
+      </p>
+    </section>
+  </article>
 </main>
+
+<lba-footer />
