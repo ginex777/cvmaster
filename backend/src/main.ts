@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -17,8 +18,11 @@ function validateEnv() {
   if (provider === 'claude' && !process.env.ANTHROPIC_API_KEY) {
     throw new Error('ANTHROPIC_API_KEY is required when AI_PROVIDER=claude');
   }
-  if (provider !== 'mistral' && provider !== 'claude') {
-    throw new Error(`AI_PROVIDER must be "mistral" or "claude", got "${provider}"`);
+  if (provider === 'groq' && !process.env.GROQ_API_KEY) {
+    throw new Error('GROQ_API_KEY is required when AI_PROVIDER=groq');
+  }
+  if (provider !== 'mistral' && provider !== 'claude' && provider !== 'groq') {
+    throw new Error(`AI_PROVIDER must be "mistral", "claude", or "groq", got "${provider}"`);
   }
 
   if (!process.env.JWT_PRIVATE_KEY && !process.env.JWT_SECRET) {
