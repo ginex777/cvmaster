@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { Test } from '@nestjs/testing';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as argon2 from 'argon2';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../common/prisma.service';
 import { MailService } from '../mail/mail.service';
@@ -104,6 +105,64 @@ describe('AuthService', () => {
       );
 
       expect(mockMail.sendVerification).toHaveBeenCalledWith('a@b.de', expect.any(String));
+    });
+  });
+
+  describe('login', () => {
+    it('throws UnauthorizedException when user not found', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+
+      await expect(service.login({ email: 'x@y.de', password: 'pass' }, '127.0.0.1', 'ua'))
+        .rejects.toThrow(UnauthorizedException);
+    });
+
+    it('throws UnauthorizedException when password is wrong', async () => {
+      const passwordHash = await argon2.hash('correct');
+      mockPrisma.user.findUnique.mockResolvedValue({ id: 'u1', passwordHash, emailVerifiedAt: new Date() } as never);
+
+      await expect(service.login({ email: 'x@y.de', password: 'wrong' }, '127.0.0.1', 'ua'))
+        .rejects.toThrow(UnauthorizedException);
+    });
+
+    it('throws UnauthorizedException when email not verified', async () => {
+      const passwordHash = await argon2.hash('pass');
+      mockPrisma.user.findUnique.mockResolvedValue({ id: 'u1', passwordHash, emailVerifiedAt: null } as never);
+
+      await expect(service.login({ email: 'x@y.de', password: 'pass' }, '127.0.0.1', 'ua'))
+        .rejects.toThrow(UnauthorizedException);
+    });
+
+    it('returns accessToken and user on valid credentials', async () => {
+      const passwordHash = await argon2.hash('validpass123');
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: 'u1', email: 'a@b.de', passwordHash, emailVerifiedAt: new Date(),
+        plan: 'FREE', twoFactorEnabled: false,
+      } as never);
+      mockPrisma.session.findMany.mockResolvedValue([]);
+      mockPrisma.session.create.mockResolvedValue({});
+      mockJwt.signAsync.mockResolvedValue('access-token-value');
+
+      const result = await service.login({ email: 'a@b.de', password: 'validpass123' }, '127.0.0.1', 'ua') as { accessToken: string; user: { id: string } };
+
+      expect(result).toHaveProperty('accessToken');
+      expect(result.user).toHaveProperty('id', 'u1');
+    });
+  });
+
+  describe('logout', () => {
+    it('does nothing when refresh token is missing', async () => {
+      await service.logout('');
+      expect(mockPrisma.session.updateMany).not.toHaveBeenCalled();
+    });
+
+    it('revokes the matching session', async () => {
+      mockPrisma.session.updateMany.mockResolvedValue({ count: 1 });
+
+      await service.logout('sometoken');
+
+      expect(mockPrisma.session.updateMany).toHaveBeenCalledWith(
+        expect.objectContaining({ data: expect.objectContaining({ revokedAt: expect.any(Date) }) }),
+      );
     });
   });
 });

@@ -1,40 +1,45 @@
-<main id="main" class="auth-page">
+<main id="main" class="auth-page" [attr.aria-busy]="loading()">
   <h1>Einloggen</h1>
 
-  <form (ngSubmit)="submit()" aria-label="Login-Formular" novalidate>
+  @if (justRegistered) {
+    <p role="status" aria-live="polite" class="form-success">
+      Account erstellt — bitte E-Mail bestätigen, dann einloggen.
+    </p>
+  }
+
+  @if (error()) {
+    <p id="form-error" role="alert" aria-live="polite" class="form-error">{{ error() }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" aria-label="Login-Formular" novalidate>
 
     <div class="field">
-      <label for="email">E-Mail-Adresse</label>
-      <input
-        id="email"
-        type="email"
-        [ngModel]="email()"
-        (ngModelChange)="email.set($event)"
-        name="email"
+      <label for="login-email">E-Mail-Adresse</label>
+      <input id="login-email" type="email"
+        formControlName="email"
         autocomplete="email"
         aria-required="true"
-        [attr.aria-invalid]="error() ? 'true' : null"
-        [attr.aria-describedby]="error() ? 'form-error' : null" />
+        [attr.aria-describedby]="form.controls.email.invalid && form.controls.email.touched ? 'login-email-err' : null" />
+      @if (form.controls.email.invalid && form.controls.email.touched) {
+        <span id="login-email-err" class="field__error" role="alert">Gültige E-Mail-Adresse eingeben</span>
+      }
     </div>
 
     <div class="field">
-      <label for="password">Passwort</label>
-      <input
-        id="password"
-        type="password"
-        [ngModel]="password()"
-        (ngModelChange)="password.set($event)"
-        name="password"
+      <label for="login-password">Passwort</label>
+      <input id="login-password" type="password"
+        formControlName="password"
         autocomplete="current-password"
-        aria-required="true" />
+        aria-required="true"
+        [attr.aria-describedby]="form.controls.password.invalid && form.controls.password.touched ? 'login-pw-err' : null" />
+      @if (form.controls.password.invalid && form.controls.password.touched) {
+        <span id="login-pw-err" class="field__error" role="alert">Passwort eingeben</span>
+      }
     </div>
 
-    @if (error()) {
-      <p id="form-error" role="alert" class="form-error">{{ error() }}</p>
-    }
-
-    <button type="submit" class="btn btn--primary btn--md" [disabled]="loading()">
-      {{ loading() ? 'Einloggen…' : 'Einloggen' }}
+    <button type="submit" class="btn btn--primary btn--md"
+      [disabled]="loading()">
+      @if (loading()) { Einloggen… } @else { Einloggen }
     </button>
 
   </form>

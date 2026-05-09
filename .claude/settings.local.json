@@ -13,7 +13,8 @@
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\shared\\\\components\\\\\" -Recurse -Force | Where-Object {!$_.PSIsContainer} | Select-Object Name, FullName)",
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\shared\\\\directives\\\\\" -Recurse -Force | Where-Object {!$_.PSIsContainer} | Select-Object Name, FullName)",
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\shared\\\\components\\\\\" -Force | Select-Object Name, @{Name=\"Size\\(Bytes\\)\";Expression={if\\($_.PSIsContainer\\){\"[DIR]\"}else{$_.Length}}} | Sort-Object Name)",
-      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\shared\\\\components\\\\\" | Format-Table Name, @{Name=\"Bytes\";Expression={if\\($_.PSIsContainer\\){\"DIR\"}else{$_.Length}}} -AutoSize)"
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\shared\\\\components\\\\\" | Format-Table Name, @{Name=\"Bytes\";Expression={if\\($_.PSIsContainer\\){\"DIR\"}else{$_.Length}}} -AutoSize)",
+      "Bash(npm test *)"
     ]
   }
 }
