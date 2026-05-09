@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Delete, Body, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Delete, Body, Req, UseGuards, Request } from '@nestjs/common';
 import { z } from 'zod';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AuthenticatedRequest } from '../common/request.types';
@@ -17,6 +17,11 @@ export class UsersController {
   @Get('me')
   getMe(@Req() req: AuthenticatedRequest) {
     return this.users.findById(req.user.sub);
+  }
+
+  @Get('me/dashboard')
+  dashboard(@Request() req: AuthenticatedRequest) {
+    return this.users.getDashboard(req.user.sub);
   }
 
   @Patch('me')

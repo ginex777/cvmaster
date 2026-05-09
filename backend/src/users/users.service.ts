@@ -22,4 +22,24 @@ export class UsersService {
     await this.prisma.user.update({ where: { id }, data: { deletedAt: new Date() } });
     return { message: 'Account scheduled for deletion in 30 days' };
   }
+
+  async getDashboard(userId: string) {
+    const [cvCount, applicationCount, recentApplications] = await Promise.all([
+      this.prisma.masterCv.count({ where: { userId } }),
+      this.prisma.application.count({ where: { userId } }),
+      this.prisma.application.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+        select: {
+          id: true,
+          status: true,
+          matchScore: true,
+          createdAt: true,
+          jobPosting: { select: { parsedJson: true } },
+        },
+      }),
+    ]);
+    return { cvCount, applicationCount, recentApplications };
+  }
 }

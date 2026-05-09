@@ -1,17 +1,21 @@
-import type { OnInit } from '@angular/core';
-import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
+import { type OnInit, Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
 import { DatePipe } from '@angular/common';
-import { AuthService } from '../../core/auth/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ApiService } from '../../core/api/api.service';
 
-export interface Application {
+interface RecentApplication {
   id: string;
   status: string;
   matchScore: number | null;
   createdAt: string;
-  jobPosting: { parsedJson: { title?: string } };
+  jobPosting: { parsedJson: { title?: string; company?: string } };
+}
+
+interface DashboardData {
+  cvCount: number;
+  applicationCount: number;
+  recentApplications: RecentApplication[];
 }
 
 @Component({
@@ -23,22 +27,27 @@ export interface Application {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit {
-  private http = inject(HttpClient);
-  auth = inject(AuthService);
+  private readonly api = inject(ApiService);
 
-  applications = signal<Application[]>([]);
-  loading      = signal(true);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly data = signal<DashboardData | null>(null);
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
+    this.loading.set(true);
+    this.error.set(null);
     try {
-      const data = await firstValueFrom(this.http.get<Application[]>('/api/applications'));
-      this.applications.set(data);
+      this.data.set(await this.api.get<DashboardData>('/users/me/dashboard'));
+    } catch (e: unknown) {
+      this.error.set(
+        e instanceof HttpErrorResponse ? e.error.message : 'Daten konnten nicht geladen werden.',
+      );
     } finally {
       this.loading.set(false);
     }
   }
 
-  scoreClass(score: number) {
+  scoreClass(score: number): string {
     if (score >= 80) return 'score--high';
     if (score >= 60) return 'score--mid';
     return 'score--low';
