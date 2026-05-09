@@ -1,5 +1,7 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { createHash } from 'crypto';
+import pdfParse from 'pdf-parse';
+import * as mammoth from 'mammoth';
 import { PrismaService } from '../common/prisma.service';
 import { AiService } from '../ai/ai.service';
 
@@ -41,6 +43,12 @@ export class CvsService {
     return this.prisma.masterCv.update({ where: { id }, data });
   }
 
+  async remove(id: string, userId: string) {
+    const cv = await this.prisma.masterCv.findFirst({ where: { id, userId } });
+    if (!cv) throw new NotFoundException('CV nicht gefunden');
+    await this.prisma.masterCv.delete({ where: { id } });
+  }
+
   private validateMagicBytes(buf: Buffer) {
     const isPdf  = buf.slice(0, 4).equals(ALLOWED_MAGIC.pdf);
     const isDocx = buf.slice(0, 4).equals(ALLOWED_MAGIC.docx);
@@ -48,7 +56,12 @@ export class CvsService {
   }
 
   private async extractText(file: Express.Multer.File): Promise<string> {
-    // TODO: pdf-parse for PDF, mammoth for DOCX
-    return file.buffer.toString('utf8').slice(0, 50_000);
+    const isPdf = file.buffer.slice(0, 4).equals(ALLOWED_MAGIC.pdf);
+    if (isPdf) {
+      const result = await pdfParse(file.buffer);
+      return result.text.slice(0, 50_000);
+    }
+    const result = await mammoth.extractRawText({ buffer: file.buffer });
+    return result.value.slice(0, 50_000);
   }
 }

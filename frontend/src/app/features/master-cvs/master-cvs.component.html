@@ -1,37 +1,59 @@
-<main id="main">
-
-  <header class="page-header">
+<main id="main" class="master-cvs" [attr.aria-busy]="loading() || uploading()">
+  <header class="master-cvs__header">
     <h1>Meine Lebensläufe</h1>
-    <label class="btn btn--primary btn--md" for="cv-upload" role="button" tabindex="0">
-      Lebenslauf hochladen
+    <label
+      class="btn btn--primary btn--md"
+      for="cv-upload"
+      role="button"
+      tabindex="0"
+      [class.btn--loading]="uploading()"
+      [attr.aria-disabled]="uploading()">
+      @if (uploading()) { Wird hochgeladen… } @else { Lebenslauf hochladen }
       <input
         id="cv-upload"
         type="file"
-        accept=".pdf,.docx,.odt,.txt"
+        accept=".pdf,.docx"
         class="sr-only"
+        [disabled]="uploading()"
         (change)="upload($event)"
-        aria-label="Lebenslauf-Datei auswählen (PDF, DOCX, ODT oder TXT)" />
+        aria-label="Lebenslauf-Datei auswählen (PDF oder DOCX)" />
     </label>
   </header>
 
+  @if (error()) {
+    <div role="alert" aria-live="polite" class="form-error">{{ error() }}</div>
+  }
+
   @if (loading()) {
-    <p aria-live="polite" aria-busy="true">Wird geladen…</p>
+    <ul class="cv-list" aria-label="Lebensläufe werden geladen" aria-busy="true">
+      <li class="cv-card cv-card--skeleton" aria-hidden="true"></li>
+      <li class="cv-card cv-card--skeleton" aria-hidden="true"></li>
+    </ul>
   } @else if (cvs().length === 0) {
-    <p class="empty-state">Noch kein Lebenslauf hochgeladen.</p>
+    <section class="empty-state" aria-label="Keine Lebensläufe">
+      <p>Noch kein Lebenslauf hochgeladen.</p>
+      <p>Lade einen Lebenslauf als PDF oder DOCX hoch, um zu starten.</p>
+    </section>
   } @else {
     <ul class="cv-list" role="list" aria-label="Lebenslauf-Liste">
       @for (cv of cvs(); track cv.id) {
-        <li class="cv-card" role="listitem">
+        <li class="cv-card">
           <div class="cv-card__info">
             <strong class="cv-card__name">{{ cv.name }}</strong>
             <span class="cv-card__meta">{{ cv.sourceFilename }} · {{ cv.language.toUpperCase() }}</span>
             <time class="cv-card__date" [attr.datetime]="cv.updatedAt">
-              Aktualisiert {{ cv.updatedAt | slice:0:10 }}
+              Aktualisiert {{ cv.updatedAt | date:'dd.MM.yyyy' }}
             </time>
           </div>
+          <button
+            type="button"
+            class="btn btn--ghost btn--sm"
+            [attr.aria-label]="'Lebenslauf ' + cv.name + ' löschen'"
+            (click)="remove(cv.id)">
+            Löschen
+          </button>
         </li>
       }
     </ul>
   }
-
 </main>

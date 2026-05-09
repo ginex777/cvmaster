@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Param, Body, Req, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Req, UseGuards, UseInterceptors, UploadedFile, BadRequestException, HttpCode, HttpStatus } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -26,5 +26,11 @@ export class CvsController {
   @Patch(':id')
   update(@Param('id') id: string, @Req() req: AuthenticatedRequest, @Body() body: unknown) {
     return this.cvs.update(id, req.user.sub, body as { name?: string; language?: string });
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    await this.cvs.remove(id, req.user.sub);
   }
 }

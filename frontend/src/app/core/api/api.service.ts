@@ -28,6 +28,12 @@ export class ApiService {
     );
   }
 
+  upload<T>(path: string, form: FormData) {
+    return firstValueFrom(
+      this.http.post<T>(`${this.base}${path}`, form, { withCredentials: true })
+    );
+  }
+
   delete<T>(path: string) {
     return firstValueFrom(
       this.http.delete<T>(`${this.base}${path}`, { withCredentials: true })
