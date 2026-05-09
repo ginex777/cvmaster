@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { AppStatus } from '@prisma/client';
 import { Response } from 'express';
 import { PrismaService } from '../common/prisma.service';
@@ -14,6 +14,9 @@ export class ApplicationsService {
   ) {}
 
   async create(data: { masterCvId: string; jobPostingId: string }, userId: string) {
+    const cv = await this.prisma.masterCv.findFirst({ where: { id: data.masterCvId, userId } });
+    if (!cv) throw new NotFoundException('Master-CV nicht gefunden');
+
     const app = await this.prisma.application.create({
       data: { userId, masterCvId: data.masterCvId, jobPostingId: data.jobPostingId, status: 'DRAFT' },
     });
