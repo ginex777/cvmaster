@@ -1,5 +1,5 @@
 import type { ApplicationConfig} from '@angular/core';
-import { provideZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection, APP_INITIALIZER, inject } from '@angular/core';
 import {
   provideRouter,
   withComponentInputBinding,
@@ -9,6 +9,14 @@ import {
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
+import { AuthService } from './core/auth/auth.service';
+
+function sessionHydration() {
+  const auth = inject(AuthService);
+  return () => auth.refresh().catch(() => {
+    // No valid session cookie — user stays logged out, no action needed
+  });
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,5 +28,6 @@ export const appConfig: ApplicationConfig = {
       withViewTransitions()
     ),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    { provide: APP_INITIALIZER, useFactory: sessionHydration, multi: true },
   ],
 };

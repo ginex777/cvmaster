@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { createHash } from 'crypto';
 import { PrismaService } from '../common/prisma.service';
 import { AiService } from '../ai/ai.service';
@@ -26,16 +26,13 @@ export class JobsService {
       case 'text':
         return data.value;
       case 'url':
-        // TODO: Playwright headless crawl + Readability.js
-        throw new Error('URL crawling not yet implemented');
+        throw new NotImplementedException('URL crawling is not yet supported');
       case 'screenshot':
-        // TODO: multimodal LLM call for image
-        throw new Error('Screenshot parsing not yet implemented');
+        throw new NotImplementedException('Screenshot parsing is not yet supported');
       case 'pdf':
-        // TODO: pdf-parse from base64
-        throw new Error('PDF parsing not yet implemented');
+        throw new NotImplementedException('PDF job ad parsing is not yet supported');
       default:
-        throw new Error('Unknown source type');
+        throw new NotImplementedException('Unknown job input type');
     }
   }
 }

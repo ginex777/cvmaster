@@ -10,7 +10,7 @@ import { PdfModule } from './pdf/pdf.module';
 import { PaymentsModule } from './payments/payments.module';
 import { MailModule } from './mail/mail.module';
 import { GdprModule } from './gdpr/gdpr.module';
-import { QueueModule } from './queue/queue.module';
+import { QueueProducerModule } from './queue/queue-producer.module';
 import { TrialModule } from './trial/trial.module';
 import { PrismaService } from './common/prisma.service';
 
@@ -27,7 +27,7 @@ import { PrismaService } from './common/prisma.service';
     PaymentsModule,
     MailModule,
     GdprModule,
-    QueueModule,
+    QueueProducerModule,
     TrialModule,
   ],
   providers: [PrismaService],

@@ -5,12 +5,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AuthenticatedRequest } from '../common/request.types';
 import { JobsService } from './jobs.service';
 
-const parseSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('url'),        value: z.string().url() }),
-  z.object({ type: z.literal('text'),       value: z.string().min(50) }),
-  z.object({ type: z.literal('screenshot'), value: z.string() }), // base64
-  z.object({ type: z.literal('pdf'),        value: z.string() }), // base64
-]);
+const parseSchema = z.object({ type: z.literal('text'), value: z.string().min(50) });
 
 @Controller('jobs')
 @UseGuards(JwtAuthGuard)

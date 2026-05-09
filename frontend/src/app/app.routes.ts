@@ -20,6 +20,7 @@ export const routes: Routes = [
       { path: 'cvs', loadComponent: () => import('./features/master-cvs/master-cvs.component').then(m => m.MasterCvsComponent) },
       { path: 'applications/:id', loadComponent: () => import('./features/application-editor/editor.component').then(m => m.EditorComponent) },
       { path: 'billing', loadComponent: () => import('./features/billing/billing.component').then(m => m.BillingComponent) },
+      { path: 'wizard', loadComponent: () => import('./features/wizard/wizard.component').then(m => m.WizardComponent) },
     ],
   },
 

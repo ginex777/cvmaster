@@ -95,7 +95,7 @@ export class AuthService {
     await this.prisma.session.updateMany({ where: { refreshHash: tokenHash }, data: { revokedAt: new Date() } });
   }
 
-  private async issueTokens(user: { id: string; plan: string; emailVerifiedAt: Date | null; twoFactorEnabled: boolean }, ip: string, ua: string) {
+  private async issueTokens(user: { id: string; email: string; name: string | null; plan: string; emailVerifiedAt: Date | null; twoFactorEnabled: boolean }, ip: string, ua: string) {
     // Enforce max sessions
     const sessions = await this.prisma.session.findMany({
       where: { userId: user.id, revokedAt: null, expiresAt: { gt: new Date() } },
@@ -131,7 +131,18 @@ export class AuthService {
         secret: process.env.JWT_SECRET ?? 'local-dev-jwt-secret-change-me',
       });
 
-    return { accessToken, refreshToken: rawRefresh, user: { id: user.id, plan: user.plan } };
+    return {
+      accessToken,
+      refreshToken: rawRefresh,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name ?? '',
+        plan: user.plan,
+        emailVerified: !!user.emailVerifiedAt,
+        twoFactorEnabled: user.twoFactorEnabled,
+      },
+    };
   }
 
   private hashIp(ip: string) {

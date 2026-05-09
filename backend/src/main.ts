@@ -3,7 +3,40 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
+function validateEnv() {
+  const required = ['DATABASE_URL', 'REDIS_URL', 'APP_URL', 'AI_PROVIDER'];
+  const missing = required.filter(k => !process.env[k]);
+  if (missing.length) {
+    throw new Error(`Missing required env vars: ${missing.join(', ')}`);
+  }
+
+  const provider = process.env.AI_PROVIDER;
+  if (provider === 'mistral' && !process.env.MISTRAL_API_KEY) {
+    throw new Error('MISTRAL_API_KEY is required when AI_PROVIDER=mistral');
+  }
+  if (provider === 'claude' && !process.env.ANTHROPIC_API_KEY) {
+    throw new Error('ANTHROPIC_API_KEY is required when AI_PROVIDER=claude');
+  }
+  if (provider !== 'mistral' && provider !== 'claude') {
+    throw new Error(`AI_PROVIDER must be "mistral" or "claude", got "${provider}"`);
+  }
+
+  if (!process.env.JWT_PRIVATE_KEY && !process.env.JWT_SECRET) {
+    console.warn('[warn] Neither JWT_PRIVATE_KEY nor JWT_SECRET is set — using insecure dev default');
+  }
+  if (!process.env.IP_SALT) {
+    console.warn('[warn] IP_SALT is not set — IP hashing will be weak');
+  }
+  if (!process.env.RESEND_API_KEY && process.env.NODE_ENV === 'production') {
+    throw new Error('RESEND_API_KEY is required in production');
+  }
+  if (!process.env.MAIL_DOMAIN) {
+    throw new Error('MAIL_DOMAIN is required');
+  }
+}
+
 async function bootstrap() {
+  validateEnv();
   const app = await NestFactory.create(AppModule, {
     bodyParser: true,
     rawBody: true,
