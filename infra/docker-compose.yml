@@ -16,10 +16,14 @@ services:
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: lba
       POSTGRES_USER: lba
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-postgres-password}
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_INITDB_ARGS: "--auth-host=trust --auth-local=trust"
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./backups:/backups
@@ -30,6 +34,8 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    ports:
+      - "6379:6379"
     command: redis-server --requirepass ${REDIS_PASSWORD:-local-redis-password}
     volumes:
       - redis_data:/data
@@ -48,13 +54,16 @@ services:
       APP_URL: ${APP_URL:-http://localhost}
       MAIL_DOMAIN: ${MAIL_DOMAIN:-localhost}
       NODE_ENV: ${NODE_ENV:-development}
+      AI_PROVIDER: ${AI_PROVIDER:-mistral}
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
     depends_on:
       postgres: { condition: service_healthy }
       redis:    { condition: service_started }
 
   worker:
     build: ../backend
-    profiles: ["worker"]
     command: node dist/worker.js
     restart: unless-stopped
     env_file:
@@ -68,6 +77,10 @@ services:
       APP_URL: ${APP_URL:-http://localhost}
       MAIL_DOMAIN: ${MAIL_DOMAIN:-localhost}
       NODE_ENV: ${NODE_ENV:-development}
+      AI_PROVIDER: ${AI_PROVIDER:-mistral}
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
     depends_on:
       - postgres
       - redis

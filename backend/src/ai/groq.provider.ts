@@ -7,7 +7,7 @@ export class GroqProvider implements LLMProvider {
   constructor(private apiKey: string) {}
 
   async generate<T>(opts: { system: string; user: string; schema: ZodSchema<T>; model?: string }): Promise<T> {
-    const model = opts.model ?? 'llama-3.1-70b-versatile';
+    const model = opts.model ?? 'llama-3.3-70b-versatile';
     const res = await fetch(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.apiKey}` },
