@@ -46,7 +46,7 @@
 h1 {
   max-width: 880px;
   margin-top: 24px;
-  font-size: clamp(48px, 7vw, 72px);
+  font-size: 4.5rem;
   font-weight: 500;
   letter-spacing: -0.035em;
   line-height: 1.02;
@@ -285,13 +285,18 @@ h1 {
     &::before {
       content: '';
       display: block;
-      width: var(--value);
+      width: 70%;
       height: 100%;
       border-radius: inherit;
       background: var(--accent);
     }
   }
 }
+
+.bar--typescript strong::before { width: 95%; }
+.bar--stripe strong::before { width: 88%; }
+.bar--design strong::before { width: 72%; }
+.bar--accessibility strong::before { width: 64%; }
 
 .suggestion {
   margin-top: 28px;
@@ -347,7 +352,7 @@ h1 {
   }
 
   h1 {
-    font-size: clamp(42px, 14vw, 58px);
+    font-size: 3rem;
   }
 
   .hero__subline {

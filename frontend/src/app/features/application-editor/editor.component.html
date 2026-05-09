@@ -1,4 +1,4 @@
-<main class="editor" aria-labelledby="editor-title" [attr.aria-busy]="loading()">
+<main class="editor" aria-labelledby="editor-title" [attr.aria-busy]="isLoading()">
   <header class="editor__header">
     <a routerLink="/app" class="btn btn--ghost btn--sm">ZurÃ¼ck</a>
     <div>
@@ -6,20 +6,20 @@
       <h1 id="editor-title">Bewerbung bearbeiten</h1>
     </div>
     <div class="editor__actions" role="group" aria-label="Bewerbungsaktionen">
-      <button class="btn btn--secondary btn--sm" type="button" (click)="downloadPdf()" [disabled]="downloading()">
-        {{ downloading() ? 'PDF wird erstellt...' : 'PDF herunterladen' }}
+      <button class="btn btn--secondary btn--sm" type="button" (click)="downloadPdf()" [disabled]="isDownloading()">
+        {{ isDownloading() ? 'PDF wird erstellt...' : 'PDF herunterladen' }}
       </button>
-      <button class="btn btn--ghost btn--sm" type="button" (click)="setStatus('SENT')" [disabled]="saving()">
+      <button class="btn btn--ghost btn--sm" type="button" (click)="setStatus('SENT')" [disabled]="isSaving()">
         Als gesendet markieren
       </button>
     </div>
   </header>
 
-  @if (error()) {
-    <p class="editor__alert" aria-live="polite">{{ error() }}</p>
+  @if (errorMessage()) {
+    <p class="editor__alert" aria-live="polite">{{ errorMessage() }}</p>
   }
 
-  @if (loading()) {
+  @if (isLoading()) {
     <section class="editor__grid editor__grid--loading" aria-label="Editor wird geladen">
       <div class="skeleton skeleton--panel"></div>
       <div class="skeleton skeleton--panel"></div>
@@ -29,19 +29,19 @@
     <form class="editor__grid" [formGroup]="editorForm">
       <aside class="panel panel--match" aria-labelledby="match-title">
         <h2 id="match-title">Match Report</h2>
-        <div class="score" role="status" [attr.aria-label]="'ATS Score ' + (score() ?? 0) + ' Prozent'">
-          <strong>{{ score() ?? 0 }}</strong>
+        <div class="score" role="status" [attr.aria-label]="'ATS Score ' + (currentScore() ?? 0) + ' Prozent'">
+          <strong>{{ currentScore() ?? 0 }}</strong>
           <span>ATS Score</span>
         </div>
 
-        @if (matchReport().summary) {
-          <p class="panel__summary">{{ matchReport().summary }}</p>
+        @if (currentMatchReport().summary) {
+          <p class="panel__summary">{{ currentMatchReport().summary }}</p>
         }
 
         <section aria-labelledby="keywords-title">
           <h3 id="keywords-title">Treffer</h3>
           <ul class="keyword-list">
-            @for (keyword of keywords(); track keyword) {
+            @for (keyword of matchedKeywords(); track keyword) {
               <li>{{ keyword }}</li>
             } @empty {
               <li>Keine Keyword-Daten vorhanden.</li>
@@ -49,11 +49,11 @@
           </ul>
         </section>
 
-        @if (missingKeywords().length) {
+        @if (currentMissingKeywords().length) {
           <section aria-labelledby="missing-title">
             <h3 id="missing-title">Noch offen</h3>
             <ul class="keyword-list keyword-list--muted">
-              @for (keyword of missingKeywords(); track keyword) {
+              @for (keyword of currentMissingKeywords(); track keyword) {
                 <li>{{ keyword }}</li>
               }
             </ul>
@@ -64,7 +64,7 @@
       <section class="panel panel--cv" aria-labelledby="cv-title">
         <div class="panel__heading">
           <h2 id="cv-title">Optimierter Lebenslauf</h2>
-          <span aria-live="polite">{{ saving() ? 'Speichert...' : 'Gespeichert' }}</span>
+          <span aria-live="polite">{{ isSaving() ? 'Speichert...' : 'Gespeichert' }}</span>
         </div>
         <label for="cv-text">CV-Inhalt</label>
         <textarea
@@ -80,13 +80,13 @@
       <aside class="panel panel--letter" aria-labelledby="letter-title">
         <h2 id="letter-title">Anschreiben</h2>
         <div class="tabs" role="tablist" aria-label="Anschreiben Varianten">
-          <button type="button" role="tab" [attr.aria-selected]="selectedLetter() === 'formal'" (click)="selectedLetter.set('formal')">
+          <button type="button" role="tab" [attr.aria-selected]="selectedLetterValue() === 'formal'" (click)="selectLetter('formal')">
             Formal
           </button>
-          <button type="button" role="tab" [attr.aria-selected]="selectedLetter() === 'warm'" (click)="selectedLetter.set('warm')">
+          <button type="button" role="tab" [attr.aria-selected]="selectedLetterValue() === 'warm'" (click)="selectLetter('warm')">
             Herzlich
           </button>
-          <button type="button" role="tab" [attr.aria-selected]="selectedLetter() === 'brief'" (click)="selectedLetter.set('brief')">
+          <button type="button" role="tab" [attr.aria-selected]="selectedLetterValue() === 'brief'" (click)="selectLetter('brief')">
             Kurz
           </button>
         </div>

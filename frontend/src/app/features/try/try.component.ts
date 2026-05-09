@@ -25,6 +25,36 @@ export class TryComponent {
     jobText: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(40)] }),
   });
 
+  readonly controls = this.form.controls;
+
+  get isLoading(): boolean {
+    return this.loading();
+  }
+
+  get errorMessage(): string | null {
+    return this.error();
+  }
+
+  get trialResult(): TrialResponse | null {
+    return this.result();
+  }
+
+  get trialAtsScore(): number {
+    return this.result()?.atsScore ?? this.result()?.matchScore ?? 0;
+  }
+
+  get trialSummary(): string {
+    return this.result()?.summary ?? '';
+  }
+
+  get trialCoverLetterPreview(): string {
+    return this.result()?.coverLetterPreview ?? '';
+  }
+
+  get trialKeywords(): string[] {
+    return this.result()?.keywords ?? [];
+  }
+
   async runTrial(): Promise<void> {
     this.form.markAllAsTouched();
     if (this.form.invalid) return;

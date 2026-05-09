@@ -33,7 +33,7 @@
 }
 
 h2 {
-  font-size: clamp(36px, 5vw, 56px);
+  font-size: 3.5rem;
   font-weight: 500;
   letter-spacing: -0.03em;
   line-height: 1.08;
@@ -147,6 +147,10 @@ h2 {
 .good { color: var(--good); }
 
 @media (max-width: 820px) {
+  h2 {
+    font-size: 2.5rem;
+  }
+
   .comparison,
   .stats {
     grid-template-columns: 1fr;

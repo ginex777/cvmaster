@@ -6,17 +6,36 @@ import { PrismaService } from '../common/prisma.service';
 export class GdprService {
   constructor(private prisma: PrismaService) {}
 
-  async exportUserData(userId: string): Promise<Buffer> {
-    const [user, cvs, applications, consents] = await Promise.all([
-      this.prisma.user.findUniqueOrThrow({ where: { id: userId } }),
+  async exportData(userId: string) {
+    const [user, masterCvs, applications, consents] = await Promise.all([
+      this.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          locale: true,
+          plan: true,
+          emailVerifiedAt: true,
+          twoFactorEnabled: true,
+          trialUsed: true,
+          createdAt: true,
+        },
+      }),
       this.prisma.masterCv.findMany({ where: { userId } }),
       this.prisma.application.findMany({ where: { userId } }),
       this.prisma.consent.findMany({ where: { userId } }),
     ]);
 
-    const json = JSON.stringify({ user, cvs, applications, consents }, null, 2);
-    // TODO: create real ZIP with archiver, include freshly rendered PDFs
-    return Buffer.from(json, 'utf8');
+    return { user, masterCvs, applications, consents, exportedAt: new Date().toISOString() };
+  }
+
+  async deleteAccount(userId: string): Promise<void> {
+    await this.prisma.user.delete({ where: { id: userId } });
+  }
+
+  async exportUserData(userId: string): Promise<Buffer> {
+    return Buffer.from(JSON.stringify(await this.exportData(userId), null, 2), 'utf8');
   }
 
   /** Soft-deleted users get hard-deleted after 30 days (SPEC § 14) */

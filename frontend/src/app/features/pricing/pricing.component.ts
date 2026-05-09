@@ -25,6 +25,10 @@ export class PricingComponent {
 
   readonly checkoutError = signal<string | null>(null);
 
+  get checkoutErrorMessage(): string | null {
+    return this.checkoutError();
+  }
+
   openProCheckout(): void {
     this.checkoutError.set(null);
     const paddle = this.getPaddle();

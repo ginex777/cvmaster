@@ -1,28 +1,40 @@
-<main id="main" class="billing-page">
-  <h1>Abrechnung</h1>
+<main id="main" class="billing-page" aria-labelledby="billing-title" [attr.aria-busy]="loading()">
+  <header class="billing-page__header">
+    <p class="billing-page__eyebrow">Konto</p>
+    <h1 id="billing-title">Abrechnung und Datenschutz</h1>
+    <p>Verwalte deinen Plan und lade die Daten herunter, die zu deinem Konto gespeichert sind.</p>
+  </header>
 
-  @if (auth.user()?.plan === 'pro') {
-    <section aria-labelledby="active-plan-heading">
-      <h2 id="active-plan-heading">Aktiver Plan: Pro</h2>
-      <p>Du kannst dein Abo jederzeit kündigen — du behältst den Zugang bis zum Periodenende.</p>
-      <button class="btn btn--secondary btn--md"
-        onclick="Paddle?.Checkout?.open({ settings: { displayMode: 'overlay' } })">
-        Abo verwalten
-      </button>
-    </section>
-  } @else {
-    <section aria-labelledby="upgrade-heading">
-      <h2 id="upgrade-heading">Auf Pro upgraden</h2>
-      <ul role="list" class="feature-list">
-        <li>Unbegrenzte Bewerbungen</li>
-        <li>Alle 3 CV-Layouts</li>
-        <li>Status-Tracking Dashboard</li>
-        <li>TOTP-Zwei-Faktor-Auth</li>
-      </ul>
-      <button class="btn btn--primary btn--md">
-        Pro starten — 14&thinsp;€/Monat
-      </button>
-      <p class="billing-page__note">oder 130&thinsp;€/Jahr (22&nbsp;% Rabatt)</p>
-    </section>
+  @if (error()) {
+    <p class="billing-page__alert" role="alert">{{ error() }}</p>
   }
+
+  @if (message()) {
+    <p class="billing-page__status" aria-live="polite">{{ message() }}</p>
+  }
+
+  <section class="settings-grid">
+    <article class="settings-panel" aria-labelledby="plan-heading">
+      <h2 id="plan-heading">Aktiver Plan</h2>
+      <p class="settings-panel__metric">{{ planLabel(auth.user()?.plan) }}</p>
+      <p>Planwechsel und Abrechnung laufen ueber den Zahlungsanbieter.</p>
+      <a routerLink="/preise" class="btn btn--secondary btn--md">Preise ansehen</a>
+    </article>
+
+    <article class="settings-panel" aria-labelledby="export-heading">
+      <h2 id="export-heading">Daten exportieren</h2>
+      <p>Erhalte Konto, Lebenslaeufe, Bewerbungen und Einwilligungen als JSON-Datei.</p>
+      <button type="button" class="btn btn--primary btn--md" (click)="exportData()" [disabled]="loading()">
+        Daten exportieren
+      </button>
+    </article>
+
+    <article class="settings-panel settings-panel--danger" aria-labelledby="delete-heading">
+      <h2 id="delete-heading">Konto loeschen</h2>
+      <p>Loescht dein Konto dauerhaft inklusive zugehoeriger Lebenslaeufe und Bewerbungen.</p>
+      <button type="button" class="btn btn--ghost btn--md" (click)="deleteAccount()" [disabled]="loading()">
+        Konto loeschen
+      </button>
+    </article>
+  </section>
 </main>

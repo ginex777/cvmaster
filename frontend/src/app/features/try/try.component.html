@@ -1,4 +1,4 @@
-<main id="main" class="try" aria-labelledby="try-title" [attr.aria-busy]="loading()">
+<main id="main" class="try" aria-labelledby="try-title" [attr.aria-busy]="isLoading">
   <header class="try__header">
     <p class="try__eyebrow">Demo ohne Account</p>
     <h1 id="try-title">Teste deinen CV gegen eine Stellenanzeige</h1>
@@ -16,7 +16,7 @@
         placeholder="Kurzprofil, Erfahrung, Skills und relevante Projekte..."
       ></textarea>
       <p id="cv-help">Mindestens 40 Zeichen. Dateien werden hier nicht hochgeladen.</p>
-      @if (form.controls.cvText.touched && form.controls.cvText.invalid) {
+      @if (controls.cvText.touched && controls.cvText.invalid) {
         <p id="cv-error" class="field__error">Bitte fuege mindestens 40 Zeichen Lebenslauf-Text ein.</p>
       }
     </section>
@@ -31,35 +31,35 @@
         placeholder="Rolle, Aufgaben, Anforderungen, gewuenschte Keywords..."
       ></textarea>
       <p id="job-help">Kopiere die Anzeige oder die wichtigsten Anforderungen hinein.</p>
-      @if (form.controls.jobText.touched && form.controls.jobText.invalid) {
+      @if (controls.jobText.touched && controls.jobText.invalid) {
         <p id="job-error" class="field__error">Bitte fuege mindestens 40 Zeichen Stellenanzeige ein.</p>
       }
     </section>
 
     <div class="try__actions">
-      <button class="btn btn--primary btn--md" type="submit" [disabled]="loading()">
-        {{ loading() ? 'Demo wird erstellt...' : 'Demo-Ergebnis anzeigen' }}
+      <button class="btn btn--primary btn--md" type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Demo wird erstellt...' : 'Demo-Ergebnis anzeigen' }}
       </button>
       <a routerLink="/register" class="btn btn--ghost btn--md">Direkt registrieren</a>
     </div>
   </form>
 
-  @if (error()) {
-    <p class="try__error" role="alert">{{ error() }}</p>
+  @if (errorMessage) {
+    <p class="try__error" role="alert">{{ errorMessage }}</p>
   }
 
-  @if (result(); as trialResult) {
+  @if (trialResult) {
     <section class="result-card" aria-labelledby="result-heading" aria-live="polite">
       <div class="result-card__score">
         <span>ATS Score</span>
-        <strong>{{ trialResult.atsScore }}%</strong>
+        <strong>{{ trialAtsScore }}%</strong>
       </div>
       <div class="result-card__body">
         <h2 id="result-heading">Gekuerzte Vorschau</h2>
-        <p>{{ trialResult.summary }}</p>
-        <blockquote>{{ trialResult.coverLetterPreview }}</blockquote>
+        <p>{{ trialSummary }}</p>
+        <blockquote>{{ trialCoverLetterPreview }}</blockquote>
         <ul class="keyword-list" aria-label="Erkannte Keywords">
-          @for (keyword of trialResult.keywords; track keyword) {
+          @for (keyword of trialKeywords; track keyword) {
             <li>{{ keyword }}</li>
           }
         </ul>

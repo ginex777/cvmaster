@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AuthenticatedRequest } from '../common/request.types';
@@ -11,9 +11,17 @@ export class GdprController {
 
   @Get('export')
   async export(@Req() req: AuthenticatedRequest, @Res() res: Response) {
-    const zip = await this.gdpr.exportUserData(req.user.sub);
-    res.setHeader('Content-Type', 'application/zip');
-    res.setHeader('Content-Disposition', 'attachment; filename="daten-export.zip"');
-    res.send(zip);
+    const data = await this.gdpr.exportData(req.user.sub);
+    res.set({
+      'Content-Type': 'application/json',
+      'Content-Disposition': 'attachment; filename="meine-daten.json"',
+    });
+    res.json(data);
+  }
+
+  @Delete('account')
+  async deleteAccount(@Req() req: AuthenticatedRequest) {
+    await this.gdpr.deleteAccount(req.user.sub);
+    return { message: 'Konto und alle Daten geloescht' };
   }
 }

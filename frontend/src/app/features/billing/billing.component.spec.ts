@@ -1,19 +1,67 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { ApiService } from '../../core/api/api.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { BillingComponent } from './billing.component';
 
 describe('BillingComponent', () => {
+  let api: jest.Mocked<Pick<ApiService, 'getBlob' | 'delete'>>;
+  let auth: Pick<AuthService, 'user'>;
+
   beforeEach(async () => {
+    api = { getBlob: jest.fn(), delete: jest.fn() };
+    api.getBlob.mockResolvedValue(new Blob(['{}'], { type: 'application/json' }));
+    api.delete.mockResolvedValue({ message: 'ok' });
+    auth = {
+      user: signal({ id: 'u1', email: 'a@b.de', name: 'Lina', plan: 'free', emailVerified: true, twoFactorEnabled: false }),
+    };
+
     await TestBed.configureTestingModule({
       imports: [BillingComponent],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideRouter([]),
+        { provide: ApiService, useValue: api },
+        { provide: AuthService, useValue: auth },
+      ],
     }).compileComponents();
   });
 
-  it('should create', () => {
+  it('renders plan info and GDPR actions', () => {
     const fixture = TestBed.createComponent(BillingComponent);
-    expect(fixture.componentInstance).toBeTruthy();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Free');
+    expect(fixture.nativeElement.textContent).toContain('Daten exportieren');
+    expect(fixture.nativeElement.textContent).toContain('Konto loeschen');
+  });
+
+  it('downloads GDPR export', async () => {
+    Object.defineProperty(URL, 'createObjectURL', { configurable: true, value: jest.fn(() => 'blob:test') });
+    Object.defineProperty(URL, 'revokeObjectURL', { configurable: true, value: jest.fn() });
+    const anchor = document.createElement('a');
+    const click = jest.fn();
+    Object.defineProperty(anchor, 'click', { value: click });
+
+    const fixture = TestBed.createComponent(BillingComponent);
+    const createElement = jest.spyOn(document, 'createElement').mockReturnValue(anchor);
+
+    await fixture.componentInstance.exportData();
+
+    expect(api.getBlob).toHaveBeenCalledWith('/gdpr/export');
+    expect(anchor.download).toBe('meine-daten.json');
+    expect(click).toHaveBeenCalled();
+
+    createElement.mockRestore();
+  });
+
+  it('deletes account after confirmation', async () => {
+    Object.defineProperty(window, 'confirm', { configurable: true, value: jest.fn(() => true) });
+    const fixture = TestBed.createComponent(BillingComponent);
+
+    await fixture.componentInstance.deleteAccount();
+
+    expect(api.delete).toHaveBeenCalledWith('/gdpr/account');
+    expect(auth.user()).toBeNull();
   });
 });

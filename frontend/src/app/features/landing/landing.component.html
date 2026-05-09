@@ -58,8 +58,8 @@
               <textarea
                 name="cvText"
                 rows="8"
-                [ngModel]="cvText()"
-                (ngModelChange)="cvText.set($event)"
+                [value]="cvText()"
+                (input)="cvText.set($any($event.target).value)"
                 placeholder="Kurzprofil, Erfahrung, Skills und relevante Projekte..."
               ></textarea>
             </label>
@@ -74,8 +74,8 @@
               <textarea
                 name="jobText"
                 rows="8"
-                [ngModel]="jobText()"
-                (ngModelChange)="jobText.set($event)"
+                [value]="jobText()"
+                (input)="jobText.set($any($event.target).value)"
                 placeholder="Rolle, Aufgaben, Anforderungen, gewünschte Keywords..."
               ></textarea>
             </label>
@@ -136,8 +136,8 @@
                 name="loginEmail"
                 type="email"
                 autocomplete="email"
-                [ngModel]="loginEmail()"
-                (ngModelChange)="loginEmail.set($event)"
+                [value]="loginEmail()"
+                (input)="loginEmail.set($any($event.target).value)"
               />
             </label>
             <label class="field">
@@ -146,8 +146,8 @@
                 name="loginPassword"
                 type="password"
                 autocomplete="current-password"
-                [ngModel]="loginPassword()"
-                (ngModelChange)="loginPassword.set($event)"
+                [value]="loginPassword()"
+                (input)="loginPassword.set($any($event.target).value)"
               />
             </label>
             <button type="submit" class="btn btn--primary btn--md" [disabled]="!canSubmitLogin()">Anmelden</button>
@@ -169,8 +169,8 @@
               <input
                 name="registerName"
                 autocomplete="name"
-                [ngModel]="registerName()"
-                (ngModelChange)="registerName.set($event)"
+                [value]="registerName()"
+                (input)="registerName.set($any($event.target).value)"
               />
             </label>
             <label class="field">
@@ -179,8 +179,8 @@
                 name="registerEmail"
                 type="email"
                 autocomplete="email"
-                [ngModel]="registerEmail()"
-                (ngModelChange)="registerEmail.set($event)"
+                [value]="registerEmail()"
+                (input)="registerEmail.set($any($event.target).value)"
               />
             </label>
             <label class="field">
@@ -189,16 +189,16 @@
                 name="registerPassword"
                 type="password"
                 autocomplete="new-password"
-                [ngModel]="registerPassword()"
-                (ngModelChange)="registerPassword.set($event)"
+                [value]="registerPassword()"
+                (input)="registerPassword.set($any($event.target).value)"
               />
             </label>
             <label class="check-field">
               <input
                 name="consentGiven"
                 type="checkbox"
-                [ngModel]="consentGiven()"
-                (ngModelChange)="consentGiven.set($event)"
+                [checked]="consentGiven()"
+                (change)="consentGiven.set($any($event.target).checked)"
               />
               <span>Ich stimme der Verarbeitung meiner Bewerbungsdaten für diesen Test zu.</span>
             </label>

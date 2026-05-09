@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { TrialApiService } from '../../core/api/trial.service';
 import type { TrialResponse } from '../../core/api/trial.service';
 import { FooterComponent } from '../../shared/components/footer.component';
@@ -20,7 +19,6 @@ type TryDialogStep = 'cv' | 'job' | 'result';
   selector: 'lba-landing',
   standalone: true,
   imports: [
-    FormsModule,
     NavbarComponent,
     FooterComponent,
     HeroComponent,

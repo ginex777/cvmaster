@@ -60,6 +60,15 @@ export class EditorComponent implements OnInit {
     return report.keywords?.length ? report.keywords : jobKeywords;
   });
   readonly missingKeywords = computed(() => this.matchReport().missingKeywords ?? []);
+  readonly isLoading = computed(() => this.loading());
+  readonly isSaving = computed(() => this.saving());
+  readonly isDownloading = computed(() => this.downloading());
+  readonly errorMessage = computed(() => this.error());
+  readonly currentScore = computed(() => this.score());
+  readonly currentMatchReport = computed(() => this.matchReport());
+  readonly matchedKeywords = computed(() => this.keywords());
+  readonly currentMissingKeywords = computed(() => this.missingKeywords());
+  readonly selectedLetterValue = computed(() => this.selectedLetter());
 
   async ngOnInit(): Promise<void> {
     await this.load();
@@ -91,6 +100,10 @@ export class EditorComponent implements OnInit {
 
   letterControl(): FormControl<string> {
     return this.editorForm.controls[this.selectedLetter()];
+  }
+
+  selectLetter(variant: LetterVariant): void {
+    this.selectedLetter.set(variant);
   }
 
   async saveCv(): Promise<void> {

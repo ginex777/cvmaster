@@ -5,8 +5,8 @@
     <p>Waehle den Umfang, der zu deiner aktuellen Suche passt. Beide Plaene enthalten den Match-Report und PDF-Export.</p>
   </header>
 
-  @if (checkoutError()) {
-    <p class="pricing__alert" aria-live="polite">{{ checkoutError() }}</p>
+  @if (checkoutErrorMessage) {
+    <p class="pricing__alert" aria-live="polite">{{ checkoutErrorMessage }}</p>
   }
 
   <div class="pricing-grid" role="list">

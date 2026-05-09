@@ -30,7 +30,7 @@
 }
 
 h2 {
-  font-size: clamp(36px, 5vw, 56px);
+  font-size: 3.5rem;
   font-weight: 500;
   letter-spacing: -0.03em;
   line-height: 1.08;
@@ -94,6 +94,10 @@ small {
 }
 
 @media (max-width: 860px) {
+  h2 {
+    font-size: 2.5rem;
+  }
+
   .testimonials {
     grid-template-columns: 1fr;
   }
