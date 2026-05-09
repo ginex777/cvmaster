@@ -1,0 +1,30 @@
+{
+  email admin@example.de
+}
+
+example.de, www.example.de {
+  encode zstd gzip
+
+  # Sicherheits-Header (siehe SPEC § 23)
+  header {
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    X-Frame-Options "DENY"
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "no-referrer"
+    Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src fonts.gstatic.com; img-src 'self' data:; connect-src 'self'"
+    -Server
+  }
+
+  handle_path /api/* {
+    reverse_proxy api:3000
+  }
+
+  handle_path /.well-known/security.txt {
+    respond `Contact: mailto:security@example.de
+Expires: 2027-01-01T00:00:00.000Z
+Preferred-Languages: de, en` 200
+  }
+
+  reverse_proxy frontend:4000
+}

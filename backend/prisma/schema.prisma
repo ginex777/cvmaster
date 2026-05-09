@@ -1,0 +1,147 @@
+// Prisma Schema — siehe SPEC § 3 (Modell B, kein File-Storage)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                  String    @id @default(uuid()) @db.Uuid
+  email               String    @unique @db.Citext
+  passwordHash        String
+  name                String?
+  locale              String    @default("de")
+  plan                Plan      @default(FREE)
+  paddleCustomerId    String?
+  emailVerifiedAt     DateTime?
+  twoFactorEnabled    Boolean   @default(false)
+  twoFactorSecret     String?
+  createdAt           DateTime  @default(now())
+  deletedAt           DateTime?
+
+  masterCvs           MasterCv[]
+  applications        Application[]
+  sessions            Session[]
+  consents            Consent[]
+}
+
+model Session {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshHash String   @unique
+  userAgent   String
+  ipHash      String
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  revokedAt   DateTime?
+}
+
+model Consent {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String?  @db.Uuid
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // "art9_processing", "cookies_support", ...
+  granted     Boolean
+  version     String
+  ipHash      String
+  createdAt   DateTime @default(now())
+}
+
+model MasterCv {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @db.Uuid
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  language        String
+  parsedJson      Json
+  sourceFilename  String
+  sourceHash      String
+  containsArt9    Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  applications    Application[]
+}
+
+model JobPosting {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  sourceType   String
+  sourceValue  String   @db.Text
+  sourceHash   String   @unique
+  parsedJson   Json
+  createdAt    DateTime @default(now())
+
+  applications Application[]
+}
+
+model Application {
+  id              String       @id @default(uuid()) @db.Uuid
+  userId          String       @db.Uuid
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  masterCvId      String       @db.Uuid
+  masterCv        MasterCv     @relation(fields: [masterCvId], references: [id])
+  jobPostingId    String       @db.Uuid
+  jobPosting      JobPosting   @relation(fields: [jobPostingId], references: [id])
+  status          AppStatus    @default(DRAFT)
+  matchScore      Int?
+  optimizedCv     Json?
+  coverLetter     Json?
+  chosenVariant   String?
+  chosenLayout    String?
+  matchReport     Json?
+  anonymizePhoto  Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  exportedAt      DateTime?
+
+  aiJobs          AiJob[]
+}
+
+model AiJob {
+  id              String     @id @default(uuid()) @db.Uuid
+  applicationId   String     @db.Uuid
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  type            String
+  state           String
+  prompt          String     @db.Text
+  promptVersion   String
+  modelName       String
+  response        Json?
+  tokensIn        Int?
+  tokensOut       Int?
+  provider        String
+  error           String?
+  createdAt       DateTime   @default(now())
+  finishedAt      DateTime?
+
+  // Auto-Purge nach 30 Tagen via Cron
+}
+
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  event     String
+  payload   Json
+  ipHash    String?
+  createdAt DateTime @default(now())
+}
+
+enum Plan {
+  FREE
+  PAY_PER_APP
+  PRO
+}
+
+enum AppStatus {
+  DRAFT
+  EXPORTED
+  SENT
+  REPLIED
+  INTERVIEW
+  REJECTED
+  OFFER
+}

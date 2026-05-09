@@ -1,0 +1,40 @@
+<section class="section-shell" aria-labelledby="pricing-inline-heading">
+  <div class="section-head">
+    <p class="eyebrow">● PREISE</p>
+    <h2 id="pricing-inline-heading">Fair. Transparent. Pro Bewerbung.</h2>
+    <p>Erst zahlen, wenn die Bewerbung fertig ist. Kein Abo-Zwang.</p>
+  </div>
+
+  <div class="pricing-grid">
+    <article class="price-card" [lbaReveal]="0">
+      <h3>Einzelbewerbung</h3>
+      <p class="price"><strong>4,90 €</strong><span>/ Bewerbung</span></p>
+      <p>Für die eine wichtige Stelle. Ohne Account, ohne Abo.</p>
+      <ul>
+        <li>1 maßgeschneiderter Lebenslauf</li>
+        <li>1 Anschreiben in deinem Tonfall</li>
+        <li>ATS-Match-Report inkl. Keywords</li>
+        <li>PDF-Export, druckfertig</li>
+      </ul>
+      <button type="button" class="btn btn--outline btn--md" (click)="singleRequested.emit()">
+        Eine Bewerbung optimieren
+      </button>
+    </article>
+
+    <article class="price-card price-card--featured" [lbaReveal]="120">
+      <span class="badge">EMPFOHLEN</span>
+      <h3>Pro</h3>
+      <p class="price"><strong>14 €</strong><span>/ Monat</span></p>
+      <p>Für aktive Bewerbungsphasen. Monatlich kündbar.</p>
+      <ul>
+        <li>Unbegrenzt Bewerbungen pro Monat</li>
+        <li>Anschreiben in 3 Tonfall-Varianten</li>
+        <li>Mehrere Master-CVs &amp; Sprachversionen</li>
+        <li>LinkedIn-Profil-Optimierung</li>
+        <li>Versand-Tracking &amp; Follow-up-Vorlagen</li>
+      </ul>
+      <button type="button" class="btn btn--accent btn--md" (click)="proRequested.emit()">7 Tage gratis testen -></button>
+    </article>
+  </div>
+</section>
+

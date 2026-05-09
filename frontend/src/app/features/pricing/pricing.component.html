@@ -1,0 +1,40 @@
+<main id="main">
+  <h1>Preise</h1>
+
+  <div class="pricing-grid" role="list">
+
+    <article class="plan" role="listitem" aria-label="Pay-per-Application Plan">
+      <h2 class="plan__name">Pay-per-App</h2>
+      <p class="plan__price"><strong>4,90 €</strong> <span>pro Bewerbung</span></p>
+      <ul class="plan__features" role="list">
+        <li>1 optimierter Lebenslauf</li>
+        <li>3 Anschreiben-Varianten</li>
+        <li>PDF-Download (2 Layouts)</li>
+        <li>Match-Score-Report</li>
+      </ul>
+      <a routerLink="/register" class="btn btn--primary btn--md">Jetzt starten</a>
+    </article>
+
+    <article class="plan plan--featured" role="listitem" aria-label="Pro Plan — empfohlen">
+      <span class="plan__badge" aria-hidden="true">Empfohlen</span>
+      <h2 class="plan__name">Pro</h2>
+      <p class="plan__price">
+        <strong>14 €</strong> <span>/Monat</span>
+        <small>oder 130 €/Jahr (22 % Rabatt)</small>
+      </p>
+      <ul class="plan__features" role="list">
+        <li>Unbegrenzte Bewerbungen</li>
+        <li>Alle 3 CV-Layouts</li>
+        <li>Status-Tracking Dashboard</li>
+        <li>TOTP-Zwei-Faktor-Auth</li>
+        <li>Follow-up-Vorlagen</li>
+      </ul>
+      <a routerLink="/register" class="btn btn--primary btn--md">Pro starten</a>
+    </article>
+
+  </div>
+
+  <p class="guarantee">
+    30 Tage Rückgaberecht — Match-Score unter 80&nbsp;% → automatischer Refund.
+  </p>
+</main>

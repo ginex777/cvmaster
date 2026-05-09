@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd backend && npm run lint)",
+      "Bash(cd backend && npm test)",
+      "Bash(cd backend && npm run build)",
+      "Bash(cd frontend && npm run lint)",
+      "Bash(cd frontend && npm test -- --watchAll=false)",
+      "Bash(cd frontend && npm run build)",
+      "Bash(ng generate *)",
+      "Bash(npm install *)"
+    ]
+  }
+}

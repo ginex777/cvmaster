@@ -1,0 +1,49 @@
+.wizard-page {
+  max-width: 600px;
+  margin-inline: auto;
+  padding: var(--space-12) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+
+  h1 { font-size: 2rem; font-weight: 800; }
+  &__sub { color: var(--ink-2); }
+}
+
+.wizard-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  label { font-weight: 600; font-size: 0.875rem; }
+  &__hint { font-weight: 400; color: var(--ink-3); font-size: 0.8rem; margin-left: var(--space-2); }
+
+  input, select {
+    padding: var(--space-3) var(--space-4);
+    border: 1.5px solid oklch(80% 0 0);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    background: var(--bg-2);
+    color: var(--ink);
+
+    &:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+      border-color: var(--accent);
+    }
+  }
+}
+
+.form-error {
+  color: var(--danger);
+  font-size: 0.875rem;
+  padding: var(--space-3) var(--space-4);
+  background: oklch(from var(--danger) l c h / 8%);
+  border-radius: var(--radius-md);
+}

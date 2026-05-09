@@ -1,0 +1,8 @@
+<section class="keyword-bar" aria-label="Skill-Übereinstimmung">
+  @for (kw of matched(); track kw) {
+    <span class="keyword keyword--match" [attr.aria-label]="kw + ' (vorhanden)'">{{ kw }}</span>
+  }
+  @for (kw of missing(); track kw) {
+    <span class="keyword keyword--miss" [attr.aria-label]="kw + ' (fehlt)'">{{ kw }}</span>
+  }
+</section>

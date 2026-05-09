@@ -1,0 +1,66 @@
+// Shared auth layout — mirrors login.component.scss intentionally
+.auth-page {
+  max-width: 440px;
+  margin-inline: auto;
+  padding: var(--space-16) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+
+  h1 { font-size: 1.75rem; font-weight: 800; }
+  &__links { font-size: 0.9rem; color: var(--ink-2); }
+}
+
+form { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  label { font-weight: 600; font-size: 0.875rem; }
+
+  &__hint { font-weight: 400; color: var(--ink-3); font-size: 0.8rem; margin-left: var(--space-2); }
+  &__note { font-size: 0.8rem; color: var(--ink-3); margin-top: calc(-1 * var(--space-2)); }
+
+  input[type='text'],
+  input[type='email'],
+  input[type='password'] {
+    padding: var(--space-3) var(--space-4);
+    border: 1.5px solid oklch(80% 0 0);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    background: var(--bg-2);
+    color: var(--ink);
+
+    &:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+      border-color: var(--accent);
+    }
+  }
+
+  &--checkbox {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-3);
+
+    input[type='checkbox'] {
+      margin-top: 3px;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    label { font-weight: 400; font-size: 0.875rem; cursor: pointer; }
+  }
+}
+
+.form-error {
+  color: var(--danger);
+  font-size: 0.875rem;
+  padding: var(--space-3) var(--space-4);
+  background: oklch(from var(--danger) l c h / 8%);
+  border-radius: var(--radius-md);
+}

@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+        working-directory: frontend
+      - run: pnpm lint
+        working-directory: frontend
+      - run: pnpm test --watch=false --browsers=ChromeHeadless
+        working-directory: frontend
+      - run: pnpm build
+        working-directory: frontend
+
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: test, POSTGRES_DB: lba_test }
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 10s
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+        working-directory: backend
+      - run: pnpm prisma:deploy
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5432/lba_test
+      - run: pnpm test
+        working-directory: backend
+      - run: pnpm build
+        working-directory: backend
+
+  a11y:
+    needs: frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+        working-directory: frontend
+      - run: pnpm exec playwright install --with-deps chromium
+        working-directory: frontend
+      - run: pnpm build && pnpm exec http-server dist -p 4200 &
+        working-directory: frontend
+      - run: sleep 5 && pnpm a11y
+        working-directory: frontend
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          cd frontend && npm audit --audit-level=high || true
+          cd ../backend && npm audit --audit-level=high || true

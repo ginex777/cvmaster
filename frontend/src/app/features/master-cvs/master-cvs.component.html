@@ -1,0 +1,37 @@
+<main id="main">
+
+  <header class="page-header">
+    <h1>Meine Lebensläufe</h1>
+    <label class="btn btn--primary btn--md" for="cv-upload" role="button" tabindex="0">
+      Lebenslauf hochladen
+      <input
+        id="cv-upload"
+        type="file"
+        accept=".pdf,.docx,.odt,.txt"
+        class="sr-only"
+        (change)="upload($event)"
+        aria-label="Lebenslauf-Datei auswählen (PDF, DOCX, ODT oder TXT)" />
+    </label>
+  </header>
+
+  @if (loading()) {
+    <p aria-live="polite" aria-busy="true">Wird geladen…</p>
+  } @else if (cvs().length === 0) {
+    <p class="empty-state">Noch kein Lebenslauf hochgeladen.</p>
+  } @else {
+    <ul class="cv-list" role="list" aria-label="Lebenslauf-Liste">
+      @for (cv of cvs(); track cv.id) {
+        <li class="cv-card" role="listitem">
+          <div class="cv-card__info">
+            <strong class="cv-card__name">{{ cv.name }}</strong>
+            <span class="cv-card__meta">{{ cv.sourceFilename }} · {{ cv.language.toUpperCase() }}</span>
+            <time class="cv-card__date" [attr.datetime]="cv.updatedAt">
+              Aktualisiert {{ cv.updatedAt | slice:0:10 }}
+            </time>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+
+</main>

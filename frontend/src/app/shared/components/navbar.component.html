@@ -1,0 +1,26 @@
+<nav class="nav" [class.scrolled]="scrolled()" aria-label="Hauptnavigation">
+  <div class="nav__inner">
+    <a routerLink="/" class="nav__logo" aria-label="Lebenslauf-Agent Startseite">
+      <svg viewBox="0 0 28 28" fill="none" aria-hidden="true">
+        <rect width="28" height="28" rx="7" fill="oklch(58% 0.20 255)" />
+        <rect x="7" y="7" width="9" height="2" rx="1" fill="white" />
+        <rect x="7" y="11" width="14" height="2" rx="1" fill="white" opacity=".7" />
+        <rect x="7" y="15" width="11" height="2" rx="1" fill="white" opacity=".5" />
+        <rect x="7" y="19" width="8" height="2" rx="1" fill="white" opacity=".3" />
+      </svg>
+      Lebenslauf-Agent
+    </a>
+
+    <nav class="nav__links" aria-label="Seitennavigation">
+      <a href="#features">Features</a>
+      <a href="#workflow">So funktioniert's</a>
+      <a href="#beispiel">Beispiel</a>
+      <a href="#preise">Preise</a>
+    </nav>
+
+    <div class="nav__actions">
+      <button type="button" class="btn btn--ghost btn--sm" (click)="loginRequested.emit()">Anmelden</button>
+      <button type="button" class="btn btn--primary btn--sm" (click)="registerRequested.emit()">Kostenlos starten -></button>
+    </div>
+  </div>
+</nav>

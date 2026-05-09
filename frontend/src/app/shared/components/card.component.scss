@@ -1,0 +1,12 @@
+:host { display: contents; }
+
+.card {
+  background: var(--bg-2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+
+  &__body {
+    padding: var(--space-6);
+  }
+}

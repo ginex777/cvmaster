@@ -1,0 +1,58 @@
+<main id="main" class="auth-page">
+  <h1>Kostenlosen Account erstellen</h1>
+
+  <form (ngSubmit)="submit()" aria-label="Registrierungsformular" novalidate>
+
+    <div class="field">
+      <label for="name">Vollständiger Name</label>
+      <input id="name" type="text"
+        [ngModel]="name()" (ngModelChange)="name.set($event)"
+        name="name" autocomplete="name" aria-required="true" minlength="2" />
+    </div>
+
+    <div class="field">
+      <label for="email">E-Mail-Adresse</label>
+      <input id="email" type="email"
+        [ngModel]="email()" (ngModelChange)="email.set($event)"
+        name="email" autocomplete="email" aria-required="true" />
+    </div>
+
+    <div class="field">
+      <label for="password">
+        Passwort
+        <span class="field__hint">(min. 12 Zeichen)</span>
+      </label>
+      <input id="password" type="password"
+        [ngModel]="password()" (ngModelChange)="password.set($event)"
+        name="password" autocomplete="new-password" aria-required="true" minlength="12" />
+    </div>
+
+    <!-- Art. 9 DSGVO consent — mandatory checkbox (SPEC § 25.2) -->
+    <div class="field field--checkbox">
+      <input id="art9" type="checkbox"
+        [ngModel]="art9Consent()" (ngModelChange)="art9Consent.set($event)"
+        name="art9Consent" aria-required="true"
+        [attr.aria-describedby]="'art9-desc'" />
+      <label for="art9">
+        Ich willige in die Verarbeitung besonderer Kategorien personenbezogener Daten
+        (Art. 9 DSGVO) ein, die mein Lebenslauf enthalten kann
+        (z.&thinsp;B. Foto, Gesundheit, Religion).
+      </label>
+    </div>
+    <p id="art9-desc" class="field__note">
+      Diese Einwilligung ist für die Nutzung des Dienstes erforderlich und jederzeit widerrufbar.
+    </p>
+
+    @if (error()) {
+      <p role="alert" class="form-error">{{ error() }}</p>
+    }
+
+    <button type="submit" class="btn btn--primary btn--md"
+      [disabled]="loading() || !art9Consent()">
+      {{ loading() ? 'Account wird erstellt…' : 'Account erstellen' }}
+    </button>
+
+  </form>
+
+  <p class="auth-page__links">Bereits registriert? <a routerLink="/login">Einloggen</a></p>
+</main>

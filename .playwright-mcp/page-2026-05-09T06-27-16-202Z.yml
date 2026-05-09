@@ -1,0 +1,368 @@
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - generic [ref=e4]:
+      - link "Lebenslauf-Agent" [ref=e5] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e7]: Lebenslauf-Agent
+      - generic [ref=e8]:
+        - link "Features" [ref=e9] [cursor=pointer]:
+          - /url: "#features"
+        - link "So funktioniert's" [ref=e10] [cursor=pointer]:
+          - /url: "#how"
+        - link "Beispiel" [ref=e11] [cursor=pointer]:
+          - /url: "#beispiel"
+        - link "Preise" [ref=e12] [cursor=pointer]:
+          - /url: "#preise"
+      - generic [ref=e13]:
+        - link "Anmelden" [ref=e14] [cursor=pointer]:
+          - /url: "#"
+        - link "Kostenlos starten" [ref=e15] [cursor=pointer]:
+          - /url: "#cta"
+          - text: Kostenlos starten
+          - img [ref=e16]
+  - generic [ref=e19]:
+    - generic [ref=e20]: KI-Bewerbungsagent · Beta
+    - heading "Bewerbungen, die zur Stelle passen" [level=1] [ref=e22]:
+      - generic [ref=e23]: Bewerbungen, die zur
+      - text: Stelle passen
+    - paragraph [ref=e24]: Lade deinen Lebenslauf hoch, füge eine Stellenanzeige ein — bekomme in Sekunden eine maßgeschneiderte Bewerbung mit passenden Keywords, präzisem Anschreiben und ATS-tauglichem Layout.
+    - generic [ref=e25]:
+      - link "Bewerbung optimieren" [ref=e26] [cursor=pointer]:
+        - /url: "#cta"
+        - text: Bewerbung optimieren
+        - img [ref=e27]
+      - link "So funktioniert's" [ref=e29] [cursor=pointer]:
+        - /url: "#how"
+    - generic [ref=e30]:
+      - generic [ref=e36]: 4.000+ Bewerbungen verschickt
+      - generic [ref=e37]:
+        - img [ref=e39]
+        - img [ref=e42]
+        - img [ref=e45]
+        - img [ref=e48]
+        - img [ref=e51]
+      - generic [ref=e53]: 4.9 / 5
+    - generic [ref=e55]:
+      - generic [ref=e61]: app.lebenslauf-agent.de / bewerbung / fe-junior-stripe
+      - generic [ref=e62]:
+        - complementary [ref=e63]:
+          - generic [ref=e64]:
+            - heading "Bewerbungen" [level=5] [ref=e65]
+            - generic [ref=e66]:
+              - text: Alle
+              - generic [ref=e68]: "14"
+            - generic [ref=e69]:
+              - text: Frontend Junior
+              - generic [ref=e71]: ●
+            - generic [ref=e72]: Werkstudent UX
+            - generic [ref=e74]: Backend Praktikum
+          - generic [ref=e76]:
+            - heading "Vorlagen" [level=5] [ref=e77]
+            - generic [ref=e78]: Master-CV
+            - generic [ref=e80]: Anschreiben
+        - main [ref=e82]:
+          - generic [ref=e83]:
+            - generic [ref=e84]:
+              - heading "Frontend Developer (Junior) — Stripe" [level=4] [ref=e85]
+              - generic [ref=e86]: Optimiert vor 2 Sek. · 1 Iteration
+            - generic [ref=e87]:
+              - img [ref=e88]
+              - text: ATS · 92%
+          - generic [ref=e90]:
+            - generic [ref=e91]: Lina Hartmann
+            - generic [ref=e92]: Frontend Developer · Berlin · lina@hartmann.dev
+            - generic [ref=e93]: Profil
+            - generic [ref=e94]: Junior Frontend Developer mit 2 Jahren Erfahrung in React, TypeScript und der Entwicklung performanter Web-Apps. Erfahrung im Aufbau von design-systemen und der Zusammenarbeit mit Stripe Checkout Integrationen.
+            - generic [ref=e95]: Erfahrung
+            - generic [ref=e100]: Skills
+        - complementary [ref=e102]:
+          - heading "Match-Score" [level=5] [ref=e103]
+          - generic [ref=e104]:
+            - generic [ref=e106]: "92"
+            - generic [ref=e107]:
+              - generic [ref=e108]: Sehr gute Passung
+              - generic [ref=e109]: 3 Hinweise zur Verbesserung
+          - heading "Keyword-Treffer" [level=5] [ref=e110]
+          - generic [ref=e111]:
+            - generic [ref=e112]:
+              - generic [ref=e113]: React
+              - generic [ref=e116]: 100%
+            - generic [ref=e117]:
+              - generic [ref=e118]: TypeScript
+              - generic [ref=e121]: 95%
+            - generic [ref=e122]:
+              - generic [ref=e123]: Stripe API
+              - generic [ref=e126]: 88%
+            - generic [ref=e127]:
+              - generic [ref=e128]: Design Systems
+              - generic [ref=e131]: 72%
+            - generic [ref=e132]:
+              - generic [ref=e133]: Accessibility
+              - generic [ref=e136]: 64%
+          - generic [ref=e137]:
+            - generic [ref=e138]: ✦ Vorschlag
+            - paragraph [ref=e139]: Erwähne deine Erfahrung mit WCAG 2.2. Stripe nennt Accessibility explizit in der Anzeige.
+            - generic [ref=e140]:
+              - button "Übernehmen" [ref=e141] [cursor=pointer]
+              - button "Verwerfen" [ref=e142] [cursor=pointer]
+  - generic [ref=e144]:
+    - generic [ref=e145]: Erfolgreich beworben bei
+    - generic [ref=e146]:
+      - generic [ref=e147]: ◆ Northwind
+      - generic [ref=e148]: ◐ Helix
+      - generic [ref=e149]: ▲ Atrium
+      - generic [ref=e150]: ◇ Lumen
+      - generic [ref=e151]: ● Forge & Co
+      - generic [ref=e152]: ◑ Kestrel
+  - generic [ref=e154]:
+    - generic [ref=e155]:
+      - generic [ref=e156]: Features
+      - heading "Alles, was eine moderne Bewerbung heute braucht." [level=2] [ref=e158]:
+        - text: Alles, was eine moderne
+        - text: Bewerbung heute braucht.
+      - paragraph [ref=e159]: Vier präzise Werkzeuge — kein aufgeblähter „Karriere-Coach". Jedes davon spart dir 30 Minuten pro Bewerbung.
+    - generic [ref=e160]:
+      - generic [ref=e161]:
+        - img [ref=e163]
+        - heading "CV-Analyse in Sekunden" [level=3] [ref=e166]
+        - paragraph [ref=e167]: Wir lesen deinen Lebenslauf, gleichen ihn mit der Stelle ab und zeigen dir Lücken, irrelevante Abschnitte und ungenutzte Stärken.
+        - generic [ref=e168]:
+          - generic [ref=e169]:
+            - heading "Aus deinem CV" [level=6] [ref=e170]
+            - generic [ref=e171]: React · 2 Jahre
+            - generic [ref=e172]: TypeScript
+            - generic [ref=e173]: Java SE 7
+            - generic [ref=e174]: Praktikum '22
+          - generic [ref=e175]:
+            - heading "Stelle verlangt" [level=6] [ref=e176]
+            - generic [ref=e177]: React
+            - generic [ref=e178]: TypeScript
+            - generic [ref=e179]: a11y
+            - generic [ref=e180]: Tests
+      - generic [ref=e181]:
+        - img [ref=e183]
+        - heading "Anschreiben-Generator" [level=3] [ref=e186]
+        - paragraph [ref=e187]: "In deinem Tonfall, mit echten Belegen aus deinem CV. Drei Varianten: knapp, herzlich, formal — du wählst."
+        - generic [ref=e194]: "schreibt: „…begeistert mich besonders an Stripe"
+      - generic [ref=e196]:
+        - img [ref=e198]
+        - heading "ATS-Keyword-Optimierung" [level=3] [ref=e202]
+        - paragraph [ref=e203]: Bestehst du den automatischen Filter? Wir scannen die Anzeige nach Pflichtbegriffen und schlagen vor, welche du sinnvoll einbauen kannst.
+        - generic [ref=e204]:
+          - generic [ref=e205]: + React
+          - generic [ref=e206]: + TypeScript
+          - generic [ref=e207]: + Next.js
+          - generic [ref=e208]: Tailwind
+          - generic [ref=e209]: Vite
+          - generic [ref=e210]: Tests
+          - generic [ref=e211]: a11y
+          - generic [ref=e212]: + GraphQL
+      - generic [ref=e213]:
+        - img [ref=e215]
+        - heading "Sauberer PDF-Export" [level=3] [ref=e218]
+        - paragraph [ref=e219]: Pixelgenau, ATS-freundlich, in deinem Layout. Inklusive separatem Anschreiben und mehreren Sprachversionen.
+        - generic [ref=e220]:
+          - generic [ref=e221]: PDF
+          - generic [ref=e226]: →
+          - generic [ref=e227]:
+            - generic [ref=e228]: Lebenslauf_Stripe.pdf
+            - generic [ref=e229]: 2 Seiten · 184 KB
+            - generic [ref=e230]: ATS getestet ✓
+  - generic [ref=e232]:
+    - generic [ref=e233]:
+      - generic [ref=e234]: Workflow
+      - heading "Drei Schritte zur passenden Bewerbung." [level=2] [ref=e236]
+      - paragraph [ref=e237]: Im Schnitt 90 Sekunden. Ohne Account ausprobieren.
+    - generic [ref=e238]:
+      - generic [ref=e239]:
+        - generic [ref=e240]:
+          - generic [ref=e241]: "1"
+          - generic [ref=e242]: 00:00 — 00:10
+        - heading "CV hochladen" [level=3] [ref=e243]
+        - paragraph [ref=e244]: PDF, DOCX oder LinkedIn-Export. Wir extrahieren Erfahrung, Skills und Projekte automatisch.
+        - generic [ref=e246]:
+          - img [ref=e247]
+          - generic [ref=e249]: lebenslauf_lina.pdf hierhin ziehen
+      - generic [ref=e250]:
+        - generic [ref=e251]:
+          - generic [ref=e252]: "2"
+          - generic [ref=e253]: 00:10 — 00:30
+        - heading "Stellenanzeige einfügen" [level=3] [ref=e254]
+        - paragraph [ref=e255]: Link, Screenshot oder Text. Wir erkennen Anforderungen, Tonfall und Pflicht-Keywords.
+        - generic [ref=e257]:
+          - text: Frontend Developer (m/w/d) · Stripe
+          - text: Du arbeitest mit React, TypeScript und unserem
+          - text: Design-System. Wir legen Wert auf Accessibility…
+      - generic [ref=e258]:
+        - generic [ref=e259]:
+          - generic [ref=e260]: "3"
+          - generic [ref=e261]: 00:30 — 01:30
+        - heading "Optimierte Bewerbung erhalten" [level=3] [ref=e262]
+        - paragraph [ref=e263]: Lebenslauf, Anschreiben und Match-Report — als PDF, editierbar im Browser.
+        - generic [ref=e265]:
+          - generic [ref=e266]:
+            - generic [ref=e267]: PDF
+            - generic [ref=e268]: Lebenslauf_Stripe.pdf
+            - generic [ref=e269]: 184 KB
+          - generic [ref=e270]:
+            - generic [ref=e271]: PDF
+            - generic [ref=e272]: Anschreiben_Stripe.pdf
+            - generic [ref=e273]: 96 KB
+          - generic [ref=e274]:
+            - generic [ref=e275]: MD
+            - generic [ref=e276]: Match-Report.md
+            - generic [ref=e277]: 8 KB
+  - generic [ref=e279]:
+    - generic [ref=e280]:
+      - generic [ref=e281]: Echtes Beispiel
+      - 'heading "Vorher: generisch. Nachher: auf den Punkt." [level=2] [ref=e283]':
+        - text: "Vorher: generisch."
+        - text: "Nachher: auf den Punkt."
+      - paragraph [ref=e284]: Gleicher Bewerber, gleiche Stelle — nur einmal mit, einmal ohne uns.
+    - generic [ref=e285]:
+      - generic [ref=e286]:
+        - generic [ref=e287]:
+          - heading "Vorher" [level=4] [ref=e288]
+          - generic [ref=e289]: Original-CV
+        - generic [ref=e290]:
+          - heading "Lina Hartmann" [level=5] [ref=e291]
+          - generic [ref=e292]: Frontend Developer · Berlin
+          - paragraph [ref=e293]: Engagiert, motiviert und teamfähig mit Leidenschaft für Web-Technologien aller Art.
+          - paragraph [ref=e294]: Diverse Projekte mit JavaScript-Frameworks, gute Kenntnisse in Frontend-Entwicklung.
+          - paragraph [ref=e295]: Abgeschlossenes Praktikum bei einer Werbeagentur, wo ich an Webseiten mitgewirkt habe.
+        - generic [ref=e296]:
+          - generic [ref=e297]:
+            - generic [ref=e298]: 41%
+            - generic [ref=e299]: ATS-Score
+          - generic [ref=e300]:
+            - generic [ref=e301]: 3 / 12
+            - generic [ref=e302]: Keywords
+          - generic [ref=e303]:
+            - generic [ref=e304]: 2,1%
+            - generic [ref=e305]: Antwortrate
+      - generic [ref=e306]:
+        - generic [ref=e307]:
+          - heading "Nachher" [level=4] [ref=e308]
+          - generic [ref=e309]: + Lebenslauf-Agent
+        - generic [ref=e310]:
+          - heading "Lina Hartmann" [level=5] [ref=e311]
+          - generic [ref=e312]: Frontend Developer · React, TypeScript · Berlin
+          - paragraph [ref=e313]: Junior Frontend Developer mit 2 Jahren Praxis in React und TypeScript. Fokus auf design-systeme und Accessibility (WCAG 2.2).
+          - paragraph [ref=e314]: Bei Mediahaus GmbH Migration einer Marketing-Site auf Next.js 14 begleitet — Lighthouse-Score von 62 → 96.
+          - paragraph [ref=e315]: Open-Source-Beiträge zu stripe-js, Pull Requests in TypeScript.
+        - generic [ref=e316]:
+          - generic [ref=e317]:
+            - generic [ref=e318]: 92%
+            - generic [ref=e319]: ATS-Score
+          - generic [ref=e320]:
+            - generic [ref=e321]: 11 / 12
+            - generic [ref=e322]: Keywords
+          - generic [ref=e323]:
+            - generic [ref=e324]: 18,4%
+            - generic [ref=e325]: Antwortrate
+  - generic [ref=e327]:
+    - generic [ref=e328]:
+      - generic [ref=e329]: Stimmen
+      - heading "Was Studenten und Junior-Devs sagen." [level=2] [ref=e331]
+    - generic [ref=e332]:
+      - generic [ref=e333]:
+        - paragraph [ref=e334]: "“Drei Wochen, sieben Bewerbungen, vier Interviews. Vorher: ein Jahr, null.”"
+        - generic [ref=e337]:
+          - generic [ref=e338]: Marek S.
+          - text: Junior Backend · Berlin
+      - generic [ref=e339]:
+        - paragraph [ref=e340]: “Endlich bekomme ich Anschreiben hin, die nicht klingen wie aus einem Vorlagen-Generator.”
+        - generic [ref=e343]:
+          - generic [ref=e344]: Anita K.
+          - text: Werkstudentin UX · München
+      - generic [ref=e345]:
+        - paragraph [ref=e346]: “Der Match-Score hat mir gezeigt, dass ich mich auf die falschen Stellen bewerbe. Game changer.”
+        - generic [ref=e349]:
+          - generic [ref=e350]: Tobias R.
+          - text: Berufseinsteiger · Köln
+  - generic [ref=e352]:
+    - generic [ref=e353]:
+      - generic [ref=e354]: Preise
+      - heading "Fair. Transparent. Pro Bewerbung." [level=2] [ref=e356]
+      - paragraph [ref=e357]: Erst zahlen, wenn die Bewerbung fertig ist. Kein Abo-Zwang.
+    - generic [ref=e358]:
+      - generic [ref=e359]:
+        - heading "Einzelbewerbung" [level=3] [ref=e360]
+        - generic [ref=e361]:
+          - generic [ref=e362]: 4,90 €
+          - generic [ref=e363]: / Bewerbung
+        - paragraph [ref=e364]: Für die eine wichtige Stelle. Ohne Account, ohne Abo.
+        - list [ref=e365]:
+          - listitem [ref=e366]: 1 maßgeschneiderter Lebenslauf
+          - listitem [ref=e367]: 1 Anschreiben in deinem Tonfall
+          - listitem [ref=e368]: ATS-Match-Report inkl. Keywords
+          - listitem [ref=e369]: PDF-Export, druckfertig
+        - link "Eine Bewerbung optimieren" [ref=e370] [cursor=pointer]:
+          - /url: "#cta"
+      - generic [ref=e371]:
+        - generic [ref=e372]: Empfohlen
+        - heading "Pro" [level=3] [ref=e373]
+        - generic [ref=e374]:
+          - generic [ref=e375]: 14 €
+          - generic [ref=e376]: / Monat
+        - paragraph [ref=e377]: Für aktive Bewerbungsphasen. Monatlich kündbar.
+        - list [ref=e378]:
+          - listitem [ref=e379]: Unbegrenzt Bewerbungen pro Monat
+          - listitem [ref=e380]: Anschreiben in 3 Tonfall-Varianten
+          - listitem [ref=e381]: Mehrere Master-CVs & Sprachversionen
+          - listitem [ref=e382]: LinkedIn-Profil-Optimierung
+          - listitem [ref=e383]: Versand-Tracking & Follow-up-Vorlagen
+        - link "7 Tage gratis testen" [ref=e384] [cursor=pointer]:
+          - /url: "#cta"
+          - text: 7 Tage gratis testen
+          - img [ref=e385]
+  - generic [ref=e389]:
+    - generic [ref=e390]: Bereit?
+    - heading "Deine nächste Bewerbung — in 90 Sekunden." [level=2] [ref=e392]
+    - paragraph [ref=e393]: Probier es mit einer echten Stelle aus deiner Liste. Wenn der Match-Score unter 80% bleibt, bezahlst du nichts.
+    - generic [ref=e394]:
+      - link "Bewerbung jetzt optimieren" [ref=e395] [cursor=pointer]:
+        - /url: "#"
+        - text: Bewerbung jetzt optimieren
+        - img [ref=e396]
+      - link "Demo ansehen" [ref=e398] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=e399]:
+      - generic [ref=e400]: Keine Kreditkarte
+      - generic [ref=e401]: DSGVO-konform · Server in EU
+      - generic [ref=e402]: Daten nach 30 Tagen gelöscht
+  - contentinfo [ref=e403]:
+    - generic [ref=e404]:
+      - generic [ref=e405]:
+        - generic [ref=e406]:
+          - generic [ref=e409]: Lebenslauf-Agent
+          - paragraph [ref=e410]: KI-gestützte Bewerbungen für Studenten, Junior-Devs und Berufseinsteiger. Made in Berlin.
+        - generic [ref=e411]:
+          - heading "Produkt" [level=6] [ref=e412]
+          - link "Features" [ref=e413] [cursor=pointer]:
+            - /url: "#features"
+          - link "So funktioniert's" [ref=e414] [cursor=pointer]:
+            - /url: "#how"
+          - link "Preise" [ref=e415] [cursor=pointer]:
+            - /url: "#preise"
+          - link "Changelog" [ref=e416] [cursor=pointer]:
+            - /url: "#"
+        - generic [ref=e417]:
+          - heading "Ressourcen" [level=6] [ref=e418]
+          - link "Bewerbungs-Guide" [ref=e419] [cursor=pointer]:
+            - /url: "#"
+          - link "Vorlagen" [ref=e420] [cursor=pointer]:
+            - /url: "#"
+          - link "Hilfe-Center" [ref=e421] [cursor=pointer]:
+            - /url: "#"
+        - generic [ref=e422]:
+          - heading "Rechtliches" [level=6] [ref=e423]
+          - link "Datenschutz" [ref=e424] [cursor=pointer]:
+            - /url: "#"
+          - link "AGB" [ref=e425] [cursor=pointer]:
+            - /url: "#"
+          - link "Impressum" [ref=e426] [cursor=pointer]:
+            - /url: "#"
+      - generic [ref=e427]:
+        - generic [ref=e428]: © 2026 Lebenslauf-Agent GmbH
+        - generic [ref=e429]: v 0.4.2 · Beta

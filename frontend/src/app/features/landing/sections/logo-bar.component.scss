@@ -1,0 +1,37 @@
+:host {
+  display: block;
+  border-top: 1px solid var(--line-2);
+  border-bottom: 1px solid var(--line-2);
+}
+
+.logo-bar {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 32px var(--pad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  color: var(--ink-3);
+  font-size: 14px;
+
+  span:not(.logo-bar__label) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+
+  i {
+    color: var(--ink-2);
+    font-style: normal;
+  }
+}
+
+.logo-bar__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

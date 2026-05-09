@@ -1,0 +1,59 @@
+:host {
+  display: block;
+  padding: 0 var(--pad);
+  margin-bottom: 80px;
+}
+
+.cta-band {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 80px var(--pad);
+  border-radius: var(--radius-xl);
+  background: var(--ink);
+  color: var(--bg);
+  text-align: center;
+}
+
+.cta-band__title {
+  max-width: 760px;
+  margin: 0 auto 16px;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.cta-band__sub {
+  max-width: 480px;
+  margin: 0 auto 40px;
+  opacity: 0.72;
+  font-size: 16px;
+}
+
+.cta-band__actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  a:first-child {
+    border-color: oklch(98.6% 0.005 80 / 0.45);
+    background: oklch(98.6% 0.005 80 / 0.08);
+    color: var(--bg);
+  }
+
+  a:last-child {
+    color: var(--bg);
+  }
+}
+
+.cta-band__trust {
+  margin-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  opacity: 0.55;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}

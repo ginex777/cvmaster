@@ -1,0 +1,88 @@
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero__inner">
+    <div class="eyebrow" [lbaReveal]="0">
+      <span aria-hidden="true"></span>
+      KI-Bewerbungsagent · Beta
+    </div>
+
+    <h1 id="hero-heading" [lbaReveal]="100">Bewerbungen, die zur <em>Stelle</em> passen</h1>
+
+    <p class="hero__subline" [lbaReveal]="150">
+      Lade deinen Lebenslauf hoch, füge eine Stellenanzeige an - bekomme in Sekunden eine maßgeschneiderte
+      Bewerbung mit passenden Keywords, poliertem Anschreiben und ATS-tauglichem Layout.
+    </p>
+
+    <div class="hero__actions" [lbaReveal]="200">
+      <button type="button" class="btn btn--primary btn--lg" (click)="optimizeRequested.emit()">
+        Bewerbung optimieren ->
+      </button>
+      <a href="#workflow" class="btn btn--outline btn--lg">So funktioniert's</a>
+    </div>
+
+    <div class="hero__proof" [lbaReveal]="250" aria-label="4.900 Bewerbungen eingereicht, Bewertung 4.7 von 5">
+      <div class="avatars" aria-hidden="true">
+        <span class="avatar avatar--orange"></span>
+        <span class="avatar avatar--green"></span>
+        <span class="avatar avatar--blue"></span>
+        <span class="avatar avatar--purple"></span>
+        <span class="avatar avatar--teal"></span>
+      </div>
+      <span>4.900 Bewerbungen eingereicht</span>
+      <span class="stars" aria-hidden="true">★★★★☆</span>
+      <span>4.7 / 5</span>
+    </div>
+
+    <div class="app-preview" [lbaReveal]="300" aria-label="Produktvorschau Lebenslauf-Optimierung">
+      <div class="preview-sidebar">
+        <div class="preview-sidebar__brand"></div>
+        <div class="preview-item preview-item--active">
+          <span aria-hidden="true">✓</span>
+          Master-CV
+        </div>
+        <div class="preview-item">
+          <span aria-hidden="true"></span>
+          Anschreiben
+        </div>
+      </div>
+
+      <div class="preview-doc">
+        <div class="doc-header">
+          <span></span>
+          <span></span>
+        </div>
+        <div class="doc-title"></div>
+        <div class="doc-line doc-line--wide"></div>
+        <div class="doc-line"></div>
+        <h2>ERFAHRUNG</h2>
+        <p>Frontend Developer · Mediahaus GmbH</p>
+        <div class="doc-highlight">Stripe Checkout Integrationen</div>
+        <div class="doc-line doc-line--wide"></div>
+        <h2>SKILLS</h2>
+        <div class="skill-tags" aria-hidden="true">
+          <span>React</span>
+          <span>TypeScript</span>
+          <span>a11y</span>
+        </div>
+      </div>
+
+      <div class="preview-panel">
+        <h2>Match Keywords</h2>
+        <div class="bar"><span>TypeScript</span><strong style="--value: 95%"></strong></div>
+        <div class="bar"><span>Stripe API</span><strong style="--value: 88%"></strong></div>
+        <div class="bar"><span>Design Systems</span><strong style="--value: 72%"></strong></div>
+        <div class="bar"><span>Accessibility</span><strong style="--value: 64%"></strong></div>
+        <div class="suggestion">
+          <strong>Vorschlag</strong>
+          <p>Erwähne deine Erfahrung mit WCAG 2.2. Stripe nennt Accessibility explizit in der Anzeige.</p>
+          <div>
+            <button class="mini-button mini-button--primary" type="button" (click)="optimizeRequested.emit()">
+              Übernehmen
+            </button>
+            <button class="mini-button" type="button" (click)="optimizeRequested.emit()">Verwerfen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+

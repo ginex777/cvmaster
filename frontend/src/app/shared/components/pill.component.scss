@@ -1,0 +1,17 @@
+:host { display: contents; }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  &--default { background: var(--bg-2); color: var(--ink-2); }
+  &--accent  { background: var(--accent); color: #fff; }
+  &--success { background: var(--success); color: #fff; }
+  &--warning { background: var(--warning); color: var(--ink); }
+  &--danger  { background: var(--danger);  color: #fff; }
+}

@@ -1,0 +1,7 @@
+<button
+  [class]="'btn btn--' + variant() + ' btn--' + size()"
+  [disabled]="disabled()"
+  [attr.aria-disabled]="disabled() ? 'true' : null"
+  [type]="type()">
+  <ng-content />
+</button>

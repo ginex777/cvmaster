@@ -1,0 +1,58 @@
+<main id="main">
+
+  <header class="dashboard-header">
+    <h1>Dashboard</h1>
+    <nav aria-label="Dashboard-Aktionen">
+      <a routerLink="/app/cvs"              class="btn btn--secondary btn--md">Meine Lebensläufe</a>
+      <a routerLink="/app/applications/new" class="btn btn--primary btn--md">Neue Bewerbung</a>
+    </nav>
+  </header>
+
+  @if (loading()) {
+    <p aria-live="polite" aria-busy="true" class="status-msg">Bewerbungen werden geladen…</p>
+  } @else if (applications().length === 0) {
+    <section class="empty-state" aria-label="Keine Bewerbungen">
+      <p>Du hast noch keine Bewerbungen erstellt.</p>
+      <a routerLink="/app/applications/new" class="btn btn--primary btn--md">Erste Bewerbung starten</a>
+    </section>
+  } @else {
+    <section aria-label="Bewerbungsliste">
+      <table class="app-table" role="grid">
+        <caption class="sr-only">Deine Bewerbungen</caption>
+        <thead>
+          <tr>
+            <th scope="col">Stelle</th>
+            <th scope="col">Match-Score</th>
+            <th scope="col">Status</th>
+            <th scope="col">Erstellt</th>
+            <th scope="col">Aktion</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (app of applications(); track app.id) {
+            <tr>
+              <td>{{ app.jobPosting.parsedJson.title ?? '–' }}</td>
+              <td>
+                @if (app.matchScore !== null) {
+                  <span [class]="'score ' + scoreClass(app.matchScore!)"
+                    [attr.aria-label]="app.matchScore + '% Match-Score'">
+                    {{ app.matchScore }}%
+                  </span>
+                } @else {
+                  <span aria-label="Score wird berechnet">–</span>
+                }
+              </td>
+              <td>{{ statusLabel(app.status) }}</td>
+              <td><time [attr.datetime]="app.createdAt">{{ app.createdAt | date:'dd.MM.yyyy' }}</time></td>
+              <td>
+                <a [routerLink]="['/app/applications', app.id]" class="btn btn--ghost btn--sm">Öffnen</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  }
+
+</main>
+

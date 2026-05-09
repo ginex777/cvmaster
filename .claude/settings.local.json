@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(C:/Users/Schuh/.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/brainstorming/scripts/start-server.sh --project-dir \"C:/Users/Schuh/Desktop/repo-skeleton\")",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "Bash(python -m http.server 8099)",
+      "Bash(node -e \"const http=require\\('http'\\),fs=require\\('fs'\\),path=require\\('path'\\);http.createServer\\(\\(req,res\\)=>{const fp=path.join\\('C:/Users/Schuh/Desktop/repo-skeleton',req.url\\);fs.readFile\\(fp,\\(e,d\\)=>{if\\(e\\){res.writeHead\\(404\\);res.end\\(\\);}else{res.writeHead\\(200,{'Content-Type':'text/html'}\\);res.end\\(d\\);}}\\);}\\).listen\\(8099,\\(\\)=>console.log\\('ready'\\)\\);\")",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_resize",
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\" | Select-Object Name, @{Name=\"Type\";Expression={if\\($_.PSIsContainer\\){\"DIR\"}else{\"FILE\"}}})"
+    ]
+  }
+}

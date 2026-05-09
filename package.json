@@ -1,0 +1,14 @@
+{
+  "name": "lba",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix frontend run start",
+    "stasrt": "npm --prefix frontend run start",
+    "start:backend": "npm --prefix backend run start:dev",
+    "build": "npm --prefix frontend run build",
+    "build:backend": "npm --prefix backend run build",
+    "test": "npm --prefix frontend test -- --watchAll=false",
+    "test:backend": "npm --prefix backend run test",
+    "lint": "npm --prefix frontend run lint"
+  }
+}

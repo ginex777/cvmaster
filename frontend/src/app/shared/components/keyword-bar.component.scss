@@ -1,0 +1,25 @@
+.keyword-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.keyword {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  font-weight: 500;
+
+  &--match {
+    background: oklch(from var(--success) l c h / 15%);
+    color: var(--success);
+    border: 1px solid oklch(from var(--success) l c h / 30%);
+  }
+
+  &--miss {
+    background: oklch(from var(--danger) l c h / 10%);
+    color: var(--danger);
+    border: 1px solid oklch(from var(--danger) l c h / 25%);
+    text-decoration: line-through;
+  }
+}

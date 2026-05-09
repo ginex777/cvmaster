@@ -1,0 +1,51 @@
+<main id="main" class="wizard-page" aria-label="5-Felder-Quickstart">
+  <h1>Kein Lebenslauf? Kein Problem.</h1>
+  <p class="wizard-page__sub">Fülle 5 Felder aus — die KI baut dir ein vollständiges CV-Skeleton.</p>
+
+  <form (ngSubmit)="submit()" aria-label="Quickstart-Formular" novalidate class="wizard-form">
+
+    <div class="field">
+      <label for="wiz-name">Dein Name</label>
+      <input id="wiz-name" type="text" [(ngModel)]="form.name" name="name"
+        autocomplete="name" aria-required="true" />
+    </div>
+
+    <div class="field">
+      <label for="wiz-role">Aktuelle Rolle oder Studium</label>
+      <input id="wiz-role" type="text" [(ngModel)]="form.currentRoleOrStudium" name="currentRoleOrStudium"
+        aria-required="true" placeholder="z. B. Studentin Wirtschaftsinformatik, 6. Semester" />
+    </div>
+
+    <div class="field">
+      <label for="wiz-skills">
+        Top 3–5 Skills
+        <span class="field__hint">(kommagetrennt)</span>
+      </label>
+      <input id="wiz-skills" type="text" [(ngModel)]="form.topSkills" name="topSkills"
+        aria-required="true" placeholder="z. B. TypeScript, Angular, Kommunikation" />
+    </div>
+
+    <div class="field">
+      <label for="wiz-target">Zielrolle</label>
+      <input id="wiz-target" type="text" [(ngModel)]="form.targetRole" name="targetRole"
+        aria-required="true" placeholder="z. B. Frontend Developer Junior" />
+    </div>
+
+    <div class="field">
+      <label for="wiz-lang">CV-Sprache</label>
+      <select id="wiz-lang" [(ngModel)]="form.language" name="language">
+        <option value="de">Deutsch</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+
+    @if (error()) {
+      <p role="alert" class="form-error">{{ error() }}</p>
+    }
+
+    <button type="submit" class="btn btn--primary btn--md" [disabled]="loading()">
+      {{ loading() ? 'CV wird erstellt…' : 'CV erstellen' }}
+    </button>
+
+  </form>
+</main>

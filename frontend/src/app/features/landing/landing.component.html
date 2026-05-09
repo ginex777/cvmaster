@@ -1,0 +1,219 @@
+<lba-navbar (loginRequested)="openDialog('login')" (registerRequested)="openDialog('register')" />
+
+<main id="main">
+  <lba-hero (optimizeRequested)="openDialog('try')" />
+  <lba-logo-bar />
+
+  <section id="features" aria-labelledby="features-heading">
+    <lba-features-grid />
+  </section>
+
+  <section id="workflow" aria-labelledby="workflow-heading">
+    <lba-workflow-steps />
+  </section>
+
+  <section id="beispiel" aria-labelledby="beispiel-heading">
+    <lba-before-after />
+  </section>
+
+  <lba-testimonials />
+
+  <section id="preise" aria-labelledby="pricing-inline-heading">
+    <lba-pricing-inline (singleRequested)="openDialog('try')" (proRequested)="openDialog('register')" />
+  </section>
+
+  <lba-cta-band (optimizeRequested)="openDialog('try')" (demoRequested)="openDialog('try')" />
+</main>
+
+<lba-footer />
+
+@if (activeDialog(); as dialog) {
+  <div class="modal-backdrop" role="presentation" (click)="closeDialog()" (keydown.escape)="closeDialog()" tabindex="-1">
+    <section
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="dialog + '-dialog-title'"
+      (click)="$event.stopPropagation()"
+    >
+      <button type="button" class="modal__close" aria-label="Dialog schließen" (click)="closeDialog()">×</button>
+
+      @switch (dialog) {
+        @case ('try') {
+          <div class="modal__header">
+            <p class="eyebrow">Live Optimierung</p>
+            <h2 id="try-dialog-title">Bewerbung optimieren</h2>
+            <p>Teste den Ablauf direkt hier, ohne die Landingpage zu verlassen.</p>
+          </div>
+
+          <div class="steps" aria-label="Optimierungsfortschritt">
+            <span [class.is-active]="tryStep() === 'cv'">1 CV</span>
+            <span [class.is-active]="tryStep() === 'job'">2 Stelle</span>
+            <span [class.is-active]="tryStep() === 'result'">3 Match</span>
+          </div>
+
+          @if (tryStep() === 'cv') {
+            <label class="field">
+              <span>Lebenslauf einfügen</span>
+              <textarea
+                name="cvText"
+                rows="8"
+                [ngModel]="cvText()"
+                (ngModelChange)="cvText.set($event)"
+                placeholder="Kurzprofil, Erfahrung, Skills und relevante Projekte..."
+              ></textarea>
+            </label>
+            <button type="button" class="btn btn--primary btn--md" [disabled]="!canContinueCv()" (click)="continueToJob()">
+              Weiter zur Stellenanzeige
+            </button>
+          }
+
+          @if (tryStep() === 'job') {
+            <label class="field">
+              <span>Stellenanzeige einfügen</span>
+              <textarea
+                name="jobText"
+                rows="8"
+                [ngModel]="jobText()"
+                (ngModelChange)="jobText.set($event)"
+                placeholder="Rolle, Aufgaben, Anforderungen, gewünschte Keywords..."
+              ></textarea>
+            </label>
+            <div class="modal__actions">
+              <button type="button" class="btn btn--ghost btn--md" (click)="tryStep.set('cv')">Zurück</button>
+              <button
+                type="button"
+                class="btn btn--primary btn--md"
+                [disabled]="!canRunOptimization() || trialLoading()"
+                (click)="runOptimization()"
+              >
+                {{ trialLoading() ? 'Wird berechnet...' : 'Match berechnen' }}
+              </button>
+            </div>
+            @if (trialError()) {
+              <p class="modal__error" role="alert">{{ trialError() }}</p>
+            }
+          }
+
+          @if (tryStep() === 'result') {
+            <div class="result-panel">
+              <span>Match-Score</span>
+              <strong>{{ matchScore() }}%</strong>
+              @if (trialResult(); as result) {
+                <p>{{ result.summary }}</p>
+                <div class="keyword-cloud" aria-label="Keyword-Auswertung">
+                  @for (keyword of result.keywordMatches; track keyword.keyword) {
+                    <span [class.is-missing]="!keyword.matched">{{ keyword.keyword }}</span>
+                  }
+                </div>
+                <ul>
+                  @for (suggestion of result.suggestions; track suggestion) {
+                    <li>{{ suggestion }}</li>
+                  }
+                </ul>
+              }
+            </div>
+            <div class="modal__actions">
+              <button type="button" class="btn btn--ghost btn--md" (click)="tryStep.set('job')">Anpassen</button>
+              <button type="button" class="btn btn--primary btn--md" (click)="openDialog('register')">
+                Kostenlos starten
+              </button>
+            </div>
+          }
+        }
+
+        @case ('login') {
+          <div class="modal__header">
+            <p class="eyebrow">Willkommen zurück</p>
+            <h2 id="login-dialog-title">Anmelden</h2>
+            <p>Öffnet als Overlay, damit die Landingpage im Kontext bleibt.</p>
+          </div>
+
+          <form class="modal-form" (ngSubmit)="submitLogin()">
+            <label class="field">
+              <span>E-Mail</span>
+              <input
+                name="loginEmail"
+                type="email"
+                autocomplete="email"
+                [ngModel]="loginEmail()"
+                (ngModelChange)="loginEmail.set($event)"
+              />
+            </label>
+            <label class="field">
+              <span>Passwort</span>
+              <input
+                name="loginPassword"
+                type="password"
+                autocomplete="current-password"
+                [ngModel]="loginPassword()"
+                (ngModelChange)="loginPassword.set($event)"
+              />
+            </label>
+            <button type="submit" class="btn btn--primary btn--md" [disabled]="!canSubmitLogin()">Anmelden</button>
+          </form>
+
+          <button type="button" class="modal__switch" (click)="openDialog('register')">Noch keinen Account? Kostenlos starten</button>
+        }
+
+        @case ('register') {
+          <div class="modal__header">
+            <p class="eyebrow">Kostenlos starten</p>
+            <h2 id="register-dialog-title">Account erstellen</h2>
+            <p>Ein fokussierter Start im Overlay statt Seitenwechsel.</p>
+          </div>
+
+          <form class="modal-form" (ngSubmit)="submitRegister()">
+            <label class="field">
+              <span>Name</span>
+              <input
+                name="registerName"
+                autocomplete="name"
+                [ngModel]="registerName()"
+                (ngModelChange)="registerName.set($event)"
+              />
+            </label>
+            <label class="field">
+              <span>E-Mail</span>
+              <input
+                name="registerEmail"
+                type="email"
+                autocomplete="email"
+                [ngModel]="registerEmail()"
+                (ngModelChange)="registerEmail.set($event)"
+              />
+            </label>
+            <label class="field">
+              <span>Passwort</span>
+              <input
+                name="registerPassword"
+                type="password"
+                autocomplete="new-password"
+                [ngModel]="registerPassword()"
+                (ngModelChange)="registerPassword.set($event)"
+              />
+            </label>
+            <label class="check-field">
+              <input
+                name="consentGiven"
+                type="checkbox"
+                [ngModel]="consentGiven()"
+                (ngModelChange)="consentGiven.set($event)"
+              />
+              <span>Ich stimme der Verarbeitung meiner Bewerbungsdaten für diesen Test zu.</span>
+            </label>
+            <button type="submit" class="btn btn--primary btn--md" [disabled]="!canSubmitRegister()">
+              Account vorbereiten
+            </button>
+          </form>
+
+          <button type="button" class="modal__switch" (click)="openDialog('login')">Ich habe schon einen Account</button>
+        }
+      }
+
+      @if (modalMessage()) {
+        <p class="modal__message" role="status">{{ modalMessage() }}</p>
+      }
+    </section>
+  </div>
+}

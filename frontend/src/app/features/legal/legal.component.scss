@@ -1,0 +1,20 @@
+// Shared legal page styles — imported by privacy, terms, imprint
+.legal-page {
+  max-width: 700px;
+  margin-inline: auto;
+  padding: var(--space-12) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+
+  h1 { font-size: 1.75rem; font-weight: 800; }
+
+  &__placeholder {
+    color: var(--ink-3);
+    font-style: italic;
+    padding: var(--space-6);
+    background: var(--bg-2);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--warning);
+  }
+}

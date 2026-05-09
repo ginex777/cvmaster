@@ -1,0 +1,62 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+      - frontend
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: lba
+      POSTGRES_USER: lba
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "lba"]
+      interval: 10s
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+
+  api:
+    build: ../backend
+    restart: unless-stopped
+    env_file: .env.production
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_started }
+
+  worker:
+    build: ../backend
+    command: node dist/worker.js
+    restart: unless-stopped
+    env_file: .env.production
+    depends_on:
+      - postgres
+      - redis
+
+  frontend:
+    build: ../frontend
+    restart: unless-stopped
+
+volumes:
+  pg_data:
+  redis_data:
+  caddy_data:
+  caddy_config:

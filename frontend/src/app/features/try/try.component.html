@@ -1,0 +1,66 @@
+<main id="main" aria-label="Anonymer Testlauf">
+  <h1>Kostenlos ausprobieren</h1>
+  <p class="try__sub">Kein Account erforderlich. Ergebnisse werden nicht gespeichert.</p>
+
+  @if (step() === 'cv') {
+    <section aria-labelledby="cv-heading">
+      <h2 id="cv-heading">1. Lebenslauf einfügen</h2>
+      <div class="field">
+        <label for="cv-text">Lebenslauf-Text</label>
+        <textarea
+          id="cv-text"
+          [ngModel]="cvText()"
+          (ngModelChange)="cvText.set($event)"
+          name="cvText"
+          rows="12"
+          aria-required="true"
+          placeholder="Füge deinen Lebenslauf als Text ein..."
+        ></textarea>
+      </div>
+      <button class="btn btn--primary btn--md" (click)="step.set('job')" [disabled]="!cvText().trim()">
+        Weiter zur Stellenanzeige
+      </button>
+    </section>
+  }
+
+  @if (step() === 'job') {
+    <section aria-labelledby="job-heading">
+      <h2 id="job-heading">2. Stellenanzeige einfügen</h2>
+      <div class="field">
+        <label for="job-text">Stellenanzeige-Text</label>
+        <textarea
+          id="job-text"
+          [ngModel]="jobText()"
+          (ngModelChange)="jobText.set($event)"
+          name="jobText"
+          rows="12"
+          aria-required="true"
+          placeholder="Füge die Stellenanzeige als Text ein..."
+        ></textarea>
+      </div>
+      <button class="btn btn--primary btn--md" (click)="runTrial()" [disabled]="!jobText().trim() || loading()">
+        {{ loading() ? 'Wird optimiert...' : 'Jetzt optimieren' }}
+      </button>
+      @if (error()) {
+        <p class="try__error" role="alert">{{ error() }}</p>
+      }
+    </section>
+  }
+
+  @if (step() === 'result') {
+    <section aria-labelledby="result-heading" aria-live="polite">
+      <h2 id="result-heading">Dein Ergebnis</h2>
+      <p>Match-Score: <strong>{{ matchScore() }}%</strong></p>
+      @if (result(); as trialResult) {
+        <p>{{ trialResult.summary }}</p>
+        <ul>
+          @for (suggestion of trialResult.suggestions; track suggestion) {
+            <li>{{ suggestion }}</li>
+          }
+        </ul>
+      }
+      <p>Um deine Unterlagen als PDF zu erhalten, erstelle einen kostenlosen Account.</p>
+      <a routerLink="/register" class="btn btn--primary btn--md">Kostenlosen Account erstellen</a>
+    </section>
+  }
+</main>

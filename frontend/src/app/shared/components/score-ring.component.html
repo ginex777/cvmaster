@@ -1,0 +1,9 @@
+<div class="score-ring" role="img" [attr.aria-label]="ariaLabel()">
+  <svg viewBox="0 0 36 36" aria-hidden="true">
+    <circle class="score-ring__bg"   cx="18" cy="18" r="15.9" />
+    <circle class="score-ring__fill" cx="18" cy="18" r="15.9"
+      [style.stroke-dasharray]="dashArray()"
+      [style.stroke]="strokeColor()" />
+  </svg>
+  <span class="score-ring__label">{{ value() }}%</span>
+</div>

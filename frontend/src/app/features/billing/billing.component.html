@@ -1,0 +1,28 @@
+<main id="main" class="billing-page">
+  <h1>Abrechnung</h1>
+
+  @if (auth.user()?.plan === 'pro') {
+    <section aria-labelledby="active-plan-heading">
+      <h2 id="active-plan-heading">Aktiver Plan: Pro</h2>
+      <p>Du kannst dein Abo jederzeit kündigen — du behältst den Zugang bis zum Periodenende.</p>
+      <button class="btn btn--secondary btn--md"
+        onclick="Paddle?.Checkout?.open({ settings: { displayMode: 'overlay' } })">
+        Abo verwalten
+      </button>
+    </section>
+  } @else {
+    <section aria-labelledby="upgrade-heading">
+      <h2 id="upgrade-heading">Auf Pro upgraden</h2>
+      <ul role="list" class="feature-list">
+        <li>Unbegrenzte Bewerbungen</li>
+        <li>Alle 3 CV-Layouts</li>
+        <li>Status-Tracking Dashboard</li>
+        <li>TOTP-Zwei-Faktor-Auth</li>
+      </ul>
+      <button class="btn btn--primary btn--md">
+        Pro starten — 14&thinsp;€/Monat
+      </button>
+      <p class="billing-page__note">oder 130&thinsp;€/Jahr (22&nbsp;% Rabatt)</p>
+    </section>
+  }
+</main>

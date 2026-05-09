@@ -1,0 +1,77 @@
+<h2>Landing Page — Angular Implementation Design</h2>
+<p class="subtitle">Pixel-perfect replication of the standalone HTML. Four concerns to resolve before building.</p>
+
+<div class="section">
+  <h3>1 · Design token sync <span style="font-size:11px;font-weight:400;color:#dc2626;background:#fef2f2;padding:2px 8px;border-radius:4px;margin-left:8px;">styles.css must be updated first</span></h3>
+  <p style="font-size:13px;color:#374151;margin-bottom:12px;">The standalone HTML uses a <strong>different token set</strong> than the current styles.css. Every colour, radius and shadow value differs. For a 100% match, styles.css must be replaced before any component work starts.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;">
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;">
+      <div style="font-weight:700;color:#dc2626;margin-bottom:6px;">Current styles.css (wrong)</div>
+      <code style="display:block;line-height:1.8;color:#374151;">
+        --bg: oklch(98.6% 0.003 <b>247</b>)  ← cool/blue<br>
+        --radius-sm: <b>4px</b><br>
+        --radius-md: <b>8px</b><br>
+        --shadow-sm: 0 1px 3px oklch(20% 0 0/10%)<br>
+        missing: --surface, --line, --grain<br>
+        missing: --accent-ink, --shadow-glow<br>
+        missing: --max, --pad
+      </code>
+    </div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;">
+      <div style="font-weight:700;color:#16a34a;margin-bottom:6px;">Standalone HTML (correct)</div>
+      <code style="display:block;line-height:1.8;color:#374151;">
+        --bg: oklch(98.6% 0.005 <b>80</b>)   ← warm/beige<br>
+        --radius-sm: <b>8px</b><br>
+        --radius: <b>14px</b> (new mid token)<br>
+        --shadow-sm: 0 1px 2px rgba(15,18,32,.04)…<br>
+        --surface, --surface-2, --line, --line-2<br>
+        --accent-ink, --shadow-glow, --grain<br>
+        --max: 1200px  · --pad: clamp(20px,4vw,40px)
+      </code>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>2 · Button component — variants to update</h3>
+  <p style="font-size:13px;color:#374151;margin-bottom:10px;">The standalone HTML uses 4 button variants. The current component has <code>primary/secondary/ghost/danger</code> — needs to become <code>primary/ghost/outline/accent</code>.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+    <span style="background:oklch(20% 0.015 270);color:oklch(98.6% 0.005 80);border-radius:10px;padding:9px 16px;font-size:14px;font-weight:500;">primary (dark)</span>
+    <span style="border:1px solid #d1d5db;color:oklch(36% 0.012 270);border-radius:10px;padding:9px 16px;font-size:14px;font-weight:500;background:transparent;">ghost</span>
+    <span style="background:#fff;border:1px solid #d1d5db;color:oklch(20% 0.015 270);border-radius:10px;padding:9px 16px;font-size:14px;font-weight:500;">outline</span>
+    <span style="background:oklch(58% 0.20 255);color:oklch(98% 0.01 255);border-radius:10px;padding:9px 16px;font-size:14px;font-weight:500;">accent (blue)</span>
+  </div>
+  <p style="font-size:12px;color:#6b7280;margin-top:8px;">Sizes: default (10px/16px, 14px text, r=10px) · lg (13px/20px, 15px text, r=12px)</p>
+</div>
+
+<div class="section">
+  <h3>3 · Component file structure</h3>
+  <div style="font-size:12px;line-height:2;font-family:monospace;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px;">
+    <span style="color:#6b7280;">shared/components/</span><br>
+    &nbsp;&nbsp;<span style="color:#2563eb;">navbar.component</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← NEW · used on all marketing pages<br>
+    &nbsp;&nbsp;<span style="color:#2563eb;">footer.component</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← NEW · used on all marketing pages<br>
+    &nbsp;&nbsp;<span style="color:#d97706;">button.component</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← UPDATE variants (outline + accent)<br>
+    <br>
+    <span style="color:#6b7280;">features/landing/</span><br>
+    &nbsp;&nbsp;<span style="color:#374151;">landing.component</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← UPDATE: replaces placeholder, imports all sections<br>
+    &nbsp;&nbsp;<span style="color:#6b7280;">sections/</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#2563eb;">hero.component</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← NEW<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#2563eb;">logo-bar.component</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← NEW<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#2563eb;">features-grid.component</span>&nbsp;&nbsp;&nbsp;&nbsp;← NEW<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#2563eb;">workflow-steps.component</span>&nbsp;&nbsp;&nbsp;← NEW<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#2563eb;">before-after.component</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← NEW<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#2563eb;">testimonials.component</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← NEW<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#2563eb;">cta-band.component</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← NEW<br>
+    <br>
+    <span style="color:#6b7280;">styles.css</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← UPDATE tokens to match standalone<br>
+    <span style="color:#6b7280;">shared/directives/reveal.directive</span>&nbsp;&nbsp;← EXISTS · update class from .in to .reveal--visible
+  </div>
+  <p style="font-size:12px;color:#6b7280;margin-top:8px;">No new routes. Pricing cards section reuses the <code>features/pricing/</code> component indirectly — the landing page has its own static pricing block.</p>
+</div>
+
+<div class="section">
+  <h3>4 · Scroll reveal</h3>
+  <p style="font-size:13px;color:#374151;">The standalone HTML has <strong>26 elements</strong> with <code>.reveal .in</code> scroll animations. The project already has <code>[lbaReveal]</code> directive using <code>.reveal--visible</code>. Plan: add CSS for <code>.reveal</code> → <code>.reveal--visible</code> transition in styles.css, apply the directive to headings, cards, and section intros. Respects <code>prefers-reduced-motion</code> (already handled in directive).</p>
+</div>
+
+<p style="margin-top:16px;font-size:14px;font-weight:600;">Does this design look right? Any changes before I write the full spec doc?</p>

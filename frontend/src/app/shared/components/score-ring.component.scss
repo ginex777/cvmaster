@@ -1,0 +1,39 @@
+:host { display: contents; }
+
+.score-ring {
+  position: relative;
+  width: 64px;
+  height: 64px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  &__bg {
+    fill: none;
+    stroke: var(--bg-2);
+    stroke-width: 3.5;
+  }
+
+  &__fill {
+    fill: none;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.4s ease;
+
+    @media (prefers-reduced-motion: reduce) { transition: none; }
+  }
+
+  &__label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+}

@@ -1,0 +1,48 @@
+<main id="main" class="auth-page">
+  <h1>Einloggen</h1>
+
+  <form (ngSubmit)="submit()" aria-label="Login-Formular" novalidate>
+
+    <div class="field">
+      <label for="email">E-Mail-Adresse</label>
+      <input
+        id="email"
+        type="email"
+        [ngModel]="email()"
+        (ngModelChange)="email.set($event)"
+        name="email"
+        autocomplete="email"
+        aria-required="true"
+        [attr.aria-invalid]="error() ? 'true' : null"
+        [attr.aria-describedby]="error() ? 'form-error' : null" />
+    </div>
+
+    <div class="field">
+      <label for="password">Passwort</label>
+      <input
+        id="password"
+        type="password"
+        [ngModel]="password()"
+        (ngModelChange)="password.set($event)"
+        name="password"
+        autocomplete="current-password"
+        aria-required="true" />
+    </div>
+
+    @if (error()) {
+      <p id="form-error" role="alert" class="form-error">{{ error() }}</p>
+    }
+
+    <button type="submit" class="btn btn--primary btn--md" [disabled]="loading()">
+      {{ loading() ? 'Einloggen…' : 'Einloggen' }}
+    </button>
+
+  </form>
+
+  <p class="auth-page__links">
+    <a routerLink="/auth/forgot-password">Passwort vergessen?</a>
+  </p>
+  <p class="auth-page__links">
+    Noch kein Account? <a routerLink="/register">Registrieren</a>
+  </p>
+</main>
