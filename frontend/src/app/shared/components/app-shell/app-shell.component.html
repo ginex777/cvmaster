@@ -1,0 +1,50 @@
+<a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+<div class="shell">
+  <header class="shell__nav" role="banner">
+    <a routerLink="/app" class="shell__logo" aria-label="Lebenslauf-Agent – Startseite">
+      Lebenslauf-Agent
+    </a>
+
+    <nav class="shell__links" aria-label="Hauptnavigation">
+      <a
+        routerLink="/app"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="shell__link"
+      >Dashboard</a>
+      <a
+        routerLink="/app/cvs"
+        routerLinkActive="is-active"
+        class="shell__link"
+      >Lebensläufe</a>
+      <a
+        routerLink="/app/billing"
+        routerLinkActive="is-active"
+        class="shell__link"
+      >Abrechnung</a>
+    </nav>
+
+    <div class="shell__user" aria-label="Benutzerkonto">
+      <span
+        class="shell__plan shell__plan--{{ auth.user()?.plan ?? 'free' }}"
+        aria-label="Aktueller Plan: {{ planLabel() }}"
+      >
+        {{ planLabel() }}
+      </span>
+      <span class="shell__name">{{ auth.user()?.name }}</span>
+      <button
+        type="button"
+        class="btn btn--ghost btn--sm"
+        (click)="logout()"
+        aria-label="Abmelden"
+      >
+        Abmelden
+      </button>
+    </div>
+  </header>
+
+  <main id="main" class="shell__content">
+    <router-outlet />
+  </main>
+</div>
