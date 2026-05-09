@@ -1,5 +1,5 @@
-import { ZodSchema } from 'zod';
-import { LLMProvider } from './provider';
+import type { ZodSchema } from 'zod';
+import type { LLMProvider } from './provider';
 
 export class MistralProvider implements LLMProvider {
   private baseUrl = 'https://api.mistral.ai/v1';
@@ -21,7 +21,7 @@ export class MistralProvider implements LLMProvider {
       }),
     });
     if (!res.ok) throw new Error(`Mistral error ${res.status}: ${await res.text()}`);
-    const data = await res.json() as any;
+    const data = await res.json() as { choices: Array<{ message: { content: string } }> };
     const raw = JSON.parse(data.choices[0].message.content);
     return opts.schema.parse(raw);
   }

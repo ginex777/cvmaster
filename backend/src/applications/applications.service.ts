@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AppStatus } from '@prisma/client';
 import { Response } from 'express';
 import { PrismaService } from '../common/prisma.service';
 import { QueueService } from '../queue/queue.service';
@@ -47,11 +48,11 @@ export class ApplicationsService {
     const app = await this.findById(id);
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
     // TODO: render PDFs and attach to mail
-    await this.mail.sendApplicationToSelf(user.email, app as any);
+    await this.mail.sendApplicationToSelf(user.email, app);
     return { message: 'Email sent' };
   }
 
   async updateStatus(id: string, status: string) {
-    return this.prisma.application.update({ where: { id }, data: { status: status as any } });
+    return this.prisma.application.update({ where: { id }, data: { status: status as AppStatus } });
   }
 }

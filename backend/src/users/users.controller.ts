@@ -1,7 +1,7 @@
 import { Controller, Get, Patch, Delete, Body, Req, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
 import { z } from 'zod';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AuthenticatedRequest } from '../common/request.types';
 import { UsersService } from './users.service';
 
 const updateSchema = z.object({
@@ -15,18 +15,18 @@ export class UsersController {
   constructor(private users: UsersService) {}
 
   @Get('me')
-  getMe(@Req() req: Request) {
-    return this.users.findById((req.user as any).sub);
+  getMe(@Req() req: AuthenticatedRequest) {
+    return this.users.findById(req.user.sub);
   }
 
   @Patch('me')
-  updateMe(@Req() req: Request, @Body() body: unknown) {
+  updateMe(@Req() req: AuthenticatedRequest, @Body() body: unknown) {
     const data = updateSchema.parse(body);
-    return this.users.update((req.user as any).sub, data);
+    return this.users.update(req.user.sub, data);
   }
 
   @Delete('me')
-  deleteMe(@Req() req: Request) {
-    return this.users.softDelete((req.user as any).sub);
+  deleteMe(@Req() req: AuthenticatedRequest) {
+    return this.users.softDelete(req.user.sub);
   }
 }

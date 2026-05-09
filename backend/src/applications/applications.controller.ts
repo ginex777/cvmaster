@@ -1,9 +1,10 @@
 import { Controller, Post, Get, Patch, Param, Body, Req, Res, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { z } from 'zod';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { OwnsApplicationGuard } from '../common/guards/owns-application.guard';
+import { AuthenticatedRequest } from '../common/request.types';
 import { ApplicationsService } from './applications.service';
 
 const createSchema = z.object({
@@ -22,9 +23,9 @@ export class ApplicationsController {
 
   @Post()
   @Throttle({ default: { limit: 5, ttl: 3_600_000 } })
-  create(@Body() body: unknown, @Req() req: Request) {
+  create(@Body() body: unknown, @Req() req: AuthenticatedRequest) {
     const data = createSchema.parse(body);
-    return this.apps.create(data, (req.user as any).sub);
+    return this.apps.create(data, req.user.sub);
   }
 
   @Get(':id')
@@ -43,21 +44,21 @@ export class ApplicationsController {
 
   @Post(':id/regenerate-letter')
   @UseGuards(OwnsApplicationGuard)
-  regenerateLetter(@Param('id') id: string, @Req() req: Request) {
-    return this.apps.regenerateLetter(id, (req.user as any).sub);
+  regenerateLetter(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    return this.apps.regenerateLetter(id, req.user.sub);
   }
 
   @Post(':id/export')
   @UseGuards(OwnsApplicationGuard)
-  export(@Param('id') id: string, @Body() body: unknown, @Req() req: Request, @Res() res: Response) {
+  export(@Param('id') id: string, @Body() body: unknown, @Req() req: AuthenticatedRequest, @Res() res: Response) {
     const { layout } = exportSchema.parse(body);
     return this.apps.exportPdf(id, layout, res);
   }
 
   @Post(':id/email-to-self')
   @UseGuards(OwnsApplicationGuard)
-  emailToSelf(@Param('id') id: string, @Req() req: Request) {
-    return this.apps.emailToSelf(id, (req.user as any).sub);
+  emailToSelf(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    return this.apps.emailToSelf(id, req.user.sub);
   }
 
   @Patch(':id/status')

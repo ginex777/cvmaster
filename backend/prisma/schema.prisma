@@ -19,6 +19,7 @@ model User {
   emailVerifiedAt     DateTime?
   twoFactorEnabled    Boolean   @default(false)
   twoFactorSecret     String?
+  trialUsed           Boolean   @default(false)
   createdAt           DateTime  @default(now())
   deletedAt           DateTime?
 
@@ -127,6 +128,22 @@ model AuditLog {
   event     String
   payload   Json
   ipHash    String?
+  createdAt DateTime @default(now())
+}
+
+model EmailVerification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @db.Uuid
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model PasswordReset {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  token     String   @unique
+  expiresAt DateTime
   createdAt DateTime @default(now())
 }
 

@@ -2,6 +2,10 @@
 import tseslint from 'typescript-eslint';
 import unusedImports from 'eslint-plugin-unused-imports';
 import prettierConfig from 'eslint-config-prettier';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default tseslint.config(
   {
@@ -9,6 +13,12 @@ export default tseslint.config(
   },
   ...tseslint.configs.recommended,
   {
+    languageOptions: {
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: __dirname,
+      },
+    },
     plugins: {
       'unused-imports': unusedImports,
     },
@@ -37,7 +47,7 @@ export default tseslint.config(
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
 
-      // Async safety
+      // Async safety (type-checked rule — needs parserOptions.project above)
       '@typescript-eslint/no-floating-promises': 'error',
 
       // General correctness

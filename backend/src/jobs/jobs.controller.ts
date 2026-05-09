@@ -1,8 +1,8 @@
 import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { Request } from 'express';
 import { z } from 'zod';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AuthenticatedRequest } from '../common/request.types';
 import { JobsService } from './jobs.service';
 
 const parseSchema = z.discriminatedUnion('type', [
@@ -19,8 +19,8 @@ export class JobsController {
 
   @Post('parse')
   @Throttle({ default: { limit: 20, ttl: 3_600_000 } })
-  parse(@Body() body: unknown, @Req() req: Request) {
+  parse(@Body() body: unknown, @Req() req: AuthenticatedRequest) {
     const data = parseSchema.parse(body);
-    return this.jobs.parse(data, (req.user as any).sub);
+    return this.jobs.parse(data, req.user.sub);
   }
 }

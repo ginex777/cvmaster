@@ -1,6 +1,7 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AuthenticatedRequest } from '../common/request.types';
 import { GdprService } from './gdpr.service';
 
 @Controller('gdpr')
@@ -9,8 +10,8 @@ export class GdprController {
   constructor(private gdpr: GdprService) {}
 
   @Get('export')
-  async export(@Req() req: Request, @Res() res: Response) {
-    const zip = await this.gdpr.exportUserData((req.user as any).sub);
+  async export(@Req() req: AuthenticatedRequest, @Res() res: Response) {
+    const zip = await this.gdpr.exportUserData(req.user.sub);
     res.setHeader('Content-Type', 'application/zip');
     res.setHeader('Content-Disposition', 'attachment; filename="daten-export.zip"');
     res.send(zip);

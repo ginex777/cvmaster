@@ -2,11 +2,20 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { createHmac } from 'crypto';
 import { PrismaService } from '../common/prisma.service';
 
+interface PaddleWebhookData {
+  customer_id: string;
+}
+
+interface PaddleWebhookPayload {
+  event_type: string;
+  data: PaddleWebhookData;
+}
+
 @Injectable()
 export class PaymentsService {
   constructor(private prisma: PrismaService) {}
 
-  async handleWebhook(signature: string, rawBody: Buffer, payload: any) {
+  async handleWebhook(signature: string, rawBody: Buffer, payload: PaddleWebhookPayload) {
     this.verifySignature(signature, rawBody);
 
     const { event_type, data } = payload;
@@ -34,7 +43,7 @@ export class PaymentsService {
     if (expected !== received) throw new BadRequestException('Invalid webhook signature');
   }
 
-  private async onTransactionCompleted(data: any) {
+  private async onTransactionCompleted(data: PaddleWebhookData) {
     await this.prisma.user.updateMany({
       where: { paddleCustomerId: data.customer_id },
       data: { plan: 'PAY_PER_APP' },
@@ -42,14 +51,14 @@ export class PaymentsService {
     // TODO: create charge record, check match score for money-back guarantee
   }
 
-  private async onSubscriptionActivated(data: any) {
+  private async onSubscriptionActivated(data: PaddleWebhookData) {
     await this.prisma.user.updateMany({
       where: { paddleCustomerId: data.customer_id },
       data: { plan: 'PRO' },
     });
   }
 
-  private async onSubscriptionCanceled(data: any) {
+  private async onSubscriptionCanceled(data: PaddleWebhookData) {
     await this.prisma.user.updateMany({
       where: { paddleCustomerId: data.customer_id },
       data: { plan: 'FREE' },

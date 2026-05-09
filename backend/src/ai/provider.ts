@@ -1,4 +1,5 @@
-import { z, ZodSchema } from 'zod';
+import { z } from 'zod';
+import type { ZodSchema } from 'zod';
 
 export interface LLMProvider {
   generate<T>(opts: {

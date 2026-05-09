@@ -1,5 +1,5 @@
-import { ZodSchema } from 'zod';
-import { LLMProvider } from './provider';
+import type { ZodSchema } from 'zod';
+import type { LLMProvider } from './provider';
 
 // Fallback provider — only for non-Art-9 data (see SPEC § 25.2)
 export class ClaudeProvider implements LLMProvider {
@@ -24,7 +24,7 @@ export class ClaudeProvider implements LLMProvider {
       }),
     });
     if (!res.ok) throw new Error(`Claude error ${res.status}: ${await res.text()}`);
-    const data = await res.json() as any;
+    const data = await res.json() as { content: Array<{ text: string }> };
     const raw = JSON.parse(data.content[0].text);
     return opts.schema.parse(raw);
   }

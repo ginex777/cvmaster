@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { z } from 'zod';
 import { LLMProvider, ParsedCVSchema, ParsedJobSchema, ParsedCV, ParsedJob } from './provider';
 import { MistralProvider } from './mistral.provider';
 import { ClaudeProvider } from './claude.provider';
@@ -53,10 +54,10 @@ export class AiService {
   }
 
   async generateCoverLetter(cv: ParsedCV, job: ParsedJob): Promise<{ concise: string; warm: string; formal: string }> {
-    const schema = require('zod').z.object({
-      concise: require('zod').z.string(),
-      warm:    require('zod').z.string(),
-      formal:  require('zod').z.string(),
+    const schema = z.object({
+      concise: z.string(),
+      warm:    z.string(),
+      formal:  z.string(),
     });
     return this.withRetry(() =>
       this.provider.generate({
