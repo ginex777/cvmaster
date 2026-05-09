@@ -27,7 +27,10 @@
     <section class="wizard-step" aria-labelledby="step1-heading">
       <h2 id="step1-heading" class="wizard-step__title">Welchen Lebenslauf möchtest du optimieren?</h2>
       @if (cvs().length === 0) {
-        <p class="wizard-step__empty">Noch kein Lebenslauf vorhanden. Lade zuerst einen Lebenslauf hoch.</p>
+        <div class="wizard-step__empty">
+          <p>Noch kein Lebenslauf vorhanden.</p>
+          <a routerLink="/app/cvs" class="btn btn--primary btn--md">Lebenslauf hochladen</a>
+        </div>
       } @else {
         <ul class="cv-select-list" role="list" aria-label="Verfügbare Lebensläufe">
           @for (cv of cvs(); track cv.id) {
