@@ -4,16 +4,25 @@ import { provideRouter } from '@angular/router';
 import { AppShellComponent } from './app-shell.component';
 import { AuthService } from '../../../core/auth/auth.service';
 
-const mockUser = {
+interface MockUser {
+  id: string;
+  email: string;
+  name: string;
+  plan: 'free' | 'pay' | 'pro';
+  emailVerified: boolean;
+  twoFactorEnabled: boolean;
+}
+
+const mockUser: MockUser = {
   id: '1',
   email: 'test@test.de',
   name: 'Hans',
-  plan: 'free' as const,
+  plan: 'free',
   emailVerified: true,
   twoFactorEnabled: false,
 };
 
-function makeAuthMock(user: typeof mockUser | null = mockUser) {
+function makeAuthMock(user: MockUser | null = mockUser) {
   return {
     user: () => user,
     logout: jest.fn().mockResolvedValue(undefined),
