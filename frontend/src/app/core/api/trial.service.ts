@@ -7,12 +7,15 @@ export interface TrialKeywordMatch {
 }
 
 export interface TrialResponse {
+  atsScore: number;
   matchScore: number;
+  keywords: string[];
+  coverLetterPreview: string;
+  summary: string;
+  suggestions: string[];
   matchedKeywords: string[];
   missingKeywords: string[];
   keywordMatches: TrialKeywordMatch[];
-  summary: string;
-  suggestions: string[];
 }
 
 @Injectable({ providedIn: 'root' })

@@ -13,7 +13,7 @@ export class TrialController {
   constructor(private trial: TrialService) {}
 
   @Post()
-  @Throttle({ default: { limit: 20, ttl: 900_000 } })
+  @Throttle({ default: { limit: 3, ttl: 3_600_000 } })
   analyze(@Body() body: unknown) {
     const result = trialSchema.safeParse(body);
 
@@ -21,6 +21,6 @@ export class TrialController {
       throw new BadRequestException('CV and job text must each contain at least 40 characters.');
     }
 
-    return this.trial.analyze(result.data);
+    return this.trial.run(result.data);
   }
 }

@@ -1,109 +1,85 @@
 import { Injectable } from '@nestjs/common';
+import { AiService } from '../ai/ai.service';
+import type { ParsedCV, ParsedJob } from '../ai/provider';
 import { TrialRequest, TrialResponse } from './trial.types';
 
-const MIN_WORD_LENGTH = 3;
-const MAX_KEYWORDS = 14;
-const STOP_WORDS = new Set([
-  'aber',
-  'als',
-  'and',
-  'auf',
-  'aus',
-  'bei',
-  'bis',
-  'das',
-  'der',
-  'des',
-  'die',
-  'ein',
-  'eine',
-  'for',
-  'für',
-  'mit',
-  'of',
-  'oder',
-  'the',
-  'und',
-  'von',
-  'wir',
-  'you',
-  'zur',
-]);
+const PREVIEW_LENGTH = 200;
 
 @Injectable()
 export class TrialService {
-  analyze(data: TrialRequest): TrialResponse {
-    const cvTokens = new Set(this.tokenize(data.cvText));
-    const jobKeywords = this.extractKeywords(data.jobText);
+  constructor(private readonly ai: AiService) {}
 
-    const keywordMatches = jobKeywords.map(keyword => ({
-      keyword,
-      matched: cvTokens.has(keyword),
-    }));
-    const matchedKeywords = keywordMatches.filter(item => item.matched).map(item => item.keyword);
-    const missingKeywords = keywordMatches.filter(item => !item.matched).map(item => item.keyword);
-    const matchScore = keywordMatches.length
-      ? Math.round((matchedKeywords.length / keywordMatches.length) * 100)
-      : 0;
+  async run(data: TrialRequest): Promise<TrialResponse> {
+    const cv = await this.ai.parseCv(data.cvText);
+    const job = await this.ai.parseJob(data.jobText);
+    const optimizedCv = await this.ai.optimizeCv(cv, job);
+    const coverLetter = await this.ai.generateCoverLetter(optimizedCv, job);
+    const keywords = this.keywordsFor(job);
+    const matchedKeywords = this.matchedKeywords(optimizedCv, keywords);
+    const missingKeywords = keywords.filter(keyword => !matchedKeywords.includes(keyword));
+    const atsScore = this.score(matchedKeywords.length, keywords.length);
 
     return {
-      matchScore,
+      atsScore,
+      matchScore: atsScore,
+      keywords,
+      coverLetterPreview: this.preview(coverLetter.formal || coverLetter.warm || coverLetter.concise),
+      summary: this.summary(atsScore, matchedKeywords.length, missingKeywords.length),
+      suggestions: this.suggestions(missingKeywords),
       matchedKeywords,
       missingKeywords,
-      keywordMatches,
-      summary: this.buildSummary(matchScore, matchedKeywords.length, missingKeywords.length),
-      suggestions: this.buildSuggestions(missingKeywords),
+      keywordMatches: keywords.map(keyword => ({ keyword, matched: matchedKeywords.includes(keyword) })),
     };
   }
 
-  private tokenize(text: string): string[] {
-    return text
-      .toLocaleLowerCase('de-DE')
-      .replace(/[^\p{L}\p{N}+#. -]/gu, ' ')
-      .split(/[\s,;:()/"']+/)
-      .map(token => token.trim())
-      .filter(token => token.length >= MIN_WORD_LENGTH && !STOP_WORDS.has(token));
+  async analyze(data: TrialRequest): Promise<TrialResponse> {
+    return this.run(data);
   }
 
-  private extractKeywords(text: string): string[] {
-    const counts = new Map<string, number>();
-
-    for (const token of this.tokenize(text)) {
-      counts.set(token, (counts.get(token) ?? 0) + 1);
-    }
-
-    return [...counts.entries()]
-      .sort((first, second) => second[1] - first[1] || second[0].length - first[0].length)
-      .slice(0, MAX_KEYWORDS)
-      .map(([keyword]) => keyword);
+  private keywordsFor(job: ParsedJob): string[] {
+    return [...new Set([...job.skills, ...job.mustHaves])].slice(0, 12);
   }
 
-  private buildSummary(matchScore: number, matchedCount: number, missingCount: number): string {
-    if (matchScore >= 80) {
-      return `Starker Fit: ${matchedCount} zentrale Signale aus der Anzeige sind bereits im CV sichtbar.`;
-    }
+  private matchedKeywords(cv: ParsedCV, keywords: string[]): string[] {
+    const haystack = [
+      cv.summary,
+      ...cv.skills,
+      ...cv.experience.flatMap(item => [item.company, item.role, ...item.bullets.map(bullet => bullet.text)]),
+      ...cv.education.flatMap(item => [item.institution, item.degree, item.field ?? '']),
+    ].join(' ').toLocaleLowerCase('de-DE');
 
-    if (matchScore >= 50) {
-      return `Solide Basis: ${matchedCount} Signale passen, ${missingCount} wichtige Begriffe fehlen noch.`;
-    }
-
-    return `Ausbaufähiger Fit: Die Anzeige nutzt noch mehrere Begriffe, die im CV nicht klar vorkommen.`;
+    return keywords.filter(keyword => haystack.includes(keyword.toLocaleLowerCase('de-DE')));
   }
 
-  private buildSuggestions(missingKeywords: string[]): string[] {
-    const topMissing = missingKeywords.slice(0, 5);
+  private score(matched: number, total: number): number {
+    return total ? Math.round((matched / total) * 100) : 0;
+  }
 
-    if (topMissing.length === 0) {
-      return [
-        'Schärfe die Bulletpoints mit konkreten Ergebnissen, Zahlen und Verantwortungsbereichen.',
-        'Passe die Reihenfolge deiner Skills an die Sprache der Stellenanzeige an.',
-      ];
+  private preview(value: string): string {
+    const trimmed = value.trim();
+    return trimmed.length > PREVIEW_LENGTH ? `${trimmed.slice(0, PREVIEW_LENGTH).trim()}...` : trimmed;
+  }
+
+  private summary(atsScore: number, matchedCount: number, missingCount: number): string {
+    if (atsScore >= 80) {
+      return `Starker Fit: ${matchedCount} zentrale Anforderungen sind in deinem optimierten Profil sichtbar.`;
+    }
+
+    if (atsScore >= 50) {
+      return `Solide Basis: ${matchedCount} Anforderungen passen, ${missingCount} wichtige Signale fehlen noch.`;
+    }
+
+    return `Ausbaufaehiger Fit: Die Stellenanzeige nutzt noch mehrere Signale, die der CV klarer aufnehmen sollte.`;
+  }
+
+  private suggestions(missingKeywords: string[]): string[] {
+    if (!missingKeywords.length) {
+      return ['Ergaenze konkrete Ergebnisse und Zahlen, damit der starke Fit im CV noch belastbarer wirkt.'];
     }
 
     return [
-      `Ergänze relevante Erfahrung zu: ${topMissing.join(', ')}.`,
-      'Formuliere mindestens zwei Bulletpoints näher an den Begriffen der Stellenanzeige.',
-      'Platziere die wichtigsten fehlenden Skills in Zusammenfassung oder Skills-Bereich.',
+      `Ergaenze sichtbare Erfahrung zu: ${missingKeywords.slice(0, 5).join(', ')}.`,
+      'Spiegle die wichtigsten Begriffe aus der Anzeige in Zusammenfassung und Skills-Bereich.',
     ];
   }
 }

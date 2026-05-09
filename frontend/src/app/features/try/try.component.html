@@ -1,66 +1,70 @@
-<main id="main" aria-label="Anonymer Testlauf">
-  <h1>Kostenlos ausprobieren</h1>
-  <p class="try__sub">Kein Account erforderlich. Ergebnisse werden nicht gespeichert.</p>
+<main id="main" class="try" aria-labelledby="try-title" [attr.aria-busy]="loading()">
+  <header class="try__header">
+    <p class="try__eyebrow">Demo ohne Account</p>
+    <h1 id="try-title">Teste deinen CV gegen eine Stellenanzeige</h1>
+    <p>Die Demo verarbeitet nur den eingefuegten Text und zeigt eine gekuerzte Vorschau. Fuer das vollstaendige Ergebnis legst du danach einen Account an.</p>
+  </header>
 
-  @if (step() === 'cv') {
-    <section aria-labelledby="cv-heading">
-      <h2 id="cv-heading">1. Lebenslauf einfügen</h2>
-      <div class="field">
-        <label for="cv-text">Lebenslauf-Text</label>
-        <textarea
-          id="cv-text"
-          [ngModel]="cvText()"
-          (ngModelChange)="cvText.set($event)"
-          name="cvText"
-          rows="12"
-          aria-required="true"
-          placeholder="Füge deinen Lebenslauf als Text ein..."
-        ></textarea>
-      </div>
-      <button class="btn btn--primary btn--md" (click)="step.set('job')" [disabled]="!cvText().trim()">
-        Weiter zur Stellenanzeige
-      </button>
-    </section>
-  }
-
-  @if (step() === 'job') {
-    <section aria-labelledby="job-heading">
-      <h2 id="job-heading">2. Stellenanzeige einfügen</h2>
-      <div class="field">
-        <label for="job-text">Stellenanzeige-Text</label>
-        <textarea
-          id="job-text"
-          [ngModel]="jobText()"
-          (ngModelChange)="jobText.set($event)"
-          name="jobText"
-          rows="12"
-          aria-required="true"
-          placeholder="Füge die Stellenanzeige als Text ein..."
-        ></textarea>
-      </div>
-      <button class="btn btn--primary btn--md" (click)="runTrial()" [disabled]="!jobText().trim() || loading()">
-        {{ loading() ? 'Wird optimiert...' : 'Jetzt optimieren' }}
-      </button>
-      @if (error()) {
-        <p class="try__error" role="alert">{{ error() }}</p>
+  <form class="try__form" [formGroup]="form" (ngSubmit)="runTrial()">
+    <section class="field" aria-labelledby="cv-heading">
+      <label id="cv-heading" for="cv-text">Lebenslauf-Text</label>
+      <textarea
+        id="cv-text"
+        formControlName="cvText"
+        rows="12"
+        aria-describedby="cv-help cv-error"
+        placeholder="Kurzprofil, Erfahrung, Skills und relevante Projekte..."
+      ></textarea>
+      <p id="cv-help">Mindestens 40 Zeichen. Dateien werden hier nicht hochgeladen.</p>
+      @if (form.controls.cvText.touched && form.controls.cvText.invalid) {
+        <p id="cv-error" class="field__error">Bitte fuege mindestens 40 Zeichen Lebenslauf-Text ein.</p>
       }
     </section>
+
+    <section class="field" aria-labelledby="job-heading">
+      <label id="job-heading" for="job-text">Stellenanzeige</label>
+      <textarea
+        id="job-text"
+        formControlName="jobText"
+        rows="12"
+        aria-describedby="job-help job-error"
+        placeholder="Rolle, Aufgaben, Anforderungen, gewuenschte Keywords..."
+      ></textarea>
+      <p id="job-help">Kopiere die Anzeige oder die wichtigsten Anforderungen hinein.</p>
+      @if (form.controls.jobText.touched && form.controls.jobText.invalid) {
+        <p id="job-error" class="field__error">Bitte fuege mindestens 40 Zeichen Stellenanzeige ein.</p>
+      }
+    </section>
+
+    <div class="try__actions">
+      <button class="btn btn--primary btn--md" type="submit" [disabled]="loading()">
+        {{ loading() ? 'Demo wird erstellt...' : 'Demo-Ergebnis anzeigen' }}
+      </button>
+      <a routerLink="/register" class="btn btn--ghost btn--md">Direkt registrieren</a>
+    </div>
+  </form>
+
+  @if (error()) {
+    <p class="try__error" role="alert">{{ error() }}</p>
   }
 
-  @if (step() === 'result') {
-    <section aria-labelledby="result-heading" aria-live="polite">
-      <h2 id="result-heading">Dein Ergebnis</h2>
-      <p>Match-Score: <strong>{{ matchScore() }}%</strong></p>
-      @if (result(); as trialResult) {
+  @if (result(); as trialResult) {
+    <section class="result-card" aria-labelledby="result-heading" aria-live="polite">
+      <div class="result-card__score">
+        <span>ATS Score</span>
+        <strong>{{ trialResult.atsScore }}%</strong>
+      </div>
+      <div class="result-card__body">
+        <h2 id="result-heading">Gekuerzte Vorschau</h2>
         <p>{{ trialResult.summary }}</p>
-        <ul>
-          @for (suggestion of trialResult.suggestions; track suggestion) {
-            <li>{{ suggestion }}</li>
+        <blockquote>{{ trialResult.coverLetterPreview }}</blockquote>
+        <ul class="keyword-list" aria-label="Erkannte Keywords">
+          @for (keyword of trialResult.keywords; track keyword) {
+            <li>{{ keyword }}</li>
           }
         </ul>
-      }
-      <p>Um deine Unterlagen als PDF zu erhalten, erstelle einen kostenlosen Account.</p>
-      <a routerLink="/register" class="btn btn--primary btn--md">Kostenlosen Account erstellen</a>
+        <a routerLink="/register" class="btn btn--primary btn--md">Vollstaendiges Ergebnis - jetzt registrieren</a>
+      </div>
     </section>
   }
 </main>
