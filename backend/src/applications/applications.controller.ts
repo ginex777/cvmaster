@@ -1,4 +1,5 @@
-import { Controller, Post, Get, Patch, Param, Body, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Param, Body, Req, Res, UseGuards, Delete } from '@nestjs/common';
+import { AppStatus, Prisma } from '@prisma/client';
 import { Throttle } from '@nestjs/throttler';
 import { Response } from 'express';
 import { z } from 'zod';
@@ -16,6 +17,21 @@ const exportSchema = z.object({
   layout: z.enum(['modern', 'clean', 'editorial']),
 });
 
+const statusSchema = z.preprocess(
+  value => typeof value === 'string' ? value.toUpperCase() : value,
+  z.nativeEnum(AppStatus),
+);
+
+const updateSchema = z.object({
+  optimizedCv: z.unknown().optional(),
+  coverLetter: z.unknown().optional(),
+  matchReport: z.unknown().optional(),
+  matchScore: z.number().int().min(0).max(100).nullable().optional(),
+  chosenVariant: z.string().optional(),
+  chosenLayout: z.string().optional(),
+  status: statusSchema.optional(),
+});
+
 @Controller('applications')
 @UseGuards(JwtAuthGuard)
 export class ApplicationsController {
@@ -29,9 +45,19 @@ export class ApplicationsController {
   }
 
   @Get(':id')
-  @UseGuards(OwnsApplicationGuard)
-  findOne(@Param('id') id: string) {
-    return this.apps.findById(id);
+  findOne(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    return this.apps.findOne(id, req.user.sub);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() body: unknown, @Req() req: AuthenticatedRequest) {
+    const data = updateSchema.parse(body) as Prisma.ApplicationUpdateInput;
+    return this.apps.update(id, req.user.sub, data);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    return this.apps.remove(id, req.user.sub);
   }
 
   @Get(':id/stream')

@@ -1,117 +1,99 @@
-<main id="main">
-
-  <a routerLink="/app" class="btn btn--ghost btn--sm back-link">← Zurück zum Dashboard</a>
-  <h1>Bewerbung bearbeiten</h1>
-
-  @if (loading()) {
-    <p aria-live="polite" aria-busy="true" class="status-msg">Wird geladen…</p>
-  } @else {
-
-    <!-- Match Score -->
-    @if (matchScore() !== null) {
-      <aside class="match-banner" role="status" aria-label="Match-Score: {{ matchScore() }}%">
-        <strong>Match-Score: {{ matchScore() }}%</strong>
-        @if (matchScore()! >= 80) {
-          <span class="match-banner__badge match-banner__badge--high">Sehr gut</span>
-        } @else if (matchScore()! >= 60) {
-          <span class="match-banner__badge match-banner__badge--mid">Gut</span>
-        } @else {
-          <span class="match-banner__badge match-banner__badge--low">Optimierungsbedarf</span>
-        }
-      </aside>
-    }
-
-    <!-- Cover Letter -->
-    <section class="editor-section" aria-labelledby="letter-heading">
-      <h2 id="letter-heading">Anschreiben</h2>
-      <fieldset class="variant-picker">
-        <legend>Variante wählen</legend>
-        <label>
-          <input type="radio" name="variant" value="concise"
-            [ngModel]="chosenVariant()" (ngModelChange)="chosenVariant.set($any($event))" />
-          Präzise (~150 Wörter)
-        </label>
-        <label>
-          <input type="radio" name="variant" value="warm"
-            [ngModel]="chosenVariant()" (ngModelChange)="chosenVariant.set($any($event))" />
-          Herzlich (~220 Wörter)
-        </label>
-        <label>
-          <input type="radio" name="variant" value="formal"
-            [ngModel]="chosenVariant()" (ngModelChange)="chosenVariant.set($any($event))" />
-          Formal (~220 Wörter)
-        </label>
-      </fieldset>
-
-      @if (coverLetter()[chosenVariant()]) {
-        <div class="letter-preview" role="region" aria-label="Anschreiben-Vorschau" aria-live="polite">
-          <p style="white-space: pre-wrap">{{ coverLetter()[chosenVariant()] }}</p>
-        </div>
-      }
-    </section>
-
-    <!-- CV Editor with diff view -->
-    <section class="editor-section" aria-labelledby="cv-heading">
-      <h2 id="cv-heading">Optimierter Lebenslauf</h2>
-
-      @for (section of sections(); track section.id) {
-        <article class="cv-section" [attr.aria-labelledby]="'section-' + section.id">
-          <h3 [id]="'section-' + section.id">{{ section.role }} @ {{ section.company }}</h3>
-          <ul class="bullets">
-            @for (bullet of section.bullets; track bullet.id) {
-              <li class="bullet">
-                <label [for]="'b-' + bullet.id" class="sr-only">Bullet bearbeiten: {{ bullet.text }}</label>
-                <textarea [id]="'b-' + bullet.id"
-                  [ngModel]="bullet.text" (ngModelChange)="bullet.text = $event"
-                  name="bullet" rows="2" class="bullet__input"></textarea>
-
-                @if (bullet.suggested && !bullet.accepted) {
-                  <div class="diff-block" role="region" aria-label="KI-Vorschlag">
-                    <p class="diff-block__text">✦ {{ bullet.suggested }}</p>
-                    <div class="diff-block__actions">
-                      <button class="btn btn--primary btn--sm"  (click)="accept(bullet)">✓ Übernehmen</button>
-                      <button class="btn btn--ghost   btn--sm"  (click)="reject(bullet)">✗ Verwerfen</button>
-                    </div>
-                  </div>
-                }
-              </li>
-            }
-          </ul>
-        </article>
-      }
-    </section>
-
-    <!-- Layout picker -->
-    <section class="editor-section" aria-labelledby="layout-heading">
-      <h2 id="layout-heading">PDF-Layout wählen</h2>
-      <fieldset class="layout-picker">
-        <legend>Layout</legend>
-        <label>
-          <input type="radio" name="layout" value="modern"
-            [ngModel]="chosenLayout()" (ngModelChange)="chosenLayout.set($any($event))" />
-          Modern
-        </label>
-        <label>
-          <input type="radio" name="layout" value="clean"
-            [ngModel]="chosenLayout()" (ngModelChange)="chosenLayout.set($any($event))" />
-          Clean (ATS-sicher)
-        </label>
-        <label>
-          <input type="radio" name="layout" value="editorial"
-            [ngModel]="chosenLayout()" (ngModelChange)="chosenLayout.set($any($event))" />
-          Editorial
-        </label>
-      </fieldset>
-    </section>
-
-    <!-- Actions -->
-    <div class="editor-actions" role="group" aria-label="Export-Aktionen">
-      <button class="btn btn--primary btn--md" (click)="exportPdf()" [disabled]="exporting()">
-        {{ exporting() ? 'Wird erstellt…' : 'PDF herunterladen (ZIP)' }}
-      </button>
-      <button class="btn btn--secondary btn--md" (click)="emailToSelf()">An mich senden</button>
+<main class="editor" aria-labelledby="editor-title" [attr.aria-busy]="loading()">
+  <header class="editor__header">
+    <a routerLink="/app" class="btn btn--ghost btn--sm">ZurÃ¼ck</a>
+    <div>
+      <p class="editor__eyebrow">Bewerbungseditor</p>
+      <h1 id="editor-title">Bewerbung bearbeiten</h1>
     </div>
+    <button class="btn btn--secondary btn--sm" type="button" (click)="setStatus('SENT')" [disabled]="saving()">
+      Als gesendet markieren
+    </button>
+  </header>
 
+  @if (error()) {
+    <p class="editor__alert" aria-live="polite">{{ error() }}</p>
   }
 
+  @if (loading()) {
+    <section class="editor__grid editor__grid--loading" aria-label="Editor wird geladen">
+      <div class="skeleton skeleton--panel"></div>
+      <div class="skeleton skeleton--panel"></div>
+      <div class="skeleton skeleton--panel"></div>
+    </section>
+  } @else {
+    <form class="editor__grid" [formGroup]="editorForm">
+      <aside class="panel panel--match" aria-labelledby="match-title">
+        <h2 id="match-title">Match Report</h2>
+        <div class="score" role="status" [attr.aria-label]="'ATS Score ' + (score() ?? 0) + ' Prozent'">
+          <strong>{{ score() ?? 0 }}</strong>
+          <span>ATS Score</span>
+        </div>
+
+        @if (matchReport().summary) {
+          <p class="panel__summary">{{ matchReport().summary }}</p>
+        }
+
+        <section aria-labelledby="keywords-title">
+          <h3 id="keywords-title">Treffer</h3>
+          <ul class="keyword-list">
+            @for (keyword of keywords(); track keyword) {
+              <li>{{ keyword }}</li>
+            } @empty {
+              <li>Keine Keyword-Daten vorhanden.</li>
+            }
+          </ul>
+        </section>
+
+        @if (missingKeywords().length) {
+          <section aria-labelledby="missing-title">
+            <h3 id="missing-title">Noch offen</h3>
+            <ul class="keyword-list keyword-list--muted">
+              @for (keyword of missingKeywords(); track keyword) {
+                <li>{{ keyword }}</li>
+              }
+            </ul>
+          </section>
+        }
+      </aside>
+
+      <section class="panel panel--cv" aria-labelledby="cv-title">
+        <div class="panel__heading">
+          <h2 id="cv-title">Optimierter Lebenslauf</h2>
+          <span aria-live="polite">{{ saving() ? 'Speichert...' : 'Gespeichert' }}</span>
+        </div>
+        <label for="cv-text">CV-Inhalt</label>
+        <textarea
+          id="cv-text"
+          formControlName="cvText"
+          rows="22"
+          (blur)="saveCv()"
+          aria-describedby="cv-help"
+        ></textarea>
+        <p id="cv-help">Abschnitte durch Leerzeilen trennen. Beim Verlassen des Feldes wird automatisch gespeichert.</p>
+      </section>
+
+      <aside class="panel panel--letter" aria-labelledby="letter-title">
+        <h2 id="letter-title">Anschreiben</h2>
+        <div class="tabs" role="tablist" aria-label="Anschreiben Varianten">
+          <button type="button" role="tab" [attr.aria-selected]="selectedLetter() === 'formal'" (click)="selectedLetter.set('formal')">
+            Formal
+          </button>
+          <button type="button" role="tab" [attr.aria-selected]="selectedLetter() === 'warm'" (click)="selectedLetter.set('warm')">
+            Herzlich
+          </button>
+          <button type="button" role="tab" [attr.aria-selected]="selectedLetter() === 'brief'" (click)="selectedLetter.set('brief')">
+            Kurz
+          </button>
+        </div>
+
+        <label for="letter-text">Textvariante</label>
+        <textarea
+          id="letter-text"
+          [formControl]="letterControl()"
+          rows="16"
+          (blur)="saveCoverLetter()"
+        ></textarea>
+      </aside>
+    </form>
+  }
 </main>

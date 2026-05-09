@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { ApplicationsService } from './applications.service';
 import { PrismaService } from '../common/prisma.service';
@@ -10,7 +10,7 @@ const fn = () => jest.fn<() => Promise<unknown>>();
 
 const mockPrisma = {
   masterCv: { findFirst: fn() },
-  application: { create: fn(), findUniqueOrThrow: fn(), update: fn() },
+  application: { create: fn(), findUnique: fn(), findUniqueOrThrow: fn(), update: fn(), delete: fn() },
   user: { findUniqueOrThrow: fn() },
 };
 const mockQueue = { enqueueAiPipeline: fn(), enqueueRegenerateLetter: fn() };
@@ -50,6 +50,40 @@ describe('ApplicationsService', () => {
       expect(mockPrisma.application.create).toHaveBeenCalled();
       expect(mockQueue.enqueueAiPipeline).toHaveBeenCalledWith('app1');
       expect(result).toHaveProperty('id', 'app1');
+    });
+  });
+
+  describe('findOne', () => {
+    it('throws ForbiddenException when application belongs to another user', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue({ id: 'a1', userId: 'other' } as never);
+      await expect(service.findOne('a1', 'u1')).rejects.toThrow(ForbiddenException);
+    });
+
+    it('throws NotFoundException when not found', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue(null);
+      await expect(service.findOne('a1', 'u1')).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('update', () => {
+    it('calls prisma.application.update with merged data', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue({ id: 'a1', userId: 'u1' } as never);
+      mockPrisma.application.update.mockResolvedValue({ id: 'a1' } as never);
+      await service.update('a1', 'u1', { status: 'SENT' });
+      expect(mockPrisma.application.update).toHaveBeenCalledWith({
+        where: { id: 'a1' },
+        data: { status: 'SENT' },
+        include: { masterCv: true, jobPosting: true },
+      });
+    });
+  });
+
+  describe('remove', () => {
+    it('deletes an application after ownership check', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue({ id: 'a1', userId: 'u1' } as never);
+      mockPrisma.application.delete.mockResolvedValue({ id: 'a1' } as never);
+      await service.remove('a1', 'u1');
+      expect(mockPrisma.application.delete).toHaveBeenCalledWith({ where: { id: 'a1' } });
     });
   });
 });
