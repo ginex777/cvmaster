@@ -3,12 +3,16 @@ import { Resend } from 'resend';
 
 @Injectable()
 export class MailService {
-  private resend = new Resend(process.env.RESEND_API_KEY);
   private from = `Lebenslauf-Agent <noreply@${process.env.MAIL_DOMAIN}>`;
 
   async sendVerification(to: string, token: string) {
-    const link = `${process.env.APP_URL}/auth/verify?token=${token}`;
-    await this.resend.emails.send({
+    const link = `${process.env.APP_URL}/api/auth/verify?token=${token}`;
+    if (!process.env.RESEND_API_KEY && process.env.NODE_ENV !== 'production') {
+      console.warn(`[dev-email] Verification link for ${to}: ${link}`);
+      return;
+    }
+
+    await this.resend().emails.send({
       from: this.from,
       to,
       subject: 'E-Mail-Adresse bestätigen',
@@ -18,7 +22,7 @@ export class MailService {
 
   async sendPasswordReset(to: string, token: string) {
     const link = `${process.env.APP_URL}/auth/reset-password?token=${token}`;
-    await this.resend.emails.send({
+    await this.resend().emails.send({
       from: this.from,
       to,
       subject: 'Passwort zurücksetzen',
@@ -26,8 +30,8 @@ export class MailService {
     });
   }
 
-  async sendApplicationToSelf(to: string, application: { id: string }) {
-    await this.resend.emails.send({
+  async sendApplicationToSelf(to: string, _application: { id: string }) {
+    await this.resend().emails.send({
       from: this.from,
       to,
       subject: 'Deine Bewerbungsunterlagen',
@@ -37,11 +41,15 @@ export class MailService {
   }
 
   async sendSecurityAlert(to: string, event: string) {
-    await this.resend.emails.send({
+    await this.resend().emails.send({
       from: this.from,
       to,
       subject: `Sicherheitshinweis: ${event}`,
       html: `<p>Es wurde ein unbekannter Login von einer neuen Region erkannt. Falls du das nicht warst, ändere sofort dein Passwort.</p>`,
     });
+  }
+
+  private resend(): Resend {
+    return new Resend(process.env.RESEND_API_KEY);
   }
 }

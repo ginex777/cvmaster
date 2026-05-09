@@ -12,6 +12,15 @@ function loadPrompt(name: string): string {
   return readFileSync(join(process.cwd(), 'prompts', `${name}.txt`), 'utf8');
 }
 
+function requiredEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} is required`);
+  }
+
+  return value;
+}
+
 @Injectable()
 export class AiService {
   private provider: LLMProvider;
@@ -19,8 +28,8 @@ export class AiService {
   constructor() {
     const p = process.env.AI_PROVIDER ?? 'mistral';
     this.provider = p === 'claude'
-      ? new ClaudeProvider(process.env.ANTHROPIC_API_KEY!)
-      : new MistralProvider(process.env.MISTRAL_API_KEY!);
+      ? new ClaudeProvider(requiredEnv('ANTHROPIC_API_KEY'))
+      : new MistralProvider(requiredEnv('MISTRAL_API_KEY'));
   }
 
   async parseCv(text: string): Promise<ParsedCV> {

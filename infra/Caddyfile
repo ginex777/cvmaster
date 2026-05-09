@@ -1,8 +1,4 @@
-{
-  email admin@example.de
-}
-
-example.de, www.example.de {
+:80 {
   encode zstd gzip
 
   # Sicherheits-Header (siehe SPEC § 23)
@@ -16,7 +12,7 @@ example.de, www.example.de {
     -Server
   }
 
-  handle_path /api/* {
+  handle /api/* {
     reverse_proxy api:3000
   }
 
@@ -26,5 +22,5 @@ Expires: 2027-01-01T00:00:00.000Z
 Preferred-Languages: de, en` 200
   }
 
-  reverse_proxy frontend:4000
+  reverse_proxy frontend:80
 }

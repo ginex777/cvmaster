@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { randomBytes, createHash } from 'crypto';
@@ -40,6 +40,20 @@ export class AuthService {
     await this.mail.sendVerification(user.email, verifyToken);
 
     return { message: 'Registration successful. Please verify your email.' };
+  }
+
+  async verifyEmail(token: string) {
+    const verification = await this.prisma.emailVerification.findUnique({ where: { token } });
+    if (!verification) throw new NotFoundException('Verification token not found');
+    if (verification.expiresAt < new Date()) throw new BadRequestException('Verification token expired');
+
+    await this.prisma.user.update({
+      where: { id: verification.userId },
+      data: { emailVerifiedAt: new Date() },
+    });
+    await this.prisma.emailVerification.delete({ where: { id: verification.id } });
+
+    return { message: 'Email verified' };
   }
 
   async login(data: { email: string; password: string; totp?: string }, ip: string, ua: string) {
@@ -104,12 +118,18 @@ export class AuthService {
     });
 
     const payload = { sub: user.id, plan: user.plan, ev: !!user.emailVerifiedAt, tfa: user.twoFactorEnabled };
-    // @ts-expect-error EdDSA is supported by jsonwebtoken at runtime but missing from the installed type union.
-    const accessToken = await this.jwt.signAsync(payload, {
-      expiresIn: '15m',
-      algorithm: 'EdDSA',
-      privateKey: process.env.JWT_PRIVATE_KEY,
-    });
+    const accessToken = process.env.JWT_PRIVATE_KEY
+      // @ts-expect-error EdDSA is supported by jsonwebtoken at runtime but missing from the installed type union.
+      ? await this.jwt.signAsync(payload, {
+        expiresIn: '15m',
+        algorithm: 'EdDSA',
+        privateKey: process.env.JWT_PRIVATE_KEY,
+      })
+      : await this.jwt.signAsync(payload, {
+        expiresIn: '15m',
+        algorithm: 'HS256',
+        secret: process.env.JWT_SECRET ?? 'local-dev-jwt-secret-change-me',
+      });
 
     return { accessToken, refreshToken: rawRefresh, user: { id: user.id, plan: user.plan } };
   }

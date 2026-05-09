@@ -10,8 +10,8 @@ import { MailService } from '../mail/mail.service';
 const fn = () => jest.fn<() => Promise<unknown>>();
 
 const mockPrisma = {
-  user: { create: fn(), findUnique: fn(), findUniqueOrThrow: fn() },
-  emailVerification: { create: fn() },
+  user: { create: fn(), findUnique: fn(), findUniqueOrThrow: fn(), update: fn() },
+  emailVerification: { create: fn(), findUnique: fn(), delete: fn() },
   consent: { create: fn() },
   session: {
     create: fn(),
@@ -146,6 +146,29 @@ describe('AuthService', () => {
 
       expect(result).toHaveProperty('accessToken');
       expect(result.user).toHaveProperty('id', 'u1');
+    });
+  });
+
+  describe('verifyEmail', () => {
+    it('marks the user as verified and removes the verification token', async () => {
+      mockPrisma.emailVerification.findUnique.mockResolvedValue({
+        id: 'ev1',
+        userId: 'u1',
+        token: 'token',
+        expiresAt: new Date(Date.now() + 60_000),
+      });
+      mockPrisma.user.update.mockResolvedValue({});
+      mockPrisma.emailVerification.delete.mockResolvedValue({});
+
+      await service.verifyEmail('token');
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'u1' },
+          data: expect.objectContaining({ emailVerifiedAt: expect.any(Date) }),
+        }),
+      );
+      expect(mockPrisma.emailVerification.delete).toHaveBeenCalledWith({ where: { id: 'ev1' } });
     });
   });
 

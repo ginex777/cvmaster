@@ -5,6 +5,15 @@ import { PrismaService } from '../common/prisma.service';
 import { AiService } from '../ai/ai.service';
 import type { ParsedCV, ParsedJob } from '../ai/provider';
 
+function redisUrl(): string {
+  const value = process.env.REDIS_URL;
+  if (!value) {
+    throw new Error('REDIS_URL is required');
+  }
+
+  return value;
+}
+
 @Injectable()
 export class AiPipelineProcessor implements OnModuleInit {
   private redis: IORedis;
@@ -12,7 +21,7 @@ export class AiPipelineProcessor implements OnModuleInit {
   constructor(private prisma: PrismaService, private ai: AiService) {}
 
   onModuleInit() {
-    this.redis = new IORedis(process.env.REDIS_URL!, { maxRetriesPerRequest: null });
+    this.redis = new IORedis(redisUrl(), { maxRetriesPerRequest: null });
     new Worker('ai-pipeline', (job) => this.process(job), { connection: this.redis });
   }
 

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ZodError } from 'zod';
 import { Throttle } from '@nestjs/throttler';
 import { Request, Response } from 'express';
@@ -54,6 +54,14 @@ export class AuthController {
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     return { accessToken: result.accessToken, user: result.user };
+  }
+
+  @Get('verify')
+  async verify(@Query('token') token: string, @Res() res: Response) {
+    if (!token) throw new BadRequestException('Verification token is required');
+    await this.auth.verifyEmail(token);
+    const appUrl = process.env.APP_URL ?? 'http://localhost:4200';
+    return res.redirect(`${appUrl}/login?verified=1`);
   }
 
   @Post('refresh')

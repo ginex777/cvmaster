@@ -126,7 +126,7 @@
           <div class="modal__header">
             <p class="eyebrow">Willkommen zurück</p>
             <h2 id="login-dialog-title">Anmelden</h2>
-            <p>Öffnet als Overlay, damit die Landingpage im Kontext bleibt.</p>
+            <p>Mit deinem Konto gelangst du direkt in den Bewerbungsbereich.</p>
           </div>
 
           <form class="modal-form" (ngSubmit)="submitLogin()">
@@ -150,7 +150,9 @@
                 (input)="loginPassword.set($any($event.target).value)"
               />
             </label>
-            <button type="submit" class="btn btn--primary btn--md" [disabled]="!canSubmitLogin()">Anmelden</button>
+            <button type="submit" class="btn btn--primary btn--md" [disabled]="!canSubmitLogin() || authLoading()">
+              {{ authLoading() ? 'Anmeldung laeuft...' : 'Anmelden' }}
+            </button>
           </form>
 
           <button type="button" class="modal__switch" (click)="openDialog('register')">Noch keinen Account? Kostenlos starten</button>
@@ -160,7 +162,7 @@
           <div class="modal__header">
             <p class="eyebrow">Kostenlos starten</p>
             <h2 id="register-dialog-title">Account erstellen</h2>
-            <p>Ein fokussierter Start im Overlay statt Seitenwechsel.</p>
+            <p>Nach der Registrierung bestaetigst du deine E-Mail-Adresse und kannst dich einloggen.</p>
           </div>
 
           <form class="modal-form" (ngSubmit)="submitRegister()">
@@ -185,6 +187,7 @@
             </label>
             <label class="field">
               <span>Passwort</span>
+              <small>Mindestens 12 Zeichen</small>
               <input
                 name="registerPassword"
                 type="password"
@@ -202,8 +205,8 @@
               />
               <span>Ich stimme der Verarbeitung meiner Bewerbungsdaten für diesen Test zu.</span>
             </label>
-            <button type="submit" class="btn btn--primary btn--md" [disabled]="!canSubmitRegister()">
-              Account vorbereiten
+            <button type="submit" class="btn btn--primary btn--md" [disabled]="!canSubmitRegister() || authLoading()">
+              {{ authLoading() ? 'Account wird erstellt...' : 'Account erstellen' }}
             </button>
           </form>
 
@@ -212,7 +215,7 @@
       }
 
       @if (modalMessage()) {
-        <p class="modal__message" role="status">{{ modalMessage() }}</p>
+        <p class="modal__message" role="alert" aria-live="polite">{{ modalMessage() }}</p>
       }
     </section>
   </div>

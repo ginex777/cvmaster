@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { TrialApiService } from '../../core/api/trial.service';
 import type { TrialResponse } from '../../core/api/trial.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { FooterComponent } from '../../shared/components/footer.component';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { BeforeAfterComponent } from './sections/before-after.component';
@@ -36,6 +39,8 @@ type TryDialogStep = 'cv' | 'job' | 'result';
 })
 export class LandingComponent {
   private readonly trialApi = inject(TrialApiService);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
   protected readonly activeDialog = signal<LandingDialog | null>(null);
   protected readonly tryStep = signal<TryDialogStep>('cv');
@@ -52,6 +57,7 @@ export class LandingComponent {
   protected readonly registerPassword = signal('');
   protected readonly consentGiven = signal(false);
   protected readonly modalMessage = signal('');
+  protected readonly authLoading = signal(false);
 
   protected readonly canContinueCv = computed(() => this.cvText().trim().length >= 40);
   protected readonly canRunOptimization = computed(
@@ -64,7 +70,7 @@ export class LandingComponent {
     () =>
       this.registerName().trim().length > 1 &&
       this.registerEmail().trim().length > 3 &&
-      this.registerPassword().trim().length >= 8 &&
+      this.registerPassword().trim().length >= 12 &&
       this.consentGiven(),
   );
 
@@ -113,19 +119,54 @@ export class LandingComponent {
     }
   }
 
-  protected submitLogin(): void {
+  protected async submitLogin(): Promise<void> {
     if (!this.canSubmitLogin()) {
       return;
     }
 
-    this.modalMessage.set('Anmeldung vorbereitet. Die echte Authentifizierung bleibt im nächsten Schritt anbindbar.');
+    this.authLoading.set(true);
+    this.modalMessage.set('');
+
+    try {
+      await this.auth.login(this.loginEmail().trim(), this.loginPassword());
+      await this.router.navigate(['/app']);
+      this.closeDialog();
+    } catch (error: unknown) {
+      this.modalMessage.set(this.errorMessage(error, 'Anmeldung fehlgeschlagen.'));
+    } finally {
+      this.authLoading.set(false);
+    }
   }
 
-  protected submitRegister(): void {
+  protected async submitRegister(): Promise<void> {
     if (!this.canSubmitRegister()) {
       return;
     }
 
-    this.modalMessage.set('Account-Start vorbereitet. Der Flow bleibt im Overlay, ohne die Landingpage zu verlassen.');
+    this.authLoading.set(true);
+    this.modalMessage.set('');
+
+    try {
+      await this.auth.register({
+        name: this.registerName().trim(),
+        email: this.registerEmail().trim(),
+        password: this.registerPassword(),
+        art9Consent: this.consentGiven(),
+      });
+      await this.router.navigate(['/login'], { queryParams: { registered: '1' } });
+      this.closeDialog();
+    } catch (error: unknown) {
+      this.modalMessage.set(this.errorMessage(error, 'Registrierung fehlgeschlagen.'));
+    } finally {
+      this.authLoading.set(false);
+    }
+  }
+
+  private errorMessage(error: unknown, fallback: string): string {
+    if (error instanceof HttpErrorResponse && typeof error.error?.message === 'string') {
+      return error.error.message;
+    }
+
+    return fallback;
   }
 }
