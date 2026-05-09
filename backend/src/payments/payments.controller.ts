@@ -1,11 +1,6 @@
-import { Controller, Post, Body, Headers, RawBodyRequest, Req } from '@nestjs/common';
+import { Controller, Post, Headers, RawBodyRequest, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { PaymentsService } from './payments.service';
-
-interface PaddleWebhookPayload {
-  event_type: string;
-  data: { customer_id: string };
-}
 
 @Controller('payments')
 export class PaymentsController {
@@ -16,9 +11,8 @@ export class PaymentsController {
   async webhook(
     @Headers('paddle-signature') signature: string,
     @Req() req: RawBodyRequest<Request>,
-    @Body() body: PaddleWebhookPayload,
   ) {
-    await this.payments.handleWebhook(signature, req.rawBody!, body);
+    await this.payments.handleWebhook(req.rawBody ?? Buffer.from('{}'), signature);
     return { ok: true };
   }
 }

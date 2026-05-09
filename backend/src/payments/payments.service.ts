@@ -1,67 +1,45 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { createHmac } from 'crypto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { createHmac, timingSafeEqual } from 'crypto';
 import { PrismaService } from '../common/prisma.service';
 
-interface PaddleWebhookData {
-  customer_id: string;
-}
-
 interface PaddleWebhookPayload {
-  event_type: string;
-  data: PaddleWebhookData;
+  event_type?: string;
+  data?: {
+    custom_data?: {
+      userId?: string;
+    };
+  };
 }
 
 @Injectable()
 export class PaymentsService {
   constructor(private prisma: PrismaService) {}
 
-  async handleWebhook(signature: string, rawBody: Buffer, payload: PaddleWebhookPayload) {
-    this.verifySignature(signature, rawBody);
+  async handleWebhook(rawBody: Buffer, signature: string): Promise<void> {
+    if (!this.isValidSignature(rawBody, signature)) {
+      throw new UnauthorizedException('UngÃ¼ltige Webhook-Signatur');
+    }
 
-    const { event_type, data } = payload;
-    switch (event_type) {
-      case 'transaction.completed':
-        await this.onTransactionCompleted(data);
-        break;
-      case 'subscription.activated':
-        await this.onSubscriptionActivated(data);
-        break;
-      case 'subscription.canceled':
-        await this.onSubscriptionCanceled(data);
-        break;
-      default:
-        break;
+    const event = JSON.parse(rawBody.toString()) as PaddleWebhookPayload;
+    const userId = event.data?.custom_data?.userId;
+    if (!userId) return;
+
+    if (event.event_type === 'subscription.activated') {
+      await this.prisma.user.update({ where: { id: userId }, data: { plan: 'PRO' } });
+    }
+
+    if (event.event_type === 'subscription.cancelled' || event.event_type === 'subscription.canceled') {
+      await this.prisma.user.update({ where: { id: userId }, data: { plan: 'FREE' } });
     }
   }
 
-  private verifySignature(header: string, body: Buffer) {
-    // Paddle HMAC-SHA256 verification
-    const secret = process.env.PADDLE_WEBHOOK_SECRET!;
-    const ts = header.split(';')[0].replace('ts=', '');
-    const expected = createHmac('sha256', secret).update(`${ts}:${body.toString()}`).digest('hex');
-    const received = header.split(';')[1]?.replace('h1=', '');
-    if (expected !== received) throw new BadRequestException('Invalid webhook signature');
-  }
+  isValidSignature(rawBody: Buffer, signature: string): boolean {
+    const secret = process.env.PADDLE_WEBHOOK_SECRET;
+    if (!secret || !signature) return false;
 
-  private async onTransactionCompleted(data: PaddleWebhookData) {
-    await this.prisma.user.updateMany({
-      where: { paddleCustomerId: data.customer_id },
-      data: { plan: 'PAY_PER_APP' },
-    });
-    // TODO: create charge record, check match score for money-back guarantee
-  }
-
-  private async onSubscriptionActivated(data: PaddleWebhookData) {
-    await this.prisma.user.updateMany({
-      where: { paddleCustomerId: data.customer_id },
-      data: { plan: 'PRO' },
-    });
-  }
-
-  private async onSubscriptionCanceled(data: PaddleWebhookData) {
-    await this.prisma.user.updateMany({
-      where: { paddleCustomerId: data.customer_id },
-      data: { plan: 'FREE' },
-    });
+    const expected = createHmac('sha256', secret).update(rawBody).digest('hex');
+    const expectedBuffer = Buffer.from(expected);
+    const receivedBuffer = Buffer.from(signature);
+    return expectedBuffer.length === receivedBuffer.length && timingSafeEqual(receivedBuffer, expectedBuffer);
   }
 }

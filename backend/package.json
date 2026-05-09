@@ -25,6 +25,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^4.1.0",
     "@nestjs/throttler": "^6.0.0",
+    "@paddle/paddle-node-sdk": "^3.8.0",
     "@prisma/client": "^7.0.0",
     "argon2": "^0.41.0",
     "bullmq": "^5.0.0",
