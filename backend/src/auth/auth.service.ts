@@ -30,7 +30,13 @@ export class AuthService {
     });
 
     const verifyToken = randomBytes(32).toString('hex');
-    // TODO: store verifyToken in Redis with 24h TTL, then send mail
+    await this.prisma.emailVerification.create({
+      data: {
+        userId: user.id,
+        token: verifyToken,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+    });
     await this.mail.sendVerification(user.email, verifyToken);
 
     return { message: 'Registration successful. Please verify your email.' };

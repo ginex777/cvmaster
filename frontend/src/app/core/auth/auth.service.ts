@@ -44,6 +44,10 @@ export class AuthService {
     this.user.set(null);
   }
 
+  async register(data: { name: string; email: string; password: string; art9Consent: boolean }): Promise<void> {
+    await firstValueFrom(this.http.post('/api/auth/register', data));
+  }
+
   getAccessToken() {
     return this.accessToken();
   }

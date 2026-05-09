@@ -1,4 +1,5 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { ZodError } from 'zod';
 import { Throttle } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 import { z } from 'zod';
@@ -25,14 +26,25 @@ export class AuthController {
   @Post('register')
   @Throttle({ default: { limit: 5, ttl: 900_000 } })
   async register(@Body() body: unknown, @Req() req: Request) {
-    const data = registerSchema.parse(body);
-    return this.auth.register(data, this.clientIp(req));
+    try {
+      const data = registerSchema.parse(body);
+      return await this.auth.register(data, this.clientIp(req));
+    } catch (e) {
+      if (e instanceof ZodError) throw new BadRequestException(e.errors[0]?.message ?? 'Invalid input');
+      throw e;
+    }
   }
 
   @Post('login')
   @Throttle({ default: { limit: 10, ttl: 900_000 } })
   async login(@Body() body: unknown, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const data = loginSchema.parse(body);
+    let data: ReturnType<typeof loginSchema.parse>;
+    try {
+      data = loginSchema.parse(body);
+    } catch (e) {
+      if (e instanceof ZodError) throw new BadRequestException(e.errors[0]?.message ?? 'Invalid input');
+      throw e;
+    }
     const result = await this.auth.login(data, this.clientIp(req), req.headers['user-agent'] || '');
     res.cookie('__Host-session', result.refreshToken, {
       httpOnly: true,

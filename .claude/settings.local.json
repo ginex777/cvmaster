@@ -8,7 +8,12 @@
       "mcp__plugin_playwright_playwright__browser_take_screenshot",
       "mcp__plugin_playwright_playwright__browser_resize",
       "mcp__plugin_playwright_playwright__browser_evaluate",
-      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\" | Select-Object Name, @{Name=\"Type\";Expression={if\\($_.PSIsContainer\\){\"DIR\"}else{\"FILE\"}}})"
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\" | Select-Object Name, @{Name=\"Type\";Expression={if\\($_.PSIsContainer\\){\"DIR\"}else{\"FILE\"}}})",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\features\\\\landing\\\\\" -Recurse -Force | Select-Object FullName, @{Name=\"SizeBytes\";Expression={if\\($_.PSIsContainer\\){\"DIR\"}else{$_.Length}}} | Format-List)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\shared\\\\components\\\\\" -Recurse -Force | Where-Object {!$_.PSIsContainer} | Select-Object Name, FullName)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\shared\\\\directives\\\\\" -Recurse -Force | Where-Object {!$_.PSIsContainer} | Select-Object Name, FullName)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\shared\\\\components\\\\\" -Force | Select-Object Name, @{Name=\"Size\\(Bytes\\)\";Expression={if\\($_.PSIsContainer\\){\"[DIR]\"}else{$_.Length}}} | Sort-Object Name)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\shared\\\\components\\\\\" | Format-Table Name, @{Name=\"Bytes\";Expression={if\\($_.PSIsContainer\\){\"DIR\"}else{$_.Length}}} -AutoSize)"
     ]
   }
 }
