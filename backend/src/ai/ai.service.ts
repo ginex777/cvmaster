@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { LLMProvider, ParsedCVSchema, ParsedJobSchema, ParsedCV, ParsedJob } from './provider';
 import { MistralProvider } from './mistral.provider';
 import { ClaudeProvider } from './claude.provider';
+import { GroqProvider } from './groq.provider';
 
 const MAX_RETRIES = 3;
 
@@ -29,7 +30,9 @@ export class AiService {
     const p = process.env.AI_PROVIDER ?? 'mistral';
     this.provider = p === 'claude'
       ? new ClaudeProvider(requiredEnv('ANTHROPIC_API_KEY'))
-      : new MistralProvider(requiredEnv('MISTRAL_API_KEY'));
+      : p === 'groq'
+        ? new GroqProvider(requiredEnv('GROQ_API_KEY'))
+        : new MistralProvider(requiredEnv('MISTRAL_API_KEY'));
   }
 
   async parseCv(text: string): Promise<ParsedCV> {
