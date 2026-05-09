@@ -1,4 +1,4 @@
-.page-header {
+.master-cvs__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -20,7 +20,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-5) var(--space-6);
+  padding: var(--space-4) var(--space-6);
   background: var(--bg-2);
   border-radius: var(--radius-lg);
   border: 1px solid oklch(92% 0 0);
