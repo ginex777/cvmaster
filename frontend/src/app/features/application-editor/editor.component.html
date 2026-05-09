@@ -5,9 +5,14 @@
       <p class="editor__eyebrow">Bewerbungseditor</p>
       <h1 id="editor-title">Bewerbung bearbeiten</h1>
     </div>
-    <button class="btn btn--secondary btn--sm" type="button" (click)="setStatus('SENT')" [disabled]="saving()">
-      Als gesendet markieren
-    </button>
+    <div class="editor__actions" role="group" aria-label="Bewerbungsaktionen">
+      <button class="btn btn--secondary btn--sm" type="button" (click)="downloadPdf()" [disabled]="downloading()">
+        {{ downloading() ? 'PDF wird erstellt...' : 'PDF herunterladen' }}
+      </button>
+      <button class="btn btn--ghost btn--sm" type="button" (click)="setStatus('SENT')" [disabled]="saving()">
+        Als gesendet markieren
+      </button>
+    </div>
   </header>
 
   @if (error()) {

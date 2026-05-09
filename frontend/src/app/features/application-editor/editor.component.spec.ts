@@ -6,10 +6,10 @@ import { EditorComponent } from './editor.component';
 import { ApiService } from '../../core/api/api.service';
 
 describe('EditorComponent', () => {
-  let api: jest.Mocked<Pick<ApiService, 'get' | 'patch'>>;
+  let api: jest.Mocked<Pick<ApiService, 'get' | 'patch' | 'getBlob'>>;
 
   beforeEach(async () => {
-    api = { get: jest.fn(), patch: jest.fn() };
+    api = { get: jest.fn(), patch: jest.fn(), getBlob: jest.fn() };
     api.get.mockResolvedValue({
       id: 'a1',
       matchScore: 88,
@@ -18,6 +18,7 @@ describe('EditorComponent', () => {
       matchReport: { summary: 'Sehr passend', keywords: ['Angular'] },
     });
     api.patch.mockResolvedValue({ id: 'a1', matchScore: 88 });
+    api.getBlob.mockResolvedValue(new Blob(['pdf']));
 
     await TestBed.configureTestingModule({
       imports: [EditorComponent],
@@ -64,5 +65,32 @@ describe('EditorComponent', () => {
     expect(api.patch).toHaveBeenCalledWith('/applications/a1', {
       coverLetter: { formal: 'x', warm: 'y', brief: 'Kurzfassung' },
     });
+  });
+
+  it('downloads PDF from application endpoint', async () => {
+    Object.defineProperty(URL, 'createObjectURL', { configurable: true, value: jest.fn(() => 'blob:test') });
+    Object.defineProperty(URL, 'revokeObjectURL', { configurable: true, value: jest.fn() });
+    const createObjectUrl = jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
+    const revokeObjectUrl = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+
+    const click = jest.fn();
+    const anchor = document.createElement('a');
+    Object.defineProperty(anchor, 'click', { value: click });
+    const createElement = jest.spyOn(document, 'createElement').mockReturnValue(anchor);
+
+    await f.componentInstance.downloadPdf();
+
+    expect(api.getBlob).toHaveBeenCalledWith('/applications/a1/pdf');
+    expect(anchor.download).toBe('Lebenslauf.pdf');
+    expect(click).toHaveBeenCalled();
+    expect(revokeObjectUrl).toHaveBeenCalledWith('blob:test');
+
+    createObjectUrl.mockRestore();
+    revokeObjectUrl.mockRestore();
+    createElement.mockRestore();
   });
 });

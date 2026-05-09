@@ -16,6 +16,15 @@ export class ApiService {
     );
   }
 
+  getBlob(path: string) {
+    return firstValueFrom(
+      this.http.get(`${this.base}${path}`, {
+        responseType: 'blob',
+        withCredentials: true,
+      })
+    );
+  }
+
   post<T>(path: string, body: unknown) {
     return firstValueFrom(
       this.http.post<T>(`${this.base}${path}`, body, { withCredentials: true })

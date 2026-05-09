@@ -40,6 +40,7 @@ export class EditorComponent implements OnInit {
   readonly id = this.route.snapshot.paramMap.get('id') ?? '';
   readonly loading = signal(false);
   readonly saving = signal(false);
+  readonly downloading = signal(false);
   readonly error = signal<string | null>(null);
   readonly application = signal<ApplicationDto | null>(null);
   readonly selectedLetter = signal<LetterVariant>('formal');
@@ -113,6 +114,25 @@ export class EditorComponent implements OnInit {
 
   async setStatus(status: string): Promise<void> {
     await this.patchApplication({ status });
+  }
+
+  async downloadPdf(): Promise<void> {
+    if (!this.id) return;
+    this.downloading.set(true);
+    this.error.set(null);
+    try {
+      const blob = await this.api.getBlob(`/applications/${this.id}/pdf`);
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = 'Lebenslauf.pdf';
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (e: unknown) {
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'PDF konnte nicht erstellt werden.');
+    } finally {
+      this.downloading.set(false);
+    }
   }
 
   private async patchApplication(body: Record<string, unknown>): Promise<void> {

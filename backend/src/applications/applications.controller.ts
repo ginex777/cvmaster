@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { OwnsApplicationGuard } from '../common/guards/owns-application.guard';
 import { AuthenticatedRequest } from '../common/request.types';
+import { CvPdfData, PdfService } from '../pdf/pdf.service';
 import { ApplicationsService } from './applications.service';
 
 const createSchema = z.object({
@@ -35,7 +36,10 @@ const updateSchema = z.object({
 @Controller('applications')
 @UseGuards(JwtAuthGuard)
 export class ApplicationsController {
-  constructor(private apps: ApplicationsService) {}
+  constructor(
+    private apps: ApplicationsService,
+    private pdf: PdfService,
+  ) {}
 
   @Post()
   @Throttle({ default: { limit: 5, ttl: 3_600_000 } })
@@ -47,6 +51,20 @@ export class ApplicationsController {
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
     return this.apps.findOne(id, req.user.sub);
+  }
+
+  @Get(':id/pdf')
+  async downloadPdf(@Param('id') id: string, @Req() req: AuthenticatedRequest, @Res() res: Response) {
+    const app = await this.apps.findOne(id, req.user.sub);
+    const title = this.fileTitle(app);
+    const buffer = await this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title));
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${this.safeFilename(title)}.pdf"`,
+      'Content-Length': buffer.length.toString(),
+    });
+    res.send(buffer);
   }
 
   @Patch(':id')
@@ -91,5 +109,74 @@ export class ApplicationsController {
   @UseGuards(OwnsApplicationGuard)
   updateStatus(@Param('id') id: string, @Body('status') status: string) {
     return this.apps.updateStatus(id, status);
+  }
+
+  private toPdfData(value: unknown, fallbackName: string): CvPdfData {
+    if (this.hasPdfSections(value)) {
+      return {
+        name: typeof value.name === 'string' ? value.name : fallbackName,
+        sections: value.sections,
+      };
+    }
+
+    if (this.hasEditorText(value)) {
+      return { name: fallbackName, sections: this.textToSections(value.text) };
+    }
+
+    if (this.hasExperience(value)) {
+      return {
+        name: fallbackName,
+        sections: value.experience.map(section => ({
+          heading: `${section.role} @ ${section.company}`,
+          lines: section.bullets.map(bullet => bullet.text),
+        })),
+      };
+    }
+
+    return {
+      name: fallbackName,
+      sections: [{ heading: 'Lebenslauf', lines: [typeof value === 'string' ? value : JSON.stringify(value ?? {})] }],
+    };
+  }
+
+  private textToSections(text: string): CvPdfData['sections'] {
+    return text
+      .split(/\n{2,}/)
+      .map(block => block.split('\n').map(line => line.trim()).filter(Boolean))
+      .filter(lines => lines.length > 0)
+      .map(([heading, ...lines]) => ({ heading, lines }));
+  }
+
+  private fileTitle(app: { jobPosting?: { parsedJson?: unknown } }): string {
+    const parsed = app.jobPosting?.parsedJson;
+    if (this.hasJobTitle(parsed)) return `Lebenslauf_${parsed.company}_${parsed.title}`;
+    return 'Lebenslauf';
+  }
+
+  private safeFilename(value: string): string {
+    return value.replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'Lebenslauf';
+  }
+
+  private hasPdfSections(value: unknown): value is CvPdfData {
+    return typeof value === 'object' && value !== null && Array.isArray((value as { sections?: unknown }).sections);
+  }
+
+  private hasEditorText(value: unknown): value is { text: string } {
+    return typeof value === 'object' && value !== null && typeof (value as { text?: unknown }).text === 'string';
+  }
+
+  private hasExperience(value: unknown): value is {
+    experience: Array<{ company: string; role: string; bullets: Array<{ text: string }> }>;
+  } {
+    return typeof value === 'object' && value !== null && Array.isArray((value as { experience?: unknown }).experience);
+  }
+
+  private hasJobTitle(value: unknown): value is { title: string; company: string } {
+    return (
+      typeof value === 'object' &&
+      value !== null &&
+      typeof (value as { title?: unknown }).title === 'string' &&
+      typeof (value as { company?: unknown }).company === 'string'
+    );
   }
 }
