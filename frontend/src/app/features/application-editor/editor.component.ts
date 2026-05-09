@@ -1,4 +1,4 @@
-import type { OnInit } from '@angular/core';
+import type { OnInit, OnDestroy } from '@angular/core';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -25,6 +25,9 @@ interface ApplicationDto {
   jobPosting?: { parsedJson?: { title?: string; company?: string; keywords?: string[] } };
 }
 
+const POLL_INTERVAL_MS = 3000;
+const POLL_MAX_ATTEMPTS = 40; // 40 × 3s = 120s max wait
+
 @Component({
   selector: 'lba-editor',
   standalone: true,
@@ -33,12 +36,14 @@ interface ApplicationDto {
   styleUrl: './editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditorComponent implements OnInit {
+export class EditorComponent implements OnInit, OnDestroy {
   private readonly api = inject(ApiService);
   private readonly route = inject(ActivatedRoute);
+  private pollTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly id = this.route.snapshot.paramMap.get('id') ?? '';
   readonly loading = signal(false);
+  readonly generating = signal(false);
   readonly saving = signal(false);
   readonly downloading = signal(false);
   readonly error = signal<string | null>(null);
@@ -61,6 +66,7 @@ export class EditorComponent implements OnInit {
   });
   readonly missingKeywords = computed(() => this.matchReport().missingKeywords ?? []);
   readonly isLoading = computed(() => this.loading());
+  readonly isGenerating = computed(() => this.generating());
   readonly isSaving = computed(() => this.saving());
   readonly isDownloading = computed(() => this.downloading());
   readonly errorMessage = computed(() => this.error());
@@ -74,6 +80,10 @@ export class EditorComponent implements OnInit {
     await this.load();
   }
 
+  ngOnDestroy(): void {
+    this.clearPoll();
+  }
+
   async load(): Promise<void> {
     if (!this.id) {
       this.error.set('Bewerbung konnte nicht gefunden werden.');
@@ -85,12 +95,14 @@ export class EditorComponent implements OnInit {
     try {
       const app = await this.api.get<ApplicationDto>(`/applications/${this.id}`);
       this.application.set(app);
-      this.editorForm.patchValue({
-        cvText: this.optimizedCvToText(app.optimizedCv),
-        formal: app.coverLetter?.['formal'] ?? '',
-        warm: app.coverLetter?.['warm'] ?? app.coverLetter?.['casual'] ?? '',
-        brief: app.coverLetter?.['brief'] ?? '',
-      });
+
+      if (!app.optimizedCv) {
+        this.generating.set(true);
+        this.schedulePoll(0);
+      } else {
+        this.generating.set(false);
+        this.populateForm(app);
+      }
     } catch (e: unknown) {
       this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Bewerbung konnte nicht geladen werden.');
     } finally {
@@ -148,6 +160,45 @@ export class EditorComponent implements OnInit {
     }
   }
 
+  private schedulePoll(attempt: number): void {
+    if (attempt >= POLL_MAX_ATTEMPTS) {
+      this.generating.set(false);
+      this.error.set('KI-Generierung hat zu lange gedauert. Bitte Seite neu laden.');
+      return;
+    }
+
+    this.pollTimer = setTimeout(async () => {
+      try {
+        const app = await this.api.get<ApplicationDto>(`/applications/${this.id}`);
+        this.application.set(app);
+        if (app.optimizedCv) {
+          this.generating.set(false);
+          this.populateForm(app);
+        } else {
+          this.schedulePoll(attempt + 1);
+        }
+      } catch {
+        this.schedulePoll(attempt + 1);
+      }
+    }, POLL_INTERVAL_MS);
+  }
+
+  private clearPoll(): void {
+    if (this.pollTimer !== null) {
+      clearTimeout(this.pollTimer);
+      this.pollTimer = null;
+    }
+  }
+
+  private populateForm(app: ApplicationDto): void {
+    this.editorForm.patchValue({
+      cvText: this.optimizedCvToText(app.optimizedCv),
+      formal: app.coverLetter?.['formal'] ?? '',
+      warm: app.coverLetter?.['warm'] ?? app.coverLetter?.['casual'] ?? '',
+      brief: app.coverLetter?.['brief'] ?? '',
+    });
+  }
+
   private async patchApplication(body: Record<string, unknown>): Promise<void> {
     if (!this.id) return;
     this.saving.set(true);
@@ -156,7 +207,7 @@ export class EditorComponent implements OnInit {
       const updated = await this.api.patch<ApplicationDto>(`/applications/${this.id}`, body);
       this.application.set(updated);
     } catch (e: unknown) {
-      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Ã„nderungen konnten nicht gespeichert werden.');
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Änderungen konnten nicht gespeichert werden.');
     } finally {
       this.saving.set(false);
     }

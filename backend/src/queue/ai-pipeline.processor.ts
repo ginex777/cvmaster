@@ -1,24 +1,68 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Worker, Job } from 'bullmq';
 import IORedis from 'ioredis';
+import sanitizeHtml from 'sanitize-html';
 import { PrismaService } from '../common/prisma.service';
 import { AiService } from '../ai/ai.service';
+import { MatchScoringService } from '../match/match-scoring.service';
 import type { ParsedCV, ParsedJob } from '../ai/provider';
 
 function redisUrl(): string {
   const value = process.env.REDIS_URL;
-  if (!value) {
-    throw new Error('REDIS_URL is required');
-  }
-
+  if (!value) throw new Error('REDIS_URL is required');
   return value;
+}
+
+function sanitizeText(value: string): string {
+  return sanitizeHtml(value, { allowedTags: [], allowedAttributes: {} }).trim();
+}
+
+function sanitizeCv(cv: ParsedCV): ParsedCV {
+  return {
+    ...cv,
+    summary: cv.summary ? sanitizeText(cv.summary) : cv.summary,
+    skills: (cv.skills ?? []).map(sanitizeText),
+    experience: (cv.experience ?? []).map(e => ({
+      ...e,
+      role: sanitizeText(e.role),
+      company: sanitizeText(e.company),
+      bullets: e.bullets.map(b => ({ ...b, text: sanitizeText(b.text) })),
+    })),
+  };
+}
+
+function sanitizeLetter(letter: { concise: string; warm: string; formal: string }): { concise: string; warm: string; formal: string } {
+  return {
+    concise: sanitizeText(letter.concise),
+    warm: sanitizeText(letter.warm),
+    formal: sanitizeText(letter.formal),
+  };
+}
+
+function filterHallucinatedSkills(optimizedCv: ParsedCV, originalCv: ParsedCV): ParsedCV {
+  const originalCorpus = [
+    ...(originalCv.skills ?? []),
+    originalCv.summary ?? '',
+    ...(originalCv.experience ?? []).flatMap(e => [e.role, e.company, ...(e.bullets ?? []).map(b => b.text)]),
+    ...(originalCv.certifications ?? []),
+  ].join(' ').toLowerCase();
+
+  const filteredSkills = (optimizedCv.skills ?? []).filter(
+    skill => originalCorpus.includes(skill.toLowerCase()),
+  );
+
+  return { ...optimizedCv, skills: filteredSkills };
 }
 
 @Injectable()
 export class AiPipelineProcessor implements OnModuleInit {
   private redis: IORedis;
 
-  constructor(private prisma: PrismaService, private ai: AiService) {}
+  constructor(
+    private prisma: PrismaService,
+    private ai: AiService,
+    private scoring: MatchScoringService,
+  ) {}
 
   onModuleInit() {
     this.redis = new IORedis(redisUrl(), { maxRetriesPerRequest: null });
@@ -33,37 +77,37 @@ export class AiPipelineProcessor implements OnModuleInit {
       include: { masterCv: true, jobPosting: true },
     });
 
+    const originalCv = app.masterCv.parsedJson as unknown as ParsedCV;
+    const parsedJob = app.jobPosting.parsedJson as unknown as ParsedJob;
+
     await job.updateProgress(10);
 
     // Step 1: Optimize CV
-    const optimizedCv = await this.ai.optimizeCv(
-      app.masterCv.parsedJson as unknown as ParsedCV,
-      app.jobPosting.parsedJson as unknown as ParsedJob,
-    );
+    const rawOptimizedCv = await this.ai.optimizeCv(originalCv, parsedJob);
+    const guardedCv = filterHallucinatedSkills(rawOptimizedCv, originalCv);
+    const optimizedCv = sanitizeCv(guardedCv);
     await job.updateProgress(50);
 
-    // Step 2: Generate cover letter (3 variants)
-    const coverLetter = await this.ai.generateCoverLetter(
-      optimizedCv,
-      app.jobPosting.parsedJson as unknown as ParsedJob,
-    );
+    // Step 2: Generate cover letters (3 variants)
+    const rawLetter = await this.ai.generateCoverLetter(optimizedCv, parsedJob);
+    const coverLetter = sanitizeLetter(rawLetter);
     await job.updateProgress(85);
 
-    // Step 3: Compute match score (deterministic, no LLM)
-    const matchScore = this.computeMatchScore(optimizedCv, app.jobPosting.parsedJson as unknown as ParsedJob);
+    // Step 3: Compute rich match report
+    const result = this.scoring.score(optimizedCv, parsedJob);
+    const matchReport = {
+      summary: result.summary,
+      matchedKeywords: result.matchedKeywords,
+      missingKeywords: result.missingKeywords,
+      strengths: result.strengths,
+      risks: result.risks,
+    };
 
     await this.prisma.application.update({
       where: { id: applicationId },
-      data: { optimizedCv, coverLetter, matchScore, status: 'DRAFT' },
+      data: { optimizedCv, coverLetter, matchScore: result.score, matchReport, status: 'DRAFT' },
     });
 
     await job.updateProgress(100);
-  }
-
-  private computeMatchScore(cv: ParsedCV, job: ParsedJob): number {
-    const cvSkills  = new Set<string>((cv.skills ?? []).map((s: string) => s.toLowerCase()));
-    const jobSkills = (job.skills ?? []) as string[];
-    const matched   = jobSkills.filter(s => cvSkills.has(s.toLowerCase())).length;
-    return jobSkills.length ? Math.round((matched / jobSkills.length) * 100) : 0;
   }
 }

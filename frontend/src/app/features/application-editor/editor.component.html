@@ -25,6 +25,15 @@
       <div class="skeleton skeleton--panel"></div>
       <div class="skeleton skeleton--panel"></div>
     </section>
+  } @else if (isGenerating()) {
+    <section class="editor__generating" aria-live="polite" aria-busy="true" aria-label="KI generiert Bewerbungsunterlagen">
+      <div class="editor__grid editor__grid--loading">
+        <div class="skeleton skeleton--panel"></div>
+        <div class="skeleton skeleton--panel"></div>
+        <div class="skeleton skeleton--panel"></div>
+      </div>
+      <p class="editor__generating-label">KI optimiert deinen Lebenslauf und erstellt Anschreiben…</p>
+    </section>
   } @else {
     <form class="editor__grid" [formGroup]="editorForm">
       <aside class="panel panel--match" aria-labelledby="match-title">

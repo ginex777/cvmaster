@@ -1,6 +1,7 @@
 import { describe, expect, it, beforeEach, jest } from '@jest/globals';
 import { Test } from '@nestjs/testing';
 import { AiService } from '../ai/ai.service';
+import { MatchScoringService } from '../match/match-scoring.service';
 import { TrialService } from './trial.service';
 
 const mockAi = {
@@ -18,6 +19,7 @@ describe('TrialService', () => {
     const module = await Test.createTestingModule({
       providers: [
         TrialService,
+        MatchScoringService,
         { provide: AiService, useValue: mockAi },
       ],
     }).compile();
