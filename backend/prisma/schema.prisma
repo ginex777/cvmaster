@@ -62,6 +62,7 @@ model MasterCv {
   sourceFilename  String
   sourceHash      String
   containsArt9    Boolean  @default(false)
+  template        String   @default("modern")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

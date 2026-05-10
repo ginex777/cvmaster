@@ -1,0 +1,1 @@
+ALTER TABLE "MasterCv" ADD COLUMN "template" TEXT NOT NULL DEFAULT 'modern';
