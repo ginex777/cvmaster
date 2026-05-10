@@ -48,6 +48,11 @@ export class ApplicationsController {
     return this.apps.create(data, req.user.sub);
   }
 
+  @Get()
+  findAll(@Req() req: AuthenticatedRequest) {
+    return this.apps.findAll(req.user.sub);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
     return this.apps.findOne(id, req.user.sub);

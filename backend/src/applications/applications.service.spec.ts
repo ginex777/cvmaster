@@ -10,7 +10,7 @@ const fn = () => jest.fn<() => Promise<unknown>>();
 
 const mockPrisma = {
   masterCv: { findFirst: fn() },
-  application: { create: fn(), findUnique: fn(), findUniqueOrThrow: fn(), update: fn(), delete: fn() },
+  application: { create: fn(), findMany: fn(), findUnique: fn(), findUniqueOrThrow: fn(), update: fn(), delete: fn() },
   user: { findUniqueOrThrow: fn() },
 };
 const mockQueue = { enqueueAiPipeline: fn(), enqueueRegenerateLetter: fn() };
@@ -62,6 +62,25 @@ describe('ApplicationsService', () => {
     it('throws NotFoundException when not found', async () => {
       mockPrisma.application.findUnique.mockResolvedValue(null);
       await expect(service.findOne('a1', 'u1')).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('findAll', () => {
+    it('returns applications for the current user ordered newest first', async () => {
+      mockPrisma.application.findMany.mockResolvedValue([{ id: 'a1' }] as never);
+
+      await expect(service.findAll('u1')).resolves.toEqual([{ id: 'a1' }]);
+      expect(mockPrisma.application.findMany).toHaveBeenCalledWith({
+        where: { userId: 'u1' },
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          status: true,
+          matchScore: true,
+          createdAt: true,
+          jobPosting: { select: { parsedJson: true } },
+        },
+      });
     });
   });
 

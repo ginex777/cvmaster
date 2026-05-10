@@ -24,7 +24,7 @@ export class UsersService {
   }
 
   async getDashboard(userId: string) {
-    const [cvCount, applicationCount, recentApplications] = await Promise.all([
+    const [cvCount, applicationCount, recentApplications, averageMatchScore] = await Promise.all([
       this.prisma.masterCv.count({ where: { userId } }),
       this.prisma.application.count({ where: { userId } }),
       this.prisma.application.findMany({
@@ -39,7 +39,19 @@ export class UsersService {
           jobPosting: { select: { parsedJson: true } },
         },
       }),
+      this.prisma.application.aggregate({
+        where: { userId, matchScore: { not: null } },
+        _avg: { matchScore: true },
+      }),
     ]);
-    return { cvCount, applicationCount, recentApplications };
+    return {
+      cvCount,
+      applicationCount,
+      avgMatchScore:
+        averageMatchScore._avg.matchScore !== null
+          ? Math.round(averageMatchScore._avg.matchScore)
+          : null,
+      recentApplications,
+    };
   }
 }

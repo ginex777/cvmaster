@@ -31,6 +31,20 @@ export class ApplicationsService {
     });
   }
 
+  async findAll(userId: string) {
+    return this.prisma.application.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        status: true,
+        matchScore: true,
+        createdAt: true,
+        jobPosting: { select: { parsedJson: true } },
+      },
+    });
+  }
+
   async findOne(id: string, userId: string) {
     const app = await this.prisma.application.findUnique({
       where: { id },
