@@ -25,7 +25,7 @@ export class CvsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Req() req: AuthenticatedRequest, @Body() body: unknown) {
-    return this.cvs.update(id, req.user.sub, body as { name?: string; language?: string });
+    return this.cvs.update(id, req.user.sub, body);
   }
 
   @Delete(':id')

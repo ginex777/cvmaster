@@ -118,4 +118,31 @@ describe('CvsService', () => {
       expect(mockPrisma.masterCv.delete).toHaveBeenCalledWith({ where: { id: 'cv1' } });
     });
   });
+
+  describe('update', () => {
+    it('persists a valid template for an owned CV', async () => {
+      mockPrisma.masterCv.findFirst.mockResolvedValue({ id: 'cv1', userId: 'u1' });
+      mockPrisma.masterCv.update.mockResolvedValue({ id: 'cv1', template: 'editorial' });
+
+      await expect(service.update('cv1', 'u1', { template: 'editorial' })).resolves.toEqual({
+        id: 'cv1',
+        template: 'editorial',
+      });
+      expect(mockPrisma.masterCv.update).toHaveBeenCalledWith({
+        where: { id: 'cv1' },
+        data: { template: 'editorial' },
+      });
+    });
+
+    it('throws BadRequestException for an invalid template', async () => {
+      await expect(service.update('cv1', 'u1', { template: 'loud' })).rejects.toThrow(BadRequestException);
+      expect(mockPrisma.masterCv.update).not.toHaveBeenCalled();
+    });
+
+    it('throws NotFoundException when updating a CV not owned by the user', async () => {
+      mockPrisma.masterCv.findFirst.mockResolvedValue(null);
+
+      await expect(service.update('cv1', 'u1', { name: 'New CV' })).rejects.toThrow(NotFoundException);
+    });
+  });
 });
