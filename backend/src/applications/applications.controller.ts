@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { OwnsApplicationGuard } from '../common/guards/owns-application.guard';
 import { AuthenticatedRequest } from '../common/request.types';
-import { CvPdfData, PdfService } from '../pdf/pdf.service';
+import { CvLayout, CvPdfData, PdfService } from '../pdf/pdf.service';
 import { ApplicationsService } from './applications.service';
 
 const createSchema = z.object({
@@ -57,7 +57,7 @@ export class ApplicationsController {
   async exportCv(@Param('id') id: string, @Req() req: AuthenticatedRequest, @Res() res: Response) {
     const app = await this.apps.findOne(id, req.user.sub);
     const title = this.fileTitle(app);
-    const buffer = await this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title));
+    const buffer = await this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title), this.cvTemplate(app));
     this.sendPdf(res, buffer, `${this.safeFilename(title)}.pdf`);
   }
 
@@ -74,7 +74,7 @@ export class ApplicationsController {
     const app = await this.apps.findOne(id, req.user.sub);
     const title = this.fileTitle(app);
     const safeTitle = this.safeFilename(title);
-    const cv = await this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title));
+    const cv = await this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title), this.cvTemplate(app));
     const letter = await this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant), title);
     const buffer = await this.pdf.generateZip([
       { filename: `${safeTitle}.pdf`, buffer: cv },
@@ -98,7 +98,7 @@ export class ApplicationsController {
   async downloadPdf(@Param('id') id: string, @Req() req: AuthenticatedRequest, @Res() res: Response) {
     const app = await this.apps.findOne(id, req.user.sub);
     const title = this.fileTitle(app);
-    const buffer = await this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title));
+    const buffer = await this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title), this.cvTemplate(app));
 
     res.set({
       'Content-Type': 'application/pdf',
@@ -205,6 +205,13 @@ export class ApplicationsController {
       'Content-Length': buffer.length.toString(),
     });
     res.send(buffer);
+  }
+
+  private cvTemplate(app: { masterCv?: { template?: string | null } }): CvLayout {
+    const template = app.masterCv?.template;
+    return template === 'classic' || template === 'editorial' || template === 'modern'
+      ? template
+      : 'modern';
   }
 
   private selectedLetterText(value: unknown, chosenVariant?: string | null): string {
