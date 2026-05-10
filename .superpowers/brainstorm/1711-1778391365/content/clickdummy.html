@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LBA — Click Dummy</title>
+<style>
+/* ── Design Tokens (matching frontend/src/styles.css) ── */
+:root {
+  --bg:         oklch(98.6% 0.005 80);
+  --surface:    oklch(99.6% 0.003 80);
+  --surface-2:  oklch(96.5% 0.005 80);
+  --ink:        oklch(20%  0.015 270);
+  --ink-2:      oklch(36%  0.012 270);
+  --ink-3:      oklch(52%  0.010 270);
+  --line:       oklch(90%  0.005 270);
+  --line-2:     oklch(94%  0.004 270);
+  --accent:     oklch(58%  0.20  255);
+  --accent-2:   oklch(70%  0.18  255);
+  --accent-ink: oklch(98%  0.01  255);
+  --accent-tint:oklch(97%  0.025 255);
+  --accent-border: oklch(84% 0.07 255);
+  --good:       oklch(64%  0.14  155);
+  --good-tint:  oklch(95%  0.04  155);
+  --warn:       oklch(72%  0.16   60);
+  --warn-tint:  oklch(96%  0.05   60);
+  --bad:        oklch(60%  0.18   25);
+  --bad-tint:   oklch(96%  0.04   25);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--ink); font-size: 14px; }
+
+/* ── NAV ── */
+.nav { background: var(--surface); border-bottom: 1px solid var(--line); padding: 0 32px; height: 56px; display: flex; align-items: center; gap: 24px; position: sticky; top: 0; z-index: 100; }
+.nav-logo { font-size: 17px; font-weight: 800; color: var(--accent); text-decoration: none; cursor: pointer; letter-spacing: -0.02em; }
+.nav-links { display: flex; gap: 20px; margin-left: 8px; }
+.nav-link { font-size: 13px; color: var(--ink-3); cursor: pointer; padding: 4px 0; border-bottom: 2px solid transparent; text-decoration: none; transition: color 0.15s; }
+.nav-link:hover { color: var(--ink); }
+.nav-link.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.nav-badge { background: var(--accent-tint); color: var(--accent); font-size: 11px; padding: 2px 8px; border-radius: 9999px; font-weight: 600; border: 1px solid var(--accent-border); }
+.nav-name { font-size: 13px; color: var(--ink-2); }
+.btn-logout { font-size: 12px; color: var(--ink-3); cursor: pointer; background: none; border: none; }
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: calc(100vh - 56px); }
+.screen.active { display: block; }
+
+/* ── DASHBOARD ── */
+.hero-banner { background: linear-gradient(135deg, var(--accent) 0%, oklch(52% 0.22 265) 100%); padding: 32px 40px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.hero-text h2 { font-size: 22px; font-weight: 700; color: var(--accent-ink); margin-bottom: 6px; letter-spacing: -0.02em; }
+.hero-text p { font-size: 13px; color: oklch(90% 0.04 255); }
+.btn-primary { background: var(--surface); color: var(--accent); border: none; border-radius: 10px; padding: 11px 22px; font-size: 13px; font-weight: 700; cursor: pointer; transition: transform 0.1s, box-shadow 0.15s; white-space: nowrap; }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+
+.dashboard-body { padding: 32px 40px; }
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+.stat-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px 26px; }
+.stat-val { font-size: 30px; font-weight: 800; color: var(--ink); line-height: 1; letter-spacing: -0.03em; }
+.stat-lbl { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 4px; }
+.stat-sub { font-size: 11px; color: var(--good); margin-top: 5px; }
+
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.section-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+.section-sub { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+
+.app-table { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.app-table-head { display: grid; grid-template-columns: 1fr 1fr 110px 110px 90px 80px; gap: 12px; padding: 10px 22px; background: var(--surface-2); border-bottom: 1px solid var(--line); font-size: 11px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; }
+.app-row { display: grid; grid-template-columns: 1fr 1fr 110px 110px 90px 80px; gap: 12px; padding: 15px 22px; border-bottom: 1px solid var(--line-2); align-items: center; transition: background 0.1s; cursor: pointer; }
+.app-row:last-child { border-bottom: none; }
+.app-row:hover { background: var(--surface-2); }
+.app-company { font-weight: 600; color: var(--ink); font-size: 13px; }
+.app-role { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+.score-pill { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; }
+.score-high { background: var(--good-tint); color: oklch(40% 0.14 155); }
+.score-mid { background: var(--warn-tint); color: oklch(42% 0.16 60); }
+.score-low { background: var(--bad-tint); color: oklch(38% 0.18 25); }
+.status-toggle { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; }
+.status-open { background: var(--warn); }
+.status-done { background: var(--good); }
+.status-label { font-size: 12px; color: var(--ink-2); }
+.action-row { display: flex; gap: 8px; align-items: center; }
+.btn-edit { font-size: 12px; color: var(--accent); font-weight: 600; cursor: pointer; background: none; border: none; }
+.btn-delete { font-size: 13px; color: var(--ink-3); cursor: pointer; background: none; border: none; transition: color 0.15s; font-weight: 600; }
+.btn-delete:hover { color: var(--bad); }
+
+.empty-state { text-align: center; padding: 72px 40px; }
+.empty-title { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+.empty-sub { font-size: 13px; color: var(--ink-3); margin-bottom: 28px; }
+
+/* ── WIZARD / PAGES ── */
+.page-body { padding: 32px 40px; }
+.page-title { font-size: 21px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.02em; }
+.page-sub { font-size: 13px; color: var(--ink-2); margin-bottom: 26px; }
+
+.input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.input-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.panel-tabs { display: flex; border-bottom: 1px solid var(--line); }
+.panel-tab { padding: 11px 16px; font-size: 12px; color: var(--ink-3); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none; font-family: inherit; }
+.panel-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.panel-body { padding: 16px; }
+.drop-zone { border: 2px dashed var(--accent-border); border-radius: 10px; padding: 36px 20px; text-align: center; background: var(--accent-tint); cursor: pointer; transition: all 0.15s; }
+.drop-zone:hover { border-color: var(--accent); background: oklch(96% 0.03 255); }
+.drop-icon { font-size: 32px; margin-bottom: 10px; }
+.drop-text { font-size: 13px; color: var(--ink-2); }
+.drop-sub { font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+.saved-row { border-top: 1px solid var(--line-2); padding: 10px 16px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.saved-label { font-size: 11px; color: var(--ink-3); }
+.cv-chip { background: var(--accent-tint); color: var(--accent); font-size: 11px; padding: 3px 10px; border-radius: 9999px; cursor: pointer; transition: all 0.15s; font-weight: 500; border: 1px solid var(--accent-border); }
+.cv-chip:hover, .cv-chip.selected { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.panel-textarea { width: 100%; border: none; resize: none; font-size: 13px; color: var(--ink-2); font-family: inherit; height: 148px; padding: 0; outline: none; line-height: 1.7; background: transparent; }
+.panel-textarea::placeholder { color: var(--ink-3); }
+.panel-label { font-size: 12px; font-weight: 700; color: var(--ink-3); padding: 12px 16px 0; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.kw-section { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; margin-bottom: 16px; }
+.kw-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.kw-title { font-size: 12px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; }
+.kw-count { font-size: 12px; color: var(--accent-2); }
+.kw-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+.kw-tag { font-size: 12px; padding: 4px 12px; border-radius: 9999px; cursor: pointer; transition: all 0.2s; border: 1px solid; user-select: none; }
+.kw-include { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.kw-maybe { background: var(--warn-tint); color: oklch(42% 0.16 60); border-color: oklch(78% 0.14 60); }
+.kw-exclude { background: var(--surface-2); color: var(--ink-3); border-color: var(--line); text-decoration: line-through; }
+
+.btn-optimize { width: 100%; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 12px; padding: 15px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 24px; transition: transform 0.1s, box-shadow 0.15s; }
+.btn-optimize:hover { transform: translateY(-1px); box-shadow: 0 6px 24px oklch(58% 0.20 255 / 0.3); }
+
+/* ── LOADING ── */
+.loading-section { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 36px; text-align: center; margin-bottom: 16px; }
+.loading-text { font-size: 15px; font-weight: 600; color: var(--accent); margin-bottom: 8px; }
+.loading-sub { font-size: 12px; color: var(--ink-3); }
+.skeleton { background: linear-gradient(90deg, var(--surface-2) 25%, var(--line-2) 50%, var(--surface-2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ── RESULTS ── */
+.results-section { margin-top: 8px; }
+.score-row { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px 26px; display: flex; align-items: center; gap: 22px; margin-bottom: 16px; }
+.score-ring-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+.score-ring-wrap svg { transform: rotate(-90deg); }
+.score-ring-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 16px; font-weight: 800; color: var(--accent); }
+.score-info h3 { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.02em; }
+.kw-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.kw-pill { font-size: 11px; padding: 2px 8px; border-radius: 9999px; font-weight: 600; }
+.kw-hit { background: var(--good-tint); color: oklch(40% 0.14 155); }
+.kw-miss { background: var(--bad-tint); color: oklch(38% 0.18 25); }
+.score-actions { margin-left: auto; display: flex; gap: 8px; flex-direction: column; align-items: flex-end; }
+.btn-regen { font-size: 12px; color: var(--accent); background: var(--accent-tint); border: 1px solid var(--accent-border); border-radius: 8px; padding: 7px 14px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+.btn-back { font-size: 12px; color: var(--ink-3); background: none; border: none; cursor: pointer; }
+
+.cv-editor-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px 26px; margin-bottom: 16px; }
+.panel-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+.autosave-badge { font-size: 11px; color: var(--good); font-weight: 400; }
+.cv-textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 14px; font-size: 13px; color: var(--ink-2); font-family: inherit; height: 200px; resize: vertical; outline: none; line-height: 1.7; transition: border-color 0.15s; background: var(--bg); }
+.cv-textarea:focus { border-color: var(--accent); }
+.dl-row { display: flex; gap: 10px; margin-top: 16px; }
+.btn-dl { flex: 1; border-radius: 10px; padding: 11px; font-size: 13px; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.15s; font-family: inherit; }
+.btn-dl-primary { background: var(--accent); color: var(--accent-ink); border: none; }
+.btn-dl-ghost { background: var(--surface); color: var(--accent); border: 1px solid var(--accent-border); }
+.btn-dl:hover { opacity: 0.85; transform: translateY(-1px); }
+
+.letters-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px 26px; margin-bottom: 16px; }
+.letters-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
+.letter-card { border: 2px solid var(--line); border-radius: 12px; padding: 14px; cursor: pointer; transition: all 0.15s; }
+.letter-card:hover { border-color: var(--accent-border); }
+.letter-card.chosen { border-color: var(--accent); background: var(--accent-tint); }
+.letter-variant { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-3); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.chosen-badge { background: var(--accent); color: var(--accent-ink); font-size: 9px; padding: 2px 7px; border-radius: 9999px; }
+.letter-textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-size: 11px; color: var(--ink-2); font-family: inherit; height: 110px; resize: none; outline: none; line-height: 1.6; background: var(--bg); }
+.letter-textarea:focus { border-color: var(--accent); }
+.btn-choose { width: 100%; margin-top: 10px; font-size: 11px; padding: 7px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.15s; font-family: inherit; }
+.btn-choose-active { background: var(--accent); color: var(--accent-ink); border: none; }
+.btn-choose-inactive { background: var(--surface); color: var(--accent); border: 1px solid var(--accent-border); }
+
+.status-section { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 26px; margin-bottom: 36px; display: flex; align-items: center; justify-content: space-between; }
+.status-label-text { font-size: 13px; font-weight: 600; color: var(--ink); }
+.status-sub-text { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+.toggle-wrap { display: flex; gap: 8px; }
+.toggle-btn { padding: 9px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+.toggle-open { background: var(--warn-tint); color: oklch(42% 0.16 60); border: 1px solid oklch(78% 0.14 60); }
+.toggle-open.active { background: var(--warn); color: white; border-color: var(--warn); }
+.toggle-done { background: var(--good-tint); color: oklch(40% 0.14 155); border: 1px solid oklch(74% 0.12 155); }
+.toggle-done.active { background: var(--good); color: white; border-color: var(--good); }
+
+/* ── CV LIBRARY ── */
+.upload-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-bottom: 24px; }
+.upload-title { padding: 16px 22px; font-size: 13px; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--line); }
+.upload-body { padding: 18px 22px; }
+.upload-tabs { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-bottom: 16px; width: fit-content; }
+.upload-tab { padding: 8px 18px; font-size: 12px; color: var(--ink-2); cursor: pointer; background: var(--surface); border: none; transition: all 0.15s; font-family: inherit; font-weight: 500; }
+.upload-tab.active { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.upload-name-input { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 13px; color: var(--ink); font-family: inherit; outline: none; margin-bottom: 12px; background: var(--bg); }
+.upload-name-input:focus { border-color: var(--accent); }
+.btn-upload { background: var(--accent); color: var(--accent-ink); border: none; border-radius: 10px; padding: 11px 22px; font-size: 13px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 8px; font-family: inherit; }
+
+.cv-list { display: flex; flex-direction: column; gap: 10px; }
+.cv-item { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 22px; display: flex; align-items: center; gap: 16px; transition: box-shadow 0.15s; }
+.cv-item:hover { box-shadow: 0 2px 12px oklch(20% 0.015 270 / 0.06); }
+.cv-icon { font-size: 28px; }
+.cv-info { flex: 1; }
+.cv-name-row { display: flex; align-items: center; gap: 8px; }
+.cv-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+.cv-name-input { font-size: 14px; font-weight: 600; color: var(--ink); border: 1px solid var(--accent); border-radius: 6px; padding: 2px 8px; font-family: inherit; outline: none; background: var(--bg); }
+.btn-rename { font-size: 11px; color: var(--ink-3); background: none; border: none; cursor: pointer; font-family: inherit; }
+.cv-meta { font-size: 11px; color: var(--ink-3); margin-top: 3px; }
+.lang-badge { background: var(--surface-2); color: var(--ink-2); font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 600; border: 1px solid var(--line); }
+.cv-actions { display: flex; gap: 8px; align-items: center; }
+.btn-use { background: var(--accent-tint); color: var(--accent); border: 1px solid var(--accent-border); border-radius: 8px; padding: 7px 16px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.btn-del { background: none; border: none; font-size: 13px; color: var(--ink-3); cursor: pointer; transition: color 0.15s; font-weight: 600; font-family: inherit; }
+.btn-del:hover { color: var(--bad); }
+
+/* ── MODALS ── */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: oklch(20% 0.015 270 / 0.45); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border-radius: 18px; padding: 32px; width: 400px; box-shadow: 0 24px 80px oklch(20% 0.015 270 / 0.18); border: 1px solid var(--line); }
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; color: var(--ink); letter-spacing: -0.02em; }
+.modal-text { font-size: 13px; color: var(--ink-2); margin-bottom: 26px; line-height: 1.6; }
+.modal-btns { display: flex; gap: 10px; }
+.btn-cancel { flex: 1; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 11px; font-size: 13px; cursor: pointer; font-weight: 600; color: var(--ink-2); font-family: inherit; }
+.btn-confirm-del { flex: 1; background: var(--bad); border: none; border-radius: 10px; padding: 11px; font-size: 13px; cursor: pointer; font-weight: 700; color: white; font-family: inherit; }
+
+.upgrade-modal { background: var(--surface); border-radius: 18px; padding: 36px; width: 440px; box-shadow: 0 24px 80px oklch(20% 0.015 270 / 0.18); text-align: center; border: 1px solid var(--line); }
+.upgrade-title { font-size: 21px; font-weight: 800; color: var(--ink); margin-bottom: 10px; letter-spacing: -0.03em; }
+.upgrade-text { font-size: 13px; color: var(--ink-2); line-height: 1.6; margin-bottom: 26px; }
+.upgrade-plans { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
+.plan-card { border: 2px solid var(--line); border-radius: 12px; padding: 16px; text-align: left; cursor: pointer; transition: all 0.15s; }
+.plan-card:hover { border-color: var(--accent); }
+.plan-card.popular { border-color: var(--accent); background: var(--accent-tint); }
+.plan-name { font-size: 13px; font-weight: 700; color: var(--ink); }
+.plan-price { font-size: 22px; font-weight: 800; color: var(--accent); margin: 6px 0; letter-spacing: -0.03em; }
+.plan-desc { font-size: 11px; color: var(--ink-3); }
+.btn-upgrade { background: var(--accent); color: var(--accent-ink); border: none; border-radius: 10px; padding: 13px 28px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; font-family: inherit; }
+
+/* ── BILLING ── */
+.billing-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 26px; margin-bottom: 16px; }
+.billing-section-label { font-size: 11px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 14px; }
+.plan-chip { background: var(--accent-tint); color: var(--accent); font-size: 20px; font-weight: 800; padding: 8px 20px; border-radius: 10px; border: 1px solid var(--accent-border); }
+.btn-accent { background: var(--accent); color: var(--accent-ink); border: none; border-radius: 10px; padding: 11px 22px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.btn-danger { background: var(--bad-tint); color: oklch(38% 0.18 25); border: 1px solid oklch(72% 0.14 25); border-radius: 10px; padding: 11px 22px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.btn-ghost { background: var(--surface); color: var(--accent); border: 1px solid var(--accent-border); border-radius: 10px; padding: 11px 22px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <span class="nav-logo" onclick="goTo('dashboard')">LBA</span>
+  <div class="nav-links">
+    <span class="nav-link active" id="nav-dashboard" onclick="goTo('dashboard')">Dashboard</span>
+    <span class="nav-link" id="nav-cvs" onclick="goTo('cvs')">Meine Lebensläufe</span>
+    <span class="nav-link" id="nav-billing" onclick="goTo('billing')">Abrechnung</span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-badge">FREE</span>
+    <span class="nav-name">Dennis S.</span>
+    <button class="btn-logout" onclick="goTo('dashboard')">Abmelden</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SCREEN: DASHBOARD -->
+<!-- ══════════════════════════════════════════ -->
+<div class="screen active" id="screen-dashboard">
+  <div class="hero-banner">
+    <div class="hero-text">
+      <h2>Willkommen zurück, Dennis</h2>
+      <p>Dein nächster Job wartet — erstelle jetzt eine optimierte Bewerbung.</p>
+    </div>
+    <button class="btn-primary" onclick="goTo('wizard')">Neue Bewerbung</button>
+  </div>
+  <div class="dashboard-body">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-val">2</div>
+        <div class="stat-lbl">Lebensläufe</div>
+        <div class="stat-sub">+1 diese Woche</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">1</div>
+        <div class="stat-lbl">Bewerbungen</div>
+        <div class="stat-sub" style="color:var(--ink-3)">Noch 0 diese Woche</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">87%</div>
+        <div class="stat-lbl">Ø Match-Score</div>
+        <div class="stat-sub">Besser als letzte Woche</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div>
+        <div class="section-title">Letzte Bewerbungen</div>
+        <div class="section-sub">Klicke auf eine Zeile um die Bewerbung zu öffnen</div>
+      </div>
+    </div>
+
+    <div class="app-table">
+      <div class="app-table-head">
+        <span>Unternehmen</span>
+        <span>Stelle</span>
+        <span>Match-Score</span>
+        <span>Status</span>
+        <span>Erstellt</span>
+        <span>Aktionen</span>
+      </div>
+      <div class="app-row" onclick="goTo('editor')">
+        <div>
+          <div class="app-company">Acme GmbH</div>
+        </div>
+        <div>
+          <div style="font-size:13px;color:var(--ink-2)">Senior Frontend Entwickler</div>
+        </div>
+        <div><span class="score-pill score-high">87%</span></div>
+        <div>
+          <div class="status-toggle" onclick="event.stopPropagation(); toggleStatus(this)">
+            <div class="status-dot status-open"></div>
+            <span class="status-label">Offen</span>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--ink-3)">09.05.2026</div>
+        <div class="action-row" onclick="event.stopPropagation()">
+          <button class="btn-edit" onclick="goTo('editor')">Öffnen</button>
+          <button class="btn-delete" onclick="showDeleteModal()">Löschen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SCREEN: WIZARD (Neue Bewerbung) -->
+<!-- ══════════════════════════════════════════ -->
+<div class="screen" id="screen-wizard">
+  <div class="page-body">
+    <div class="page-title">Neue Bewerbung erstellen</div>
+    <div class="page-sub">Lade deinen Lebenslauf hoch und füge die Stellenanzeige ein — wir optimieren alles automatisch.</div>
+
+    <div class="input-grid">
+      <!-- CV Panel -->
+      <div class="input-panel">
+        <div class="panel-tabs">
+          <button class="panel-tab active" onclick="switchTab(this,'pdf-body','text-body')">PDF hochladen</button>
+          <button class="panel-tab" onclick="switchTab(this,'text-body','pdf-body')">Text einfügen</button>
+        </div>
+        <div id="pdf-body" class="panel-body">
+          <div class="drop-zone" onclick="simulateUpload(this)">
+            <div class="drop-icon">📄</div>
+            <div class="drop-text">PDF oder DOCX hierher ziehen</div>
+            <div class="drop-sub">oder klicken zum Auswählen · max. 10 MB</div>
+          </div>
+        </div>
+        <div id="text-body" class="panel-body" style="display:none">
+          <textarea class="panel-textarea" placeholder="Deinen Lebenslauf-Text hier einfügen…&#10;&#10;Tipp: Kopiere einfach den Text aus deinem Word-Dokument."></textarea>
+        </div>
+        <div class="saved-row">
+          <span class="saved-label">Gespeichert:</span>
+          <span class="cv-chip selected">Mein CV Deutsch 2024</span>
+          <span class="cv-chip">Englisch v2</span>
+        </div>
+      </div>
+
+      <!-- Job Panel -->
+      <div class="input-panel">
+        <div class="panel-label">Stellenanzeige</div>
+        <div class="panel-body">
+          <textarea class="panel-textarea" placeholder="Stellentext hier einfügen…&#10;&#10;Tipp: Kopiere die gesamte Stellenanzeige inkl. Anforderungen.">Wir suchen einen erfahrenen Senior Frontend Entwickler (m/w/d) mit fundierten Kenntnissen in React und TypeScript. Sie arbeiten in einem agilen Team nach Scrum-Methodik und bringen Erfahrung in der Entwicklung komplexer Web-Applikationen mit. Kenntnisse in AWS und Docker sind von Vorteil.</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Keywords -->
+    <div class="kw-section">
+      <div class="kw-header">
+        <span class="kw-title">Keywords aus der Stellenanzeige — klicken zum An/Abwählen</span>
+        <span class="kw-count">4 von 6 ausgewählt</span>
+      </div>
+      <div class="kw-cloud">
+        <span class="kw-tag kw-include" onclick="cycleKw(this)">React</span>
+        <span class="kw-tag kw-include" onclick="cycleKw(this)">TypeScript</span>
+        <span class="kw-tag kw-include" onclick="cycleKw(this)">Scrum</span>
+        <span class="kw-tag kw-maybe" onclick="cycleKw(this)">AWS</span>
+        <span class="kw-tag kw-maybe" onclick="cycleKw(this)">Docker</span>
+        <span class="kw-tag kw-exclude" onclick="cycleKw(this)">Kubernetes</span>
+        <span class="kw-tag kw-include" onclick="cycleKw(this)">Web-Applikationen</span>
+        <span class="kw-tag kw-exclude" onclick="cycleKw(this)">CI/CD</span>
+      </div>
+    </div>
+
+    <button class="btn-optimize" onclick="goTo('loading')">CV optimieren und Anschreiben erstellen</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SCREEN: LOADING -->
+<!-- ══════════════════════════════════════════ -->
+<div class="screen" id="screen-loading">
+  <div class="page-body">
+    <div class="page-title">Neue Bewerbung erstellen</div>
+    <div class="page-sub">KI analysiert deinen Lebenslauf und die Stellenanzeige…</div>
+
+    <div class="loading-section">
+      <div style="font-size:38px;margin-bottom:18px">⚙️</div>
+      <div class="loading-text" id="loading-text">CV wird analysiert…</div>
+      <div class="loading-sub">Dies dauert etwa 15–30 Sekunden</div>
+      <div style="margin-top:22px;display:flex;flex-direction:column;gap:8px;max-width:340px;margin-left:auto;margin-right:auto">
+        <div class="skeleton" style="height:12px;width:80%"></div>
+        <div class="skeleton" style="height:12px;width:60%"></div>
+        <div class="skeleton" style="height:12px;width:72%"></div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="loading-section" style="padding:22px">
+        <div class="skeleton" style="height:14px;margin-bottom:10px"></div>
+        <div class="skeleton" style="height:90px"></div>
+      </div>
+      <div class="loading-section" style="padding:22px">
+        <div class="skeleton" style="height:14px;margin-bottom:10px"></div>
+        <div class="skeleton" style="height:90px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SCREEN: EDITOR (Ergebnis) -->
+<!-- ══════════════════════════════════════════ -->
+<div class="screen" id="screen-editor">
+  <div class="page-body">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+      <div class="page-title" style="margin-bottom:0">Acme GmbH — Senior Frontend Entwickler</div>
+      <button class="btn-regen" onclick="goTo('wizard')" style="margin-left:auto">Zurück zur Eingabe</button>
+    </div>
+
+    <!-- Score -->
+    <div class="score-row">
+      <div class="score-ring-wrap">
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="30" fill="none" stroke="var(--line)" stroke-width="8"/>
+          <circle cx="36" cy="36" r="30" fill="none" stroke="var(--accent)" stroke-width="8" stroke-dasharray="188.5" stroke-dashoffset="24.5" stroke-linecap="round"/>
+        </svg>
+        <div class="score-ring-text">87%</div>
+      </div>
+      <div class="score-info">
+        <h3>Sehr guter Match — 87% ATS-Score</h3>
+        <div class="kw-pills">
+          <span class="kw-pill kw-hit">React</span>
+          <span class="kw-pill kw-hit">TypeScript</span>
+          <span class="kw-pill kw-hit">Scrum</span>
+          <span class="kw-pill kw-miss">AWS</span>
+          <span class="kw-pill kw-miss">Docker</span>
+        </div>
+      </div>
+      <div class="score-actions">
+        <button class="btn-regen" onclick="showRegenNotice()">Anschreiben neu generieren</button>
+      </div>
+    </div>
+
+    <!-- Optimized CV -->
+    <div class="cv-editor-panel">
+      <div class="panel-title">
+        Optimiertes CV
+        <span class="autosave-badge" id="autosave-cv">Automatisch gespeichert</span>
+      </div>
+      <textarea class="cv-textarea" onblur="showAutosave('autosave-cv')">Dennis Schumacher
+Senior Frontend Entwickler · München
+
+ZUSAMMENFASSUNG
+Erfahrener Frontend-Entwickler mit 6+ Jahren Expertise in React und TypeScript. Spezialist für komplexe Web-Applikationen mit nachgewiesener Erfolgsgeschichte in agilen Scrum-Teams. Leidenschaftlich für sauberen, wartbaren Code und herausragende User Experiences.
+
+BERUFSERFAHRUNG
+TechCorp GmbH | Senior Frontend Developer | 2021–heute
+• Entwicklung und Wartung von 3 komplexen React/TypeScript Web-Applikationen mit 50.000+ tägl. Nutzern
+• Technische Leitung von 4 Entwicklern in einem agilen Scrum-Team
+• Reduktion der Ladezeiten um 40% durch Code-Splitting und Lazy Loading
+
+KENNTNISSE
+React · TypeScript · JavaScript · HTML/CSS · Git · REST APIs · Agile/Scrum</textarea>
+      <div class="dl-row">
+        <button class="btn-dl btn-dl-ghost">CV als PDF</button>
+        <button class="btn-dl btn-dl-ghost">Anschreiben als PDF</button>
+        <button class="btn-dl btn-dl-primary">Beide zusammen herunterladen</button>
+      </div>
+    </div>
+
+    <!-- Cover Letters -->
+    <div class="letters-panel">
+      <div class="panel-title">Anschreiben — wähle deine Variante</div>
+      <div class="letters-grid">
+        <div class="letter-card chosen" id="letter-formal">
+          <div class="letter-variant">Formal <span class="chosen-badge">Gewählt</span></div>
+          <textarea class="letter-textarea" onblur="showAutosave('autosave-cv')">Sehr geehrte Damen und Herren,
+
+mit großem Interesse bewerbe ich mich auf die ausgeschriebene Stelle als Senior Frontend Entwickler. Mit über 6 Jahren Erfahrung in React und TypeScript sowie fundierter Expertise in agilen Entwicklungsmethoden nach Scrum bringe ich genau die Kompetenzen mit, die Sie suchen.</textarea>
+          <button class="btn-choose btn-choose-active">Gewählt</button>
+        </div>
+        <div class="letter-card" id="letter-warm">
+          <div class="letter-variant">Freundlich</div>
+          <textarea class="letter-textarea" onblur="showAutosave('autosave-cv')">Hallo liebes Acme-Team,
+
+ich bin begeistert von eurer Arbeit und würde mich sehr freuen, als Senior Frontend Entwickler Teil eures Teams zu werden! Mit React und TypeScript fühle ich mich wie zuhause, und agile Entwicklung ist für mich nicht nur Methode, sondern echte Überzeugung.</textarea>
+          <button class="btn-choose btn-choose-inactive" onclick="chooseLetter('warm')">Auswählen</button>
+        </div>
+        <div class="letter-card" id="letter-brief">
+          <div class="letter-variant">Knapp</div>
+          <textarea class="letter-textarea" onblur="showAutosave('autosave-cv')">6 Jahre React und TypeScript. 3 produktive Web-Applikationen. Scrum-Teamleitung von 4 Entwicklern.
+
+Ich liefere messbare Ergebnisse — 40% schnellere Ladezeiten, 99.9% Uptime, nachgewiesene Qualität. Mein Portfolio spricht für sich.</textarea>
+          <button class="btn-choose btn-choose-inactive" onclick="chooseLetter('brief')">Auswählen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="status-section">
+      <div>
+        <div class="status-label-text">Bewerbungsstatus</div>
+        <div class="status-sub-text">Halte deinen Status aktuell</div>
+      </div>
+      <div class="toggle-wrap">
+        <button class="toggle-btn toggle-open active" id="status-open" onclick="setStatus('open')">Offen</button>
+        <button class="toggle-btn toggle-done" id="status-done" onclick="setStatus('done')">Erledigt</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SCREEN: CV LIBRARY -->
+<!-- ══════════════════════════════════════════ -->
+<div class="screen" id="screen-cvs">
+  <div class="page-body">
+    <div style="margin-bottom:26px">
+      <div class="page-title">Meine Lebensläufe</div>
+      <div class="page-sub" style="margin-bottom:0">Verwalte deine gespeicherten Lebensläufe</div>
+    </div>
+
+    <!-- Upload -->
+    <div class="upload-panel">
+      <div class="upload-title">Lebenslauf hinzufügen</div>
+      <div class="upload-body">
+        <div class="upload-tabs">
+          <button class="upload-tab active" onclick="switchUploadTab(this,'upload-pdf','upload-text')">PDF hochladen</button>
+          <button class="upload-tab" onclick="switchUploadTab(this,'upload-text','upload-pdf')">Text einfügen</button>
+        </div>
+        <input class="upload-name-input" type="text" placeholder="Name für diesen Lebenslauf (z.B. Mein CV Deutsch 2024)">
+        <div id="upload-pdf">
+          <div class="drop-zone" style="padding:22px" onclick="alert('Datei-Auswahl würde sich öffnen')">
+            <div class="drop-icon" style="font-size:24px">📄</div>
+            <div class="drop-text">PDF oder DOCX hierher ziehen oder klicken</div>
+            <div class="drop-sub">max. 10 MB</div>
+          </div>
+        </div>
+        <div id="upload-text" style="display:none">
+          <textarea class="panel-textarea" style="border:1px solid var(--line);border-radius:10px;padding:14px;height:130px;background:var(--bg)" placeholder="Lebenslauf-Text hier einfügen…"></textarea>
+        </div>
+        <button class="btn-upload">Lebenslauf speichern</button>
+      </div>
+    </div>
+
+    <!-- CV List -->
+    <div class="section-title" style="margin-bottom:14px">Gespeicherte Lebensläufe (2)</div>
+    <div class="cv-list">
+      <div class="cv-item">
+        <div class="cv-icon">📄</div>
+        <div class="cv-info">
+          <div class="cv-name-row">
+            <span class="cv-name" id="cv-name-1">Mein CV Deutsch 2024</span>
+            <button class="btn-rename" onclick="toggleRename(1)">Umbenennen</button>
+          </div>
+          <div class="cv-meta">Hochgeladen: 01.05.2026 · <span class="lang-badge">DE</span> · Acme GmbH und TechCorp AG</div>
+        </div>
+        <div class="cv-actions">
+          <button class="btn-use" onclick="goTo('wizard')">In Bewerbung verwenden</button>
+          <button class="btn-del" onclick="showDeleteModal()">Löschen</button>
+        </div>
+      </div>
+      <div class="cv-item">
+        <div class="cv-icon">📄</div>
+        <div class="cv-info">
+          <div class="cv-name-row">
+            <span class="cv-name">Englisch v2</span>
+            <button class="btn-rename" onclick="alert('Umbenennen-Feld würde erscheinen')">Umbenennen</button>
+          </div>
+          <div class="cv-meta">Hochgeladen: 28.04.2026 · <span class="lang-badge">EN</span> · Noch nicht verwendet</div>
+        </div>
+        <div class="cv-actions">
+          <button class="btn-use" onclick="goTo('wizard')">In Bewerbung verwenden</button>
+          <button class="btn-del" onclick="showDeleteModal()">Löschen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SCREEN: BILLING -->
+<!-- ══════════════════════════════════════════ -->
+<div class="screen" id="screen-billing">
+  <div class="page-body">
+    <div class="page-title">Abrechnung</div>
+    <div class="page-sub">Verwalte deinen Plan und deine Daten</div>
+
+    <div class="billing-card">
+      <div class="billing-section-label">Aktueller Plan</div>
+      <div style="display:flex;align-items:center;gap:18px">
+        <div class="plan-chip">FREE</div>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--ink)">Kostenlos</div>
+          <div style="font-size:12px;color:var(--ink-3)">1 Bewerbung inklusive · Alle Grundfunktionen</div>
+        </div>
+        <button class="btn-accent" style="margin-left:auto" onclick="showUpgradeModal()">Upgraden</button>
+      </div>
+    </div>
+
+    <div class="billing-card">
+      <div class="billing-section-label">Datenschutz und DSGVO</div>
+      <div style="display:flex;gap:12px">
+        <button class="btn-ghost">Daten exportieren</button>
+        <button class="btn-danger">Account löschen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <div class="modal-title">Wirklich löschen?</div>
+    <div class="modal-text">Diese Aktion kann nicht rückgängig gemacht werden. Bestehende Bewerbungen bleiben vollständig erhalten.</div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="hideDeleteModal()">Abbrechen</button>
+      <button class="btn-confirm-del" onclick="hideDeleteModal()">Ja, löschen</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPGRADE MODAL -->
+<div class="modal-overlay" id="upgrade-modal">
+  <div class="upgrade-modal">
+    <div class="upgrade-title">Dein Free-Limit ist erreicht</div>
+    <div class="upgrade-text">Du hast deine kostenlose Bewerbung bereits erstellt. Wähle einen Plan um unbegrenzt Bewerbungen zu optimieren.</div>
+    <div class="upgrade-plans">
+      <div class="plan-card">
+        <div class="plan-name">Pay-per-App</div>
+        <div class="plan-price">€2,49</div>
+        <div class="plan-desc">Pro Bewerbung · Kein Abo</div>
+      </div>
+      <div class="plan-card popular">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">€9,99</div>
+        <div class="plan-desc">pro Monat · Unbegrenzt</div>
+      </div>
+    </div>
+    <button class="btn-upgrade">Plan wählen und upgraden</button>
+    <div style="margin-top:14px">
+      <button style="border:none;background:none;color:var(--ink-3);cursor:pointer;font-size:13px;font-family:inherit" onclick="hideUpgradeModal()">Vielleicht später</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function goTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screen).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const navMap = { dashboard:'nav-dashboard', cvs:'nav-cvs', billing:'nav-billing', wizard:'nav-dashboard', loading:'nav-dashboard', editor:'nav-dashboard' };
+  if (navMap[screen]) document.getElementById(navMap[screen]).classList.add('active');
+  window.scrollTo(0, 0);
+  if (screen === 'loading') {
+    let steps = ['CV wird analysiert…', 'Keywords werden abgeglichen…', 'Anschreiben wird erstellt…', 'Wird fertiggestellt…'];
+    let i = 0;
+    const interval = setInterval(() => {
+      if (++i < steps.length) document.getElementById('loading-text').textContent = steps[i];
+      else { clearInterval(interval); setTimeout(() => goTo('editor'), 600); }
+    }, 1200);
+  }
+}
+
+function switchTab(tab, showId, hideId) {
+  tab.parentElement.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById(showId).style.display = 'block';
+  document.getElementById(hideId).style.display = 'none';
+}
+function switchUploadTab(tab, showId, hideId) {
+  tab.parentElement.querySelectorAll('.upload-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById(showId).style.display = 'block';
+  document.getElementById(hideId).style.display = 'none';
+}
+
+function cycleKw(el) {
+  if (el.classList.contains('kw-include')) { el.classList.replace('kw-include','kw-maybe'); }
+  else if (el.classList.contains('kw-maybe')) { el.classList.replace('kw-maybe','kw-exclude'); }
+  else { el.classList.replace('kw-exclude','kw-include'); }
+}
+
+function showAutosave(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = 'Gespeichert';
+  setTimeout(() => { el.textContent = 'Automatisch gespeichert'; }, 1500);
+}
+
+function chooseLetter(type) {
+  ['formal','warm','brief'].forEach(t => {
+    const card = document.getElementById('letter-' + t);
+    card.classList.remove('chosen');
+    card.querySelector('.letter-variant').innerHTML = {formal:'Formal',warm:'Freundlich',brief:'Knapp'}[t];
+    card.querySelector('.btn-choose').className = 'btn-choose btn-choose-inactive';
+    card.querySelector('.btn-choose').textContent = 'Auswählen';
+    card.querySelector('.btn-choose').setAttribute('onclick', `chooseLetter('${t}')`);
+  });
+  const chosen = document.getElementById('letter-' + type);
+  chosen.classList.add('chosen');
+  const names = {formal:'Formal',warm:'Freundlich',brief:'Knapp'};
+  chosen.querySelector('.letter-variant').innerHTML = `${names[type]} <span class="chosen-badge">Gewählt</span>`;
+  chosen.querySelector('.btn-choose').className = 'btn-choose btn-choose-active';
+  chosen.querySelector('.btn-choose').textContent = 'Gewählt';
+  chosen.querySelector('.btn-choose').removeAttribute('onclick');
+}
+
+function setStatus(s) {
+  document.getElementById('status-open').classList.toggle('active', s === 'open');
+  document.getElementById('status-done').classList.toggle('active', s === 'done');
+}
+
+function toggleStatus(el) {
+  const dot = el.querySelector('.status-dot');
+  const label = el.querySelector('.status-label');
+  if (label.textContent === 'Offen') {
+    dot.className = 'status-dot status-done';
+    label.textContent = 'Erledigt';
+  } else {
+    dot.className = 'status-dot status-open';
+    label.textContent = 'Offen';
+  }
+}
+
+function toggleRename(id) {
+  const nameEl = document.getElementById('cv-name-' + id);
+  if (nameEl.tagName === 'SPAN') {
+    const input = document.createElement('input');
+    input.className = 'cv-name-input';
+    input.value = nameEl.textContent;
+    input.onblur = () => { nameEl.textContent = input.value; input.replaceWith(nameEl); };
+    nameEl.replaceWith(input);
+    input.focus();
+  }
+}
+
+function showDeleteModal() { document.getElementById('delete-modal').classList.add('open'); }
+function hideDeleteModal() { document.getElementById('delete-modal').classList.remove('open'); }
+function showUpgradeModal() { document.getElementById('upgrade-modal').classList.add('open'); }
+function hideUpgradeModal() { document.getElementById('upgrade-modal').classList.remove('open'); }
+function simulateUpload(el) { el.innerHTML = '<div class="drop-icon">✓</div><div class="drop-text" style="color:var(--good);font-weight:600">mein-cv-2024.pdf hochgeladen</div><div class="drop-sub">Klicken um eine andere Datei zu wählen</div>'; }
+function showRegenNotice() { alert('Anschreiben wird neu generiert… (würde 10–15s dauern)'); }
+
+document.getElementById('delete-modal').addEventListener('click', function(e) { if(e.target===this) hideDeleteModal(); });
+document.getElementById('upgrade-modal').addEventListener('click', function(e) { if(e.target===this) hideUpgradeModal(); });
+</script>
+</body>
+</html>
