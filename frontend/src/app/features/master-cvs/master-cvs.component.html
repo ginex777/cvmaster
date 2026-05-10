@@ -44,6 +44,10 @@
             <time class="cv-card__date" [attr.datetime]="cv.updatedAt">
               Aktualisiert {{ cv.updatedAt | date:'dd.MM.yyyy' }}
             </time>
+            <lba-cv-template-picker
+              [template]="cv.template"
+              (templateChange)="updateTemplate(cv.id, $event)"
+            />
           </div>
           <button
             type="button"

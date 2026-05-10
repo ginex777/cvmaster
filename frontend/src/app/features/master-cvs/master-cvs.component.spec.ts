@@ -5,10 +5,10 @@ import { MasterCvsComponent } from './master-cvs.component';
 import { ApiService } from '../../core/api/api.service';
 
 describe('MasterCvsComponent', () => {
-  let api: jest.Mocked<Pick<ApiService, 'get' | 'upload' | 'delete'>>;
+  let api: jest.Mocked<Pick<ApiService, 'get' | 'upload' | 'delete' | 'patch'>>;
 
   beforeEach(async () => {
-    api = { get: jest.fn(), upload: jest.fn(), delete: jest.fn() };
+    api = { get: jest.fn(), upload: jest.fn(), delete: jest.fn(), patch: jest.fn() };
     await TestBed.configureTestingModule({
       imports: [MasterCvsComponent],
       providers: [
@@ -30,7 +30,7 @@ describe('MasterCvsComponent', () => {
   });
 
   it('cvs signal is populated after successful load', async () => {
-    const data = [{ id: 'cv1', name: 'My CV', language: 'de', sourceFilename: 'cv.pdf', createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }];
+    const data = [{ id: 'cv1', name: 'My CV', language: 'de', sourceFilename: 'cv.pdf', template: 'modern' as const, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }];
     api.get.mockResolvedValue(data);
     const fixture = TestBed.createComponent(MasterCvsComponent);
     fixture.detectChanges();
@@ -84,7 +84,7 @@ describe('MasterCvsComponent', () => {
 
   it('upload prepends new CV to the list on success', async () => {
     api.get.mockResolvedValue([]);
-    const newCv = { id: 'cv2', name: 'New CV', language: 'de', sourceFilename: 'new.pdf', createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' };
+    const newCv = { id: 'cv2', name: 'New CV', language: 'de', sourceFilename: 'new.pdf', template: 'modern' as const, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' };
     api.upload.mockResolvedValue(newCv);
     const fixture = TestBed.createComponent(MasterCvsComponent);
     fixture.detectChanges();
@@ -101,7 +101,7 @@ describe('MasterCvsComponent', () => {
   });
 
   it('remove deletes a CV from the list', async () => {
-    const cvList = [{ id: 'cv1', name: 'CV', language: 'de', sourceFilename: 'cv.pdf', createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }];
+    const cvList = [{ id: 'cv1', name: 'CV', language: 'de', sourceFilename: 'cv.pdf', template: 'modern' as const, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }];
     api.get.mockResolvedValue(cvList);
     api.delete.mockResolvedValue(undefined);
     const fixture = TestBed.createComponent(MasterCvsComponent);
@@ -111,5 +111,34 @@ describe('MasterCvsComponent', () => {
     await fixture.componentInstance.remove('cv1');
 
     expect(fixture.componentInstance.cvs()).toHaveLength(0);
+  });
+
+  it('updateTemplate optimistically updates and persists the template', async () => {
+    api.get.mockResolvedValue([]);
+    api.patch.mockResolvedValue({} as never);
+    const fixture = TestBed.createComponent(MasterCvsComponent);
+    fixture.componentInstance.cvs.set([
+      { id: 'cv1', name: 'CV', language: 'de', sourceFilename: 'cv.pdf', template: 'modern', createdAt: '', updatedAt: '' },
+    ]);
+
+    const promise = fixture.componentInstance.updateTemplate('cv1', 'classic');
+
+    expect(fixture.componentInstance.cvs()[0].template).toBe('classic');
+    await promise;
+    expect(api.patch).toHaveBeenCalledWith('/cvs/cv1', { template: 'classic' });
+  });
+
+  it('updateTemplate rolls back and sets error when persistence fails', async () => {
+    api.get.mockResolvedValue([]);
+    api.patch.mockRejectedValue(new HttpErrorResponse({ status: 500 }));
+    const fixture = TestBed.createComponent(MasterCvsComponent);
+    fixture.componentInstance.cvs.set([
+      { id: 'cv1', name: 'CV', language: 'de', sourceFilename: 'cv.pdf', template: 'modern', createdAt: '', updatedAt: '' },
+    ]);
+
+    await fixture.componentInstance.updateTemplate('cv1', 'editorial');
+
+    expect(fixture.componentInstance.cvs()[0].template).toBe('modern');
+    expect(fixture.componentInstance.error()).toBe('Template konnte nicht gespeichert werden.');
   });
 });

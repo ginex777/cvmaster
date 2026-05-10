@@ -3,12 +3,14 @@ import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/cor
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApiService } from '../../core/api/api.service';
+import { CvTemplatePicker, type CvTemplate } from '../../shared/components/cv-template-picker/cv-template-picker';
 
 export interface MasterCv {
   id: string;
   name: string;
   language: string;
   sourceFilename: string;
+  template: CvTemplate;
   createdAt: string;
   updatedAt: string;
 }
@@ -16,7 +18,7 @@ export interface MasterCv {
 @Component({
   selector: 'lba-master-cvs',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, CvTemplatePicker],
   templateUrl: './master-cvs.component.html',
   styleUrl: './master-cvs.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -73,6 +75,19 @@ export class MasterCvsComponent implements OnInit {
       this.error.set(
         e instanceof HttpErrorResponse ? e.error.message : 'Löschen fehlgeschlagen.',
       );
+    }
+  }
+
+  async updateTemplate(id: string, template: CvTemplate): Promise<void> {
+    const previous = this.cvs().find((cv) => cv.id === id)?.template ?? 'modern';
+    this.error.set(null);
+    this.cvs.update((list) => list.map((cv) => cv.id === id ? { ...cv, template } : cv));
+
+    try {
+      await this.api.patch<MasterCv>(`/cvs/${id}`, { template });
+    } catch {
+      this.cvs.update((list) => list.map((cv) => cv.id === id ? { ...cv, template: previous } : cv));
+      this.error.set('Template konnte nicht gespeichert werden.');
     }
   }
 }
