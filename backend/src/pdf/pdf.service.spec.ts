@@ -8,11 +8,11 @@ describe('PdfService', () => {
     service = new PdfService();
   });
 
-  it('generateCvPdf returns Buffer starting with %PDF-', async () => {
+  it.each(['classic', 'modern', 'editorial'] as const)('generateCvPdf returns a PDF for %s layout', async (layout) => {
     const buf = await service.generateCvPdf({
       name: 'Lina Hartmann',
       sections: [{ heading: 'Erfahrung', lines: ['Stripe - 2 Jahre'] }],
-    });
+    }, layout);
 
     expect(Buffer.isBuffer(buf)).toBe(true);
     expect(buf.subarray(0, 5).toString('ascii')).toBe('%PDF-');

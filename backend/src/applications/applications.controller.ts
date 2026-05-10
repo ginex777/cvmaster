@@ -15,7 +15,7 @@ const createSchema = z.object({
 });
 
 const exportSchema = z.object({
-  layout: z.enum(['modern', 'clean', 'editorial']),
+  layout: z.enum(['classic', 'modern', 'editorial']),
 });
 
 const statusSchema = z.preprocess(
