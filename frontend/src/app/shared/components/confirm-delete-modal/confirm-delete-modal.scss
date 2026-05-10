@@ -1,0 +1,39 @@
+:host {
+  display: contents;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: color-mix(in oklch, var(--ink), transparent 62%);
+}
+
+.modal__dialog {
+  width: min(100%, 28rem);
+  padding: var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+
+  h2 {
+    margin-bottom: var(--space-2);
+    font-size: 1.2rem;
+    line-height: 1.25;
+  }
+
+  p {
+    color: var(--ink-2);
+  }
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}

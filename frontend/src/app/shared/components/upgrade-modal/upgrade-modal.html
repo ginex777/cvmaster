@@ -1,0 +1,35 @@
+@if (open()) {
+  <div class="modal" role="presentation" (click)="dismissed.emit()">
+    <section
+      class="modal__dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="upgrade-title"
+      aria-describedby="upgrade-body"
+      (click)="$event.stopPropagation()">
+      <p class="modal__eyebrow">Free-Limit</p>
+      <h2 id="upgrade-title">Dein Free-Limit ist erreicht</h2>
+      <p id="upgrade-body">
+        Du hast deine kostenlose Bewerbung bereits erstellt. Wahle einen Plan, um weitere Bewerbungen zu optimieren.
+      </p>
+
+      <div class="plan-grid" aria-label="Upgrade-Optionen">
+        <article>
+          <strong>Pay-per-App</strong>
+          <span>2,49 EUR pro Bewerbung</span>
+        </article>
+        <article class="plan-grid__popular">
+          <strong>Pro</strong>
+          <span>9,99 EUR pro Monat</span>
+        </article>
+      </div>
+
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost btn--md" (click)="dismissed.emit()">Vielleicht spater</button>
+        <button type="button" class="btn btn--accent btn--md" (click)="upgradeRequested.emit()">
+          Plan wahlen und upgraden
+        </button>
+      </div>
+    </section>
+  </div>
+}

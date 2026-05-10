@@ -1,0 +1,21 @@
+@if (open()) {
+  <div class="modal" role="presentation" (click)="cancelled.emit()">
+    <section
+      class="modal__dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-delete-title"
+      aria-describedby="confirm-delete-body"
+      (click)="$event.stopPropagation()">
+      <h2 id="confirm-delete-title">{{ title() }}</h2>
+      <p id="confirm-delete-body">{{ body() }}</p>
+
+      <div class="modal__actions">
+        <button type="button" class="btn btn--ghost btn--md" (click)="cancelled.emit()">Abbrechen</button>
+        <button type="button" class="btn btn--danger btn--md" (click)="confirmed.emit()">
+          {{ confirmLabel() }}
+        </button>
+      </div>
+    </section>
+  </div>
+}
