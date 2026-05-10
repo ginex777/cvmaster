@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, HttpException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { ApplicationsService } from './applications.service';
 import { PrismaService } from '../common/prisma.service';
@@ -10,7 +10,7 @@ const fn = () => jest.fn<() => Promise<unknown>>();
 
 const mockPrisma = {
   masterCv: { findFirst: fn() },
-  application: { create: fn(), findMany: fn(), findUnique: fn(), findUniqueOrThrow: fn(), update: fn(), delete: fn() },
+  application: { count: fn(), create: fn(), findMany: fn(), findUnique: fn(), findUniqueOrThrow: fn(), update: fn(), delete: fn() },
   user: { findUniqueOrThrow: fn() },
 };
 const mockQueue = { enqueueAiPipeline: fn(), enqueueRegenerateLetter: fn() };
@@ -35,6 +35,7 @@ describe('ApplicationsService', () => {
   describe('create', () => {
     it('throws NotFoundException when masterCv not found or not owned', async () => {
       mockPrisma.masterCv.findFirst.mockResolvedValue(null);
+      mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'FREE' } as never);
       await expect(
         service.create({ masterCvId: 'cv-bad', jobPostingId: 'jp1' }, 'u1'),
       ).rejects.toThrow(NotFoundException);
@@ -42,6 +43,8 @@ describe('ApplicationsService', () => {
 
     it('creates application and enqueues AI pipeline when masterCv is owned', async () => {
       mockPrisma.masterCv.findFirst.mockResolvedValue({ id: 'cv1' } as never);
+      mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'FREE' } as never);
+      mockPrisma.application.count.mockResolvedValue(0);
       mockPrisma.application.create.mockResolvedValue({ id: 'app1', status: 'DRAFT' } as never);
       mockQueue.enqueueAiPipeline.mockResolvedValue(undefined);
 
@@ -50,6 +53,32 @@ describe('ApplicationsService', () => {
       expect(mockPrisma.application.create).toHaveBeenCalled();
       expect(mockQueue.enqueueAiPipeline).toHaveBeenCalledWith('app1');
       expect(result).toHaveProperty('id', 'app1');
+    });
+
+    it('throws 402 when a FREE user already has one application', async () => {
+      mockPrisma.masterCv.findFirst.mockResolvedValue({ id: 'cv1' } as never);
+      mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'FREE' } as never);
+      mockPrisma.application.count.mockResolvedValue(1);
+
+      await expect(
+        service.create({ masterCvId: 'cv1', jobPostingId: 'jp1' }, 'u1'),
+      ).rejects.toThrow(HttpException);
+
+      expect(mockPrisma.application.create).not.toHaveBeenCalled();
+      expect(mockQueue.enqueueAiPipeline).not.toHaveBeenCalled();
+    });
+
+    it('allows PRO users to create beyond the free limit', async () => {
+      mockPrisma.masterCv.findFirst.mockResolvedValue({ id: 'cv1' } as never);
+      mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'PRO' } as never);
+      mockPrisma.application.create.mockResolvedValue({ id: 'app2', status: 'DRAFT' } as never);
+      mockQueue.enqueueAiPipeline.mockResolvedValue(undefined);
+
+      const result = await service.create({ masterCvId: 'cv1', jobPostingId: 'jp1' }, 'u2');
+
+      expect(mockPrisma.application.count).not.toHaveBeenCalled();
+      expect(result).toHaveProperty('id', 'app2');
+      expect(mockQueue.enqueueAiPipeline).toHaveBeenCalledWith('app2');
     });
   });
 

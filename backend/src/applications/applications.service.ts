@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { AppStatus, Prisma } from '@prisma/client';
 import { Response } from 'express';
 import { PrismaService } from '../common/prisma.service';
@@ -14,8 +14,21 @@ export class ApplicationsService {
   ) {}
 
   async create(data: { masterCvId: string; jobPostingId: string }, userId: string) {
-    const cv = await this.prisma.masterCv.findFirst({ where: { id: data.masterCvId, userId } });
+    const [cv, user] = await Promise.all([
+      this.prisma.masterCv.findFirst({ where: { id: data.masterCvId, userId } }),
+      this.prisma.user.findUniqueOrThrow({ where: { id: userId } }),
+    ]);
     if (!cv) throw new NotFoundException('Master-CV nicht gefunden');
+
+    if (user.plan === 'FREE') {
+      const applicationCount = await this.prisma.application.count({ where: { userId } });
+      if (applicationCount >= 1) {
+        throw new HttpException(
+          { message: 'Kostenlose Bewerbung bereits genutzt. Bitte upgraden.', code: 'PLAN_LIMIT' },
+          HttpStatus.PAYMENT_REQUIRED,
+        );
+      }
+    }
 
     const app = await this.prisma.application.create({
       data: { userId, masterCvId: data.masterCvId, jobPostingId: data.jobPostingId, status: 'DRAFT' },
