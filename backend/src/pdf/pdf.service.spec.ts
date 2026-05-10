@@ -17,4 +17,18 @@ describe('PdfService', () => {
     expect(Buffer.isBuffer(buf)).toBe(true);
     expect(buf.subarray(0, 5).toString('ascii')).toBe('%PDF-');
   });
+
+  it('generateLetterPdf returns Buffer starting with %PDF-', async () => {
+    const buf = await service.generateLetterPdf('Sehr geehrte Damen und Herren,\n\nhiermit bewerbe ich mich.', 'Acme GmbH');
+
+    expect(Buffer.isBuffer(buf)).toBe(true);
+    expect(buf.subarray(0, 5).toString('ascii')).toBe('%PDF-');
+  });
+
+  it('generateZip returns a ZIP buffer', async () => {
+    const buf = await service.generateZip([{ filename: 'test.txt', buffer: Buffer.from('hello') }]);
+
+    expect(Buffer.isBuffer(buf)).toBe(true);
+    expect(buf.subarray(0, 2).toString('ascii')).toBe('PK');
+  });
 });

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import archiver from 'archiver';
 
 export type CvLayout = 'modern' | 'clean' | 'editorial';
 
@@ -63,6 +64,61 @@ export class PdfService {
     }
 
     return Buffer.from(await pdfDoc.save());
+  }
+
+  async generateLetterPdf(text: string, recipientName: string): Promise<Buffer> {
+    const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib');
+    const pdfDoc = await PDFDocument.create();
+    let page = pdfDoc.addPage([595, 842]);
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const margin = 60;
+    const lineHeight = 16;
+    let y = 780;
+
+    page.drawText(this.cleanText(recipientName || 'Anschreiben'), {
+      x: margin,
+      y,
+      font: boldFont,
+      size: 14,
+      color: rgb(0.08, 0.07, 0.16),
+    });
+    y -= 32;
+
+    for (const paragraph of text.split(/\n{2,}/)) {
+      for (const line of this.wrapText(paragraph, 85)) {
+        if (y < 60) {
+          page = pdfDoc.addPage([595, 842]);
+          y = 780;
+        }
+
+        page.drawText(this.cleanText(line), {
+          x: margin,
+          y,
+          font,
+          size: 11,
+          color: rgb(0.22, 0.2, 0.32),
+        });
+        y -= lineHeight;
+      }
+      y -= lineHeight;
+    }
+
+    return Buffer.from(await pdfDoc.save());
+  }
+
+  async generateZip(files: Array<{ filename: string; buffer: Buffer }>): Promise<Buffer> {
+    const archive = archiver('zip', { zlib: { level: 9 } });
+    const chunks: Buffer[] = [];
+
+    archive.on('data', (chunk: Buffer) => chunks.push(chunk));
+
+    for (const file of files) {
+      archive.append(file.buffer, { name: file.filename });
+    }
+
+    await archive.finalize();
+    return Buffer.concat(chunks);
   }
 
   async render(parsedCv: Record<string, unknown>, _layout: CvLayout): Promise<Buffer> {

@@ -53,6 +53,42 @@ export class ApplicationsController {
     return this.apps.findAll(req.user.sub);
   }
 
+  @Get(':id/export/cv')
+  async exportCv(@Param('id') id: string, @Req() req: AuthenticatedRequest, @Res() res: Response) {
+    const app = await this.apps.findOne(id, req.user.sub);
+    const title = this.fileTitle(app);
+    const buffer = await this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title));
+    this.sendPdf(res, buffer, `${this.safeFilename(title)}.pdf`);
+  }
+
+  @Get(':id/export/letter')
+  async exportLetter(@Param('id') id: string, @Req() req: AuthenticatedRequest, @Res() res: Response) {
+    const app = await this.apps.findOne(id, req.user.sub);
+    const title = this.fileTitle(app);
+    const buffer = await this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant), title);
+    this.sendPdf(res, buffer, `${this.safeFilename(title)}_Anschreiben.pdf`);
+  }
+
+  @Get(':id/export/bundle')
+  async exportBundle(@Param('id') id: string, @Req() req: AuthenticatedRequest, @Res() res: Response) {
+    const app = await this.apps.findOne(id, req.user.sub);
+    const title = this.fileTitle(app);
+    const safeTitle = this.safeFilename(title);
+    const cv = await this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title));
+    const letter = await this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant), title);
+    const buffer = await this.pdf.generateZip([
+      { filename: `${safeTitle}.pdf`, buffer: cv },
+      { filename: `${safeTitle}_Anschreiben.pdf`, buffer: letter },
+    ]);
+
+    res.set({
+      'Content-Type': 'application/zip',
+      'Content-Disposition': `attachment; filename="${safeTitle}_Bewerbung.zip"`,
+      'Content-Length': buffer.length.toString(),
+    });
+    res.send(buffer);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
     return this.apps.findOne(id, req.user.sub);
@@ -160,6 +196,31 @@ export class ApplicationsController {
 
   private safeFilename(value: string): string {
     return value.replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'Lebenslauf';
+  }
+
+  private sendPdf(res: Response, buffer: Buffer, filename: string): void {
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Length': buffer.length.toString(),
+    });
+    res.send(buffer);
+  }
+
+  private selectedLetterText(value: unknown, chosenVariant?: string | null): string {
+    const letters = this.hasLetters(value) ? value : {};
+    const variant = chosenVariant ?? 'formal';
+
+    if (variant === 'brief' && typeof letters.concise === 'string') return letters.concise;
+    if (variant === 'concise' && typeof letters.concise === 'string') return letters.concise;
+    if (variant === 'warm' && typeof letters.warm === 'string') return letters.warm;
+    if (variant === 'formal' && typeof letters.formal === 'string') return letters.formal;
+
+    return letters.formal ?? letters.warm ?? letters.brief ?? letters.concise ?? '';
+  }
+
+  private hasLetters(value: unknown): value is { formal?: string; warm?: string; brief?: string; concise?: string } {
+    return typeof value === 'object' && value !== null;
   }
 
   private hasPdfSections(value: unknown): value is CvPdfData {
