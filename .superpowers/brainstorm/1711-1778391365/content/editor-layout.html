@@ -1,0 +1,225 @@
+<h2>Editor-Layout — wie soll die Seite aufgeteilt sein?</h2>
+<p class="subtitle">Alle drei zeigen: CV-Eingabe, Job-Eingabe, Keywords, Ergebnis + Anschreiben</p>
+
+<style>
+.layouts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 24px; }
+.lcard { border: 2px solid #e2e8f0; border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; background: white; }
+.lcard:hover { border-color: #a78bfa; }
+.lcard.selected { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.2); }
+.lcard-label { background: #f8fafc; padding: 10px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; }
+.badge { background: #7c3aed; color: white; padding: 2px 8px; border-radius: 99px; font-size: 10px; }
+.badge.amber { background: #d97706; }
+.badge.teal { background: #0d9488; }
+.lcard-body { padding: 14px; }
+.mini-screen { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; font-size: 10px; }
+.mini-nav { background: #1e1b4b; color: white; padding: 5px 10px; display: flex; gap: 10px; align-items: center; font-size: 9px; }
+.mini-nav .logo { font-weight: 700; font-size: 10px; color: #a78bfa; }
+.mini-nav span { color: #94a3b8; }
+.mini-content { padding: 8px; }
+
+/* Layout A - side by side input, results below */
+.la-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+.la-panel { background: white; border: 1px solid #e2e8f0; border-radius: 5px; padding: 5px; }
+.la-panel .ptitle { font-size: 9px; font-weight: 700; color: #64748b; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
+.la-panel .parea { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 3px; height: 38px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 9px; }
+.kw-row { display: flex; gap: 3px; flex-wrap: wrap; padding: 4px 5px; background: white; border: 1px solid #e2e8f0; border-radius: 5px; margin-bottom: 6px; align-items: center; }
+.kw-label { font-size: 9px; color: #64748b; font-weight: 700; margin-right: 2px; }
+.kw { font-size: 9px; padding: 1px 5px; border-radius: 3px; }
+.kw.on { background: #7c3aed; color: white; }
+.kw.off { background: #e2e8f0; color: #64748b; }
+.btn-optimize { background: #7c3aed; color: white; border: none; border-radius: 4px; padding: 4px 10px; font-size: 9px; font-weight: 700; width: 100%; margin-bottom: 6px; cursor: pointer; }
+.result-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+.rp { background: white; border: 1px solid #e2e8f0; border-radius: 5px; padding: 5px; }
+.rp .ptitle { font-size: 9px; font-weight: 700; color: #64748b; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
+.rp .parea { background: #f8fafc; height: 30px; border-radius: 3px; }
+.score-chip { background: #d1fae5; color: #065f46; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 99px; display: inline-block; margin-bottom: 3px; }
+
+/* Layout B - left sidebar steps, right main */
+.lb-grid { display: grid; grid-template-columns: 60px 1fr; gap: 6px; }
+.lb-steps { display: flex; flex-direction: column; gap: 3px; }
+.lb-step { background: white; border: 1px solid #e2e8f0; border-radius: 5px; padding: 4px; text-align: center; }
+.lb-step .snum { width: 16px; height: 16px; background: #e2e8f0; color: #64748b; border-radius: 50%; font-size: 8px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 2px; }
+.lb-step .snum.active { background: #7c3aed; color: white; }
+.lb-step .slabel { font-size: 8px; color: #64748b; line-height: 1.2; }
+.lb-main { background: white; border: 1px solid #e2e8f0; border-radius: 5px; padding: 6px; }
+.lb-main .tab-row { display: flex; gap: 4px; margin-bottom: 6px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+.tab { font-size: 8px; padding: 2px 6px; border-radius: 3px; color: #94a3b8; }
+.tab.active { background: #ede9fe; color: #7c3aed; font-weight: 700; }
+.lb-textarea { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 3px; height: 55px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 9px; }
+
+/* Layout C - top split, bottom full editor */
+.lc-top { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 5px; }
+.lc-panel { background: white; border: 1px solid #e2e8f0; border-radius: 5px; padding: 5px; }
+.lc-panel .ptitle { font-size: 9px; font-weight: 700; color: #64748b; margin-bottom: 3px; }
+.lc-panel .parea { background: #f8fafc; border: 1px dashed #cbd5e1; height: 35px; border-radius: 3px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 9px; }
+.lc-bottom { background: white; border: 1px solid #e2e8f0; border-radius: 5px; padding: 6px; }
+.lc-3col { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 5px; }
+.lc-col .ctitle { font-size: 9px; font-weight: 700; color: #64748b; margin-bottom: 3px; text-transform: uppercase; }
+.lc-col .carea { background: #f8fafc; height: 50px; border-radius: 3px; }
+
+.lcard-footer { border-top: 1px solid #e2e8f0; padding: 8px 14px; background: #f8fafc; }
+.pro { color: #059669; font-size: 10px; margin-bottom: 2px; }
+.con { color: #dc2626; font-size: 10px; }
+</style>
+
+<div class="layouts">
+
+  <!-- Layout A: Full-page flow, top-down -->
+  <div class="lcard" data-choice="a" onclick="toggleSelect(this)">
+    <div class="lcard-label">Layout A — Fluss von oben nach unten <span class="badge">Klar</span></div>
+    <div class="lcard-body">
+      <div class="mini-screen">
+        <div class="mini-nav"><span class="logo">LBA</span><span>Dashboard</span><span>Lebensläufe</span><span style="color:white;font-weight:700">Neu</span></div>
+        <div class="mini-content">
+          <!-- Input row -->
+          <div class="la-grid">
+            <div class="la-panel">
+              <div class="ptitle">Dein CV</div>
+              <div class="parea">PDF hochladen oder Text einfügen</div>
+            </div>
+            <div class="la-panel">
+              <div class="ptitle">Stellenanzeige</div>
+              <div class="parea">Job-Text einfügen</div>
+            </div>
+          </div>
+          <!-- Keywords -->
+          <div class="kw-row">
+            <span class="kw-label">Keywords:</span>
+            <span class="kw on">React</span>
+            <span class="kw on">TypeScript</span>
+            <span class="kw off">AWS</span>
+            <span class="kw on">Scrum</span>
+            <span class="kw off">Docker</span>
+            <span class="kw off">CI/CD</span>
+          </div>
+          <button class="btn-optimize">✨ CV optimieren & Anschreiben erstellen</button>
+          <!-- Results -->
+          <div class="result-row">
+            <div class="rp">
+              <div class="score-chip">87%</div>
+              <div class="ptitle">Match-Score</div>
+              <div class="parea"></div>
+            </div>
+            <div class="rp">
+              <div class="ptitle">Optimiertes CV</div>
+              <div class="parea"></div>
+            </div>
+            <div class="rp">
+              <div class="ptitle">Anschreiben</div>
+              <div class="parea"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lcard-footer">
+      <div class="pro">✓ Einfach zu verstehen — Schritt für Schritt</div>
+      <div class="pro">✓ Keywords direkt zwischen Input und Output</div>
+      <div class="con">– Viel Scrollen bei langen CVs</div>
+    </div>
+  </div>
+
+  <!-- Layout B: Left steps, right content (wizard-style) -->
+  <div class="lcard" data-choice="b" onclick="toggleSelect(this)">
+    <div class="lcard-label">Layout B — Schritte links, Inhalt rechts <span class="badge amber">Geführt</span></div>
+    <div class="lcard-body">
+      <div class="mini-screen">
+        <div class="mini-nav"><span class="logo">LBA</span><span>Dashboard</span><span>Lebensläufe</span><span style="color:white;font-weight:700">Bewerbung</span></div>
+        <div class="mini-content">
+          <div class="lb-grid">
+            <div class="lb-steps">
+              <div class="lb-step">
+                <div class="snum active">1</div>
+                <div class="slabel">CV</div>
+              </div>
+              <div class="lb-step">
+                <div class="snum">2</div>
+                <div class="slabel">Job</div>
+              </div>
+              <div class="lb-step">
+                <div class="snum">3</div>
+                <div class="slabel">KW</div>
+              </div>
+              <div class="lb-step">
+                <div class="snum">4</div>
+                <div class="slabel">Ergebnis</div>
+              </div>
+            </div>
+            <div class="lb-main">
+              <div class="tab-row">
+                <div class="tab active">PDF hochladen</div>
+                <div class="tab">Text einfügen</div>
+              </div>
+              <div class="lb-textarea">PDF hier ablegen oder klicken</div>
+              <div class="kw-row" style="margin:0">
+                <span class="kw-label">Gespeicherte CVs:</span>
+                <span class="kw on">Mein CV 2024</span>
+                <span class="kw off">Englisch v2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lcard-footer">
+      <div class="pro">✓ Klarer Fortschritt — Nutzer weiß wo er ist</div>
+      <div class="pro">✓ Jeden Schritt separat bestätigen</div>
+      <div class="con">– Fühlt sich mehr nach Formular an, weniger nach Tool</div>
+    </div>
+  </div>
+
+  <!-- Layout C: Split top input, full-width editor below -->
+  <div class="lcard" data-choice="c" onclick="toggleSelect(this)">
+    <div class="lcard-label">Layout C — Split oben, Editor unten <span class="badge teal">Wie Demo</span></div>
+    <div class="lcard-body">
+      <div class="mini-screen">
+        <div class="mini-nav"><span class="logo">LBA</span><span>Dashboard</span><span>Lebensläufe</span><span style="color:white;font-weight:700">Neue Bewerbung</span></div>
+        <div class="mini-content">
+          <!-- Top split input -->
+          <div class="lc-top">
+            <div class="lc-panel">
+              <div class="ptitle">📄 Dein CV — PDF oder Text</div>
+              <div class="parea">Upload / Textarea</div>
+            </div>
+            <div class="lc-panel">
+              <div class="ptitle">💼 Stellenanzeige</div>
+              <div class="parea">Text einfügen…</div>
+            </div>
+          </div>
+          <!-- Keywords bar -->
+          <div class="kw-row" style="margin-bottom:5px">
+            <span class="kw-label">Gefundene Keywords — klick zum Auswählen:</span>
+            <span class="kw on">React</span><span class="kw on">TypeScript</span><span class="kw off">AWS</span><span class="kw on">Scrum</span>
+          </div>
+          <button class="btn-optimize">✨ Optimieren</button>
+          <!-- Full-width 3-col editor -->
+          <div class="lc-bottom">
+            <div class="lc-3col">
+              <div class="lc-col">
+                <div class="ctitle">🎯 Match <span style="background:#d1fae5;color:#065f46;padding:1px 5px;border-radius:99px;font-size:8px">87%</span></div>
+                <div class="carea"></div>
+              </div>
+              <div class="lc-col">
+                <div class="ctitle">📝 Optimiertes CV</div>
+                <div class="carea"></div>
+              </div>
+              <div class="lc-col">
+                <div class="ctitle">✉️ Anschreiben</div>
+                <div class="carea"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lcard-footer">
+      <div class="pro">✓ Genau wie die Landing-Demo — vertrautes Muster</div>
+      <div class="pro">✓ Voller Überblick auf einen Blick</div>
+      <div class="con">– Viel Inhalt auf einer Seite — braucht gutes Design</div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;text-align:center">Welches Layout für den Editor / Wizard — A, B oder C?</p>
+</content>

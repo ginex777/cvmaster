@@ -1,0 +1,82 @@
+<h2>How should the app navigation be laid out?</h2>
+<p class="subtitle">This becomes the shell that wraps every page in the /app area</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="display:flex;height:220px;background:#0f0f0f;border-radius:6px;overflow:hidden;font-size:12px;">
+        <div style="width:200px;background:#1a1a1a;padding:16px;display:flex;flex-direction:column;gap:8px;flex-shrink:0;">
+          <div style="color:#a0a0a0;font-size:10px;letter-spacing:1px;margin-bottom:4px;">LEBENSLAUF-AGENT</div>
+          <div style="background:#2563eb;color:#fff;padding:8px 12px;border-radius:6px;">Dashboard</div>
+          <div style="color:#a0a0a0;padding:8px 12px;">Meine Lebensläufe</div>
+          <div style="color:#a0a0a0;padding:8px 12px;">Bewerbungen</div>
+          <div style="color:#a0a0a0;padding:8px 12px;">Abrechnung</div>
+          <div style="margin-top:auto;color:#a0a0a0;padding:8px 12px;border-top:1px solid #2a2a2a;padding-top:12px;">Abmelden</div>
+        </div>
+        <div style="flex:1;padding:20px;">
+          <div style="color:#fff;font-size:14px;margin-bottom:12px;">Dashboard</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="background:#1a1a1a;border-radius:6px;padding:12px;color:#a0a0a0;font-size:11px;">2 Lebensläufe</div>
+            <div style="background:#1a1a1a;border-radius:6px;padding:12px;color:#a0a0a0;font-size:11px;">5 Bewerbungen</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Fixed Sidebar</h3>
+      <p>Always visible left sidebar, 200px wide. Navigation always in view. Standard SaaS pattern (Linear, Notion, Vercel).</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="display:flex;height:220px;background:#0f0f0f;border-radius:6px;overflow:hidden;font-size:12px;">
+        <div style="width:52px;background:#1a1a1a;padding:8px;display:flex;flex-direction:column;align-items:center;gap:12px;flex-shrink:0;">
+          <div style="color:#a0a0a0;font-size:16px;margin-bottom:4px;">⬡</div>
+          <div style="background:#2563eb;width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;">⊞</div>
+          <div style="color:#606060;width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;">📄</div>
+          <div style="color:#606060;width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;">✉</div>
+          <div style="color:#606060;width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;">💳</div>
+          <div style="margin-top:auto;color:#606060;width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;">→</div>
+        </div>
+        <div style="flex:1;padding:20px;">
+          <div style="color:#fff;font-size:14px;margin-bottom:12px;">Dashboard</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="background:#1a1a1a;border-radius:6px;padding:12px;color:#a0a0a0;font-size:11px;">2 Lebensläufe</div>
+            <div style="background:#1a1a1a;border-radius:6px;padding:12px;color:#a0a0a0;font-size:11px;">5 Bewerbungen</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Icon-only Sidebar</h3>
+      <p>Narrow 52px sidebar with icons only. Maximises content space. Good for the editor with its 3-column layout.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="display:flex;flex-direction:column;height:220px;background:#0f0f0f;border-radius:6px;overflow:hidden;font-size:12px;">
+        <div style="height:44px;background:#1a1a1a;padding:0 16px;display:flex;align-items:center;gap:20px;flex-shrink:0;">
+          <div style="color:#a0a0a0;font-size:10px;letter-spacing:1px;">LEBENSLAUF-AGENT</div>
+          <div style="background:#2563eb;color:#fff;padding:4px 12px;border-radius:4px;font-size:11px;">Dashboard</div>
+          <div style="color:#606060;font-size:11px;">Lebensläufe</div>
+          <div style="color:#606060;font-size:11px;">Bewerbungen</div>
+          <div style="color:#606060;font-size:11px;">Abrechnung</div>
+          <div style="margin-left:auto;color:#606060;font-size:11px;">Abmelden</div>
+        </div>
+        <div style="flex:1;padding:20px;">
+          <div style="color:#fff;font-size:14px;margin-bottom:12px;">Dashboard</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="background:#1a1a1a;border-radius:6px;padding:12px;color:#a0a0a0;font-size:11px;">2 Lebensläufe</div>
+            <div style="background:#1a1a1a;border-radius:6px;padding:12px;color:#a0a0a0;font-size:11px;">5 Bewerbungen</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Top Navigation Bar</h3>
+      <p>Horizontal nav at the top. Full-width content below. Familiar to most users, works well on smaller screens.</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,231 @@
+<h2>Wie soll der Kern-Workflow aussehen?</h2>
+<p class="subtitle">Drei Ansätze — klick auf einen, um ihn auszuwählen</p>
+
+<style>
+.workflow-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  margin-top: 24px;
+}
+.wcard {
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: white;
+}
+.wcard:hover { border-color: #a78bfa; box-shadow: 0 4px 20px rgba(167,139,250,0.15); }
+.wcard.selected { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.2); }
+.wcard-label {
+  background: #f8fafc;
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.badge { background: #7c3aed; color: white; padding: 2px 8px; border-radius: 99px; font-size: 10px; }
+.badge.green { background: #059669; }
+.badge.blue { background: #2563eb; }
+.wcard-mockup {
+  padding: 16px;
+  min-height: 280px;
+}
+.flow-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #7c3aed;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-num.green { background: #059669; }
+.step-num.blue { background: #2563eb; }
+.step-body h4 { margin: 0 0 2px; font-size: 13px; font-weight: 600; color: #1e293b; }
+.step-body p { margin: 0; font-size: 11px; color: #64748b; line-height: 1.4; }
+.step-arrow { color: #cbd5e1; font-size: 18px; margin-left: 10px; margin-bottom: 8px; }
+.screen-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 8px 0 8px 36px;
+  font-size: 11px;
+  color: #475569;
+}
+.screen-box .row { display: flex; gap: 6px; margin-bottom: 4px; align-items: center; }
+.pill { background: #ede9fe; color: #7c3aed; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+.pill.green { background: #d1fae5; color: #059669; }
+.pill.blue { background: #dbeafe; color: #2563eb; }
+.kw-bar { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
+.kw { background: #fef3c7; color: #92400e; padding: 1px 6px; border-radius: 4px; font-size: 10px; }
+.kw.active { background: #7c3aed; color: white; }
+.wcard-footer {
+  border-top: 1px solid #e2e8f0;
+  padding: 10px 16px;
+  background: #f8fafc;
+}
+.pro { color: #059669; font-size: 11px; margin-bottom: 2px; }
+.con { color: #dc2626; font-size: 11px; }
+</style>
+
+<div class="workflow-cards">
+
+  <!-- Option A -->
+  <div class="wcard" data-choice="a" onclick="toggleSelect(this)">
+    <div class="wcard-label">
+      Option A — Library-first
+      <span class="badge">Empfohlen</span>
+    </div>
+    <div class="wcard-mockup">
+      <div class="flow-step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>CV-Bibliothek</h4>
+          <p>PDF hochladen oder Text einfügen → gespeichert & wiederverwendbar</p>
+        </div>
+      </div>
+      <div class="screen-box">
+        <div class="row"><span class="pill">PDF</span> Upload-Bereich</div>
+        <div class="row" style="color:#94a3b8">— oder —</div>
+        <div class="row"><span class="pill">Text</span> Textarea zum Einfügen</div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Wizard: Job-Anzeige</h4>
+          <p>CV auswählen → Stellentext einfügen → generieren</p>
+        </div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Editor</h4>
+          <p>Optimiertes CV + 3 Anschreiben-Varianten → auswählen + herunterladen</p>
+        </div>
+      </div>
+    </div>
+    <div class="wcard-footer">
+      <div class="pro">✓ CV einmal hochladen, mehrfach verwenden</div>
+      <div class="pro">✓ Saubere Trennung von Daten und Anwendungen</div>
+      <div class="con">– Zwei getrennte Bereiche zum Erlernen</div>
+    </div>
+  </div>
+
+  <!-- Option B -->
+  <div class="wcard" data-choice="b" onclick="toggleSelect(this)">
+    <div class="wcard-label">
+      Option B — Job-first
+      <span class="badge blue">Einfach</span>
+    </div>
+    <div class="wcard-mockup">
+      <div class="flow-step">
+        <div class="step-num blue">1</div>
+        <div class="step-body">
+          <h4>Stellentext einfügen</h4>
+          <p>Jede Bewerbung beginnt mit dem Job</p>
+        </div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="flow-step">
+        <div class="step-num blue">2</div>
+        <div class="step-body">
+          <h4>CV hochladen / auswählen</h4>
+          <p>PDF oder Text — inline in diesem Flow</p>
+        </div>
+      </div>
+      <div class="screen-box">
+        <div class="row"><span class="pill blue">Neu:</span> PDF oder Text einfügen</div>
+        <div class="row"><span class="pill blue">Gespeichert:</span> Mein CV vom 01.05.</div>
+      </div>
+      <div class="step-arrow">↓</div>
+      <div class="flow-step">
+        <div class="step-num blue">3</div>
+        <div class="step-body">
+          <h4>Editor</h4>
+          <p>Direkt in den Editor — keine separate Bibliothek</p>
+        </div>
+      </div>
+    </div>
+    <div class="wcard-footer">
+      <div class="pro">✓ Einfachster Einstieg für neue Nutzer</div>
+      <div class="pro">✓ Alles in einem Flow</div>
+      <div class="con">– CV-Wiederverwendung weniger offensichtlich</div>
+    </div>
+  </div>
+
+  <!-- Option C -->
+  <div class="wcard" data-choice="c" onclick="toggleSelect(this)">
+    <div class="wcard-label">
+      Option C — Wizard = Editor
+      <span class="badge" style="background:#d97706">Immersiv</span>
+    </div>
+    <div class="wcard-mockup">
+      <div class="flow-step">
+        <div class="step-num" style="background:#d97706">1</div>
+        <div class="step-body">
+          <h4>Eine Seite — alles live</h4>
+          <p>CV-Text links, Stellenanzeige rechts — Keywords leuchten sofort auf</p>
+        </div>
+      </div>
+      <div class="screen-box">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <div style="font-size:10px;color:#64748b;margin-bottom:4px">Dein CV</div>
+            <div style="background:#e2e8f0;height:60px;border-radius:4px;padding:6px;font-size:10px;color:#94a3b8">Text einfügen oder PDF hochladen…</div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:#64748b;margin-bottom:4px">Stellenanzeige</div>
+            <div style="background:#e2e8f0;height:60px;border-radius:4px;padding:6px;font-size:10px;color:#94a3b8">Job-Text einfügen…</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:#64748b">Keywords erkannt:</div>
+        <div class="kw-bar">
+          <span class="kw active">React</span>
+          <span class="kw active">TypeScript</span>
+          <span class="kw">AWS</span>
+          <span class="kw active">Scrum</span>
+          <span class="kw">Docker</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num" style="background:#d97706">2</div>
+        <div class="step-body">
+          <h4>„Optimieren" klicken</h4>
+          <p>Ergebnis erscheint auf derselben Seite — wie die Landing-Demo</p>
+        </div>
+      </div>
+    </div>
+    <div class="wcard-footer">
+      <div class="pro">✓ Fühlt sich wie die Demo an — vertrautes Erlebnis</div>
+      <div class="pro">✓ Keywords sofort sichtbar</div>
+      <div class="con">– Mehr Bauaufwand, komplexere Seite</div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:20px;text-align:center">Du kannst auch eine Mischung wählen — klick auf zwei Optionen, wenn du Elemente aus beiden magst.</p>
+</content>
+</invoke>

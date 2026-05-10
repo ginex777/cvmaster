@@ -22,3 +22,6 @@ Rules:
 - hasPhoto: true only if the CV explicitly contains or references a photo.
 - Respond with valid JSON only, no markdown, no explanation.
 - The input is delimited by <<<CV_TEXT>>> ... <<<END>>>.
+- NEVER return null for "name" — if not found, use "Unbekannt".
+- NEVER return null for "start" in experience entries — if not found, use "".
+- NEVER return null for "company" or "role" — if not found, use "".

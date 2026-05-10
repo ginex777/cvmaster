@@ -1,0 +1,148 @@
+<h2>Eingabe-Bereich + Keyword-Auswahl</h2>
+<p class="subtitle">Wie soll der obere Teil des Editors aussehen? Klick auf eine Option.</p>
+
+<style>
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+.ocard { border: 2px solid #e2e8f0; border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; background: white; }
+.ocard:hover { border-color: #a78bfa; }
+.ocard.selected { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.2); }
+.ocard-label { background: #f8fafc; padding: 10px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; }
+.badge { background: #7c3aed; color: white; padding: 2px 8px; border-radius: 99px; font-size: 10px; }
+.ocard-body { padding: 16px; }
+.ocard-footer { border-top: 1px solid #e2e8f0; padding: 8px 16px; background: #f8fafc; }
+.pro { color: #059669; font-size: 10px; margin-bottom: 2px; }
+.con { color: #dc2626; font-size: 10px; }
+
+/* Shared mockup elements */
+.mock-panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+.mock-tabs { display: flex; background: white; border-bottom: 1px solid #e2e8f0; }
+.mock-tab { padding: 6px 12px; font-size: 11px; color: #94a3b8; border-bottom: 2px solid transparent; cursor: pointer; }
+.mock-tab.active { color: #7c3aed; border-bottom-color: #7c3aed; font-weight: 600; }
+.mock-drop { background: white; border: 2px dashed #c4b5fd; border-radius: 8px; margin: 10px; padding: 16px; text-align: center; }
+.mock-drop .icon { font-size: 20px; margin-bottom: 4px; }
+.mock-drop .text { font-size: 11px; color: #64748b; }
+.mock-drop .sub { font-size: 10px; color: #94a3b8; margin-top: 2px; }
+.mock-textarea { background: white; border: none; width: 100%; height: 80px; padding: 10px; font-size: 11px; color: #64748b; resize: none; box-sizing: border-box; font-family: inherit; }
+.mock-textarea::placeholder { color: #cbd5e1; }
+.saved-cvs { padding: 6px 10px; border-top: 1px solid #e2e8f0; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.saved-label { font-size: 10px; color: #94a3b8; }
+.cv-chip { background: #ede9fe; color: #7c3aed; font-size: 10px; padding: 2px 8px; border-radius: 99px; font-weight: 500; }
+
+.input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+
+/* Keywords - Option 1: Tag cloud mit Toggle */
+.kw-section { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; }
+.kw-title { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; justify-content: space-between; }
+.kw-cloud { display: flex; flex-wrap: wrap; gap: 6px; }
+.kw-tag { font-size: 11px; padding: 3px 10px; border-radius: 99px; cursor: pointer; transition: all 0.15s; border: 1px solid; }
+.kw-tag.include { background: #7c3aed; color: white; border-color: #7c3aed; }
+.kw-tag.maybe { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+.kw-tag.exclude { background: white; color: #94a3b8; border-color: #e2e8f0; text-decoration: line-through; }
+
+/* Keywords - Option 2: Inline highlight in text */
+.kw-inline { font-size: 11px; color: #475569; line-height: 1.8; padding: 10px 12px; background: white; border-radius: 8px; border: 1px solid #e2e8f0; }
+.hl { border-radius: 3px; padding: 1px 3px; cursor: pointer; }
+.hl.green { background: #d1fae5; color: #065f46; }
+.hl.yellow { background: #fef3c7; color: #92400e; }
+.hl.gray { background: #f1f5f9; color: #94a3b8; }
+
+.btn-go { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 12px; font-weight: 700; width: 100%; margin-top: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+</style>
+
+<div class="opts">
+
+  <!-- Option A: Tabs für PDF/Text, Keywords als Tag-Cloud -->
+  <div class="ocard" data-choice="a" onclick="toggleSelect(this)">
+    <div class="ocard-label">Option A — Tabs + Keyword-Tags <span class="badge">Empfohlen</span></div>
+    <div class="ocard-body">
+      <div class="input-grid">
+        <!-- CV Panel with tabs -->
+        <div class="mock-panel">
+          <div class="mock-tabs">
+            <div class="mock-tab active">📤 PDF hochladen</div>
+            <div class="mock-tab">✏️ Text einfügen</div>
+          </div>
+          <div class="mock-drop">
+            <div class="icon">📄</div>
+            <div class="text">PDF oder DOCX hierher ziehen</div>
+            <div class="sub">oder klicken zum Auswählen</div>
+          </div>
+          <div class="saved-cvs">
+            <span class="saved-label">Gespeichert:</span>
+            <span class="cv-chip">Mein CV 2024</span>
+            <span class="cv-chip">Englisch</span>
+          </div>
+        </div>
+        <!-- Job Panel -->
+        <div class="mock-panel">
+          <div style="padding:8px 10px;font-size:10px;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0">💼 Stellenanzeige</div>
+          <textarea class="mock-textarea" placeholder="Stellentext hier einfügen — z.B. von LinkedIn oder dem Karriereportal…" readonly></textarea>
+        </div>
+      </div>
+
+      <!-- Keyword tag cloud -->
+      <div class="kw-section">
+        <div class="kw-title">
+          <span>🎯 Keywords aus der Stellenanzeige — klick zum An/Abwählen</span>
+          <span style="color:#a78bfa;font-size:10px;font-weight:400">4 von 6 ausgewählt</span>
+        </div>
+        <div class="kw-cloud">
+          <span class="kw-tag include">React</span>
+          <span class="kw-tag include">TypeScript</span>
+          <span class="kw-tag include">Node.js</span>
+          <span class="kw-tag maybe">AWS</span>
+          <span class="kw-tag include">Scrum</span>
+          <span class="kw-tag exclude">Docker</span>
+          <span class="kw-tag maybe">CI/CD</span>
+          <span class="kw-tag exclude">Kubernetes</span>
+        </div>
+      </div>
+      <button class="btn-go">✨ CV optimieren & Anschreiben erstellen</button>
+    </div>
+    <div class="ocard-footer">
+      <div class="pro">✓ Klar welche Keywords einbezogen werden</div>
+      <div class="pro">✓ Grün = muss rein, Gelb = optional, Grau = ignorieren</div>
+    </div>
+  </div>
+
+  <!-- Option B: Inline highlights im CV-Text, Text-first -->
+  <div class="ocard" data-choice="b" onclick="toggleSelect(this)">
+    <div class="ocard-label">Option B — Inline-Highlights im Text <span class="badge" style="background:#0d9488">Modern</span></div>
+    <div class="ocard-body">
+      <div class="input-grid">
+        <!-- CV Panel text-first -->
+        <div class="mock-panel">
+          <div class="mock-tabs">
+            <div class="mock-tab active">✏️ Text einfügen</div>
+            <div class="mock-tab">📤 PDF hochladen</div>
+          </div>
+          <textarea class="mock-textarea" style="height:90px" placeholder="Deinen Lebenslauf-Text hier einfügen…" readonly></textarea>
+          <div class="saved-cvs">
+            <span class="saved-label">Gespeichert:</span>
+            <span class="cv-chip">Mein CV 2024</span>
+          </div>
+        </div>
+        <!-- Job Panel with inline highlights -->
+        <div class="mock-panel">
+          <div style="padding:8px 10px;font-size:10px;font-weight:700;color:#64748b;border-bottom:1px solid #e2e8f0">💼 Stellenanzeige — Keywords werden markiert</div>
+          <div class="kw-inline">
+            Wir suchen einen <span class="hl green">React</span> Entwickler mit <span class="hl green">TypeScript</span> Kenntnissen. Erfahrung mit <span class="hl yellow">AWS</span> ist von Vorteil. <span class="hl green">Scrum</span> und agile Methoden werden vorausgesetzt. Kenntnisse in <span class="hl gray">Docker</span> und <span class="hl gray">Kubernetes</span> wünschenswert…
+          </div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:#64748b;margin-bottom:8px;padding:4px 0">
+        <span style="background:#d1fae5;color:#065f46;padding:1px 5px;border-radius:3px;margin-right:4px">Grün</span> im CV vorhanden ·
+        <span style="background:#fef3c7;color:#92400e;padding:1px 5px;border-radius:3px;margin:0 4px">Gelb</span> fehlt noch ·
+        <span style="background:#f1f5f9;color:#94a3b8;padding:1px 5px;border-radius:3px;margin-left:4px">Grau</span> nicht relevant
+      </div>
+      <button class="btn-go">✨ CV optimieren & Anschreiben erstellen</button>
+    </div>
+    <div class="ocard-footer">
+      <div class="pro">✓ Keywords direkt im Kontext sichtbar</div>
+      <div class="pro">✓ Sofortiges visuelles Feedback beim Tippen</div>
+      <div class="con">– Komplexer zu bauen (Echtzeit-Highlighting)</div>
+    </div>
+  </div>
+
+</div>
+</content>

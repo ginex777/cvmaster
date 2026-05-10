@@ -153,8 +153,12 @@ export class LandingComponent {
         password: this.registerPassword(),
         art9Consent: this.consentGiven(),
       });
-      await this.router.navigate(['/login'], { queryParams: { registered: '1' } });
-      this.closeDialog();
+      this.registerName.set('');
+      this.registerEmail.set('');
+      this.registerPassword.set('');
+      this.consentGiven.set(false);
+      this.activeDialog.set('login');
+      this.modalMessage.set('Registrierung erfolgreich! Bitte bestätige deine E-Mail-Adresse und melde dich dann an.');
     } catch (error: unknown) {
       this.modalMessage.set(this.errorMessage(error, 'Registrierung fehlgeschlagen.'));
     } finally {

@@ -1,0 +1,153 @@
+<h2>Ergebnis-Bereich — nach dem Optimieren</h2>
+<p class="subtitle">Wie sollen Match-Score, optimiertes CV und die Anschreiben-Varianten angezeigt werden?</p>
+
+<style>
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+.ocard { border: 2px solid #e2e8f0; border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; background: white; }
+.ocard:hover { border-color: #a78bfa; }
+.ocard.selected { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.2); }
+.ocard-label { background: #f8fafc; padding: 10px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; }
+.badge { background: #7c3aed; color: white; padding: 2px 8px; border-radius: 99px; font-size: 10px; }
+.ocard-body { padding: 14px; }
+.ocard-footer { border-top: 1px solid #e2e8f0; padding: 8px 16px; background: #f8fafc; }
+.pro { color: #059669; font-size: 10px; margin-bottom: 2px; }
+.con { color: #dc2626; font-size: 10px; }
+
+/* shared */
+.score-ring { width: 48px; height: 48px; border-radius: 50%; background: conic-gradient(#7c3aed 315deg, #e2e8f0 0deg); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #7c3aed; position: relative; flex-shrink: 0; }
+.score-ring::before { content: ''; position: absolute; width: 36px; height: 36px; background: white; border-radius: 50%; }
+.score-ring span { position: relative; z-index: 1; }
+.section-title { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.text-block { background: #f8fafc; border-radius: 6px; padding: 8px; font-size: 10px; color: #475569; line-height: 1.6; height: 60px; overflow: hidden; }
+.kw-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; }
+.kw { font-size: 9px; padding: 1px 6px; border-radius: 99px; }
+.kw.hit { background: #d1fae5; color: #065f46; }
+.kw.miss { background: #fee2e2; color: #991b1b; }
+.btn-dl { background: #7c3aed; color: white; font-size: 10px; padding: 5px 12px; border-radius: 6px; border: none; width: 100%; margin-top: 8px; cursor: pointer; font-weight: 600; }
+.btn-dl.ghost { background: white; color: #7c3aed; border: 1px solid #c4b5fd; }
+
+/* Option A: 3-column side by side */
+.three-col { display: grid; grid-template-columns: 120px 1fr 1fr; gap: 8px; }
+.col-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; }
+.variant-tabs { display: flex; gap: 3px; margin-bottom: 6px; }
+.vtab { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: #e2e8f0; color: #64748b; cursor: pointer; }
+.vtab.active { background: #7c3aed; color: white; font-weight: 600; }
+.chosen-badge { background: #d1fae5; color: #065f46; font-size: 9px; padding: 1px 6px; border-radius: 99px; font-weight: 600; }
+
+/* Option B: full-width CV, anschreiben below as cards */
+.full-cv { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; margin-bottom: 8px; }
+.letter-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.lcard { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; position: relative; }
+.lcard.selected-card { border-color: #7c3aed; }
+.lcard .variant-name { font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between; }
+.lcard .letter-preview { font-size: 9px; color: #475569; line-height: 1.5; height: 45px; overflow: hidden; }
+.select-btn { width: 100%; margin-top: 5px; font-size: 9px; padding: 3px 0; border-radius: 4px; border: 1px solid #c4b5fd; background: white; color: #7c3aed; cursor: pointer; font-weight: 600; }
+.select-btn.chosen { background: #7c3aed; color: white; border-color: #7c3aed; }
+
+/* score bar */
+.score-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.score-label { font-size: 10px; color: #64748b; }
+.score-bar-wrap { flex: 1; background: #e2e8f0; border-radius: 99px; height: 6px; }
+.score-bar { background: linear-gradient(90deg, #7c3aed, #a78bfa); height: 6px; border-radius: 99px; width: 87%; }
+</style>
+
+<div class="opts">
+
+  <!-- Option A: 3 columns side by side (like current editor) -->
+  <div class="ocard" data-choice="a" onclick="toggleSelect(this)">
+    <div class="ocard-label">Option A — 3 Spalten nebeneinander <span class="badge">Wie Demo</span></div>
+    <div class="ocard-body">
+      <div class="three-col">
+        <!-- Score column -->
+        <div class="col-box">
+          <div class="section-title">Match</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+            <div class="score-ring"><span>87%</span></div>
+            <div style="font-size:9px;color:#64748b;">ATS Score</div>
+          </div>
+          <div class="kw-row">
+            <span class="kw hit">React</span>
+            <span class="kw hit">TypeScript</span>
+            <span class="kw miss">AWS</span>
+            <span class="kw hit">Scrum</span>
+            <span class="kw miss">Docker</span>
+          </div>
+        </div>
+        <!-- Optimized CV column -->
+        <div class="col-box">
+          <div class="section-title">Optimiertes CV</div>
+          <div class="text-block">Senior Frontend Entwickler mit 6 Jahren Erfahrung in React und TypeScript. Erfolgreich agile Projekte mit Scrum geleitet…</div>
+          <button class="btn-dl ghost" style="margin-top:6px">⬇ PDF herunterladen</button>
+        </div>
+        <!-- Cover letter column with tabs -->
+        <div class="col-box">
+          <div class="section-title" style="display:flex;align-items:center;gap:6px">Anschreiben <span class="chosen-badge">Formal gewählt</span></div>
+          <div class="variant-tabs">
+            <div class="vtab active">Formal</div>
+            <div class="vtab">Freundlich</div>
+            <div class="vtab">Knapp</div>
+          </div>
+          <div class="text-block">Sehr geehrte Damen und Herren, mit großem Interesse bewerbe ich mich auf die ausgeschriebene Stelle als Senior Frontend Entwickler…</div>
+          <button class="btn-dl" style="margin-top:6px">✓ Diese Variante wählen & herunterladen</button>
+        </div>
+      </div>
+    </div>
+    <div class="ocard-footer">
+      <div class="pro">✓ Alles auf einen Blick — kein Scrollen nötig</div>
+      <div class="pro">✓ Anschreiben-Varianten per Tab wechselbar</div>
+      <div class="con">– Spalten werden eng auf kleinen Bildschirmen</div>
+    </div>
+  </div>
+
+  <!-- Option B: Full-width CV, letter cards below -->
+  <div class="ocard" data-choice="b" onclick="toggleSelect(this)">
+    <div class="ocard-label">Option B — CV breit, Anschreiben als Karten <span class="badge" style="background:#0d9488">Übersichtlich</span></div>
+    <div class="ocard-body">
+      <!-- Score bar -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="score-ring"><span>87%</span></div>
+        <div style="flex:1">
+          <div style="font-size:10px;font-weight:700;color:#1e293b;margin-bottom:3px">87% Match — Sehr gut!</div>
+          <div class="score-bar-wrap"><div class="score-bar"></div></div>
+          <div class="kw-row" style="margin-top:4px">
+            <span class="kw hit">React</span><span class="kw hit">TypeScript</span><span class="kw miss">AWS</span><span class="kw hit">Scrum</span>
+          </div>
+        </div>
+        <button class="btn-dl ghost" style="width:auto;white-space:nowrap;font-size:10px">⬇ CV als PDF</button>
+      </div>
+      <!-- Full width CV preview -->
+      <div class="full-cv">
+        <div class="section-title">Optimiertes CV</div>
+        <div class="text-block" style="height:40px">Senior Frontend Entwickler mit 6 Jahren Erfahrung in React und TypeScript. Erfolgreich agile Projekte mit Scrum geleitet und internationale Teams koordiniert…</div>
+      </div>
+      <!-- 3 letter cards -->
+      <div class="section-title">Anschreiben — wähle deine Variante:</div>
+      <div class="letter-cards">
+        <div class="lcard selected-card">
+          <div class="variant-name">✉ Formal <span class="chosen-badge">Gewählt</span></div>
+          <div class="letter-preview">Sehr geehrte Damen und Herren, mit großem Interesse bewerbe ich mich auf die ausgeschriebene Stelle…</div>
+          <button class="select-btn chosen">✓ Gewählt</button>
+        </div>
+        <div class="lcard">
+          <div class="variant-name">😊 Freundlich</div>
+          <div class="letter-preview">Hallo liebes Team, ich bin begeistert von eurer Arbeit und würde mich sehr freuen, Teil davon zu werden…</div>
+          <button class="select-btn">Auswählen</button>
+        </div>
+        <div class="lcard">
+          <div class="variant-name">⚡ Knapp</div>
+          <div class="letter-preview">Ich bringe 6 Jahre React-Erfahrung mit und liefere messbare Ergebnisse. Mein Portfolio belegt das eindrucksvoll…</div>
+          <button class="select-btn">Auswählen</button>
+        </div>
+      </div>
+    </div>
+    <div class="ocard-footer">
+      <div class="pro">✓ Alle 3 Anschreiben gleichzeitig sichtbar — leichter zu vergleichen</div>
+      <div class="pro">✓ CV bekommt mehr Platz zum Lesen und Bearbeiten</div>
+      <div class="con">– Mehr Scrollen nötig</div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;text-align:center">Wie sollen Match-Score, CV und die 3 Anschreiben-Varianten nach dem Generieren aussehen?</p>
+</content>

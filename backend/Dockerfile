@@ -7,6 +7,8 @@ FROM node:22-alpine AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Dummy URL for prisma generate — generate only reads the schema, never connects
+ENV DATABASE_URL=postgresql://lba:placeholder@localhost:5432/lba
 RUN npm run prisma:generate
 RUN npm run build
 

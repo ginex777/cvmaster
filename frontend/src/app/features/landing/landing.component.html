@@ -129,7 +129,7 @@
             <p>Mit deinem Konto gelangst du direkt in den Bewerbungsbereich.</p>
           </div>
 
-          <form class="modal-form" (ngSubmit)="submitLogin()">
+          <form class="modal-form" (submit)="$event.preventDefault(); submitLogin()">
             <label class="field">
               <span>E-Mail</span>
               <input
@@ -165,7 +165,7 @@
             <p>Nach der Registrierung bestaetigst du deine E-Mail-Adresse und kannst dich einloggen.</p>
           </div>
 
-          <form class="modal-form" (ngSubmit)="submitRegister()">
+          <form class="modal-form" (submit)="$event.preventDefault(); submitRegister()">
             <label class="field">
               <span>Name</span>
               <input

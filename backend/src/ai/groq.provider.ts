@@ -1,6 +1,17 @@
 import type { ZodSchema } from 'zod';
 import type { LLMProvider } from './provider';
 
+function normalizeNulls(v: unknown): unknown {
+  if (v === null) return undefined;
+  if (Array.isArray(v)) return v.map(normalizeNulls);
+  if (typeof v === 'object') {
+    return Object.fromEntries(
+      Object.entries(v as Record<string, unknown>).map(([k, val]) => [k, normalizeNulls(val)])
+    );
+  }
+  return v;
+}
+
 export class GroqProvider implements LLMProvider {
   private baseUrl = 'https://api.groq.com/openai/v1';
 
@@ -22,7 +33,7 @@ export class GroqProvider implements LLMProvider {
     });
     if (!res.ok) throw new Error(`Groq error ${res.status}: ${await res.text()}`);
     const data = await res.json() as { choices: Array<{ message: { content: string } }> };
-    const raw = JSON.parse(data.choices[0].message.content);
+    const raw = normalizeNulls(JSON.parse(data.choices[0].message.content));
     return opts.schema.parse(raw);
   }
 }

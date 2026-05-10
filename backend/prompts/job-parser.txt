@@ -20,3 +20,5 @@ Rules:
 - Do NOT invent anything not present in the text.
 - Respond with valid JSON only, no markdown, no explanation.
 - The input is delimited by <<<JOB_AD>>> ... <<<END>>>.
+- NEVER return null for "title" — if not found, use "Unbekannte Stelle".
+- NEVER return null for "language" — default to "de" if uncertain.

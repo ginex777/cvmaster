@@ -1,0 +1,199 @@
+<h2>Dashboard — was siehst du nach dem Login?</h2>
+<p class="subtitle">Beide passen zum Stil der Landing Page — welcher Ton gefällt dir?</p>
+
+<style>
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+.ocard { border: 2px solid #e2e8f0; border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; background: white; }
+.ocard:hover { border-color: #a78bfa; }
+.ocard.selected { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.2); }
+.ocard-label { background: #f8fafc; padding: 10px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; }
+.badge { background: #7c3aed; color: white; padding: 2px 8px; border-radius: 99px; font-size: 10px; }
+.ocard-body { padding: 0; overflow: hidden; }
+.ocard-footer { border-top: 1px solid #e2e8f0; padding: 8px 16px; background: #f8fafc; }
+.pro { color: #059669; font-size: 10px; margin-bottom: 2px; }
+.con { color: #dc2626; font-size: 10px; }
+
+/* ── Option A: Dark/Purple wie Landing Page ── */
+.dash-a { background: #0f0a1e; font-family: system-ui, sans-serif; }
+.nav-a { background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 8px 16px; display: flex; align-items: center; gap: 12px; }
+.logo-a { font-size: 13px; font-weight: 800; background: linear-gradient(135deg, #a78bfa, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.nav-link { font-size: 10px; color: rgba(255,255,255,0.5); }
+.nav-link.active { color: white; }
+.nav-user { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.nav-badge { background: rgba(124,58,237,0.3); color: #a78bfa; font-size: 9px; padding: 1px 6px; border-radius: 99px; border: 1px solid rgba(124,58,237,0.4); }
+.nav-name { font-size: 10px; color: rgba(255,255,255,0.6); }
+.dash-content { padding: 14px 16px; }
+.hero-row-a { margin-bottom: 12px; }
+.welcome { font-size: 13px; font-weight: 700; color: white; margin-bottom: 2px; }
+.welcome-sub { font-size: 10px; color: rgba(255,255,255,0.4); }
+.btn-new { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; border: none; border-radius: 6px; padding: 6px 14px; font-size: 10px; font-weight: 700; cursor: pointer; float: right; margin-top: -24px; }
+.stats-a { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.stat-card-a { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 12px; }
+.stat-val { font-size: 20px; font-weight: 800; color: white; }
+.stat-lbl { font-size: 9px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1px; }
+.stat-change { font-size: 9px; color: #34d399; margin-top: 3px; }
+.recent-title { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.app-row-a { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; margin-bottom: 4px; }
+.app-company { font-size: 11px; font-weight: 600; color: white; flex: 1; }
+.app-role { font-size: 9px; color: rgba(255,255,255,0.4); }
+.score-pill { font-size: 9px; padding: 2px 7px; border-radius: 99px; font-weight: 700; }
+.score-pill.high { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+.score-pill.mid { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: #a78bfa; }
+.edit-link { font-size: 9px; color: #a78bfa; }
+
+/* ── Option B: Light/Clean mit Purple Akzenten ── */
+.dash-b { background: #fafafa; font-family: system-ui, sans-serif; }
+.nav-b { background: white; border-bottom: 1px solid #e2e8f0; padding: 8px 16px; display: flex; align-items: center; gap: 12px; }
+.logo-b { font-size: 13px; font-weight: 800; color: #7c3aed; }
+.nav-link-b { font-size: 10px; color: #94a3b8; }
+.nav-link-b.active { color: #1e293b; font-weight: 600; }
+.nav-badge-b { background: #ede9fe; color: #7c3aed; font-size: 9px; padding: 1px 6px; border-radius: 99px; }
+.dash-content-b { padding: 14px 16px; }
+.hero-banner { background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+.hero-text h3 { font-size: 13px; font-weight: 700; color: white; margin: 0 0 2px; }
+.hero-text p { font-size: 10px; color: rgba(255,255,255,0.7); margin: 0; }
+.btn-new-b { background: white; color: #7c3aed; border: none; border-radius: 6px; padding: 6px 14px; font-size: 10px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.stats-b { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.stat-card-b { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; }
+.stat-val-b { font-size: 20px; font-weight: 800; color: #1e293b; }
+.stat-lbl-b { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1px; }
+.stat-icon { float: right; font-size: 16px; margin-top: -2px; }
+.recent-title-b { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.app-row-b { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: white; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 4px; }
+.app-company-b { font-size: 11px; font-weight: 600; color: #1e293b; flex: 1; }
+.app-role-b { font-size: 9px; color: #94a3b8; }
+.score-pill-b { font-size: 9px; padding: 2px 7px; border-radius: 99px; font-weight: 700; background: #ede9fe; color: #7c3aed; }
+.status-chip { font-size: 9px; padding: 1px 6px; border-radius: 99px; background: #fef3c7; color: #92400e; }
+.edit-link-b { font-size: 9px; color: #7c3aed; font-weight: 600; }
+</style>
+
+<div class="opts">
+
+  <!-- Option A: Dark like landing page -->
+  <div class="ocard" data-choice="a" onclick="toggleSelect(this)">
+    <div class="ocard-label">Option A — Dark, wie die Landing Page <span class="badge">Konsistent</span></div>
+    <div class="ocard-body">
+      <div class="dash-a">
+        <div class="nav-a">
+          <span class="logo-a">LBA</span>
+          <span class="nav-link active">Dashboard</span>
+          <span class="nav-link">Lebensläufe</span>
+          <span class="nav-link">Abrechnung</span>
+          <div class="nav-user">
+            <span class="nav-badge">FREE</span>
+            <span class="nav-name">Dennis</span>
+          </div>
+        </div>
+        <div class="dash-content">
+          <div class="hero-row-a">
+            <div class="welcome">Willkommen zurück, Dennis 👋</div>
+            <div class="welcome-sub">Dein nächster Job wartet — starte eine neue Bewerbung.</div>
+            <button class="btn-new">+ Neue Bewerbung</button>
+          </div>
+          <div class="stats-a">
+            <div class="stat-card-a">
+              <div class="stat-val">3</div>
+              <div class="stat-lbl">Lebensläufe</div>
+              <div class="stat-change">↑ +1 diese Woche</div>
+            </div>
+            <div class="stat-card-a">
+              <div class="stat-val">12</div>
+              <div class="stat-lbl">Bewerbungen</div>
+              <div class="stat-change">↑ +2 diese Woche</div>
+            </div>
+            <div class="stat-card-a">
+              <div class="stat-val">89%</div>
+              <div class="stat-lbl">Ø Match-Score</div>
+              <div class="stat-change">↑ besser als letzte Woche</div>
+            </div>
+          </div>
+          <div class="recent-title">Letzte Bewerbungen</div>
+          <div class="app-row-a">
+            <div class="status-dot"></div>
+            <div style="flex:1"><div class="app-company">Acme GmbH</div><div class="app-role">Senior Frontend Entwickler</div></div>
+            <span class="score-pill high">94%</span>
+            <span class="edit-link">Öffnen →</span>
+          </div>
+          <div class="app-row-a">
+            <div class="status-dot" style="background:#fbbf24"></div>
+            <div style="flex:1"><div class="app-company">TechCorp AG</div><div class="app-role">React Developer</div></div>
+            <span class="score-pill mid">71%</span>
+            <span class="edit-link">Öffnen →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ocard-footer">
+      <div class="pro">✓ Nahtloser Übergang von der Landing Page</div>
+      <div class="pro">✓ Premium-Gefühl, fühlt sich wie ein Power-Tool an</div>
+      <div class="con">– Dunkle UIs können bei langen Sessions ermüden</div>
+    </div>
+  </div>
+
+  <!-- Option B: Light with purple accents -->
+  <div class="ocard" data-choice="b" onclick="toggleSelect(this)">
+    <div class="ocard-label">Option B — Hell mit Purple-Akzenten <span class="badge" style="background:#0d9488">Lesbar</span></div>
+    <div class="ocard-body">
+      <div class="dash-b">
+        <div class="nav-b">
+          <span class="logo-b">LBA</span>
+          <span class="nav-link-b active">Dashboard</span>
+          <span class="nav-link-b">Lebensläufe</span>
+          <span class="nav-link-b">Abrechnung</span>
+          <div class="nav-user" style="margin-left:auto;display:flex;align-items:center;gap:6px">
+            <span class="nav-badge-b">FREE</span>
+            <span style="font-size:10px;color:#64748b">Dennis</span>
+          </div>
+        </div>
+        <div class="dash-content-b">
+          <div class="hero-banner">
+            <div class="hero-text">
+              <h3>Willkommen zurück, Dennis 👋</h3>
+              <p>Dein nächster Job wartet — starte eine neue Bewerbung.</p>
+            </div>
+            <button class="btn-new-b">+ Neue Bewerbung</button>
+          </div>
+          <div class="stats-b">
+            <div class="stat-card-b">
+              <span class="stat-icon">📄</span>
+              <div class="stat-val-b">3</div>
+              <div class="stat-lbl-b">Lebensläufe</div>
+            </div>
+            <div class="stat-card-b">
+              <span class="stat-icon">📨</span>
+              <div class="stat-val-b">12</div>
+              <div class="stat-lbl-b">Bewerbungen</div>
+            </div>
+            <div class="stat-card-b">
+              <span class="stat-icon">🎯</span>
+              <div class="stat-val-b">89%</div>
+              <div class="stat-lbl-b">Ø Match-Score</div>
+            </div>
+          </div>
+          <div class="recent-title-b">Letzte Bewerbungen</div>
+          <div class="app-row-b">
+            <div style="flex:1"><div class="app-company-b">Acme GmbH</div><div class="app-role-b">Senior Frontend Entwickler</div></div>
+            <span class="score-pill-b">94%</span>
+            <span class="status-chip">Entwurf</span>
+            <span class="edit-link-b">Öffnen →</span>
+          </div>
+          <div class="app-row-b">
+            <div style="flex:1"><div class="app-company-b">TechCorp AG</div><div class="app-role-b">React Developer</div></div>
+            <span class="score-pill-b">71%</span>
+            <span class="status-chip" style="background:#d1fae5;color:#065f46">Gesendet</span>
+            <span class="edit-link-b">Öffnen →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ocard-footer">
+      <div class="pro">✓ Angenehmer für lange Arbeitssessions</div>
+      <div class="pro">✓ Purple-Banner hält den Landing-Page-Look</div>
+      <div class="con">– Weniger dramatischer Übergang von der dunklen Landing Page</div>
+    </div>
+  </div>
+
+</div>
+<p class="subtitle" style="margin-top:16px;text-align:center">Dunkel wie die Landing Page — oder hell mit Purple-Banner?</p>
+</content>
