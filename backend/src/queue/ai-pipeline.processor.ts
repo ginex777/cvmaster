@@ -105,7 +105,7 @@ export class AiPipelineProcessor implements OnModuleInit {
 
     await this.prisma.application.update({
       where: { id: applicationId },
-      data: { optimizedCv, coverLetter, matchScore: result.score, matchReport, status: 'DRAFT' },
+      data: { optimizedCv, coverLetter, matchScore: result.score, matchReport, status: 'OPEN' },
     });
 
     await job.updateProgress(100);

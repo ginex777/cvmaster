@@ -55,7 +55,7 @@ export class DashboardComponent implements OnInit {
 
   statusLabel(status: string): string {
     const labels: Record<string, string> = {
-      DRAFT: 'Entwurf', EXPORTED: 'Exportiert', SENT: 'Gesendet',
+      DRAFT: 'Wird optimiert...', OPEN: 'Offen', DONE: 'Erledigt', EXPORTED: 'Exportiert', SENT: 'Gesendet',
       REPLIED: 'Antwort', INTERVIEW: 'Interview', REJECTED: 'Abgelehnt', OFFER: 'Angebot',
     };
     return labels[status] ?? status;
