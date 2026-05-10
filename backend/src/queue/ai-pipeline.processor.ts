@@ -70,6 +70,14 @@ export class AiPipelineProcessor implements OnModuleInit {
   }
 
   private async process(job: Job) {
+    if (job.name === 'regenerate-letter') {
+      return this.processRegenerateLetter(job);
+    }
+
+    return this.processFullPipeline(job);
+  }
+
+  private async processFullPipeline(job: Job) {
     const { applicationId } = job.data;
 
     const app = await this.prisma.application.findUniqueOrThrow({
@@ -106,6 +114,30 @@ export class AiPipelineProcessor implements OnModuleInit {
     await this.prisma.application.update({
       where: { id: applicationId },
       data: { optimizedCv, coverLetter, matchScore: result.score, matchReport, status: 'OPEN' },
+    });
+
+    await job.updateProgress(100);
+  }
+
+  private async processRegenerateLetter(job: Job) {
+    const { applicationId } = job.data;
+
+    const app = await this.prisma.application.findUniqueOrThrow({
+      where: { id: applicationId },
+      include: { jobPosting: true },
+    });
+
+    const optimizedCv = app.optimizedCv as unknown as ParsedCV;
+    const parsedJob = app.jobPosting.parsedJson as unknown as ParsedJob;
+
+    await job.updateProgress(20);
+
+    const rawLetter = await this.ai.generateCoverLetter(optimizedCv, parsedJob);
+    const coverLetter = sanitizeLetter(rawLetter);
+
+    await this.prisma.application.update({
+      where: { id: applicationId },
+      data: { coverLetter },
     });
 
     await job.updateProgress(100);
