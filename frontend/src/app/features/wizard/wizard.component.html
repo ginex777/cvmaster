@@ -102,3 +102,9 @@
     </section>
   }
 </main>
+
+<lba-upgrade-modal
+  [open]="upgradeModalOpen()"
+  (upgradeRequested)="onUpgradeRequested()"
+  (dismissed)="upgradeModalOpen.set(false)"
+/>

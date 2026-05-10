@@ -58,6 +58,21 @@ describe('WizardComponent', () => {
     expect(f.componentInstance.error()).toBe('Fehler');
   });
 
+  it('shows upgrade modal when application creation returns 402', async () => {
+    api.post.mockImplementation((path: string) => {
+      if (path === '/jobs/parse') return Promise.resolve({ id: 'job1' });
+      return Promise.reject(new HttpErrorResponse({ status: 402, error: { message: 'Plan limit' } }));
+    });
+    const f = TestBed.createComponent(WizardComponent);
+    f.componentInstance.selectedCvId.set('cv1');
+    f.componentInstance.jobForm.setValue({ jobRaw: 'Frontend Developer at Stripe with React skills required for this position...' });
+
+    await f.componentInstance.generate();
+
+    expect(f.componentInstance.upgradeModalOpen()).toBe(true);
+    expect(f.componentInstance.error()).toBeNull();
+  });
+
   it('error signal set to fallback for non-HTTP errors', async () => {
     api.post.mockRejectedValue(new Error('network'));
     const f = TestBed.createComponent(WizardComponent);

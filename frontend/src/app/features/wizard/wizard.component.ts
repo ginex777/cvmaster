@@ -5,12 +5,14 @@ import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApiService } from '../../core/api/api.service';
+import { UpgradeModal } from '../../shared/components/upgrade-modal/upgrade-modal';
 
 export interface MasterCv {
   id: string;
   name: string;
   language: string;
   sourceFilename: string;
+  template?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,7 +20,7 @@ export interface MasterCv {
 @Component({
   selector: 'lba-wizard',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, UpgradeModal],
   templateUrl: './wizard.component.html',
   styleUrl: './wizard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,6 +34,7 @@ export class WizardComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly cvs = signal<MasterCv[]>([]);
   readonly selectedCvId = signal<string | null>(null);
+  readonly upgradeModalOpen = signal(false);
 
   readonly jobForm = new FormGroup({
     jobRaw: new FormControl('', [Validators.required, Validators.minLength(50)]),
@@ -71,11 +74,20 @@ export class WizardComponent implements OnInit {
       });
       await this.router.navigate(['/app/applications', app.id]);
     } catch (e: unknown) {
-      this.error.set(
-        e instanceof HttpErrorResponse ? e.error.message : 'Bewerbung konnte nicht erstellt werden.',
-      );
+      if (e instanceof HttpErrorResponse && e.status === 402) {
+        this.upgradeModalOpen.set(true);
+      } else {
+        this.error.set(
+          e instanceof HttpErrorResponse ? e.error.message : 'Bewerbung konnte nicht erstellt werden.',
+        );
+      }
     } finally {
       this.loading.set(false);
     }
+  }
+
+  onUpgradeRequested(): void {
+    this.upgradeModalOpen.set(false);
+    void this.router.navigate(['/app/billing']);
   }
 }
