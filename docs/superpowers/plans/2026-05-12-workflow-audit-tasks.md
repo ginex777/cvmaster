@@ -33,14 +33,15 @@ Audit scope: frontend, backend, infra, CI, app-shell/post-login/CV-template plan
     - Done: added backend tests covering same-text cross-user parsing and rejecting foreign `jobPostingId`.
     - Done: backend lint, targeted tests, full tests, build, audit high-severity check, schema validate, Docker health smoke.
 
-- [ ] P0 - Enforce TOTP when `twoFactorEnabled` is true.
+- [x] P0 - Enforce TOTP when `twoFactorEnabled` is true.
   - Evidence: `AuthService.login()` still has a TODO for TOTP and issues tokens even when `user.twoFactorEnabled` is true.
   - Risk: accounts marked as 2FA-enabled are not actually protected by the second factor.
   - DoD:
-    - Add a TOTP verification path using the stored secret.
-    - Reject missing/invalid TOTP for users with 2FA enabled.
-    - Add login tests for disabled 2FA, missing TOTP, invalid TOTP, and valid TOTP.
-    - Ensure frontend login error copy remains user-visible through the existing aria-live region.
+    - Done: added an RFC 6238 TOTP verification path using the stored secret.
+    - Done: rejects missing/invalid TOTP for users with 2FA enabled.
+    - Done: added login tests for disabled 2FA, missing TOTP, invalid TOTP, and valid TOTP.
+    - Done: login form accepts an optional one-time code and still renders API errors through the existing aria-live region.
+    - Done: backend lint/tests/build/audit, frontend lint/tests/build/audit, Docker image build, service restart, API health smoke, frontend smoke.
 
 - [ ] P1 - Verify and harden Paddle webhook signature handling.
   - Evidence: `PaymentsService.isValidSignature()` expects a simple raw hex HMAC, while Paddle signatures are commonly delivered as structured header values. Current code is likely to reject real Paddle webhook events unless the configured provider sends exactly this custom format.

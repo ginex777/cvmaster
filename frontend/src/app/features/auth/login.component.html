@@ -37,6 +37,20 @@
       }
     </div>
 
+    <div class="field">
+      <label for="login-totp">2FA-Code</label>
+      <input id="login-totp" type="text"
+        formControlName="totp"
+        inputmode="numeric"
+        autocomplete="one-time-code"
+        maxlength="6"
+        aria-describedby="login-totp-hint login-totp-err" />
+      <span id="login-totp-hint" class="field__hint">Nur ausfüllen, wenn Zwei-Faktor-Auth aktiv ist.</span>
+      @if (form.controls.totp.invalid && form.controls.totp.touched) {
+        <span id="login-totp-err" class="field__error" role="alert">6-stelligen Code eingeben</span>
+      }
+    </div>
+
     <button type="submit" class="btn btn--primary btn--md"
       [disabled]="loading()">
       @if (loading()) { Einloggen… } @else { Einloggen }

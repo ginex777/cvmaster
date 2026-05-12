@@ -24,6 +24,7 @@ export class LoginComponent {
   readonly form = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required]),
+    totp: new FormControl('', [Validators.pattern(/^\d{6}$/)]),
   });
 
   async submit(): Promise<void> {
@@ -35,7 +36,7 @@ export class LoginComponent {
     this.error.set(null);
     try {
       const v = this.form.getRawValue();
-      await this.auth.login(v.email ?? '', v.password ?? '');
+      await this.auth.login(v.email ?? '', v.password ?? '', v.totp?.trim() || undefined);
       await this.router.navigate(['/app']);
     } catch (e: unknown) {
       this.error.set(

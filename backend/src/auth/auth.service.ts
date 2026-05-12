@@ -4,6 +4,7 @@ import * as argon2 from 'argon2';
 import { randomBytes, createHash } from 'crypto';
 import { PrismaService } from '../common/prisma.service';
 import { MailService } from '../mail/mail.service';
+import { verifyTotp } from './totp';
 
 const ARGON2_OPTIONS = { memoryCost: 65536, timeCost: 3, parallelism: 4 };
 const MAX_SESSIONS = 5;
@@ -63,7 +64,9 @@ export class AuthService {
     }
     if (!user.emailVerifiedAt) throw new UnauthorizedException('Email not verified');
 
-    // TODO: TOTP check if user.twoFactorEnabled
+    if (user.twoFactorEnabled && !verifyTotp(data.totp, user.twoFactorSecret)) {
+      throw new UnauthorizedException('Invalid two-factor code');
+    }
 
     return this.issueTokens(user, ip, ua);
   }
@@ -95,7 +98,7 @@ export class AuthService {
     await this.prisma.session.updateMany({ where: { refreshHash: tokenHash }, data: { revokedAt: new Date() } });
   }
 
-  private async issueTokens(user: { id: string; email: string; name: string | null; plan: string; emailVerifiedAt: Date | null; twoFactorEnabled: boolean }, ip: string, ua: string) {
+  private async issueTokens(user: { id: string; email: string; name: string | null; plan: string; emailVerifiedAt: Date | null; twoFactorEnabled: boolean; twoFactorSecret?: string | null }, ip: string, ua: string) {
     // Enforce max sessions
     const sessions = await this.prisma.session.findMany({
       where: { userId: user.id, revokedAt: null, expiresAt: { gt: new Date() } },

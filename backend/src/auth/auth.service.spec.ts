@@ -4,6 +4,7 @@ import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { AuthService } from './auth.service';
+import { generateTotpCode } from './totp';
 import { PrismaService } from '../common/prisma.service';
 import { MailService } from '../mail/mail.service';
 
@@ -146,6 +147,62 @@ describe('AuthService', () => {
 
       expect(result).toHaveProperty('accessToken');
       expect(result.user).toHaveProperty('id', 'u1');
+    });
+
+    it('allows login without a TOTP code when two-factor auth is disabled', async () => {
+      const passwordHash = await argon2.hash('validpass123');
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: 'u1', email: 'a@b.de', passwordHash, emailVerifiedAt: new Date(),
+        plan: 'FREE', twoFactorEnabled: false, twoFactorSecret: null,
+      } as never);
+      mockPrisma.session.findMany.mockResolvedValue([]);
+      mockPrisma.session.create.mockResolvedValue({});
+      mockJwt.signAsync.mockResolvedValue('access-token-value');
+
+      await expect(service.login({ email: 'a@b.de', password: 'validpass123' }, '127.0.0.1', 'ua'))
+        .resolves.toHaveProperty('accessToken');
+    });
+
+    it('rejects login when two-factor auth is enabled and TOTP is missing', async () => {
+      const passwordHash = await argon2.hash('validpass123');
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: 'u1', email: 'a@b.de', passwordHash, emailVerifiedAt: new Date(),
+        plan: 'FREE', twoFactorEnabled: true, twoFactorSecret: 'JBSWY3DPEHPK3PXP',
+      } as never);
+
+      await expect(service.login({ email: 'a@b.de', password: 'validpass123' }, '127.0.0.1', 'ua'))
+        .rejects.toThrow(UnauthorizedException);
+      expect(mockPrisma.session.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects login when two-factor auth is enabled and TOTP is invalid', async () => {
+      const passwordHash = await argon2.hash('validpass123');
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: 'u1', email: 'a@b.de', passwordHash, emailVerifiedAt: new Date(),
+        plan: 'FREE', twoFactorEnabled: true, twoFactorSecret: 'JBSWY3DPEHPK3PXP',
+      } as never);
+
+      await expect(service.login({ email: 'a@b.de', password: 'validpass123', totp: '000000' }, '127.0.0.1', 'ua'))
+        .rejects.toThrow(UnauthorizedException);
+      expect(mockPrisma.session.create).not.toHaveBeenCalled();
+    });
+
+    it('allows login when two-factor auth is enabled and TOTP is valid', async () => {
+      const passwordHash = await argon2.hash('validpass123');
+      const secret = 'JBSWY3DPEHPK3PXP';
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: 'u1', email: 'a@b.de', passwordHash, emailVerifiedAt: new Date(),
+        plan: 'FREE', twoFactorEnabled: true, twoFactorSecret: secret,
+      } as never);
+      mockPrisma.session.findMany.mockResolvedValue([]);
+      mockPrisma.session.create.mockResolvedValue({});
+      mockJwt.signAsync.mockResolvedValue('access-token-value');
+
+      await expect(service.login({
+        email: 'a@b.de',
+        password: 'validpass123',
+        totp: generateTotpCode(secret),
+      }, '127.0.0.1', 'ua')).resolves.toHaveProperty('accessToken');
     });
   });
 
