@@ -43,14 +43,14 @@ Audit scope: frontend, backend, infra, CI, app-shell/post-login/CV-template plan
     - Done: login form accepts an optional one-time code and still renders API errors through the existing aria-live region.
     - Done: backend lint/tests/build/audit, frontend lint/tests/build/audit, Docker image build, service restart, API health smoke, frontend smoke.
 
-- [ ] P1 - Verify and harden Paddle webhook signature handling.
+- [x] P1 - Verify and harden Paddle webhook signature handling.
   - Evidence: `PaymentsService.isValidSignature()` expects a simple raw hex HMAC, while Paddle signatures are commonly delivered as structured header values. Current code is likely to reject real Paddle webhook events unless the configured provider sends exactly this custom format.
   - Risk: subscription activation/cancellation may never update user plans in production.
   - DoD:
-    - Confirm the exact Paddle signature format used for this integration.
-    - Parse and verify the real signature header format with timestamp tolerance.
-    - Add webhook tests for valid activation, valid cancellation, malformed signature, expired timestamp, and wrong secret.
-    - Run backend lint, tests, build.
+    - Done: confirmed Paddle's current `Paddle-Signature` format is `ts=...;h1=...`, signed as `timestamp:rawBody` with HMAC-SHA256.
+    - Done: parses and verifies the real signature header format with timestamp tolerance and support for multiple `h1` values.
+    - Done: added webhook tests for valid activation, valid cancellation, malformed signature, expired timestamp, and wrong secret.
+    - Done: backend lint, targeted tests, full tests, build, audit high-severity check, Docker API build/restart, health smoke.
 
 - [ ] P1 - Normalize plan enum values between backend and frontend shell.
   - Evidence: backend returns Prisma enum values `FREE`, `PAY_PER_APP`, and `PRO`; `AppShellComponent.planLabel()` only checks lowercase `pro` and `pay`, so a `PRO` user is displayed as `Free` in the shell.
