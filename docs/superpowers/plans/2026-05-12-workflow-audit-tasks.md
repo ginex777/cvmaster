@@ -52,14 +52,14 @@ Audit scope: frontend, backend, infra, CI, app-shell/post-login/CV-template plan
     - Done: added webhook tests for valid activation, valid cancellation, malformed signature, expired timestamp, and wrong secret.
     - Done: backend lint, targeted tests, full tests, build, audit high-severity check, Docker API build/restart, health smoke.
 
-- [ ] P1 - Normalize plan enum values between backend and frontend shell.
+- [x] P1 - Normalize plan enum values between backend and frontend shell.
   - Evidence: backend returns Prisma enum values `FREE`, `PAY_PER_APP`, and `PRO`; `AppShellComponent.planLabel()` only checks lowercase `pro` and `pay`, so a `PRO` user is displayed as `Free` in the shell.
   - Risk: user-facing account state is misleading after payment or admin plan changes.
   - DoD:
-    - Update frontend auth/user plan typing to accept backend enum values.
-    - Normalize display labels in app shell and any plan badge class names.
-    - Add/adjust shell tests for `FREE`, `PAY_PER_APP`, and `PRO`.
-    - Run frontend lint, tests, build.
+    - Done: updated frontend auth/user plan typing to accept backend enum values and legacy lowercase values.
+    - Done: normalized display labels and badge classes in the app shell.
+    - Done: added shell tests for `FREE`, `PAY_PER_APP`, and `PRO`.
+    - Done: frontend targeted tests, lint, full tests, build, audit high-severity check, Docker frontend build/restart, frontend smoke.
 
 - [ ] P2 - Decide how to handle remaining moderate dependency advisories.
   - Evidence: backend has moderate Prisma dev-tool advisory via `@hono/node-server`; frontend has moderate advisory through `geist` -> `next` -> `postcss`.

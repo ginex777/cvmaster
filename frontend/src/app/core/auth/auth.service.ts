@@ -2,11 +2,13 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
+type UserPlan = 'FREE' | 'PAY_PER_APP' | 'PRO' | 'free' | 'pay' | 'pro';
+
 interface User {
   id: string;
   email: string;
   name: string;
-  plan: 'free' | 'pay' | 'pro';
+  plan: UserPlan;
   emailVerified: boolean;
   twoFactorEnabled: boolean;
 }

@@ -27,7 +27,7 @@
 
     <div class="shell__user" aria-label="Benutzerkonto">
       <span
-        class="shell__plan shell__plan--{{ auth.user()?.plan ?? 'free' }}"
+        class="shell__plan shell__plan--{{ planClass() }}"
         aria-label="Aktueller Plan: {{ planLabel() }}"
       >
         {{ planLabel() }}

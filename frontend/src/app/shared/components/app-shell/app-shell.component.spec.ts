@@ -8,7 +8,7 @@ interface MockUser {
   id: string;
   email: string;
   name: string;
-  plan: 'free' | 'pay' | 'pro';
+  plan: 'FREE' | 'PAY_PER_APP' | 'PRO' | 'free' | 'pay' | 'pro';
   emailVerified: boolean;
   twoFactorEnabled: boolean;
 }
@@ -17,7 +17,7 @@ const mockUser: MockUser = {
   id: '1',
   email: 'test@test.de',
   name: 'Hans',
-  plan: 'free',
+  plan: 'FREE',
   emailVerified: true,
   twoFactorEnabled: false,
 };
@@ -64,8 +64,15 @@ describe('AppShellComponent', () => {
     expect((badge.nativeElement as HTMLElement).classList).toContain('shell__plan--free');
   });
 
-  it('shows Pro badge for pro plan', async () => {
-    const { fixture } = await setup(makeAuthMock({ ...mockUser, plan: 'pro' }));
+  it('shows Pay-per-App badge for PAY_PER_APP plan', async () => {
+    const { fixture } = await setup(makeAuthMock({ ...mockUser, plan: 'PAY_PER_APP' }));
+    const badge = fixture.debugElement.query(By.css('.shell__plan'));
+    expect((badge.nativeElement as HTMLElement).textContent?.trim()).toBe('Pay-per-App');
+    expect((badge.nativeElement as HTMLElement).classList).toContain('shell__plan--pay');
+  });
+
+  it('shows Pro badge for PRO plan', async () => {
+    const { fixture } = await setup(makeAuthMock({ ...mockUser, plan: 'PRO' }));
     const badge = fixture.debugElement.query(By.css('.shell__plan'));
     expect((badge.nativeElement as HTMLElement).textContent?.trim()).toBe('Pro');
     expect((badge.nativeElement as HTMLElement).classList).toContain('shell__plan--pro');

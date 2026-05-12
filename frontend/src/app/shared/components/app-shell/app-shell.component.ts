@@ -16,9 +16,16 @@ export class AppShellComponent {
 
   protected planLabel(): string {
     const plan = this.auth.user()?.plan;
-    if (plan === 'pro') return 'Pro';
-    if (plan === 'pay') return 'Pay-per-App';
+    if (plan === 'PRO' || plan === 'pro') return 'Pro';
+    if (plan === 'PAY_PER_APP' || plan === 'pay') return 'Pay-per-App';
     return 'Free';
+  }
+
+  protected planClass(): string {
+    const plan = this.auth.user()?.plan;
+    if (plan === 'PRO' || plan === 'pro') return 'pro';
+    if (plan === 'PAY_PER_APP' || plan === 'pay') return 'pay';
+    return 'free';
   }
 
   protected async logout(): Promise<void> {
