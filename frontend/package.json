@@ -14,7 +14,7 @@
     "lint:fix": "ng lint --fix",
     "format": "prettier --write \"src/**/*.{ts,html,scss,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,css}\"",
-    "a11y": "axe http://localhost:4200"
+    "a11y": "node scripts/a11y-smoke.mjs"
   },
   "dependencies": {
     "@angular/animations": "^21.0.0",

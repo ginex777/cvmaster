@@ -71,12 +71,15 @@ Audit scope: frontend, backend, infra, CI, app-shell/post-login/CV-template plan
     - Done: backend and frontend `npm audit --audit-level=high` remain green.
     - Done: frontend lint, tests, build, Docker frontend build/restart, frontend smoke.
 
-- [ ] P2 - Make local accessibility smoke reproducible on Windows.
+- [x] P2 - Make local accessibility smoke reproducible on Windows.
   - Evidence: `npx axe http://localhost` fails because local Chrome crashes before the scan starts. CI still installs Chromium on Linux and is wired to run the a11y job.
   - Risk: local visual/a11y verification is harder even though unit/build checks pass.
   - DoD:
-    - Add a documented Playwright/Chromium-backed local a11y command or fix the current axe Chrome invocation.
-    - Verify at least `/`, `/preise`, `/try`, and one protected-shell route when authenticated test setup exists.
+    - Done: replaced the local a11y command with a Playwright/Chromium-backed axe-core smoke script.
+    - Done: verified `/`, `/preise`, and `/try` against Docker via `A11Y_URL=http://localhost npm run a11y`.
+    - Done: fixed the reported public-route landmark, ARIA role, and contrast issues.
+    - Done: frontend lint, tests, build, high/moderate audit checks, Docker frontend build/restart, frontend smoke.
+    - Note: protected-shell route a11y can be added once an authenticated browser fixture exists.
 
 ## Completed Plan Checks
 

@@ -18,9 +18,9 @@
 
   <lba-testimonials />
 
-  <section id="preise" aria-labelledby="pricing-inline-heading">
+  <div id="preise">
     <lba-pricing-inline (singleRequested)="openDialog('try')" (proRequested)="openDialog('register')" />
-  </section>
+  </div>
 
   <lba-cta-band (optimizeRequested)="openDialog('try')" (demoRequested)="openDialog('try')" />
 </main>
