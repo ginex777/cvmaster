@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Worker, Job } from 'bullmq';
 import IORedis from 'ioredis';
 import sanitizeHtml from 'sanitize-html';
@@ -56,6 +56,7 @@ function filterHallucinatedSkills(optimizedCv: ParsedCV, originalCv: ParsedCV): 
 
 @Injectable()
 export class AiPipelineProcessor implements OnModuleInit {
+  private readonly logger = new Logger(AiPipelineProcessor.name);
   private redis: IORedis;
 
   constructor(
@@ -66,7 +67,13 @@ export class AiPipelineProcessor implements OnModuleInit {
 
   onModuleInit() {
     this.redis = new IORedis(redisUrl(), { maxRetriesPerRequest: null });
-    new Worker('ai-pipeline', (job) => this.process(job), { connection: this.redis });
+    const worker = new Worker('ai-pipeline', (job) => this.process(job), { connection: this.redis });
+    worker.on('failed', (job, error) => {
+      this.logger.error(
+        `AI pipeline job failed: name=${job?.name ?? 'unknown'} id=${job?.id ?? 'unknown'} applicationId=${String(job?.data?.applicationId ?? 'unknown')}`,
+        error.stack,
+      );
+    });
   }
 
   private async process(job: Job) {
