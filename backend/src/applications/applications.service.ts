@@ -16,11 +16,13 @@ export class ApplicationsService {
   ) {}
 
   async create(data: { masterCvId: string; jobPostingId: string }, userId: string) {
-    const [cv, user] = await Promise.all([
+    const [cv, jobPosting, user] = await Promise.all([
       this.prisma.masterCv.findFirst({ where: { id: data.masterCvId, userId } }),
+      this.prisma.jobPosting.findFirst({ where: { id: data.jobPostingId, userId } }),
       this.prisma.user.findUniqueOrThrow({ where: { id: userId } }),
     ]);
     if (!cv) throw new NotFoundException('Master-CV nicht gefunden');
+    if (!jobPosting) throw new NotFoundException('Stellenanzeige nicht gefunden');
 
     if (user.plan === 'FREE') {
       const applicationCount = await this.prisma.application.count({ where: { userId } });

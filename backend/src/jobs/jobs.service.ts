@@ -11,7 +11,7 @@ export class JobsService {
     const text = await this.fetchText(data);
     const sourceHash = createHash('sha256').update(text).digest('hex');
 
-    const existing = await this.prisma.jobPosting.findUnique({ where: { sourceHash } });
+    const existing = await this.prisma.jobPosting.findFirst({ where: { userId, sourceHash } });
     if (existing) return existing;
 
     const parsedJson = await this.ai.parseJob(text);

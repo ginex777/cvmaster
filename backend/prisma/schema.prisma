@@ -79,6 +79,8 @@ model JobPosting {
   createdAt    DateTime @default(now())
 
   applications Application[]
+
+  @@unique([userId, sourceHash])
 }
 
 model Application {

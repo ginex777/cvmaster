@@ -11,6 +11,7 @@ const fn = () => jest.fn<() => Promise<unknown>>();
 
 const mockPrisma = {
   masterCv: { findFirst: fn() },
+  jobPosting: { findFirst: fn() },
   application: { count: fn(), create: fn(), findMany: fn(), findUnique: fn(), findUniqueOrThrow: fn(), update: fn(), delete: fn() },
   user: { findUniqueOrThrow: fn() },
 };
@@ -38,14 +39,32 @@ describe('ApplicationsService', () => {
   describe('create', () => {
     it('throws NotFoundException when masterCv not found or not owned', async () => {
       mockPrisma.masterCv.findFirst.mockResolvedValue(null);
+      mockPrisma.jobPosting.findFirst.mockResolvedValue({ id: 'jp1' } as never);
       mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'FREE' } as never);
       await expect(
         service.create({ masterCvId: 'cv-bad', jobPostingId: 'jp1' }, 'u1'),
       ).rejects.toThrow(NotFoundException);
     });
 
+    it('throws NotFoundException when job posting is not owned by the current user', async () => {
+      mockPrisma.masterCv.findFirst.mockResolvedValue({ id: 'cv1' } as never);
+      mockPrisma.jobPosting.findFirst.mockResolvedValue(null);
+      mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'FREE' } as never);
+
+      await expect(
+        service.create({ masterCvId: 'cv1', jobPostingId: 'foreign-jp' }, 'u1'),
+      ).rejects.toThrow(NotFoundException);
+
+      expect(mockPrisma.jobPosting.findFirst).toHaveBeenCalledWith({
+        where: { id: 'foreign-jp', userId: 'u1' },
+      });
+      expect(mockPrisma.application.create).not.toHaveBeenCalled();
+      expect(mockQueue.enqueueAiPipeline).not.toHaveBeenCalled();
+    });
+
     it('creates application and enqueues AI pipeline when masterCv is owned', async () => {
       mockPrisma.masterCv.findFirst.mockResolvedValue({ id: 'cv1' } as never);
+      mockPrisma.jobPosting.findFirst.mockResolvedValue({ id: 'jp1' } as never);
       mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'FREE' } as never);
       mockPrisma.application.count.mockResolvedValue(0);
       mockPrisma.application.create.mockResolvedValue({ id: 'app1', status: 'DRAFT' } as never);
@@ -60,6 +79,7 @@ describe('ApplicationsService', () => {
 
     it('throws 402 when a FREE user already has one application', async () => {
       mockPrisma.masterCv.findFirst.mockResolvedValue({ id: 'cv1' } as never);
+      mockPrisma.jobPosting.findFirst.mockResolvedValue({ id: 'jp1' } as never);
       mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'FREE' } as never);
       mockPrisma.application.count.mockResolvedValue(1);
 
@@ -73,6 +93,7 @@ describe('ApplicationsService', () => {
 
     it('allows PRO users to create beyond the free limit', async () => {
       mockPrisma.masterCv.findFirst.mockResolvedValue({ id: 'cv1' } as never);
+      mockPrisma.jobPosting.findFirst.mockResolvedValue({ id: 'jp1' } as never);
       mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'PRO' } as never);
       mockPrisma.application.create.mockResolvedValue({ id: 'app2', status: 'DRAFT' } as never);
       mockQueue.enqueueAiPipeline.mockResolvedValue(undefined);

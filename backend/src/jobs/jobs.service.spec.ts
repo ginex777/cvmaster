@@ -7,7 +7,7 @@ import { AiService } from '../ai/ai.service';
 const fn = () => jest.fn<() => Promise<unknown>>();
 
 const mockPrisma = {
-  jobPosting: { findUnique: fn(), create: fn() },
+  jobPosting: { findFirst: fn(), create: fn() },
 };
 const mockAi = { parseJob: fn() };
 
@@ -29,16 +29,19 @@ describe('JobsService', () => {
   describe('parse', () => {
     it('returns existing job posting and skips AI when same text submitted twice', async () => {
       const existing = { id: 'jp1', sourceHash: 'abc' };
-      mockPrisma.jobPosting.findUnique.mockResolvedValue(existing as never);
+      mockPrisma.jobPosting.findFirst.mockResolvedValue(existing as never);
 
       const result = await service.parse({ type: 'text', value: 'Frontend Developer at Stripe with React skills required...' }, 'u1');
 
+      expect(mockPrisma.jobPosting.findFirst).toHaveBeenCalledWith({
+        where: { userId: 'u1', sourceHash: expect.any(String) },
+      });
       expect(mockAi.parseJob).not.toHaveBeenCalled();
       expect(result).toBe(existing);
     });
 
     it('parses and stores new job posting when not yet seen', async () => {
-      mockPrisma.jobPosting.findUnique.mockResolvedValue(null);
+      mockPrisma.jobPosting.findFirst.mockResolvedValue(null);
       mockAi.parseJob.mockResolvedValue({
         title: 'FE Dev', company: 'Stripe', mustHaves: [], niceToHaves: [], skills: [], responsibilities: [], language: 'de',
       } as never);
@@ -48,6 +51,23 @@ describe('JobsService', () => {
 
       expect(mockAi.parseJob).toHaveBeenCalled();
       expect(result).toHaveProperty('id', 'jp1');
+    });
+
+    it('creates a user-owned posting for the same text submitted by another user', async () => {
+      mockPrisma.jobPosting.findFirst.mockResolvedValue(null);
+      mockAi.parseJob.mockResolvedValue({
+        title: 'FE Dev', company: 'Stripe', mustHaves: [], niceToHaves: [], skills: [], responsibilities: [], language: 'de',
+      } as never);
+      mockPrisma.jobPosting.create.mockResolvedValue({ id: 'jp2', userId: 'u2' } as never);
+
+      await service.parse({ type: 'text', value: 'Frontend Developer at Stripe with React skills required...' }, 'u2');
+
+      expect(mockPrisma.jobPosting.findFirst).toHaveBeenCalledWith({
+        where: { userId: 'u2', sourceHash: expect.any(String) },
+      });
+      expect(mockPrisma.jobPosting.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ userId: 'u2', sourceHash: expect.any(String) }),
+      });
     });
   });
 });

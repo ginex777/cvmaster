@@ -24,14 +24,14 @@ Audit scope: frontend, backend, infra, CI, app-shell/post-login/CV-template plan
 
 ## Open Tasks
 
-- [ ] P0 - Fix job posting ownership and cross-user dedupe leakage.
+- [x] P0 - Fix job posting ownership and cross-user dedupe leakage.
   - Evidence: `JobsService.parse()` uses globally unique `sourceHash` and returns an existing `JobPosting` even if it belongs to another user. `ApplicationsService.create()` validates `masterCvId` ownership but does not validate that `jobPostingId` belongs to the current user.
   - Risk: a user who submits identical job text, or knows a UUID, can create an application linked to another user's `JobPosting` and see parsed job data through application/dashboard responses.
   - DoD:
-    - Scope job-posting lookup/dedupe by `userId`, or clone shared parsed data into a user-owned job posting.
-    - Validate `jobPostingId` ownership in application creation before creating the application.
-    - Add backend tests covering same-text cross-user parsing and rejecting foreign `jobPostingId`.
-    - Run backend lint, tests, build, and live create-flow smoke if practical.
+    - Done: scoped job-posting lookup/dedupe by `userId` and added a composite unique index.
+    - Done: validated `jobPostingId` ownership in application creation before creating the application.
+    - Done: added backend tests covering same-text cross-user parsing and rejecting foreign `jobPostingId`.
+    - Done: backend lint, targeted tests, full tests, build, audit high-severity check, schema validate, Docker health smoke.
 
 - [ ] P0 - Enforce TOTP when `twoFactorEnabled` is true.
   - Evidence: `AuthService.login()` still has a TODO for TOTP and issues tokens even when `user.twoFactorEnabled` is true.
