@@ -12,6 +12,7 @@ import { MailModule } from './mail/mail.module';
 import { GdprModule } from './gdpr/gdpr.module';
 import { QueueProducerModule } from './queue/queue-producer.module';
 import { TrialModule } from './trial/trial.module';
+import { HealthModule } from './health/health.module';
 import { PrismaService } from './common/prisma.service';
 
 @Module({
@@ -29,6 +30,7 @@ import { PrismaService } from './common/prisma.service';
     GdprModule,
     QueueProducerModule,
     TrialModule,
+    HealthModule,
   ],
   providers: [PrismaService],
   exports: [PrismaService],

@@ -6,6 +6,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     const useEdDsa = !!process.env.JWT_PUBLIC_KEY;
+    // @ts-expect-error EdDSA is supported by jsonwebtoken at runtime but missing from the installed type union.
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
