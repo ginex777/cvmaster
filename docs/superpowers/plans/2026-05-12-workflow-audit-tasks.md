@@ -61,12 +61,15 @@ Audit scope: frontend, backend, infra, CI, app-shell/post-login/CV-template plan
     - Done: added shell tests for `FREE`, `PAY_PER_APP`, and `PRO`.
     - Done: frontend targeted tests, lint, full tests, build, audit high-severity check, Docker frontend build/restart, frontend smoke.
 
-- [ ] P2 - Decide how to handle remaining moderate dependency advisories.
+- [x] P2 - Decide how to handle remaining moderate dependency advisories.
   - Evidence: backend has moderate Prisma dev-tool advisory via `@hono/node-server`; frontend has moderate advisory through `geist` -> `next` -> `postcss`.
   - Risk: currently not high severity, but audit output stays noisy and may become blocking later.
   - DoD:
-    - Track upstream fixed versions or replace the dependency path if a safe non-breaking update is available.
-    - Keep `npm audit --audit-level=high` green for both projects.
+    - Done: replaced the frontend `geist` package with font-only `@fontsource/geist` packages, removing the `next` -> `postcss` advisory path.
+    - Done: frontend `npm audit --audit-level=moderate` now reports 0 vulnerabilities.
+    - Done: backend `npm audit fix --package-lock-only` found no non-breaking fix; `npm audit fix --force` would downgrade Prisma from 7.x to 6.x, so this remains an upstream/tooling hold rather than a safe project change.
+    - Done: backend and frontend `npm audit --audit-level=high` remain green.
+    - Done: frontend lint, tests, build, Docker frontend build/restart, frontend smoke.
 
 - [ ] P2 - Make local accessibility smoke reproducible on Windows.
   - Evidence: `npx axe http://localhost` fails because local Chrome crashes before the scan starts. CI still installs Chromium on Linux and is wired to run the a11y job.
