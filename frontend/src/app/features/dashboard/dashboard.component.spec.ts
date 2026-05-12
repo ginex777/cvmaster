@@ -4,13 +4,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DashboardComponent } from './dashboard.component';
 import { ApiService } from '../../core/api/api.service';
 
-const emptyDashboard = { cvCount: 0, applicationCount: 0, recentApplications: [] };
+const emptyDashboard = { cvCount: 0, applicationCount: 0, avgMatchScore: null, recentApplications: [] };
 
 describe('DashboardComponent', () => {
-  let api: jest.Mocked<Pick<ApiService, 'get'>>;
+  let api: jest.Mocked<Pick<ApiService, 'get' | 'patch' | 'delete'>>;
 
   beforeEach(async () => {
-    api = { get: jest.fn() };
+    api = { get: jest.fn(), patch: jest.fn(), delete: jest.fn() };
     await TestBed.configureTestingModule({
       imports: [DashboardComponent],
       providers: [
@@ -26,7 +26,7 @@ describe('DashboardComponent', () => {
     const fixture = TestBed.createComponent(DashboardComponent);
     fixture.detectChanges();
     expect(fixture.componentInstance.loading()).toBe(true);
-    resolve({ cvCount: 2, applicationCount: 5, recentApplications: [] });
+    resolve({ cvCount: 2, applicationCount: 5, avgMatchScore: 81, recentApplications: [] });
     await fixture.whenStable();
     expect(fixture.componentInstance.loading()).toBe(false);
     expect(fixture.componentInstance.data()?.cvCount).toBe(2);
@@ -52,13 +52,14 @@ describe('DashboardComponent', () => {
   });
 
   it('renders stat cards when data is loaded', async () => {
-    api.get.mockResolvedValue({ cvCount: 3, applicationCount: 7, recentApplications: [] });
+    api.get.mockResolvedValue({ cvCount: 3, applicationCount: 7, avgMatchScore: 75, recentApplications: [] });
     const fixture = TestBed.createComponent(DashboardComponent);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
     const cards = fixture.nativeElement.querySelectorAll('.stat-card');
-    expect(cards.length).toBe(2);
+    expect(cards.length).toBe(3);
+    expect(fixture.nativeElement.textContent).toContain('75');
   });
 
   it('aria-live error region is rendered when error signal is set', async () => {
@@ -80,5 +81,68 @@ describe('DashboardComponent', () => {
     expect(fixture.componentInstance.scoreClass(85)).toBe('score--high');
     expect(fixture.componentInstance.scoreClass(65)).toBe('score--mid');
     expect(fixture.componentInstance.scoreClass(40)).toBe('score--low');
+  });
+
+  it('toggles application status optimistically and persists it', async () => {
+    api.get.mockResolvedValue({
+      cvCount: 1,
+      applicationCount: 1,
+      avgMatchScore: 80,
+      recentApplications: [
+        { id: 'app-1', status: 'OPEN', matchScore: 80, createdAt: '2026-05-10T00:00:00Z', jobPosting: { parsedJson: { title: 'Dev', company: 'Acme' } } },
+      ],
+    });
+    api.patch.mockResolvedValue({});
+    const fixture = TestBed.createComponent(DashboardComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const promise = fixture.componentInstance.toggleStatus('app-1');
+
+    expect(fixture.componentInstance.data()?.recentApplications[0].status).toBe('DONE');
+    await promise;
+    expect(api.patch).toHaveBeenCalledWith('/applications/app-1', { status: 'DONE' });
+  });
+
+  it('rolls status back and sets error when status persistence fails', async () => {
+    api.get.mockResolvedValue({
+      cvCount: 1,
+      applicationCount: 1,
+      avgMatchScore: 80,
+      recentApplications: [
+        { id: 'app-1', status: 'OPEN', matchScore: 80, createdAt: '2026-05-10T00:00:00Z', jobPosting: { parsedJson: { title: 'Dev', company: 'Acme' } } },
+      ],
+    });
+    api.patch.mockRejectedValue(new HttpErrorResponse({ status: 500 }));
+    const fixture = TestBed.createComponent(DashboardComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    await fixture.componentInstance.toggleStatus('app-1');
+
+    expect(fixture.componentInstance.data()?.recentApplications[0].status).toBe('OPEN');
+    expect(fixture.componentInstance.error()).not.toBeNull();
+  });
+
+  it('deletes an application after confirmation', async () => {
+    api.get.mockResolvedValue({
+      cvCount: 1,
+      applicationCount: 1,
+      avgMatchScore: 80,
+      recentApplications: [
+        { id: 'app-1', status: 'OPEN', matchScore: 80, createdAt: '2026-05-10T00:00:00Z', jobPosting: { parsedJson: { title: 'Dev', company: 'Acme' } } },
+      ],
+    });
+    api.delete.mockResolvedValue({});
+    const fixture = TestBed.createComponent(DashboardComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fixture.componentInstance.requestDelete('app-1');
+    await fixture.componentInstance.confirmDelete();
+
+    expect(api.delete).toHaveBeenCalledWith('/applications/app-1');
+    expect(fixture.componentInstance.data()?.recentApplications).toHaveLength(0);
+    expect(fixture.componentInstance.data()?.applicationCount).toBe(0);
   });
 });

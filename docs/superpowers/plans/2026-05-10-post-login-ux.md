@@ -1,6 +1,6 @@
 # Post-Login App Shell — Implementation Plan
 
-> Codex completion note: completed ranges are checked only after their relevant DoD commands passed. Task 9 Dashboard and Task 13 final verification remain open until dashboard gaps are closed and the final full verification/smoke pass is rerun.
+> Codex completion note: completed ranges are checked only after their relevant DoD commands passed. All post-login implementation tasks are checked after backend lint/tests and frontend lint/tests/build passed on 2026-05-12.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -1259,7 +1259,7 @@ Changes needed:
 3. Add delete button per row (opens ConfirmDeleteModal)
 4. Add inline status toggle per row (OPEN/DONE)
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 In `frontend/src/app/features/dashboard/dashboard.component.spec.ts`, replace/extend the existing tests:
 
@@ -1347,13 +1347,13 @@ describe('DashboardComponent', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests — verify they fail**
+- [x] **Step 2: Run tests — verify they fail**
 
 ```bash
 cd frontend && npx jest dashboard.component.spec.ts --no-coverage
 ```
 
-- [ ] **Step 3: Update DashboardComponent TypeScript**
+- [x] **Step 3: Update DashboardComponent TypeScript**
 
 Replace `frontend/src/app/features/dashboard/dashboard.component.ts`:
 
@@ -1473,7 +1473,7 @@ export class DashboardComponent implements OnInit {
 }
 ```
 
-- [ ] **Step 4: Update dashboard template**
+- [x] **Step 4: Update dashboard template**
 
 Replace `frontend/src/app/features/dashboard/dashboard.component.html`:
 
@@ -1593,7 +1593,7 @@ Replace `frontend/src/app/features/dashboard/dashboard.component.html`:
 />
 ```
 
-- [ ] **Step 5: Add status-toggle and actions styles to dashboard.component.scss**
+- [x] **Step 5: Add status-toggle and actions styles to dashboard.component.scss**
 
 Append to `frontend/src/app/features/dashboard/dashboard.component.scss`:
 
@@ -1636,7 +1636,7 @@ Append to `frontend/src/app/features/dashboard/dashboard.component.scss`:
 }
 ```
 
-- [ ] **Step 6: Run tests**
+- [x] **Step 6: Run tests**
 
 ```bash
 cd frontend && npx jest dashboard.component.spec.ts --no-coverage
@@ -1644,7 +1644,7 @@ cd frontend && npx jest dashboard.component.spec.ts --no-coverage
 
 Expected: PASS.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add frontend/src/app/features/dashboard
@@ -2423,7 +2423,7 @@ git commit -m "CV Library: add use-in-wizard button, inline rename, custom delet
 
 ## Task 13: Full verification
 
-- [ ] **Step 1: Backend lint**
+- [x] **Step 1: Backend lint**
 
 ```bash
 cd backend && npm run lint
@@ -2431,7 +2431,7 @@ cd backend && npm run lint
 
 Expected: exit 0.
 
-- [ ] **Step 2: Backend tests**
+- [x] **Step 2: Backend tests**
 
 ```bash
 cd backend && npm test
@@ -2439,7 +2439,7 @@ cd backend && npm test
 
 Expected: exit 0, all tests pass.
 
-- [ ] **Step 3: Frontend lint**
+- [x] **Step 3: Frontend lint**
 
 ```bash
 cd frontend && npm run lint
@@ -2447,7 +2447,7 @@ cd frontend && npm run lint
 
 Expected: exit 0.
 
-- [ ] **Step 4: Frontend tests**
+- [x] **Step 4: Frontend tests**
 
 ```bash
 cd frontend && npm test -- --watchAll=false
@@ -2455,7 +2455,7 @@ cd frontend && npm test -- --watchAll=false
 
 Expected: exit 0.
 
-- [ ] **Step 5: Frontend build**
+- [x] **Step 5: Frontend build**
 
 ```bash
 cd frontend && npm run build
@@ -2463,7 +2463,7 @@ cd frontend && npm run build
 
 Expected: exit 0.
 
-- [ ] **Step 6: Final commit**
+- [x] **Step 6: Final commit**
 
 ```bash
 git add -A
