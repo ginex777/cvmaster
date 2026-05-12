@@ -5,6 +5,7 @@ import { ApplicationsService } from './applications.service';
 import { PrismaService } from '../common/prisma.service';
 import { QueueService } from '../queue/queue.service';
 import { MailService } from '../mail/mail.service';
+import { PdfService } from '../pdf/pdf.service';
 
 const fn = () => jest.fn<() => Promise<unknown>>();
 
@@ -15,6 +16,7 @@ const mockPrisma = {
 };
 const mockQueue = { enqueueAiPipeline: fn(), enqueueRegenerateLetter: fn() };
 const mockMail = { sendApplicationToSelf: fn() };
+const mockPdf = { generateCvPdf: jest.fn<() => Promise<Buffer>>() };
 
 describe('ApplicationsService', () => {
   let service: ApplicationsService;
@@ -27,6 +29,7 @@ describe('ApplicationsService', () => {
         { provide: PrismaService, useValue: mockPrisma },
         { provide: QueueService, useValue: mockQueue },
         { provide: MailService, useValue: mockMail },
+        { provide: PdfService, useValue: mockPdf },
       ],
     }).compile();
     service = module.get(ApplicationsService);
@@ -132,6 +135,31 @@ describe('ApplicationsService', () => {
       mockPrisma.application.delete.mockResolvedValue({ id: 'a1' } as never);
       await service.remove('a1', 'u1');
       expect(mockPrisma.application.delete).toHaveBeenCalledWith({ where: { id: 'a1' } });
+    });
+  });
+
+  describe('exportPdf', () => {
+    it('renders a PDF response for the legacy export route', async () => {
+      const res = {
+        set: jest.fn(),
+        send: jest.fn(),
+      };
+      const buffer = Buffer.from('pdf');
+      mockPrisma.application.findUniqueOrThrow.mockResolvedValue({
+        id: 'a1',
+        optimizedCv: { text: 'Profil\nAngular' },
+        jobPosting: { parsedJson: { company: 'Acme', title: 'Dev' } },
+      } as never);
+      mockPdf.generateCvPdf.mockResolvedValue(buffer);
+
+      await service.exportPdf('a1', 'classic', res as never);
+
+      expect(mockPdf.generateCvPdf).toHaveBeenCalledWith(
+        { name: 'Lebenslauf_Acme_Dev', sections: [{ heading: 'Profil', lines: ['Angular'] }] },
+        'classic',
+      );
+      expect(res.set).toHaveBeenCalledWith(expect.objectContaining({ 'Content-Type': 'application/pdf' }));
+      expect(res.send).toHaveBeenCalledWith(buffer);
     });
   });
 });

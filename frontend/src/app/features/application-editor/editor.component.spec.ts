@@ -6,18 +6,21 @@ import { EditorComponent } from './editor.component';
 import { ApiService } from '../../core/api/api.service';
 
 describe('EditorComponent', () => {
-  let api: jest.Mocked<Pick<ApiService, 'get' | 'patch' | 'getBlob'>>;
+  let api: jest.Mocked<Pick<ApiService, 'get' | 'patch' | 'post' | 'getBlob'>>;
 
   beforeEach(async () => {
-    api = { get: jest.fn(), patch: jest.fn(), getBlob: jest.fn() };
+    api = { get: jest.fn(), patch: jest.fn(), post: jest.fn(), getBlob: jest.fn() };
     api.get.mockResolvedValue({
       id: 'a1',
+      status: 'OPEN',
       matchScore: 88,
       optimizedCv: { sections: [{ heading: 'Erfahrung', lines: ['Stripe - 2 Jahre'] }] },
       coverLetter: { formal: 'x', warm: 'y', brief: 'z' },
+      chosenVariant: 'formal',
       matchReport: { summary: 'Sehr passend', keywords: ['Angular'] },
     });
     api.patch.mockResolvedValue({ id: 'a1', matchScore: 88 });
+    api.post.mockResolvedValue({ message: 'queued' });
     api.getBlob.mockResolvedValue(new Blob(['pdf']));
 
     await TestBed.configureTestingModule({
@@ -55,16 +58,52 @@ describe('EditorComponent', () => {
     expect(api.patch).toHaveBeenCalledWith('/applications/a1', expect.objectContaining({ optimizedCv: expect.any(Object) }));
   });
 
-  it('switches cover letter tab and saves variants', async () => {
+  it('switches cover letter selection and persists chosenVariant', async () => {
     const f = TestBed.createComponent(EditorComponent);
     f.detectChanges();
     await f.whenStable();
-    f.componentInstance.selectedLetter.set('brief');
+
+    await f.componentInstance.selectLetter('warm');
+
+    expect(f.componentInstance.selectedLetterValue()).toBe('warm');
+    expect(api.patch).toHaveBeenCalledWith('/applications/a1', { chosenVariant: 'warm' });
+  });
+
+  it('saves cover letter variants', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+    await f.componentInstance.selectLetter('brief');
     f.componentInstance.letterControl().setValue('Kurzfassung');
     await f.componentInstance.saveCoverLetter();
     expect(api.patch).toHaveBeenCalledWith('/applications/a1', {
       coverLetter: { formal: 'x', warm: 'y', brief: 'Kurzfassung' },
     });
+  });
+
+  it('optimistically sets status and persists it', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+
+    await f.componentInstance.setStatus('DONE');
+
+    expect(f.componentInstance.application()?.status).toBe('DONE');
+    expect(api.patch).toHaveBeenCalledWith('/applications/a1', { status: 'DONE' });
+  });
+
+  it('opens and confirms letter regeneration', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+
+    f.componentInstance.openRegenConfirm();
+    expect(f.componentInstance.regenConfirmOpen()).toBe(true);
+    await f.componentInstance.confirmRegen();
+
+    expect(api.post).toHaveBeenCalledWith('/applications/a1/regenerate-letter', {});
+    expect(f.componentInstance.regenConfirmOpen()).toBe(false);
+    expect(f.componentInstance.generating()).toBe(true);
   });
 
   it('downloads PDF from application endpoint', async () => {
@@ -91,6 +130,25 @@ describe('EditorComponent', () => {
 
     createObjectUrl.mockRestore();
     revokeObjectUrl.mockRestore();
+    createElement.mockRestore();
+  });
+
+  it('downloads the export bundle from the bundle endpoint', async () => {
+    Object.defineProperty(URL, 'createObjectURL', { configurable: true, value: jest.fn(() => 'blob:test') });
+    Object.defineProperty(URL, 'revokeObjectURL', { configurable: true, value: jest.fn() });
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+
+    const anchor = document.createElement('a');
+    Object.defineProperty(anchor, 'click', { value: jest.fn() });
+    const createElement = jest.spyOn(document, 'createElement').mockReturnValue(anchor);
+
+    await f.componentInstance.downloadBundle();
+
+    expect(api.getBlob).toHaveBeenCalledWith('/applications/a1/export/bundle');
+    expect(anchor.download).toBe('Bewerbung.zip');
+
     createElement.mockRestore();
   });
 });

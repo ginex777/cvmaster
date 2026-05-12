@@ -1,9 +1,10 @@
-import type { OnInit, OnDestroy } from '@angular/core';
+import type { OnDestroy, OnInit } from '@angular/core';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../../core/api/api.service';
+import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
 
 type LetterVariant = 'formal' | 'warm' | 'brief';
 
@@ -22,16 +23,17 @@ interface ApplicationDto {
   optimizedCv?: unknown;
   coverLetter?: Record<string, string>;
   matchReport?: MatchReport;
+  chosenVariant?: string | null;
   jobPosting?: { parsedJson?: { title?: string; company?: string; keywords?: string[] } };
 }
 
 const POLL_INTERVAL_MS = 3000;
-const POLL_MAX_ATTEMPTS = 40; // 40 × 3s = 120s max wait
+const POLL_MAX_ATTEMPTS = 40;
 
 @Component({
   selector: 'lba-editor',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, ConfirmDeleteModal],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,6 +51,8 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly error = signal<string | null>(null);
   readonly application = signal<ApplicationDto | null>(null);
   readonly selectedLetter = signal<LetterVariant>('formal');
+  readonly regenConfirmOpen = signal(false);
+  readonly letterVariants: LetterVariant[] = ['formal', 'warm', 'brief'];
 
   readonly editorForm = new FormGroup({
     cvText: new FormControl('', { nonNullable: true }),
@@ -114,8 +118,15 @@ export class EditorComponent implements OnInit, OnDestroy {
     return this.editorForm.controls[this.selectedLetter()];
   }
 
-  selectLetter(variant: LetterVariant): void {
+  async selectLetter(variant: LetterVariant): Promise<void> {
+    const previous = this.selectedLetter();
     this.selectedLetter.set(variant);
+
+    try {
+      await this.patchApplication({ chosenVariant: variant });
+    } catch {
+      this.selectedLetter.set(previous);
+    }
   }
 
   async saveCv(): Promise<void> {
@@ -137,24 +148,70 @@ export class EditorComponent implements OnInit, OnDestroy {
     });
   }
 
-  async setStatus(status: string): Promise<void> {
-    await this.patchApplication({ status });
+  async setStatus(status: 'OPEN' | 'DONE'): Promise<void> {
+    const previous = this.application();
+    this.application.update(app => app ? { ...app, status } : app);
+
+    try {
+      await this.patchApplication({ status });
+    } catch {
+      this.application.set(previous);
+    }
   }
 
   async downloadPdf(): Promise<void> {
+    await this.downloadFile(`/applications/${this.id}/pdf`, 'Lebenslauf.pdf');
+  }
+
+  async downloadCvPdf(): Promise<void> {
+    await this.downloadFile(`/applications/${this.id}/export/cv`, 'Lebenslauf.pdf');
+  }
+
+  async downloadLetterPdf(): Promise<void> {
+    await this.downloadFile(`/applications/${this.id}/export/letter`, 'Anschreiben.pdf');
+  }
+
+  async downloadBundle(): Promise<void> {
+    await this.downloadFile(`/applications/${this.id}/export/bundle`, 'Bewerbung.zip');
+  }
+
+  openRegenConfirm(): void {
+    this.regenConfirmOpen.set(true);
+  }
+
+  async confirmRegen(): Promise<void> {
+    if (!this.id) return;
+
+    this.regenConfirmOpen.set(false);
+    this.generating.set(true);
+    this.error.set(null);
+    try {
+      await this.api.post(`/applications/${this.id}/regenerate-letter`, {});
+      this.schedulePoll(0);
+    } catch (e: unknown) {
+      this.generating.set(false);
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Neu-Generierung fehlgeschlagen. Bitte erneut versuchen.');
+    }
+  }
+
+  variantLabel(variant: LetterVariant): string {
+    return { formal: 'Formal', warm: 'Freundlich', brief: 'Knapp' }[variant];
+  }
+
+  private async downloadFile(path: string, filename: string): Promise<void> {
     if (!this.id) return;
     this.downloading.set(true);
     this.error.set(null);
     try {
-      const blob = await this.api.getBlob(`/applications/${this.id}/pdf`);
+      const blob = await this.api.getBlob(path);
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
-      anchor.download = 'Lebenslauf.pdf';
+      anchor.download = filename;
       anchor.click();
       URL.revokeObjectURL(url);
     } catch (e: unknown) {
-      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'PDF konnte nicht erstellt werden.');
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Download fehlgeschlagen. Bitte erneut versuchen.');
     } finally {
       this.downloading.set(false);
     }
@@ -195,8 +252,12 @@ export class EditorComponent implements OnInit, OnDestroy {
       cvText: this.optimizedCvToText(app.optimizedCv),
       formal: app.coverLetter?.['formal'] ?? '',
       warm: app.coverLetter?.['warm'] ?? app.coverLetter?.['casual'] ?? '',
-      brief: app.coverLetter?.['brief'] ?? '',
+      brief: app.coverLetter?.['brief'] ?? app.coverLetter?.['concise'] ?? '',
     });
+
+    if (app.chosenVariant === 'formal' || app.chosenVariant === 'warm' || app.chosenVariant === 'brief') {
+      this.selectedLetter.set(app.chosenVariant);
+    }
   }
 
   private async patchApplication(body: Record<string, unknown>): Promise<void> {
@@ -205,9 +266,10 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.error.set(null);
     try {
       const updated = await this.api.patch<ApplicationDto>(`/applications/${this.id}`, body);
-      this.application.set(updated);
+      this.application.update(current => ({ ...(current ?? { id: this.id }), ...updated }));
     } catch (e: unknown) {
       this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Änderungen konnten nicht gespeichert werden.');
+      throw e;
     } finally {
       this.saving.set(false);
     }

@@ -1,5 +1,7 @@
 # Post-Login App Shell — Implementation Plan
 
+> Codex completion note: completed ranges are checked only after their relevant DoD commands passed. Task 9 Dashboard and Task 13 final verification remain open until dashboard gaps are closed and the final full verification/smoke pass is rerun.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Bring the post-login app into spec by closing all gaps between the existing implementation and the approved UX design (docs/superpowers/specs/2026-05-10-post-login-ux-design.md).
@@ -63,7 +65,7 @@
 - Modify: `backend/src/queue/ai-pipeline.processor.ts`
 - Test: run `nest build` to verify no type errors after migration
 
-- [ ] **Step 1: Add enum values to schema**
+- [x] **Step 1: Add enum values to schema**
 
 In `backend/prisma/schema.prisma`, update the `AppStatus` enum:
 
@@ -81,7 +83,7 @@ enum AppStatus {
 }
 ```
 
-- [ ] **Step 2: Create and run migration**
+- [x] **Step 2: Create and run migration**
 
 ```bash
 cd backend && npx prisma migrate dev --name add_open_done_status
@@ -89,7 +91,7 @@ cd backend && npx prisma migrate dev --name add_open_done_status
 
 Expected: migration file created, `npx prisma generate` runs automatically.
 
-- [ ] **Step 3: Update worker to set OPEN after pipeline completes**
+- [x] **Step 3: Update worker to set OPEN after pipeline completes**
 
 In `backend/src/queue/ai-pipeline.processor.ts`, change line that sets status after completion:
 
@@ -101,7 +103,7 @@ await this.prisma.application.update({
 });
 ```
 
-- [ ] **Step 4: Update controller's statusSchema to accept OPEN and DONE**
+- [x] **Step 4: Update controller's statusSchema to accept OPEN and DONE**
 
 In `backend/src/applications/applications.controller.ts`, the `statusSchema` already uses `z.nativeEnum(AppStatus)` — no change needed since AppStatus now includes OPEN and DONE. Verify:
 
@@ -111,7 +113,7 @@ cd backend && npm run build
 
 Expected: exit 0, no type errors.
 
-- [ ] **Step 5: Update dashboard statusLabel mapping in frontend**
+- [x] **Step 5: Update dashboard statusLabel mapping in frontend**
 
 In `frontend/src/app/features/dashboard/dashboard.component.ts`, add OPEN and DONE to the labels map:
 
@@ -132,7 +134,7 @@ statusLabel(status: string): string {
 }
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add backend/prisma backend/src/queue/ai-pipeline.processor.ts frontend/src/app/features/dashboard/dashboard.component.ts
@@ -149,7 +151,7 @@ git commit -m "Add OPEN/DONE status to AppStatus enum and update worker"
 - Modify: `backend/src/applications/applications.controller.ts`
 - Test: `backend/src/users/users.service.spec.ts`
 
-- [ ] **Step 1: Write failing test for getDashboard with avgMatchScore**
+- [x] **Step 1: Write failing test for getDashboard with avgMatchScore**
 
 In `backend/src/users/users.service.spec.ts`:
 
@@ -200,7 +202,7 @@ describe('UsersService', () => {
 });
 ```
 
-- [ ] **Step 2: Run test — verify it fails**
+- [x] **Step 2: Run test — verify it fails**
 
 ```bash
 cd backend && npx jest users.service.spec.ts --no-coverage
@@ -208,7 +210,7 @@ cd backend && npx jest users.service.spec.ts --no-coverage
 
 Expected: FAIL — `result.avgMatchScore` is undefined.
 
-- [ ] **Step 3: Update getDashboard to include avgMatchScore**
+- [x] **Step 3: Update getDashboard to include avgMatchScore**
 
 In `backend/src/users/users.service.ts`:
 
@@ -243,7 +245,7 @@ async getDashboard(userId: string) {
 }
 ```
 
-- [ ] **Step 4: Run test — verify it passes**
+- [x] **Step 4: Run test — verify it passes**
 
 ```bash
 cd backend && npx jest users.service.spec.ts --no-coverage
@@ -251,7 +253,7 @@ cd backend && npx jest users.service.spec.ts --no-coverage
 
 Expected: PASS.
 
-- [ ] **Step 5: Add GET /applications list endpoint**
+- [x] **Step 5: Add GET /applications list endpoint**
 
 In `backend/src/applications/applications.service.ts`, add `findAll()` after the existing methods:
 
@@ -280,7 +282,7 @@ findAll(@Req() req: AuthenticatedRequest) {
 }
 ```
 
-- [ ] **Step 6: Build backend**
+- [x] **Step 6: Build backend**
 
 ```bash
 cd backend && npm run build
@@ -288,7 +290,7 @@ cd backend && npm run build
 
 Expected: exit 0.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add backend/src/users backend/src/applications
@@ -303,7 +305,7 @@ git commit -m "Add avgMatchScore to dashboard, add GET /applications list"
 - Modify: `backend/src/applications/applications.service.ts`
 - Test: `backend/src/applications/applications.service.spec.ts`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 In `backend/src/applications/applications.service.spec.ts`:
 
@@ -395,7 +397,7 @@ describe('ApplicationsService', () => {
 });
 ```
 
-- [ ] **Step 2: Run test — verify it fails**
+- [x] **Step 2: Run test — verify it fails**
 
 ```bash
 cd backend && npx jest applications.service.spec.ts --no-coverage
@@ -403,7 +405,7 @@ cd backend && npx jest applications.service.spec.ts --no-coverage
 
 Expected: FAIL.
 
-- [ ] **Step 3: Implement plan check in create()**
+- [x] **Step 3: Implement plan check in create()**
 
 In `backend/src/applications/applications.service.ts`:
 
@@ -437,7 +439,7 @@ async create(data: { masterCvId: string; jobPostingId: string }, userId: string)
 }
 ```
 
-- [ ] **Step 4: Run tests — verify they pass**
+- [x] **Step 4: Run tests — verify they pass**
 
 ```bash
 cd backend && npx jest applications.service.spec.ts --no-coverage
@@ -445,7 +447,7 @@ cd backend && npx jest applications.service.spec.ts --no-coverage
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add backend/src/applications
@@ -459,7 +461,7 @@ git commit -m "Enforce free plan limit (1 application) on POST /applications"
 **Files:**
 - Modify: `backend/src/queue/ai-pipeline.processor.ts`
 
-- [ ] **Step 1: Add job name check to the processor**
+- [x] **Step 1: Add job name check to the processor**
 
 In `backend/src/queue/ai-pipeline.processor.ts`, update `onModuleInit()` and `process()`:
 
@@ -477,7 +479,7 @@ private async process(job: Job) {
 }
 ```
 
-- [ ] **Step 2: Extract existing pipeline logic to processFullPipeline()**
+- [x] **Step 2: Extract existing pipeline logic to processFullPipeline()**
 
 In the same file, rename the existing `process()` body to `processFullPipeline()`:
 
@@ -522,7 +524,7 @@ private async processFullPipeline(job: Job) {
 }
 ```
 
-- [ ] **Step 3: Add processRegenerateLetter() — letters only, no CV re-optimize**
+- [x] **Step 3: Add processRegenerateLetter() — letters only, no CV re-optimize**
 
 ```typescript
 private async processRegenerateLetter(job: Job) {
@@ -551,7 +553,7 @@ private async processRegenerateLetter(job: Job) {
 }
 ```
 
-- [ ] **Step 4: Build backend**
+- [x] **Step 4: Build backend**
 
 ```bash
 cd backend && npm run build
@@ -559,7 +561,7 @@ cd backend && npm run build
 
 Expected: exit 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add backend/src/queue
@@ -575,13 +577,13 @@ git commit -m "Fix regenerate-letter worker: letters-only, no CV re-optimization
 - Modify: `backend/src/applications/applications.controller.ts`
 - Install: `archiver` + types
 
-- [ ] **Step 1: Install archiver**
+- [x] **Step 1: Install archiver**
 
 ```bash
 cd backend && npm install archiver && npm install --save-dev @types/archiver
 ```
 
-- [ ] **Step 2: Add generateLetterPdf() to PdfService**
+- [x] **Step 2: Add generateLetterPdf() to PdfService**
 
 In `backend/src/pdf/pdf.service.ts`, add this method after `generateCvPdf()`:
 
@@ -611,7 +613,7 @@ async generateLetterPdf(text: string, recipientName: string): Promise<Buffer> {
 }
 ```
 
-- [ ] **Step 3: Add letter PDF and bundle endpoints to controller**
+- [x] **Step 3: Add letter PDF and bundle endpoints to controller**
 
 In `backend/src/applications/applications.controller.ts`, add these two routes after `@Get(':id/pdf')`:
 
@@ -678,7 +680,7 @@ async downloadBundle(@Param('id') id: string, @Req() req: AuthenticatedRequest, 
 }
 ```
 
-- [ ] **Step 4: Build backend**
+- [x] **Step 4: Build backend**
 
 ```bash
 cd backend && npm run build
@@ -686,7 +688,7 @@ cd backend && npm run build
 
 Expected: exit 0.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add backend/src/pdf backend/src/applications backend/package.json backend/package-lock.json
@@ -701,7 +703,7 @@ git commit -m "Add letter PDF and bundle ZIP download endpoints"
 - Modify: `backend/src/cvs/cvs.service.ts`
 - Test: `backend/src/cvs/cvs.service.spec.ts`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 In `backend/src/cvs/cvs.service.spec.ts`:
 
@@ -758,7 +760,7 @@ describe('CvsService', () => {
 });
 ```
 
-- [ ] **Step 2: Run test — verify it fails**
+- [x] **Step 2: Run test — verify it fails**
 
 ```bash
 cd backend && npx jest cvs.service.spec.ts --no-coverage
@@ -766,7 +768,7 @@ cd backend && npx jest cvs.service.spec.ts --no-coverage
 
 Expected: FAIL — no ownership check exists.
 
-- [ ] **Step 3: Find the update method in cvs.service.ts and add ownership check**
+- [x] **Step 3: Find the update method in cvs.service.ts and add ownership check**
 
 Read the current `update()` method in `backend/src/cvs/cvs.service.ts`. It likely calls `prisma.masterCv.update({ where: { id } })` without checking `userId`. Update it:
 
@@ -789,7 +791,7 @@ update(@Param('id') id: string, @Body() body: unknown, @Req() req: Authenticated
 }
 ```
 
-- [ ] **Step 4: Run test — verify it passes**
+- [x] **Step 4: Run test — verify it passes**
 
 ```bash
 cd backend && npx jest cvs.service.spec.ts --no-coverage
@@ -797,7 +799,7 @@ cd backend && npx jest cvs.service.spec.ts --no-coverage
 
 Expected: PASS.
 
-- [ ] **Step 5: Full backend test suite**
+- [x] **Step 5: Full backend test suite**
 
 ```bash
 cd backend && npm test
@@ -805,7 +807,7 @@ cd backend && npm test
 
 Expected: all tests pass.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add backend/src/cvs
@@ -819,13 +821,13 @@ git commit -m "Fix PATCH /cvs/:id — add ownership check to prevent unauthorize
 **Files:**
 - Create: `frontend/src/app/shared/components/confirm-delete-modal/` (4 files via CLI)
 
-- [ ] **Step 1: Generate component**
+- [x] **Step 1: Generate component**
 
 ```bash
 cd frontend && ng generate component shared/components/confirm-delete-modal --standalone
 ```
 
-- [ ] **Step 2: Write spec first**
+- [x] **Step 2: Write spec first**
 
 In `frontend/src/app/shared/components/confirm-delete-modal/confirm-delete-modal.component.spec.ts`:
 
@@ -897,7 +899,7 @@ describe('ConfirmDeleteModalComponent', () => {
 });
 ```
 
-- [ ] **Step 3: Run spec — verify it fails**
+- [x] **Step 3: Run spec — verify it fails**
 
 ```bash
 cd frontend && npx jest confirm-delete-modal --no-coverage
@@ -905,7 +907,7 @@ cd frontend && npx jest confirm-delete-modal --no-coverage
 
 Expected: FAIL.
 
-- [ ] **Step 4: Implement the component TS**
+- [x] **Step 4: Implement the component TS**
 
 In `frontend/src/app/shared/components/confirm-delete-modal/confirm-delete-modal.component.ts`:
 
@@ -933,7 +935,7 @@ export class ConfirmDeleteModalComponent {
 }
 ```
 
-- [ ] **Step 5: Implement the template**
+- [x] **Step 5: Implement the template**
 
 In `frontend/src/app/shared/components/confirm-delete-modal/confirm-delete-modal.component.html`:
 
@@ -958,7 +960,7 @@ In `frontend/src/app/shared/components/confirm-delete-modal/confirm-delete-modal
 }
 ```
 
-- [ ] **Step 6: Add SCSS**
+- [x] **Step 6: Add SCSS**
 
 In `frontend/src/app/shared/components/confirm-delete-modal/confirm-delete-modal.component.scss`:
 
@@ -1004,7 +1006,7 @@ In `frontend/src/app/shared/components/confirm-delete-modal/confirm-delete-modal
 }
 ```
 
-- [ ] **Step 7: Run spec — verify it passes**
+- [x] **Step 7: Run spec — verify it passes**
 
 ```bash
 cd frontend && npx jest confirm-delete-modal --no-coverage
@@ -1012,7 +1014,7 @@ cd frontend && npx jest confirm-delete-modal --no-coverage
 
 Expected: PASS.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add frontend/src/app/shared/components/confirm-delete-modal
@@ -1026,13 +1028,13 @@ git commit -m "Add ConfirmDeleteModalComponent shared component"
 **Files:**
 - Create: `frontend/src/app/shared/components/upgrade-modal/` (4 files via CLI)
 
-- [ ] **Step 1: Generate component**
+- [x] **Step 1: Generate component**
 
 ```bash
 cd frontend && ng generate component shared/components/upgrade-modal --standalone
 ```
 
-- [ ] **Step 2: Write spec first**
+- [x] **Step 2: Write spec first**
 
 In `frontend/src/app/shared/components/upgrade-modal/upgrade-modal.component.spec.ts`:
 
@@ -1077,13 +1079,13 @@ describe('UpgradeModalComponent', () => {
 });
 ```
 
-- [ ] **Step 3: Run spec — verify it fails**
+- [x] **Step 3: Run spec — verify it fails**
 
 ```bash
 cd frontend && npx jest upgrade-modal --no-coverage
 ```
 
-- [ ] **Step 4: Implement component TS**
+- [x] **Step 4: Implement component TS**
 
 In `frontend/src/app/shared/components/upgrade-modal/upgrade-modal.component.ts`:
 
@@ -1108,7 +1110,7 @@ export class UpgradeModalComponent {
 }
 ```
 
-- [ ] **Step 5: Implement template**
+- [x] **Step 5: Implement template**
 
 In `frontend/src/app/shared/components/upgrade-modal/upgrade-modal.component.html`:
 
@@ -1137,7 +1139,7 @@ In `frontend/src/app/shared/components/upgrade-modal/upgrade-modal.component.htm
 }
 ```
 
-- [ ] **Step 6: Add SCSS**
+- [x] **Step 6: Add SCSS**
 
 In `frontend/src/app/shared/components/upgrade-modal/upgrade-modal.component.scss`:
 
@@ -1228,13 +1230,13 @@ In `frontend/src/app/shared/components/upgrade-modal/upgrade-modal.component.scs
 }
 ```
 
-- [ ] **Step 7: Run spec — verify it passes**
+- [x] **Step 7: Run spec — verify it passes**
 
 ```bash
 cd frontend && npx jest upgrade-modal --no-coverage
 ```
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add frontend/src/app/shared/components/upgrade-modal
@@ -1666,7 +1668,7 @@ Changes:
 4. Add confirm dialog before regeneration
 5. Wire `chosenVariant` PATCH on letter card selection
 
-- [ ] **Step 1: Update editor TypeScript**
+- [x] **Step 1: Update editor TypeScript**
 
 Replace the relevant parts of `frontend/src/app/features/application-editor/editor.component.ts`. Key changes to `EditorComponent`:
 
@@ -1763,7 +1765,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 }
 ```
 
-- [ ] **Step 2: Update editor template**
+- [x] **Step 2: Update editor template**
 
 Update the letter section in `frontend/src/app/features/application-editor/editor.component.html`. Replace the `<aside class="panel panel--letter">` block and the header actions:
 
@@ -1858,7 +1860,7 @@ Update the letter section in `frontend/src/app/features/application-editor/edito
 />
 ```
 
-- [ ] **Step 3: Add variantLabel() helper to EditorComponent TypeScript**
+- [x] **Step 3: Add variantLabel() helper to EditorComponent TypeScript**
 
 ```typescript
 variantLabel(variant: LetterVariant): string {
@@ -1866,7 +1868,7 @@ variantLabel(variant: LetterVariant): string {
 }
 ```
 
-- [ ] **Step 4: Update populateForm() to set chosenVariant signal**
+- [x] **Step 4: Update populateForm() to set chosenVariant signal**
 
 In `populateForm()`, after setting form values, also set selectedLetter:
 
@@ -1903,7 +1905,7 @@ interface ApplicationDto {
 }
 ```
 
-- [ ] **Step 5: Add letters-grid and letter-card styles to editor.component.scss**
+- [x] **Step 5: Add letters-grid and letter-card styles to editor.component.scss**
 
 Append to `frontend/src/app/features/application-editor/editor.component.scss`:
 
@@ -1994,7 +1996,7 @@ Append to `frontend/src/app/features/application-editor/editor.component.scss`:
 }
 ```
 
-- [ ] **Step 6: Build frontend**
+- [x] **Step 6: Build frontend**
 
 ```bash
 cd frontend && npm run build
@@ -2002,7 +2004,7 @@ cd frontend && npm run build
 
 Expected: exit 0.
 
-- [ ] **Step 7: Write and run editor spec updates**
+- [x] **Step 7: Write and run editor spec updates**
 
 Update `editor.component.spec.ts` to test the new `selectLetter()`, `setStatus()`, and `openRegenConfirm()` methods. Key new tests:
 
@@ -2021,7 +2023,7 @@ it('selectLetter sets selectedLetter and calls PATCH with chosenVariant', async 
 cd frontend && npx jest editor.component.spec.ts --no-coverage
 ```
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add frontend/src/app/features/application-editor
@@ -2037,7 +2039,7 @@ git commit -m "Editor: 3 cover letter cards, letter/bundle download, status togg
 - Modify: `frontend/src/app/features/wizard/wizard.component.html`
 - Modify: `frontend/src/app/features/wizard/wizard.component.spec.ts`
 
-- [ ] **Step 1: Add upgradeModalOpen signal and handle 402 in generate()**
+- [x] **Step 1: Add upgradeModalOpen signal and handle 402 in generate()**
 
 In `frontend/src/app/features/wizard/wizard.component.ts`:
 
@@ -2099,7 +2101,7 @@ export class WizardComponent implements OnInit {
 }
 ```
 
-- [ ] **Step 2: Add upgrade modal to wizard template**
+- [x] **Step 2: Add upgrade modal to wizard template**
 
 In `frontend/src/app/features/wizard/wizard.component.html`, add at the end:
 
@@ -2111,7 +2113,7 @@ In `frontend/src/app/features/wizard/wizard.component.html`, add at the end:
 />
 ```
 
-- [ ] **Step 3: Write and run spec**
+- [x] **Step 3: Write and run spec**
 
 In `frontend/src/app/features/wizard/wizard.component.spec.ts`:
 
@@ -2137,7 +2139,7 @@ cd frontend && npx jest wizard.component.spec.ts --no-coverage
 
 Expected: PASS.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add frontend/src/app/features/wizard
@@ -2155,7 +2157,7 @@ git commit -m "Wizard: show upgrade modal on free plan limit (402 response)"
 
 Changes: add "In Bewerbung verwenden" button, add inline rename, replace `window.confirm` delete with ConfirmDeleteModal.
 
-- [ ] **Step 1: Update component TypeScript**
+- [x] **Step 1: Update component TypeScript**
 
 In `frontend/src/app/features/master-cvs/master-cvs.component.ts`:
 
@@ -2270,7 +2272,7 @@ export class MasterCvsComponent implements OnInit {
 }
 ```
 
-- [ ] **Step 2: Update CV library template**
+- [x] **Step 2: Update CV library template**
 
 Replace `frontend/src/app/features/master-cvs/master-cvs.component.html`:
 
@@ -2374,7 +2376,7 @@ Replace `frontend/src/app/features/master-cvs/master-cvs.component.html`:
 />
 ```
 
-- [ ] **Step 3: Update wizard to accept cvId query param**
+- [x] **Step 3: Update wizard to accept cvId query param**
 
 In `frontend/src/app/features/wizard/wizard.component.ts`, update `ngOnInit()`:
 
@@ -2400,7 +2402,7 @@ async ngOnInit(): Promise<void> {
 }
 ```
 
-- [ ] **Step 4: Write and run spec**
+- [x] **Step 4: Write and run spec**
 
 ```bash
 cd frontend && npx jest master-cvs.component.spec.ts --no-coverage
@@ -2410,7 +2412,7 @@ Key tests: `requestDelete` sets `deletingId`, `confirmDelete` calls DELETE API a
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add frontend/src/app/features/master-cvs frontend/src/app/features/wizard

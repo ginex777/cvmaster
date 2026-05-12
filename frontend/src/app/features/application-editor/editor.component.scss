@@ -51,7 +51,7 @@
 
 .editor__grid {
   display: grid;
-  grid-template-columns: minmax(240px, 0.8fr) minmax(360px, 1.4fr) minmax(280px, 1fr);
+  grid-template-columns: minmax(240px, 0.7fr) minmax(360px, 1.1fr) minmax(420px, 1.4fr);
   gap: var(--space-4);
   align-items: stretch;
 }
@@ -160,26 +160,88 @@
   color: var(--warning);
 }
 
-.tabs {
+.letters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.letters-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.letter-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.letter-card--chosen {
+  border-color: var(--accent);
+  background: color-mix(in oklch, var(--accent) 8%, var(--bg));
+}
+
+.letter-card__header {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: var(--space-2);
+}
 
-  button {
-    min-height: 44px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-    background: var(--bg);
+.letter-card__label {
+  color: var(--ink-2);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.letter-card__chosen-badge {
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.letter-card__textarea {
+  flex: 1;
+  min-height: 14rem;
+  font-size: 0.85rem;
+}
+
+.letter-card__select {
+  width: 100%;
+}
+
+.status-toggle-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+
+  p {
+    margin-top: var(--space-1);
     color: var(--ink-2);
-    font-weight: 800;
-    cursor: pointer;
+    font-size: 0.875rem;
   }
+}
 
-  button[aria-selected='true'] {
-    border-color: var(--accent);
-    background: var(--accent);
-    color: var(--accent-ink);
-  }
+.status-toggle-row__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
 .skeleton {
@@ -206,6 +268,10 @@
 
 @media (max-width: 1100px) {
   .editor__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .letters-grid {
     grid-template-columns: 1fr;
   }
 }

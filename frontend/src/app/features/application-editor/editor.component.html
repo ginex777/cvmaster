@@ -1,16 +1,19 @@
 <main class="editor" aria-labelledby="editor-title" [attr.aria-busy]="isLoading()">
   <header class="editor__header">
-    <a routerLink="/app" class="btn btn--ghost btn--sm">ZurÃ¼ck</a>
+    <a routerLink="/app" class="btn btn--ghost btn--sm">Zurück</a>
     <div>
       <p class="editor__eyebrow">Bewerbungseditor</p>
       <h1 id="editor-title">Bewerbung bearbeiten</h1>
     </div>
     <div class="editor__actions" role="group" aria-label="Bewerbungsaktionen">
-      <button class="btn btn--secondary btn--sm" type="button" (click)="downloadPdf()" [disabled]="isDownloading()">
-        {{ isDownloading() ? 'PDF wird erstellt...' : 'PDF herunterladen' }}
+      <button class="btn btn--secondary btn--sm" type="button" (click)="downloadCvPdf()" [disabled]="isDownloading()">
+        CV als PDF
       </button>
-      <button class="btn btn--ghost btn--sm" type="button" (click)="setStatus('SENT')" [disabled]="isSaving()">
-        Als gesendet markieren
+      <button class="btn btn--secondary btn--sm" type="button" (click)="downloadLetterPdf()" [disabled]="isDownloading()">
+        Anschreiben als PDF
+      </button>
+      <button class="btn btn--primary btn--sm" type="button" (click)="downloadBundle()" [disabled]="isDownloading()">
+        Beide herunterladen
       </button>
     </div>
   </header>
@@ -68,6 +71,33 @@
             </ul>
           </section>
         }
+
+        <section class="status-toggle-row" aria-labelledby="status-title">
+          <div>
+            <h3 id="status-title">Bewerbungsstatus</h3>
+            <p>Halte deinen Status aktuell.</p>
+          </div>
+          <div class="status-toggle-row__buttons">
+            <button
+              type="button"
+              class="btn btn--sm"
+              [class.btn--primary]="application()?.status === 'OPEN'"
+              [class.btn--ghost]="application()?.status !== 'OPEN'"
+              [attr.aria-pressed]="application()?.status === 'OPEN'"
+              (click)="setStatus('OPEN')">
+              Offen
+            </button>
+            <button
+              type="button"
+              class="btn btn--sm"
+              [class.btn--primary]="application()?.status === 'DONE'"
+              [class.btn--ghost]="application()?.status !== 'DONE'"
+              [attr.aria-pressed]="application()?.status === 'DONE'"
+              (click)="setStatus('DONE')">
+              Erledigt
+            </button>
+          </div>
+        </section>
       </aside>
 
       <section class="panel panel--cv" aria-labelledby="cv-title">
@@ -86,28 +116,53 @@
         <p id="cv-help">Abschnitte durch Leerzeilen trennen. Beim Verlassen des Feldes wird automatisch gespeichert.</p>
       </section>
 
-      <aside class="panel panel--letter" aria-labelledby="letter-title">
-        <h2 id="letter-title">Anschreiben</h2>
-        <div class="tabs" role="tablist" aria-label="Anschreiben Varianten">
-          <button type="button" role="tab" [attr.aria-selected]="selectedLetterValue() === 'formal'" (click)="selectLetter('formal')">
-            Formal
-          </button>
-          <button type="button" role="tab" [attr.aria-selected]="selectedLetterValue() === 'warm'" (click)="selectLetter('warm')">
-            Herzlich
-          </button>
-          <button type="button" role="tab" [attr.aria-selected]="selectedLetterValue() === 'brief'" (click)="selectLetter('brief')">
-            Kurz
+      <section class="panel panel--letters" aria-labelledby="letters-title">
+        <div class="letters-header">
+          <h2 id="letters-title">Anschreiben</h2>
+          <button type="button" class="btn btn--ghost btn--sm" (click)="openRegenConfirm()">
+            Neu generieren
           </button>
         </div>
-
-        <label for="letter-text">Textvariante</label>
-        <textarea
-          id="letter-text"
-          [formControl]="letterControl()"
-          rows="16"
-          (blur)="saveCoverLetter()"
-        ></textarea>
-      </aside>
+        <div class="letters-grid">
+          @for (variant of letterVariants; track variant) {
+            <article
+              class="letter-card"
+              [class.letter-card--chosen]="selectedLetterValue() === variant"
+              [attr.aria-label]="'Anschreiben-Variante ' + variantLabel(variant)">
+              <div class="letter-card__header">
+                <span class="letter-card__label">{{ variantLabel(variant) }}</span>
+                @if (selectedLetterValue() === variant) {
+                  <span class="letter-card__chosen-badge" aria-label="Gewählt">Gewählt</span>
+                }
+              </div>
+              <label [for]="'letter-' + variant" class="sr-only">{{ variantLabel(variant) }} Anschreiben</label>
+              <textarea
+                [id]="'letter-' + variant"
+                [formControl]="editorForm.controls[variant]"
+                rows="10"
+                class="letter-card__textarea"
+                (blur)="saveCoverLetter()"
+                [attr.aria-describedby]="selectedLetterValue() === variant ? 'chosen-letter-hint' : null"
+              ></textarea>
+              @if (selectedLetterValue() !== variant) {
+                <button type="button" class="btn btn--ghost btn--sm letter-card__select" (click)="selectLetter(variant)">
+                  Auswählen
+                </button>
+              }
+            </article>
+          }
+        </div>
+        <p id="chosen-letter-hint" class="sr-only">Diese Variante wird beim PDF-Export verwendet.</p>
+      </section>
     </form>
   }
 </main>
+
+<lba-confirm-delete-modal
+  [open]="regenConfirmOpen()"
+  title="Anschreiben neu generieren?"
+  body="Alle drei Varianten werden neu erstellt. Deine manuellen Änderungen gehen verloren."
+  confirmLabel="Ja, neu generieren"
+  (confirmed)="confirmRegen()"
+  (cancelled)="regenConfirmOpen.set(false)"
+/>
