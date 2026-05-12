@@ -2,7 +2,9 @@ import type { OnInit } from '@angular/core';
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { ApiService } from '../../core/api/api.service';
+import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
 import { CvTemplatePicker, type CvTemplate } from '../../shared/components/cv-template-picker/cv-template-picker';
 
 export interface MasterCv {
@@ -18,18 +20,22 @@ export interface MasterCv {
 @Component({
   selector: 'lba-master-cvs',
   standalone: true,
-  imports: [DatePipe, CvTemplatePicker],
+  imports: [DatePipe, ConfirmDeleteModal, CvTemplatePicker],
   templateUrl: './master-cvs.component.html',
   styleUrl: './master-cvs.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MasterCvsComponent implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly router = inject(Router);
 
   readonly cvs = signal<MasterCv[]>([]);
   readonly loading = signal(false);
   readonly uploading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly deletingId = signal<string | null>(null);
+  readonly renamingId = signal<string | null>(null);
+  readonly renameValue = signal('');
 
   async ngOnInit(): Promise<void> {
     this.loading.set(true);
@@ -66,7 +72,14 @@ export class MasterCvsComponent implements OnInit {
     }
   }
 
-  async remove(id: string): Promise<void> {
+  requestDelete(id: string): void {
+    this.deletingId.set(id);
+  }
+
+  async confirmDelete(): Promise<void> {
+    const id = this.deletingId();
+    if (!id) return;
+
     this.error.set(null);
     try {
       await this.api.delete<void>(`/cvs/${id}`);
@@ -75,6 +88,8 @@ export class MasterCvsComponent implements OnInit {
       this.error.set(
         e instanceof HttpErrorResponse ? e.error.message : 'Löschen fehlgeschlagen.',
       );
+    } finally {
+      this.deletingId.set(null);
     }
   }
 
@@ -88,6 +103,35 @@ export class MasterCvsComponent implements OnInit {
     } catch {
       this.cvs.update((list) => list.map((cv) => cv.id === id ? { ...cv, template: previous } : cv));
       this.error.set('Template konnte nicht gespeichert werden.');
+    }
+  }
+
+  useInWizard(id: string): void {
+    void this.router.navigate(['/app/wizard'], { queryParams: { cvId: id } });
+  }
+
+  startRename(cv: MasterCv): void {
+    this.renamingId.set(cv.id);
+    this.renameValue.set(cv.name);
+  }
+
+  async saveRename(cv: MasterCv): Promise<void> {
+    const name = this.renameValue().trim();
+    if (!name || name === cv.name) {
+      this.renamingId.set(null);
+      return;
+    }
+
+    this.error.set(null);
+    try {
+      await this.api.patch<MasterCv>(`/cvs/${cv.id}`, { name });
+      this.cvs.update((list) => list.map((item) => item.id === cv.id ? { ...item, name } : item));
+    } catch (e: unknown) {
+      this.error.set(
+        e instanceof HttpErrorResponse ? e.error.message : 'Umbenennen fehlgeschlagen.',
+      );
+    } finally {
+      this.renamingId.set(null);
     }
   }
 }

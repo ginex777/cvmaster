@@ -39,7 +39,21 @@
       @for (cv of cvs(); track cv.id) {
         <li class="cv-card">
           <div class="cv-card__info">
-            <strong class="cv-card__name">{{ cv.name }}</strong>
+            @if (renamingId() === cv.id) {
+              <input
+                #renameInput
+                class="cv-card__rename-input"
+                type="text"
+                [value]="renameValue()"
+                (input)="renameValue.set(renameInput.value)"
+                (blur)="saveRename(cv)"
+                (keydown.enter)="saveRename(cv)"
+                (keydown.escape)="renamingId.set(null)"
+                [attr.aria-label]="'Neuer Name für ' + cv.name"
+                autofocus />
+            } @else {
+              <strong class="cv-card__name">{{ cv.name }}</strong>
+            }
             <span class="cv-card__meta">{{ cv.sourceFilename }} · {{ cv.language.toUpperCase() }}</span>
             <time class="cv-card__date" [attr.datetime]="cv.updatedAt">
               Aktualisiert {{ cv.updatedAt | date:'dd.MM.yyyy' }}
@@ -49,15 +63,39 @@
               (templateChange)="updateTemplate(cv.id, $event)"
             />
           </div>
-          <button
-            type="button"
-            class="btn btn--ghost btn--sm"
-            [attr.aria-label]="'Lebenslauf ' + cv.name + ' löschen'"
-            (click)="remove(cv.id)">
-            Löschen
-          </button>
+          <div class="cv-card__actions">
+            <button
+              type="button"
+              class="btn btn--primary btn--sm"
+              [attr.aria-label]="'Lebenslauf ' + cv.name + ' in Bewerbung verwenden'"
+              (click)="useInWizard(cv.id)">
+              In Bewerbung verwenden
+            </button>
+            <button
+              type="button"
+              class="btn btn--ghost btn--sm"
+              [attr.aria-label]="'Lebenslauf ' + cv.name + ' umbenennen'"
+              (click)="startRename(cv)">
+              Umbenennen
+            </button>
+            <button
+              type="button"
+              class="btn btn--ghost btn--sm"
+              [attr.aria-label]="'Lebenslauf ' + cv.name + ' löschen'"
+              (click)="requestDelete(cv.id)">
+              Löschen
+            </button>
+          </div>
         </li>
       }
     </ul>
   }
 </main>
+
+<lba-confirm-delete-modal
+  [open]="deletingId() !== null"
+  title="Lebenslauf löschen?"
+  body="Dieser Lebenslauf wird dauerhaft gelöscht. Bestehende Bewerbungen sind nicht betroffen."
+  (confirmed)="confirmDelete()"
+  (cancelled)="deletingId.set(null)"
+/>

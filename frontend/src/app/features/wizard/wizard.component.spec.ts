@@ -1,19 +1,31 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { WizardComponent } from './wizard.component';
 import { ApiService } from '../../core/api/api.service';
 
 describe('WizardComponent', () => {
   let api: jest.Mocked<Pick<ApiService, 'get' | 'post'>>;
+  let queryParamMap = convertToParamMap({});
 
   beforeEach(async () => {
+    queryParamMap = convertToParamMap({});
     api = { get: jest.fn(), post: jest.fn() };
     api.get.mockResolvedValue([]);
     await TestBed.configureTestingModule({
       imports: [WizardComponent],
       providers: [
         provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              get queryParamMap() {
+                return queryParamMap;
+              },
+            },
+          },
+        },
         { provide: ApiService, useValue: api },
       ],
     }).compileComponents();
@@ -47,6 +59,17 @@ describe('WizardComponent', () => {
     await f.whenStable();
     expect(f.componentInstance.cvs()).toHaveLength(1);
     expect(f.componentInstance.cvs()[0].id).toBe('cv1');
+  });
+
+  it('preselects a CV from the cvId query parameter', async () => {
+    queryParamMap = convertToParamMap({ cvId: 'cv1' });
+    api.get.mockResolvedValue([{ id: 'cv1', name: 'My CV', language: 'de', sourceFilename: 'cv.pdf', createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }]);
+    const f = TestBed.createComponent(WizardComponent);
+    f.detectChanges();
+    await f.whenStable();
+
+    expect(f.componentInstance.selectedCvId()).toBe('cv1');
+    expect(f.componentInstance.step()).toBe(2);
   });
 
   it('error signal set when generate API throws HttpErrorResponse', async () => {
