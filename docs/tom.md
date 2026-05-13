@@ -41,7 +41,7 @@ Status: technische Arbeitsfassung, vor Public-Launch gegen reale Infrastruktur u
 - Originaluploads werden RAM-only verarbeitet und nicht dauerhaft gespeichert.
 - Generierte PDFs werden fuer Download/E-Mail in memory erzeugt und nicht auf Disk persistiert.
 - Account-Loeschung setzt Soft-Delete, widerruft Sessions und fuehrt Hard-Purge nach 30 Tagen aus.
-- AI-Job-Daten werden nach 30 Tagen gepurgt; vollstaendige AI-Job-Audit-Erfassung ist separat im Audit offen.
+- AI-Job-Daten werden nach 30 Tagen gepurgt; AI-Job-Audit-Erfassung speichert nur redaktionelle Metadaten, keine Rohprompts oder Rohantworten.
 
 ## 6. Auftragsverarbeiter und Nachweise
 

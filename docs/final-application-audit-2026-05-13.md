@@ -264,7 +264,7 @@ DoD:
 
 Closed in the implementation commit for this task. Decision: quota-based product gates use `PlanPolicyService`; `PlanGuard` remains available only for future static route-level plan requirements. Verification: focused plan/application tests, backend lint, backend build, and full backend test suite passed.
 
-### P2 - Stale audit/readiness documents can confuse future work
+### Done - P2 - Stale audit/readiness documents can confuse future work
 
 Evidence:
 - `docs/ai-web-backend-audit-2026-05-09.md` and `docs/local-manual-test-readiness.md` contain older findings, some now fixed and some still open.
@@ -274,9 +274,11 @@ Impact:
 - Future agents may re-open already completed work or miss the new final checklist.
 
 DoD:
-- [ ] Mark old audit/readiness docs as superseded by this file or archive them.
-- [ ] Keep only one active open-task checklist.
-- [ ] Remove completed checklist items once their DoD is verified and committed.
+- [x] Mark old audit/readiness docs as superseded by this file or archive them.
+- [x] Keep only one active open-task checklist.
+- [x] Remove completed checklist items once their DoD is verified and committed.
+
+Closed in the implementation commit for this task. The older audit/readiness docs were moved under `docs/archive/`, the stale CV-template spec checklist was converted to a superseded note, and this final audit remains the only active checklist. Remaining external legal/compliance items are intentionally still tracked above.
 
 ## Notes On Verified Wiring
 
