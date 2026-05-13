@@ -44,11 +44,11 @@ async function setup(authMock = makeAuthMock()) {
 }
 
 describe('AppShellComponent', () => {
-  it('renders nav links for Dashboard, Lebensläufe, Abrechnung, Sicherheit', async () => {
+  it('renders nav links for Dashboard, Lebensläufe, Abrechnung, Sicherheit, LinkedIn', async () => {
     const { fixture } = await setup();
     const links = fixture.debugElement.queryAll(By.css('.shell__link'));
     const texts = links.map(l => (l.nativeElement as HTMLElement).textContent?.trim());
-    expect(texts).toEqual(['Dashboard', 'Lebensläufe', 'Abrechnung', 'Sicherheit']);
+    expect(texts).toEqual(['Dashboard', 'Lebensläufe', 'Abrechnung', 'Sicherheit', 'LinkedIn']);
   });
 
   it('displays the user name', async () => {

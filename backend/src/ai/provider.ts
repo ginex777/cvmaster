@@ -52,3 +52,16 @@ export const ParsedJobSchema = z.object({
 });
 
 export type ParsedJob = z.infer<typeof ParsedJobSchema>;
+
+// LinkedIn optimization output schema
+export const LinkedInOptimizationSchema = z.object({
+  headline:   z.string(),
+  about:      z.string(),
+  experience: z.array(z.object({
+    role:            z.string(),
+    company:         z.string(),
+    improvedBullets: z.array(z.string()),
+  })),
+});
+
+export type LinkedInOptimization = z.infer<typeof LinkedInOptimizationSchema>;

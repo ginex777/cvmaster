@@ -28,6 +28,7 @@ export const routes: Routes = [
           { path: 'billing', loadComponent: () => import('./features/billing/billing.component').then(m => m.BillingComponent) },
           { path: 'wizard', loadComponent: () => import('./features/wizard/wizard.component').then(m => m.WizardComponent) },
           { path: 'security', loadComponent: () => import('./features/security/security.component').then(m => m.SecurityComponent) },
+          { path: 'linkedin', loadComponent: () => import('./features/linkedin/linkedin.component').then(m => m.LinkedInComponent) },
         ],
       },
       // Editor: full-screen, no shell

@@ -13,6 +13,7 @@ import { GdprModule } from './gdpr/gdpr.module';
 import { QueueProducerModule } from './queue/queue-producer.module';
 import { TrialModule } from './trial/trial.module';
 import { HealthModule } from './health/health.module';
+import { LinkedInModule } from './linkedin/linkedin.module';
 import { PrismaService } from './common/prisma.service';
 
 @Module({
@@ -31,6 +32,7 @@ import { PrismaService } from './common/prisma.service';
     QueueProducerModule,
     TrialModule,
     HealthModule,
+    LinkedInModule,
   ],
   providers: [PrismaService],
   exports: [PrismaService],

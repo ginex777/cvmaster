@@ -377,29 +377,20 @@ Completion evidence:
 - 5 frontend tests: initial null state, load success, no-reload guard, error state, copy feedback.
 - All 165 frontend tests and 124 backend tests pass; lint clean; build succeeds.
 
-### P1.6 Add LinkedIn Profile Text Optimization
+### P1.6 Add LinkedIn Profile Text Optimization - Done 2026-05-13
 
-Problem: Landing/pricing mention LinkedIn profile optimization, but no actual feature route or backend flow exists.
+Status: Done.
 
-Backend tasks:
+Completion evidence:
 
-- Add endpoint accepting pasted LinkedIn profile text and target job/role.
-- Validate input size and wrap as untrusted content.
-- Return profile headline/about/experience suggestions with schema validation.
-- Do not use LinkedIn APIs.
-- Add tests for validation and AI schema failures.
-
-Frontend tasks:
-
-- Add route under `/app/linkedin` or an editor-side tool.
-- Add form for pasted profile text and target role.
-- Show before/after suggestions with copy buttons.
-- Add billing/plan gating if the feature is premium.
-- Add tests for loading/error/copy interactions.
-
-Acceptance criteria:
-
-- The feature delivers the promised LinkedIn value without violating the V1 "no LinkedIn API" scope lock.
+- `POST /linkedin/optimize` (PRO plan required via `@RequirePlan('PRO')` + `PlanGuard`, throttled 5/min) accepts `profileText` (50–20,000 chars) + `targetRole` (2–200 chars), validated with Zod.
+- AI call uses `prompts/linkedin-optimizer.txt` system prompt with `LinkedInOptimizationSchema` (Zod): `{ headline, about, experience[{role, company, improvedBullets}] }`.
+- Input wrapped with `wrapUntrustedContent('LINKEDIN_PROFILE_INPUT_JSON', ...)` for prompt-injection defence; 3-retry logic on schema failure.
+- 2 backend service tests: correct args forwarded to AiService, errors propagated.
+- `LinkedInComponent` at `/app/linkedin`: form with profile textarea + target role input, lazy result section with Headline/About/Experience cards, copy-to-clipboard with 2s feedback, 403 → PRO-upgrade message.
+- "LinkedIn" nav link added to app-shell.
+- 7 frontend tests: initial null state, loading signal, success, 403 error, API error, correct POST args, copy feedback.
+- All 172 frontend tests and 126 backend tests pass; lint clean; build succeeds.
 
 ## P2 - Conversion, Trust, And Retention
 

@@ -1,0 +1,110 @@
+<main id="main" class="linkedin-page" tabindex="-1">
+  <h1 class="linkedin-page__title">LinkedIn-Profil optimieren</h1>
+  <p class="linkedin-page__desc">Füge deinen LinkedIn-Profiltext ein und gib deine Zielposition an. Die KI verbessert Headline, About und Berufserfahrung.</p>
+
+  @if (error()) {
+    <div role="alert" aria-live="polite" class="linkedin-page__error">{{ error() }}</div>
+  }
+
+  <form
+    class="linkedin-form"
+    [formGroup]="form"
+    (ngSubmit)="optimize()"
+    novalidate
+    aria-label="LinkedIn-Profil optimieren">
+
+    <div class="field">
+      <label for="profile-text">LinkedIn-Profiltext</label>
+      <textarea
+        id="profile-text"
+        formControlName="profileText"
+        rows="10"
+        placeholder="Füge hier deinen LinkedIn-Profiltext ein (Headline, About, Berufserfahrung)…"
+        aria-required="true"
+        [attr.aria-describedby]="form.controls.profileText.invalid && form.controls.profileText.touched ? 'profile-text-error' : null">
+      </textarea>
+      @if (form.controls.profileText.invalid && form.controls.profileText.touched) {
+        <span id="profile-text-error" role="alert" class="field__error">Mindestens 50 Zeichen erforderlich.</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="target-role">Zielposition</label>
+      <input
+        id="target-role"
+        type="text"
+        formControlName="targetRole"
+        placeholder="z. B. Senior Frontend Developer"
+        aria-required="true"
+        [attr.aria-describedby]="form.controls.targetRole.invalid && form.controls.targetRole.touched ? 'target-role-error' : null" />
+      @if (form.controls.targetRole.invalid && form.controls.targetRole.touched) {
+        <span id="target-role-error" role="alert" class="field__error">Bitte gib eine Zielposition ein.</span>
+      }
+    </div>
+
+    <button type="submit" class="btn btn--primary" [disabled]="loading()">
+      @if (loading()) { KI optimiert… } @else { Profil optimieren }
+    </button>
+  </form>
+
+  @if (result()) {
+    <section class="linkedin-results" aria-label="Optimierungsergebnisse" aria-live="polite">
+      <h2 class="linkedin-results__title">Optimierungsvorschläge</h2>
+
+      <div class="result-card">
+        <div class="result-card__header">
+          <h3 class="result-card__label">Headline</h3>
+          <button
+            type="button"
+            class="btn btn--ghost btn--sm"
+            (click)="copyField(result()!.headline, 'headline')"
+            aria-label="Headline kopieren">
+            @if (copiedField() === 'headline') { Kopiert! } @else { Kopieren }
+          </button>
+        </div>
+        <p class="result-card__text">{{ result()!.headline }}</p>
+      </div>
+
+      <div class="result-card">
+        <div class="result-card__header">
+          <h3 class="result-card__label">About</h3>
+          <button
+            type="button"
+            class="btn btn--ghost btn--sm"
+            (click)="copyField(result()!.about, 'about')"
+            aria-label="About-Text kopieren">
+            @if (copiedField() === 'about') { Kopiert! } @else { Kopieren }
+          </button>
+        </div>
+        <p class="result-card__text result-card__text--pre">{{ result()!.about }}</p>
+      </div>
+
+      @if (result()!.experience.length > 0) {
+        <div class="result-card">
+          <h3 class="result-card__label">Berufserfahrung</h3>
+          <ul class="experience-list" role="list">
+            @for (exp of result()!.experience; track exp.company + exp.role) {
+              <li class="experience-item">
+                <div class="experience-item__header">
+                  <strong>{{ exp.role }}</strong> bei <strong>{{ exp.company }}</strong>
+                  <button
+                    type="button"
+                    class="btn btn--ghost btn--sm"
+                    (click)="copyField(exp.improvedBullets.join('\n'), exp.company + exp.role)"
+                    [attr.aria-label]="'Bullets für ' + exp.role + ' kopieren'">
+                    @if (copiedField() === exp.company + exp.role) { Kopiert! } @else { Kopieren }
+                  </button>
+                </div>
+                <ul class="experience-item__bullets" role="list">
+                  @for (bullet of exp.improvedBullets; track bullet) {
+                    <li>{{ bullet }}</li>
+                  }
+                </ul>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </section>
+  }
+</main>

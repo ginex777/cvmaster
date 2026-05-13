@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { z } from 'zod';
-import { LLMProvider, ParsedCVSchema, ParsedJobSchema, ParsedCV, ParsedJob } from './provider';
+import { LLMProvider, ParsedCVSchema, ParsedJobSchema, ParsedCV, ParsedJob, LinkedInOptimizationSchema, LinkedInOptimization } from './provider';
 import { ClaudeProvider } from './claude.provider';
 import { GroqProvider } from './groq.provider';
 import { PrismaService } from '../common/prisma.service';
@@ -92,6 +92,24 @@ export class AiService {
         system: loadPrompt('optimizer'),
         user,
         schema: ParsedCVSchema,
+      })
+    ));
+  }
+
+  async optimizeLinkedIn(
+    profileText: string,
+    targetRole: string,
+    audit: AiAuditContext = {},
+  ): Promise<LinkedInOptimization> {
+    const user = this.wrapUntrustedContent(
+      'LINKEDIN_PROFILE_INPUT_JSON',
+      JSON.stringify({ profileText, targetRole }),
+    );
+    return this.withAudit('optimize_linkedin', audit, () => this.withRetry(() =>
+      this.provider.generate({
+        system: loadPrompt('linkedin-optimizer'),
+        user,
+        schema: LinkedInOptimizationSchema,
       })
     ));
   }
