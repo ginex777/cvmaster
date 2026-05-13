@@ -181,6 +181,14 @@ export class ApplicationsController {
     return this.apps.updateStructuredCv(id, req.user.sub, sections);
   }
 
+  @Patch(':id/reminder')
+  @UseGuards(OwnsApplicationGuard)
+  updateReminder(@Param('id') id: string, @Body() body: unknown, @Req() req: AuthenticatedRequest) {
+    const schema = z.object({ reminderAt: z.string().datetime().nullable() });
+    const { reminderAt } = schema.parse(body);
+    return this.apps.updateReminder(id, req.user.sub, reminderAt ? new Date(reminderAt) : null);
+  }
+
   @Get(':id/follow-up-templates')
   @UseGuards(OwnsApplicationGuard)
   getFollowUpTemplates(@Param('id') id: string, @Req() req: AuthenticatedRequest) {

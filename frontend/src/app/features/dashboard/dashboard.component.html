@@ -91,8 +91,26 @@
       <section class="applications" aria-label="Letzte Bewerbungen">
         <div class="applications__heading">
           <h2>Letzte Bewerbungen</h2>
-          <a routerLink="/app/wizard" class="btn btn--ghost btn--sm">Weitere erstellen</a>
+          <div class="applications__heading-actions">
+            <button
+              type="button"
+              class="btn btn--ghost btn--sm"
+              (click)="toggleView()"
+              [attr.aria-pressed]="showPipeline()"
+              aria-label="Ansicht wechseln">
+              @if (showPipeline()) { Listenansicht } @else { Pipeline-Ansicht }
+            </button>
+            <a routerLink="/app/wizard" class="btn btn--ghost btn--sm">Weitere erstellen</a>
+          </div>
         </div>
+        @if (showPipeline()) {
+          <lba-pipeline-board
+            [applications]="data()!.recentApplications"
+            (statusChange)="onStatusChange($event)"
+            (reminderChange)="onReminderChange($event)"
+          />
+        }
+        @if (!showPipeline()) {
         <div class="app-table-wrap">
           <table class="app-table" role="grid">
             <caption class="sr-only">Letzte 5 Bewerbungen</caption>
@@ -157,6 +175,7 @@
             </tbody>
           </table>
         </div>
+        }
       </section>
     } @else {
       <section class="empty-state" aria-label="Keine Bewerbungen">

@@ -4,12 +4,15 @@ import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApiService } from '../../core/api/api.service';
 import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
+import { PipelineBoard } from '../../shared/components/pipeline-board/pipeline-board';
+import type { StatusChangeEvent, ReminderChangeEvent } from '../../shared/components/pipeline-board/pipeline-board';
 
 interface RecentApplication {
   id: string;
   status: string;
   matchScore: number | null;
   createdAt: string;
+  reminderAt?: string | null;
   jobPosting: { parsedJson: { title?: string; company?: string } };
 }
 
@@ -24,7 +27,7 @@ interface DashboardData {
 @Component({
   selector: 'lba-dashboard',
   standalone: true,
-  imports: [RouterLink, DatePipe, ConfirmDeleteModal],
+  imports: [RouterLink, DatePipe, ConfirmDeleteModal, PipelineBoard],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -136,6 +139,33 @@ export class DashboardComponent implements OnInit {
       // silently fail — checklist stays visible if the request fails
     } finally {
       this.dismissingOnboarding.set(false);
+    }
+  }
+
+  readonly showPipeline = signal(false);
+
+  toggleView(): void {
+    this.showPipeline.update(v => !v);
+  }
+
+  async onStatusChange(event: StatusChangeEvent): Promise<void> {
+    const previous = this.data()?.recentApplications.find(a => a.id === event.id)?.status;
+    this.updateApplicationInList(event.id, { status: event.status });
+    try {
+      await this.api.patch(`/applications/${event.id}/status`, { status: event.status });
+    } catch (e: unknown) {
+      if (previous) this.updateApplicationInList(event.id, { status: previous });
+      this.error.set(this.errorMessage(e, 'Status konnte nicht geändert werden.'));
+    }
+  }
+
+  async onReminderChange(event: ReminderChangeEvent): Promise<void> {
+    const reminderAt = event.reminderAt ? new Date(event.reminderAt).toISOString() : null;
+    this.updateApplicationInList(event.id, { reminderAt });
+    try {
+      await this.api.patch(`/applications/${event.id}/reminder`, { reminderAt });
+    } catch (e: unknown) {
+      this.error.set(this.errorMessage(e, 'Erinnerung konnte nicht gespeichert werden.'));
     }
   }
 

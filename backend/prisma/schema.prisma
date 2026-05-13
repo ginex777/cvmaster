@@ -105,6 +105,8 @@ model Application {
   anonymizePhoto  Boolean      @default(false)
   createdAt       DateTime     @default(now())
   exportedAt      DateTime?
+  reminderAt      DateTime?
+  reminderSentAt  DateTime?
 
   aiJobs          AiJob[]
 }

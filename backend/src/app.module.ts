@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -14,11 +15,13 @@ import { QueueProducerModule } from './queue/queue-producer.module';
 import { TrialModule } from './trial/trial.module';
 import { HealthModule } from './health/health.module';
 import { LinkedInModule } from './linkedin/linkedin.module';
+import { RemindersModule } from './reminders/reminders.module';
 import { PrismaService } from './common/prisma.service';
 
 @Module({
   imports: [
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
+    ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
     CvsModule,
@@ -33,6 +36,7 @@ import { PrismaService } from './common/prisma.service';
     TrialModule,
     HealthModule,
     LinkedInModule,
+    RemindersModule,
   ],
   providers: [PrismaService],
   exports: [PrismaService],

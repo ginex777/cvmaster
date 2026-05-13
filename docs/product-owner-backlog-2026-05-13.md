@@ -585,17 +585,23 @@ Acceptance criteria:
 
 - Codes like `STUDENT20` and `LAUNCH10` can be run without manual payment changes.
 
-### P3.2 Status Pipeline And Reminders
+### P3.2 Status Pipeline And Reminders - Done 2026-05-13
 
-Backend tasks:
+Status: Done.
 
-- Add reminder dates and status history for applications.
-- Add scheduled email reminders for follow-up.
+Completion evidence:
 
-Frontend tasks:
-
-- Add kanban or pipeline view: Offen, Gesendet, Antwort, Interview, Angebot, Absage.
-- Add reminder picker and next-action labels.
+- Prisma schema: `reminderAt DateTime?` and `reminderSentAt DateTime?` added to `Application`, migration `20260513190000_add_application_reminder`.
+- `PATCH /applications/:id/reminder` — sets or clears `reminderAt` (ISO datetime or null); clears `reminderSentAt` when reminder is removed; guarded with `JwtAuthGuard` + `OwnsApplicationGuard`.
+- `backend/src/reminders/reminders.service.ts` — `RemindersService` with `@Cron(EVERY_DAY_AT_8AM)` `sendDueReminders()`: queries applications with `reminderAt <= now` and `reminderSentAt = null`, sends `sendReminderNotification` email via `MailService`, marks `reminderSentAt` after success, continues on per-app error.
+- `backend/src/reminders/reminders.module.ts` — wired into `AppModule` with `ScheduleModule.forRoot()`.
+- `backend/src/mail/mail.service.ts` — `sendReminderNotification(to, { id, title, company })` added.
+- `backend/src/reminders/reminders.service.spec.ts` — 5 tests: sends email for each due app, marks reminderSentAt, no-op when empty, continues on failure, fallback title when parsedJson is empty.
+- `backend/src/applications/applications.service.spec.ts` — 3 tests for `updateReminder`: sets date, clears to null (also clears reminderSentAt), ForbiddenException for wrong user.
+- `frontend/src/app/shared/components/pipeline-board/` — `PipelineBoard` dumb component with 6 columns (Offen, Gesendet, Antwort, Interview, Angebot, Absage), move buttons per card, reminder date picker, reminder dot indicator; emits `statusChange` and `reminderChange` outputs.
+- `frontend/src/app/features/dashboard/dashboard.component.ts` — `showPipeline` signal, `toggleView()`, `onStatusChange()`, `onReminderChange()` methods.
+- `frontend/src/app/features/dashboard/dashboard.component.html` — toggle button switches between list and pipeline views; `<lba-pipeline-board>` shown when `showPipeline()` is true.
+- 215 frontend tests pass; 147 backend tests pass; lint clean; build succeeds.
 
 Acceptance criteria:
 

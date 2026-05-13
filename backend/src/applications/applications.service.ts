@@ -179,6 +179,14 @@ export class ApplicationsService {
     return this.prisma.application.update({ where: { id }, data: { status } });
   }
 
+  async updateReminder(id: string, userId: string, reminderAt: Date | null) {
+    await this.findOne(id, userId);
+    return this.prisma.application.update({
+      where: { id },
+      data: { reminderAt, reminderSentAt: reminderAt === null ? null : undefined },
+    });
+  }
+
   async updateStructuredCv(id: string, userId: string, sections: CvSection[]) {
     await this.findOne(id, userId);
     return this.prisma.application.update({

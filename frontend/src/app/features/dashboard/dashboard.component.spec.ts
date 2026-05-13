@@ -149,6 +149,62 @@ describe('DashboardComponent', () => {
     expect(fixture.componentInstance.data()?.applicationCount).toBe(0);
   });
 
+  describe('pipeline view', () => {
+    const appData = {
+      onboardingDismissed: true,
+      cvCount: 1,
+      applicationCount: 1,
+      avgMatchScore: 80,
+      recentApplications: [
+        { id: 'app-1', status: 'OPEN', matchScore: 80, createdAt: '2026-05-10T00:00:00Z', reminderAt: null, jobPosting: { parsedJson: { title: 'Dev', company: 'Acme' } } },
+      ],
+    };
+
+    it('toggleView switches showPipeline signal', () => {
+      api.get.mockResolvedValue(emptyDashboard);
+      const fixture = TestBed.createComponent(DashboardComponent);
+      expect(fixture.componentInstance.showPipeline()).toBe(false);
+      fixture.componentInstance.toggleView();
+      expect(fixture.componentInstance.showPipeline()).toBe(true);
+    });
+
+    it('onStatusChange calls PATCH /applications/:id/status', async () => {
+      api.get.mockResolvedValue(appData);
+      api.patch.mockResolvedValue({});
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      await fixture.componentInstance.onStatusChange({ id: 'app-1', status: 'SENT' });
+
+      expect(api.patch).toHaveBeenCalledWith('/applications/app-1/status', { status: 'SENT' });
+    });
+
+    it('onReminderChange calls PATCH /applications/:id/reminder', async () => {
+      api.get.mockResolvedValue(appData);
+      api.patch.mockResolvedValue({});
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      await fixture.componentInstance.onReminderChange({ id: 'app-1', reminderAt: '2026-06-15' });
+
+      expect(api.patch).toHaveBeenCalledWith('/applications/app-1/reminder', expect.objectContaining({ reminderAt: expect.any(String) }));
+    });
+
+    it('onReminderChange with null sends null reminderAt', async () => {
+      api.get.mockResolvedValue(appData);
+      api.patch.mockResolvedValue({});
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      await fixture.componentInstance.onReminderChange({ id: 'app-1', reminderAt: null });
+
+      expect(api.patch).toHaveBeenCalledWith('/applications/app-1/reminder', { reminderAt: null });
+    });
+  });
+
   describe('onboarding', () => {
     it('shows onboarding panel when onboardingDismissed is false', async () => {
       api.get.mockResolvedValue({ ...emptyDashboard, onboardingDismissed: false });

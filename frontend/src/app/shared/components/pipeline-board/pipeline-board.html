@@ -1,0 +1,66 @@
+<div class="pipeline" role="region" aria-label="Bewerbungs-Pipeline">
+  <div class="pipeline__columns">
+    @for (col of columns; track col.key) {
+      <div class="pipeline__col" [attr.aria-label]="col.label">
+        <h3 class="pipeline__col-heading">
+          {{ col.label }}
+          <span class="pipeline__col-count" aria-hidden="true">{{ appsForColumn(col).length }}</span>
+        </h3>
+        <ul class="pipeline__cards" role="list">
+          @for (app of appsForColumn(col); track app.id) {
+            <li class="pipeline__card">
+              <a class="pipeline__card-title" [routerLink]="['/app/applications', app.id]">
+                {{ jobTitle(app) }}
+              </a>
+              @if (company(app)) {
+                <span class="pipeline__card-company">{{ company(app) }}</span>
+              }
+              @if (app.matchScore !== null) {
+                <span [class]="'pipeline__card-score ' + scoreClass(app.matchScore!)" [attr.aria-label]="'Match-Score ' + app.matchScore + ' Prozent'">
+                  {{ app.matchScore }}%
+                </span>
+              }
+              <div class="pipeline__card-actions" role="group" [attr.aria-label]="'Status für ' + jobTitle(app) + ' ändern'">
+                @for (target of columns; track target.key) {
+                  @if (target.key !== col.key) {
+                    <button
+                      type="button"
+                      class="pipeline__move-btn"
+                      (click)="moveToColumn(app, target)"
+                      [attr.aria-label]="'Nach ' + target.label + ' verschieben'"
+                    >
+                      → {{ target.label }}
+                    </button>
+                  }
+                }
+              </div>
+              <div class="pipeline__reminder">
+                <label class="pipeline__reminder-label" [attr.for]="'reminder-' + app.id">
+                  Erinnerung
+                  @if (hasReminder(app)) {
+                    <span class="pipeline__reminder-dot" aria-hidden="true">●</span>
+                  }
+                </label>
+                <input
+                  type="date"
+                  class="pipeline__reminder-input"
+                  [id]="'reminder-' + app.id"
+                  [value]="reminderDateValue(app)"
+                  (change)="onReminderInput(app, $event)"
+                />
+                @if (hasReminder(app)) {
+                  <span class="pipeline__reminder-hint" aria-live="polite">
+                    {{ app.reminderAt | date:'dd.MM.yyyy' }}
+                  </span>
+                }
+              </div>
+            </li>
+          }
+          @empty {
+            <li class="pipeline__empty">–</li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+</div>

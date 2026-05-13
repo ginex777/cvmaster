@@ -51,6 +51,21 @@ export class MailService {
     });
   }
 
+  async sendReminderNotification(to: string, application: { id: string; title: string; company: string }) {
+    const link = `${process.env.APP_URL}/app/applications/${application.id}`;
+    const subject = application.company
+      ? `Erinnerung: Bewerbung bei ${application.company}`
+      : `Erinnerung: ${application.title}`;
+    const html = `<p>Du hast eine Erinnerung für deine Bewerbung gesetzt.</p><p><strong>${application.title}</strong>${application.company ? ` bei ${application.company}` : ''}</p><p><a href="${link}">Bewerbung öffnen</a></p>`;
+
+    if (!process.env.RESEND_API_KEY && process.env.NODE_ENV !== 'production') {
+      console.warn(`[dev-email] Reminder for ${to}: ${link}`);
+      return;
+    }
+
+    await this.resend().emails.send({ from: this.from, to, subject, html });
+  }
+
   async sendSecurityAlert(to: string, event: string) {
     await this.resend().emails.send({
       from: this.from,

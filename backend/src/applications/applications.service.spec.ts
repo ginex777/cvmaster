@@ -339,6 +339,39 @@ describe('ApplicationsService', () => {
     });
   });
 
+  describe('updateReminder', () => {
+    const mockApp = { id: 'a1', userId: 'u1', masterCv: null, jobPosting: null };
+
+    it('sets reminderAt date', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue(mockApp as never);
+      mockPrisma.application.update.mockResolvedValue({ ...mockApp, reminderAt: new Date('2026-06-01') } as never);
+      const date = new Date('2026-06-01');
+
+      const result = await service.updateReminder('a1', 'u1', date);
+
+      expect(mockPrisma.application.update).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: 'a1' }, data: expect.objectContaining({ reminderAt: date }) }),
+      );
+      expect(result).toBeTruthy();
+    });
+
+    it('clears reminderAt and reminderSentAt when null is passed', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue(mockApp as never);
+      mockPrisma.application.update.mockResolvedValue({ ...mockApp, reminderAt: null, reminderSentAt: null } as never);
+
+      await service.updateReminder('a1', 'u1', null);
+
+      expect(mockPrisma.application.update).toHaveBeenCalledWith(
+        expect.objectContaining({ data: { reminderAt: null, reminderSentAt: null } }),
+      );
+    });
+
+    it('throws ForbiddenException for wrong user', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue({ ...mockApp, userId: 'other' } as never);
+      await expect(service.updateReminder('a1', 'u1', new Date())).rejects.toThrow(ForbiddenException);
+    });
+  });
+
   describe('getFollowUpTemplates', () => {
     const appWithJob = {
       id: 'a1',
