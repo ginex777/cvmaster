@@ -7,10 +7,11 @@ import { QueueModule } from '../queue/queue.module';
 import { PdfModule } from '../pdf/pdf.module';
 import { MailModule } from '../mail/mail.module';
 import { OwnsApplicationGuard } from '../common/guards/owns-application.guard';
+import { PlanPolicyService } from '../common/plan-policy.service';
 
 @Module({
   imports: [AiModule, QueueModule, PdfModule, MailModule],
   controllers: [ApplicationsController],
-  providers: [ApplicationsService, PrismaService, OwnsApplicationGuard],
+  providers: [ApplicationsService, PrismaService, OwnsApplicationGuard, PlanPolicyService],
 })
 export class ApplicationsModule {}

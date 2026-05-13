@@ -6,6 +6,7 @@ import { PrismaService } from '../common/prisma.service';
 import { QueueService } from '../queue/queue.service';
 import { MailService } from '../mail/mail.service';
 import { PdfService } from '../pdf/pdf.service';
+import { PlanPolicyService } from '../common/plan-policy.service';
 
 const fn = () => jest.fn<() => Promise<unknown>>();
 
@@ -17,6 +18,7 @@ const mockPrisma = {
 };
 const mockQueue = { enqueueAiPipeline: fn(), enqueueRegenerateLetter: fn() };
 const mockMail = { sendApplicationToSelf: fn() };
+const mockPlanPolicy = { assertCanCreateApplication: jest.fn<() => Promise<void>>() };
 const mockPdf = {
   generateCvPdf: jest.fn<() => Promise<Buffer>>(),
   generateLetterPdf: jest.fn<() => Promise<Buffer>>(),
@@ -27,6 +29,7 @@ describe('ApplicationsService', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    mockPlanPolicy.assertCanCreateApplication.mockResolvedValue(undefined);
     const module = await Test.createTestingModule({
       providers: [
         ApplicationsService,
@@ -34,6 +37,7 @@ describe('ApplicationsService', () => {
         { provide: QueueService, useValue: mockQueue },
         { provide: MailService, useValue: mockMail },
         { provide: PdfService, useValue: mockPdf },
+        { provide: PlanPolicyService, useValue: mockPlanPolicy },
       ],
     }).compile();
     service = module.get(ApplicationsService);
@@ -69,13 +73,14 @@ describe('ApplicationsService', () => {
       mockPrisma.masterCv.findFirst.mockResolvedValue({ id: 'cv1' } as never);
       mockPrisma.jobPosting.findFirst.mockResolvedValue({ id: 'jp1' } as never);
       mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'FREE' } as never);
-      mockPrisma.application.count.mockResolvedValue(0);
+      mockPlanPolicy.assertCanCreateApplication.mockResolvedValue(undefined);
       mockPrisma.application.create.mockResolvedValue({ id: 'app1', status: 'DRAFT' } as never);
       mockQueue.enqueueAiPipeline.mockResolvedValue(undefined);
 
       const result = await service.create({ masterCvId: 'cv1', jobPostingId: 'jp1' }, 'u1');
 
       expect(mockPrisma.application.create).toHaveBeenCalled();
+      expect(mockPlanPolicy.assertCanCreateApplication).toHaveBeenCalledWith('u1', 'FREE');
       expect(mockQueue.enqueueAiPipeline).toHaveBeenCalledWith('app1');
       expect(result).toHaveProperty('id', 'app1');
     });
@@ -84,7 +89,10 @@ describe('ApplicationsService', () => {
       mockPrisma.masterCv.findFirst.mockResolvedValue({ id: 'cv1' } as never);
       mockPrisma.jobPosting.findFirst.mockResolvedValue({ id: 'jp1' } as never);
       mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'FREE' } as never);
-      mockPrisma.application.count.mockResolvedValue(1);
+      mockPlanPolicy.assertCanCreateApplication.mockRejectedValue(new HttpException(
+        { message: 'Kostenlose Bewerbung bereits genutzt. Bitte upgraden.', code: 'PLAN_LIMIT' },
+        402,
+      ));
 
       await expect(
         service.create({ masterCvId: 'cv1', jobPostingId: 'jp1' }, 'u1'),
@@ -94,18 +102,33 @@ describe('ApplicationsService', () => {
       expect(mockQueue.enqueueAiPipeline).not.toHaveBeenCalled();
     });
 
-    it('allows PRO users to create beyond the free limit', async () => {
+    it('allows PAY_PER_APP users when policy allows another application', async () => {
       mockPrisma.masterCv.findFirst.mockResolvedValue({ id: 'cv1' } as never);
       mockPrisma.jobPosting.findFirst.mockResolvedValue({ id: 'jp1' } as never);
-      mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'PRO' } as never);
+      mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'PAY_PER_APP' } as never);
+      mockPlanPolicy.assertCanCreateApplication.mockResolvedValue(undefined);
       mockPrisma.application.create.mockResolvedValue({ id: 'app2', status: 'DRAFT' } as never);
       mockQueue.enqueueAiPipeline.mockResolvedValue(undefined);
 
       const result = await service.create({ masterCvId: 'cv1', jobPostingId: 'jp1' }, 'u2');
 
-      expect(mockPrisma.application.count).not.toHaveBeenCalled();
+      expect(mockPlanPolicy.assertCanCreateApplication).toHaveBeenCalledWith('u2', 'PAY_PER_APP');
       expect(result).toHaveProperty('id', 'app2');
       expect(mockQueue.enqueueAiPipeline).toHaveBeenCalledWith('app2');
+    });
+
+    it('allows PRO users when policy allows unlimited applications', async () => {
+      mockPrisma.masterCv.findFirst.mockResolvedValue({ id: 'cv1' } as never);
+      mockPrisma.jobPosting.findFirst.mockResolvedValue({ id: 'jp1' } as never);
+      mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ plan: 'PRO' } as never);
+      mockPlanPolicy.assertCanCreateApplication.mockResolvedValue(undefined);
+      mockPrisma.application.create.mockResolvedValue({ id: 'app3', status: 'DRAFT' } as never);
+      mockQueue.enqueueAiPipeline.mockResolvedValue(undefined);
+
+      const result = await service.create({ masterCvId: 'cv1', jobPostingId: 'jp1' }, 'u3');
+
+      expect(mockPlanPolicy.assertCanCreateApplication).toHaveBeenCalledWith('u3', 'PRO');
+      expect(result).toHaveProperty('id', 'app3');
     });
   });
 

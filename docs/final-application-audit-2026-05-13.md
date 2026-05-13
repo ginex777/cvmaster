@@ -247,7 +247,7 @@ DoD:
 
 Closed in the implementation commit for this task. Verification: Caddy was reloaded locally and `GET http://localhost/health` returned `{"status":"ok","checks":{"database":"ok","redis":"ok"}}`.
 
-### P2 - PlanGuard exists but product gates are mostly manual
+### Done - P2 - PlanGuard exists but product gates are mostly manual
 
 Evidence:
 - `backend/src/common/guards/plan.guard.ts` defines `PlanGuard` and `@RequirePlan`.
@@ -258,9 +258,11 @@ Impact:
 - This is not broken, but plan enforcement is easy to miss as new premium routes are added.
 
 DoD:
-- [ ] Decide whether manual plan checks are the project convention or adopt `PlanGuard`.
-- [ ] Apply a consistent pattern to all paid features.
-- [ ] Add tests for free, pay-per-app, and pro plan boundaries.
+- [x] Decide whether manual plan checks are the project convention or adopt `PlanGuard`.
+- [x] Apply a consistent pattern to all paid features.
+- [x] Add tests for free, pay-per-app, and pro plan boundaries.
+
+Closed in the implementation commit for this task. Decision: quota-based product gates use `PlanPolicyService`; `PlanGuard` remains available only for future static route-level plan requirements. Verification: focused plan/application tests, backend lint, backend build, and full backend test suite passed.
 
 ### P2 - Stale audit/readiness documents can confuse future work
 
