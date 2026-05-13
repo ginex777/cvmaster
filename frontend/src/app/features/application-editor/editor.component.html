@@ -30,12 +30,32 @@
     </section>
   } @else if (isGenerating()) {
     <section class="editor__generating" aria-live="polite" aria-busy="true" aria-label="KI generiert Bewerbungsunterlagen">
+      <div class="generation-status">
+        <p class="editor__generating-label">KI optimiert deinen Lebenslauf und erstellt Anschreiben...</p>
+        <div
+          class="generation-status__bar"
+          role="progressbar"
+          [attr.aria-valuenow]="generationProgress()"
+          aria-valuemin="0"
+          aria-valuemax="100">
+          <span [style.width.%]="generationProgress()"></span>
+        </div>
+        <p>{{ generationProgress() }}% abgeschlossen</p>
+      </div>
       <div class="editor__grid editor__grid--loading">
         <div class="skeleton skeleton--panel"></div>
         <div class="skeleton skeleton--panel"></div>
         <div class="skeleton skeleton--panel"></div>
       </div>
       <p class="editor__generating-label">KI optimiert deinen Lebenslauf und erstellt Anschreiben…</p>
+    </section>
+  } @else if (generationFailed()) {
+    <section class="generation-status generation-status--failed" aria-live="assertive" aria-label="KI-Generierung fehlgeschlagen">
+      <p class="editor__generating-label">Die KI-Generierung ist fehlgeschlagen.</p>
+      <p>{{ generationError() ?? 'Bitte starte die Generierung erneut.' }}</p>
+      <button type="button" class="btn btn--primary btn--md" (click)="retryGeneration()">
+        Erneut versuchen
+      </button>
     </section>
   } @else {
     <form class="editor__grid" [formGroup]="editorForm">

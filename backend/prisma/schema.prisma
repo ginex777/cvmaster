@@ -98,6 +98,8 @@ model Application {
   chosenVariant   String?
   chosenLayout    String?
   matchReport     Json?
+  generationProgress Int        @default(0)
+  generationError String?
   anonymizePhoto  Boolean      @default(false)
   createdAt       DateTime     @default(now())
   exportedAt      DateTime?
@@ -166,4 +168,5 @@ enum AppStatus {
   INTERVIEW
   REJECTED
   OFFER
+  FAILED
 }

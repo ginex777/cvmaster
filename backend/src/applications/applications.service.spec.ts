@@ -127,12 +127,14 @@ describe('ApplicationsService', () => {
         where: { userId: 'u1' },
         orderBy: { createdAt: 'desc' },
         select: {
-          id: true,
-          status: true,
-          matchScore: true,
-          createdAt: true,
-          jobPosting: { select: { parsedJson: true } },
-        },
+        id: true,
+        status: true,
+        matchScore: true,
+        generationProgress: true,
+        generationError: true,
+        createdAt: true,
+        jobPosting: { select: { parsedJson: true } },
+      },
       });
     });
   });
@@ -147,6 +149,22 @@ describe('ApplicationsService', () => {
         data: { status: 'SENT' },
         include: { masterCv: true, jobPosting: true },
       });
+    });
+  });
+
+  describe('retryGeneration', () => {
+    it('resets generation state and enqueues the full AI pipeline', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue({ id: 'a1', userId: 'u1' } as never);
+      mockPrisma.application.update.mockResolvedValue({ id: 'a1', status: 'DRAFT' } as never);
+      mockQueue.enqueueAiPipeline.mockResolvedValue(undefined);
+
+      await expect(service.retryGeneration('a1', 'u1')).resolves.toEqual({ message: 'Generation queued' });
+
+      expect(mockPrisma.application.update).toHaveBeenCalledWith({
+        where: { id: 'a1' },
+        data: { status: 'DRAFT', generationProgress: 0, generationError: null },
+      });
+      expect(mockQueue.enqueueAiPipeline).toHaveBeenCalledWith('a1');
     });
   });
 

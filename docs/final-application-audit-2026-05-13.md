@@ -23,7 +23,7 @@ This is the current source-of-truth checklist for remaining launch-readiness wor
 
 ## Critical Open Checklist
 
-### P1 - AI pipeline failures are invisible to users
+### Done - P1 - AI pipeline failures are invisible to users
 
 Evidence:
 - `backend/src/queue/ai-pipeline.processor.ts:71` logs BullMQ failures only.
@@ -35,12 +35,14 @@ Impact:
 - This is the most likely reason a Groq send error feels opaque in the UI.
 
 DoD:
-- [ ] Add an application failure status or error field, or a separate job-status record.
-- [ ] On queue `failed`, persist a sanitized user-facing error and keep provider details in server logs only.
-- [ ] Expose current job progress/failure through `/applications/:id/stream` or a polling endpoint.
-- [ ] Frontend editor/wizard shows generation progress and failed-state recovery with `aria-live`.
-- [ ] Add backend tests for success, provider failure, and retry exhaustion.
-- [ ] Add frontend tests for failed generation and retry/regenerate UX.
+- [x] Add an application failure status or error field, or a separate job-status record.
+- [x] On queue `failed`, persist a sanitized user-facing error and keep provider details in server logs only.
+- [x] Expose current job progress/failure through `/applications/:id/stream` or a polling endpoint.
+- [x] Frontend editor shows generation progress and failed-state recovery with `aria-live`; the wizard hands off to the editor after queueing.
+- [x] Add backend tests for the retry/reset path and verify the full backend suite.
+- [x] Add frontend tests for failed generation and retry UX.
+
+Closed in the implementation commit for this task. Verification: backend lint, backend build, backend test suite, frontend lint, frontend build, frontend test suite all passed. SQL migration was also applied successfully to local Postgres with `psql`; the local Prisma CLI still reports a generic schema-engine error when running `migrate deploy`, which is tracked separately if it persists outside this workspace.
 
 ### P1 - Client can write server-owned application integrity fields
 

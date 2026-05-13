@@ -68,11 +68,12 @@ export class AiPipelineProcessor implements OnModuleInit {
   onModuleInit() {
     this.redis = new IORedis(redisUrl(), { maxRetriesPerRequest: null });
     const worker = new Worker('ai-pipeline', (job) => this.process(job), { connection: this.redis });
-    worker.on('failed', (job, error) => {
+    worker.on('failed', async (job, error) => {
       this.logger.error(
         `AI pipeline job failed: name=${job?.name ?? 'unknown'} id=${job?.id ?? 'unknown'} applicationId=${String(job?.data?.applicationId ?? 'unknown')}`,
         error.stack,
       );
+      await this.markApplicationFailed(job);
     });
   }
 
@@ -95,18 +96,18 @@ export class AiPipelineProcessor implements OnModuleInit {
     const originalCv = app.masterCv.parsedJson as unknown as ParsedCV;
     const parsedJob = app.jobPosting.parsedJson as unknown as ParsedJob;
 
-    await job.updateProgress(10);
+    await this.updateProgress(applicationId, job, 10);
 
     // Step 1: Optimize CV
     const rawOptimizedCv = await this.ai.optimizeCv(originalCv, parsedJob);
     const guardedCv = filterHallucinatedSkills(rawOptimizedCv, originalCv);
     const optimizedCv = sanitizeCv(guardedCv);
-    await job.updateProgress(50);
+    await this.updateProgress(applicationId, job, 50);
 
     // Step 2: Generate cover letters (3 variants)
     const rawLetter = await this.ai.generateCoverLetter(optimizedCv, parsedJob);
     const coverLetter = sanitizeLetter(rawLetter);
-    await job.updateProgress(85);
+    await this.updateProgress(applicationId, job, 85);
 
     // Step 3: Compute rich match report
     const result = this.scoring.score(optimizedCv, parsedJob);
@@ -120,7 +121,15 @@ export class AiPipelineProcessor implements OnModuleInit {
 
     await this.prisma.application.update({
       where: { id: applicationId },
-      data: { optimizedCv, coverLetter, matchScore: result.score, matchReport, status: 'OPEN' },
+      data: {
+        optimizedCv,
+        coverLetter,
+        matchScore: result.score,
+        matchReport,
+        status: 'OPEN',
+        generationProgress: 100,
+        generationError: null,
+      },
     });
 
     await job.updateProgress(100);
@@ -137,16 +146,45 @@ export class AiPipelineProcessor implements OnModuleInit {
     const optimizedCv = app.optimizedCv as unknown as ParsedCV;
     const parsedJob = app.jobPosting.parsedJson as unknown as ParsedJob;
 
-    await job.updateProgress(20);
+    await this.updateProgress(applicationId, job, 20);
 
     const rawLetter = await this.ai.generateCoverLetter(optimizedCv, parsedJob);
     const coverLetter = sanitizeLetter(rawLetter);
 
     await this.prisma.application.update({
       where: { id: applicationId },
-      data: { coverLetter },
+      data: { coverLetter, generationProgress: 100, generationError: null },
     });
 
     await job.updateProgress(100);
+  }
+
+  private async updateProgress(applicationId: string, job: Job, progress: number): Promise<void> {
+    await Promise.all([
+      job.updateProgress(progress),
+      this.prisma.application.update({
+        where: { id: applicationId },
+        data: { generationProgress: progress, generationError: null },
+      }),
+    ]);
+  }
+
+  private async markApplicationFailed(job: Job | undefined): Promise<void> {
+    if (!job) return;
+    const applicationId = typeof job?.data?.applicationId === 'string' ? job.data.applicationId : null;
+    if (!applicationId || !this.isFinalAttempt(job)) return;
+
+    await this.prisma.application.update({
+      where: { id: applicationId },
+      data: {
+        status: job.name === 'regenerate-letter' ? undefined : 'FAILED',
+        generationError: 'Die KI-Generierung ist fehlgeschlagen. Bitte versuche es erneut.',
+      },
+    });
+  }
+
+  private isFinalAttempt(job: Job): boolean {
+    const attempts = typeof job.opts.attempts === 'number' ? job.opts.attempts : 1;
+    return job.attemptsMade >= attempts;
   }
 }

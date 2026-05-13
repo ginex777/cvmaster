@@ -35,7 +35,14 @@ export class ApplicationsService {
     }
 
     const app = await this.prisma.application.create({
-      data: { userId, masterCvId: data.masterCvId, jobPostingId: data.jobPostingId, status: 'DRAFT' },
+      data: {
+        userId,
+        masterCvId: data.masterCvId,
+        jobPostingId: data.jobPostingId,
+        status: 'DRAFT',
+        generationProgress: 0,
+        generationError: null,
+      },
     });
     await this.queue.enqueueAiPipeline(app.id);
     return app;
@@ -56,6 +63,8 @@ export class ApplicationsService {
         id: true,
         status: true,
         matchScore: true,
+        generationProgress: true,
+        generationError: true,
         createdAt: true,
         jobPosting: { select: { parsedJson: true } },
       },
@@ -88,14 +97,31 @@ export class ApplicationsService {
   }
 
   async streamProgress(id: string, res: Response) {
-    // TODO: subscribe to BullMQ job events and emit SSE progress
-    res.write(`data: ${JSON.stringify({ status: 'pending' })}\n\n`);
+    const app = await this.prisma.application.findUniqueOrThrow({
+      where: { id },
+      select: { status: true, generationProgress: true, generationError: true },
+    });
+    res.write(`data: ${JSON.stringify({
+      status: app.status,
+      progress: app.generationProgress,
+      error: app.generationError,
+    })}\n\n`);
     res.end();
   }
 
   async regenerateLetter(id: string, _userId: string) {
     await this.queue.enqueueRegenerateLetter(id);
     return { message: 'Letter regeneration queued' };
+  }
+
+  async retryGeneration(id: string, userId: string) {
+    await this.findOne(id, userId);
+    await this.prisma.application.update({
+      where: { id },
+      data: { status: 'DRAFT', generationProgress: 0, generationError: null },
+    });
+    await this.queue.enqueueAiPipeline(id);
+    return { message: 'Generation queued' };
   }
 
   async exportPdf(id: string, layout: string, res: Response) {

@@ -24,6 +24,8 @@ interface ApplicationDto {
   coverLetter?: Record<string, string>;
   matchReport?: MatchReport;
   chosenVariant?: string | null;
+  generationProgress?: number;
+  generationError?: string | null;
   jobPosting?: { parsedJson?: { title?: string; company?: string; keywords?: string[] } };
 }
 
@@ -74,6 +76,9 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly isSaving = computed(() => this.saving());
   readonly isDownloading = computed(() => this.downloading());
   readonly errorMessage = computed(() => this.error());
+  readonly generationProgress = computed(() => this.application()?.generationProgress ?? 0);
+  readonly generationError = computed(() => this.application()?.generationError ?? null);
+  readonly generationFailed = computed(() => this.application()?.status === 'FAILED' || !!this.generationError());
   readonly currentScore = computed(() => this.score());
   readonly currentMatchReport = computed(() => this.matchReport());
   readonly matchedKeywords = computed(() => this.keywords());
@@ -100,7 +105,10 @@ export class EditorComponent implements OnInit, OnDestroy {
       const app = await this.api.get<ApplicationDto>(`/applications/${this.id}`);
       this.application.set(app);
 
-      if (!app.optimizedCv) {
+      if (app.status === 'FAILED' || app.generationError) {
+        this.generating.set(false);
+        this.error.set(app.generationError ?? 'KI-Generierung fehlgeschlagen. Bitte versuche es erneut.');
+      } else if (!app.optimizedCv) {
         this.generating.set(true);
         this.schedulePoll(0);
       } else {
@@ -194,6 +202,24 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
   }
 
+  async retryGeneration(): Promise<void> {
+    if (!this.id) return;
+
+    this.generating.set(true);
+    this.error.set(null);
+    this.application.update(app => app
+      ? { ...app, status: 'DRAFT', generationProgress: 0, generationError: null }
+      : app);
+
+    try {
+      await this.api.post(`/applications/${this.id}/retry-generation`, {});
+      this.schedulePoll(0);
+    } catch (e: unknown) {
+      this.generating.set(false);
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'KI-Generierung konnte nicht neu gestartet werden.');
+    }
+  }
+
   variantLabel(variant: LetterVariant): string {
     return { formal: 'Formal', warm: 'Freundlich', brief: 'Knapp' }[variant];
   }
@@ -218,6 +244,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   }
 
   private schedulePoll(attempt: number): void {
+    this.clearPoll();
     if (attempt >= POLL_MAX_ATTEMPTS) {
       this.generating.set(false);
       this.error.set('KI-Generierung hat zu lange gedauert. Bitte Seite neu laden.');
@@ -228,7 +255,10 @@ export class EditorComponent implements OnInit, OnDestroy {
       try {
         const app = await this.api.get<ApplicationDto>(`/applications/${this.id}`);
         this.application.set(app);
-        if (app.optimizedCv) {
+        if (app.status === 'FAILED' || app.generationError) {
+          this.generating.set(false);
+          this.error.set(app.generationError ?? 'KI-Generierung fehlgeschlagen. Bitte versuche es erneut.');
+        } else if (app.optimizedCv) {
           this.generating.set(false);
           this.populateForm(app);
         } else {

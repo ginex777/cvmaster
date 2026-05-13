@@ -106,6 +106,26 @@ describe('EditorComponent', () => {
     expect(f.componentInstance.generating()).toBe(true);
   });
 
+  it('shows failed generation state and retries full generation', async () => {
+    api.get.mockResolvedValueOnce({
+      id: 'a1',
+      status: 'FAILED',
+      generationProgress: 50,
+      generationError: 'Die KI-Generierung ist fehlgeschlagen. Bitte versuche es erneut.',
+    });
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+
+    expect(f.componentInstance.generationFailed()).toBe(true);
+    expect(f.componentInstance.error()).toContain('fehlgeschlagen');
+
+    await f.componentInstance.retryGeneration();
+
+    expect(api.post).toHaveBeenCalledWith('/applications/a1/retry-generation', {});
+    expect(f.componentInstance.generating()).toBe(true);
+  });
+
   it('downloads PDF from application endpoint', async () => {
     Object.defineProperty(URL, 'createObjectURL', { configurable: true, value: jest.fn(() => 'blob:test') });
     Object.defineProperty(URL, 'revokeObjectURL', { configurable: true, value: jest.fn() });

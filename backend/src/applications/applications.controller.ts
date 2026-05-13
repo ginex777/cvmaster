@@ -133,6 +133,12 @@ export class ApplicationsController {
     return this.apps.regenerateLetter(id, req.user.sub);
   }
 
+  @Post(':id/retry-generation')
+  @UseGuards(OwnsApplicationGuard)
+  retryGeneration(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    return this.apps.retryGeneration(id, req.user.sub);
+  }
+
   @Post(':id/export')
   @UseGuards(OwnsApplicationGuard)
   export(@Param('id') id: string, @Body() body: unknown, @Req() req: AuthenticatedRequest, @Res() res: Response) {
