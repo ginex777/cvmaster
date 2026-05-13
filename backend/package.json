@@ -9,6 +9,7 @@
     "build": "tsc -p tsconfig.json",
     "test": "jest",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "eval": "jest --testPathPattern=eval",
     "lint": "eslint \"{src,test}/**/*.ts\"",
     "lint:fix": "eslint \"{src,test}/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\"",

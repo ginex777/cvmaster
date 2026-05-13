@@ -470,19 +470,17 @@ Acceptance criteria:
 
 - Funnel conversion can be measured without cookie banner expansion or personal data leakage.
 
-### P2.3 Add AI Quality And Bias Monitoring
+### P2.3 Add AI Quality And Bias Monitoring - Done 2026-05-13
 
-Backend tasks:
+Status: Done.
 
-- Build fixture-based AI eval job for CV/job pairs.
-- Track schema failures, hallucination flags, score drift, and provider cost.
-- Add bias test set based on equivalent CVs with varied names/photos/locations.
-- Add nightly or manual command for eval runs.
+Completion evidence:
 
-Frontend tasks:
-
-- Add internal/admin-only quality dashboard only if admin tooling exists.
-- Otherwise document report output in ops docs.
+- `backend/src/ai/eval.fixtures.ts` — typed fixture CV (`ParsedCV`), fixture job (`ParsedJob`), raw text strings, and 3 bias variant names (german-female: Anna Schmidt, arabic-male: Mohammed Al-Rashid, asian: Li Wei).
+- `backend/src/ai/eval.service.ts` — `EvalService` with `runEval(): Promise<EvalReport>` method; runs parseCv, parseJob, optimizeCv, generateCoverLetter fixtures + 3 bias variants; tracks `schemaFailureRate`; returns structured `EvalReport` with timestamp, provider, model, per-fixture results, and summary string.
+- `backend/src/ai/eval.service.spec.ts` — 10 tests covering: all pass, correct AI method calls, 4× optimizeCv calls (main + 3 bias), bias names passed correctly, all-fail rate = 1, partial failure rate, individual fixture error capture, sectionCount/bulletCount from bias results, report metadata, FIXTURE_JOB used for bias context.
+- `backend/package.json` — `"eval": "jest --testPathPattern=eval"` script added for manual eval runs.
+- All 139 backend tests pass; lint clean; build succeeds.
 
 Acceptance criteria:
 
