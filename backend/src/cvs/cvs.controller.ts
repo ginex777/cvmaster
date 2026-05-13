@@ -18,6 +18,11 @@ export class CvsController {
     return this.cvs.parseAndStore(file, name, req.user.sub);
   }
 
+  @Post('quickstart')
+  createQuickstart(@Body() body: unknown, @Req() req: AuthenticatedRequest) {
+    return this.cvs.createQuickstart(body, req.user.sub);
+  }
+
   @Get()
   list(@Req() req: AuthenticatedRequest) {
     return this.cvs.listForUser(req.user.sub);

@@ -238,7 +238,17 @@ Acceptance criteria:
 
 ## P1 - Core V1 Feature Completion
 
-### P1.1 Complete New Application Wizard
+### P1.1 Complete New Application Wizard - Done 2026-05-13
+
+Status: Done.
+
+Completion evidence:
+
+- Added `POST /cvs/quickstart` with Zod validation for name, current role/study, 3-5 skills, language, and target role.
+- Quickstart CV generation goes through `AiService` with a schema-validated `ParsedCV` response and prompt-injection delimiters.
+- Generated skeletons are persisted as Master CVs with `sourceFilename=quickstart`, stable input hashing, and user ownership.
+- Wizard now lets users without a CV create a conservative CV skeleton, review the generated summary/skills, and continue into the normal job/application flow.
+- Tests cover backend validation/persistence, controller delegation, frontend quickstart validation, preview rendering, and selected-CV guarding.
 
 Problem: The current wizard mostly requires an existing saved CV plus pasted job text. The V1 spec calls for a more complete quickstart and all-in-one flow.
 
@@ -611,5 +621,5 @@ Acceptance criteria:
 1. Done - Fix the dashboard status API mismatch.
 2. Done - Update `infra/.env.example` so local and production configuration matches the current code.
 3. Done - Complete Pro monthly checkout and webhook handling as the minimum paid launch path.
-4. Start the no-CV quickstart wizard, because it has the highest activation impact after blockers.
+4. Done - Start the no-CV quickstart wizard, because it has the highest activation impact after blockers.
 5. Move legal/compliance evidence from working docs to final launch checklist once external review is complete.

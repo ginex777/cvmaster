@@ -17,7 +17,7 @@ const mockPrisma = {
   masterCv: { findFirst: fn(), findMany: fn(), create: fn(), delete: fn(), update: fn() },
 };
 
-const mockAi = { parseCv: fn() };
+const mockAi = { parseCv: fn(), generateQuickstartCv: fn() };
 const pdfParseMock = jest.mocked(pdfParse);
 const mammothMock = jest.mocked(mammoth.extractRawText);
 
@@ -221,6 +221,53 @@ describe('CvsService', () => {
         expect.objectContaining({ where: { userId: 'u1' } }),
       );
       expect(result).toBe(cvs);
+    });
+  });
+
+  describe('createQuickstart', () => {
+    const input = {
+      name: 'Lina Beispiel',
+      currentRoleOrStudy: 'Studentin Wirtschaftsinformatik',
+      topSkills: ['Angular', 'TypeScript', 'Testing'],
+      language: 'de',
+      targetRole: 'Junior Frontend Developer',
+    };
+
+    it('validates quickstart input before AI generation', async () => {
+      await expect(service.createQuickstart({ ...input, topSkills: ['Angular'] }, 'u1')).rejects.toThrow(BadRequestException);
+      expect(mockAi.generateQuickstartCv).not.toHaveBeenCalled();
+    });
+
+    it('generates and stores a quickstart CV skeleton', async () => {
+      const parsedCv = { name: 'Lina Beispiel', experience: [], education: [], skills: input.topSkills, languages: [] };
+      mockPrisma.masterCv.findFirst.mockResolvedValue(null);
+      mockAi.generateQuickstartCv.mockResolvedValue(parsedCv);
+      mockPrisma.masterCv.create.mockResolvedValue({ id: 'cv-quickstart', parsedJson: parsedCv });
+
+      const result = await service.createQuickstart(input, 'u1') as { id: string };
+
+      expect(result.id).toBe('cv-quickstart');
+      expect(mockAi.generateQuickstartCv).toHaveBeenCalledWith(input, { userId: 'u1' });
+      expect(mockPrisma.masterCv.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          userId: 'u1',
+          name: 'Lina Beispiel - Quickstart',
+          language: 'de',
+          parsedJson: parsedCv,
+          sourceFilename: 'quickstart',
+        }),
+      });
+    });
+
+    it('returns an existing quickstart CV when the input hash already exists', async () => {
+      const existing = { id: 'cv-existing' };
+      mockPrisma.masterCv.findFirst.mockResolvedValue(existing);
+
+      const result = await service.createQuickstart(input, 'u1');
+
+      expect(result).toBe(existing);
+      expect(mockAi.generateQuickstartCv).not.toHaveBeenCalled();
+      expect(mockPrisma.masterCv.create).not.toHaveBeenCalled();
     });
   });
 

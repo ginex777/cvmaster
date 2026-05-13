@@ -49,6 +49,71 @@
           }
         </ul>
       }
+
+      <section class="quickstart" aria-labelledby="quickstart-heading">
+        <div class="quickstart__header">
+          <h3 id="quickstart-heading">Ohne vorhandenen Lebenslauf starten</h3>
+          <p>Erstelle ein vorsichtiges CV-Geruest, das du im Editor mit echten Erfahrungen ergaenzt.</p>
+        </div>
+
+        <form class="quickstart-form" [formGroup]="quickstartForm" (ngSubmit)="createQuickstartCv()" novalidate aria-label="Quickstart Lebenslauf">
+          <div class="field">
+            <label for="quickstart-name">Name</label>
+            <input id="quickstart-name" type="text" formControlName="name" autocomplete="name" aria-required="true" />
+          </div>
+
+          <div class="field">
+            <label for="quickstart-role">Aktuelle Rolle oder Studium</label>
+            <input id="quickstart-role" type="text" formControlName="currentRoleOrStudy" aria-required="true" />
+          </div>
+
+          <div class="field">
+            <label for="quickstart-skills">Top-Skills</label>
+            <input
+              id="quickstart-skills"
+              type="text"
+              formControlName="topSkills"
+              aria-required="true"
+              aria-describedby="quickstart-skills-note"
+              placeholder="Angular, TypeScript, Testing" />
+            <span id="quickstart-skills-note" class="field__note">3 bis 5 Skills, durch Komma getrennt.</span>
+          </div>
+
+          <div class="field">
+            <label for="quickstart-language">Sprache</label>
+            <select id="quickstart-language" formControlName="language" aria-required="true">
+              <option value="de">Deutsch</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="quickstart-target">Zielrolle</label>
+            <input id="quickstart-target" type="text" formControlName="targetRole" aria-required="true" />
+          </div>
+
+          <button type="submit" class="btn btn--secondary btn--md" [disabled]="loading()">
+            @if (loading()) { CV-Geruest wird erstellt... } @else { CV-Geruest erstellen }
+          </button>
+        </form>
+
+        @if (quickstartPreview()) {
+          <article class="quickstart-preview" aria-live="polite" aria-labelledby="quickstart-preview-heading">
+            <h3 id="quickstart-preview-heading">{{ quickstartPreview()?.name }}</h3>
+            <p>{{ quickstartPreview()?.parsedJson?.summary ?? 'CV-Geruest wurde erstellt und kann im Editor erweitert werden.' }}</p>
+            @if (quickstartPreview()?.parsedJson?.skills?.length) {
+              <ul class="quickstart-preview__skills" role="list" aria-label="Uebernommene Skills">
+                @for (skill of quickstartPreview()?.parsedJson?.skills ?? []; track skill) {
+                  <li>{{ skill }}</li>
+                }
+              </ul>
+            }
+            <div class="wizard-step__actions">
+              <button type="button" class="btn btn--primary btn--md" (click)="step.set(2)">Mit diesem CV weiter</button>
+            </div>
+          </article>
+        }
+      </section>
     </section>
   }
 

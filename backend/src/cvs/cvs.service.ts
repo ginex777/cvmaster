@@ -29,6 +29,14 @@ const updateCvSchema = z.object({
   template: z.enum(['classic', 'modern', 'editorial']).optional(),
 });
 
+const quickstartSchema = z.object({
+  name: z.string().trim().min(2).max(120),
+  currentRoleOrStudy: z.string().trim().min(3).max(160),
+  topSkills: z.array(z.string().trim().min(1).max(60)).min(3).max(5),
+  language: z.enum(['de', 'en']),
+  targetRole: z.string().trim().min(3).max(120),
+});
+
 @Injectable()
 export class CvsService {
   constructor(private prisma: PrismaService, private ai: AiService) {}
@@ -55,6 +63,29 @@ export class CvsService {
       where: { userId },
       select: { id: true, name: true, language: true, sourceFilename: true, template: true, createdAt: true, updatedAt: true },
       orderBy: { updatedAt: 'desc' },
+    });
+  }
+
+  async createQuickstart(data: unknown, userId: string) {
+    const parsed = quickstartSchema.safeParse(data);
+    if (!parsed.success) {
+      throw new BadRequestException(parsed.error.message);
+    }
+
+    const sourceHash = createHash('sha256').update(JSON.stringify(parsed.data)).digest('hex');
+    const existing = await this.prisma.masterCv.findFirst({ where: { userId, sourceHash } });
+    if (existing) return existing;
+
+    const parsedJson = await this.ai.generateQuickstartCv(parsed.data, { userId });
+    return this.prisma.masterCv.create({
+      data: {
+        userId,
+        name: `${parsed.data.name} - Quickstart`,
+        language: parsed.data.language,
+        parsedJson,
+        sourceFilename: 'quickstart',
+        sourceHash,
+      },
     });
   }
 

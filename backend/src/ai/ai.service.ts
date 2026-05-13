@@ -57,6 +57,23 @@ export class AiService {
     ));
   }
 
+  async generateQuickstartCv(input: {
+    name: string;
+    currentRoleOrStudy: string;
+    topSkills: string[];
+    language: 'de' | 'en';
+    targetRole: string;
+  }, audit: AiAuditContext = {}): Promise<ParsedCV> {
+    const user = this.wrapUntrustedContent('QUICKSTART_CV_INPUT_JSON', JSON.stringify(input));
+    return this.withAudit('generate_quickstart_cv', audit, () => this.withRetry(() =>
+      this.provider.generate({
+        system: loadPrompt('quickstart-cv'),
+        user,
+        schema: ParsedCVSchema,
+      })
+    ));
+  }
+
   async parseJob(text: string, audit: AiAuditContext = {}): Promise<ParsedJob> {
     const user = this.wrapUntrustedContent('JOB_AD', text);
     return this.withAudit('parse_job', audit, () => this.withRetry(() =>

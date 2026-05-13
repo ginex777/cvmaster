@@ -124,4 +124,66 @@ describe('WizardComponent', () => {
     const textarea = f.nativeElement.querySelector('textarea');
     expect(textarea).toBeTruthy();
   });
+
+  it('creates a quickstart CV skeleton and shows review preview', async () => {
+    api.post.mockResolvedValue({
+      id: 'cv-quick',
+      name: 'Lina Beispiel - Quickstart',
+      language: 'de',
+      sourceFilename: 'quickstart',
+      createdAt: '2026-05-13T00:00:00.000Z',
+      updatedAt: '2026-05-13T00:00:00.000Z',
+      parsedJson: {
+        summary: 'Entwurf fuer echte Erfahrungen.',
+        skills: ['Angular', 'TypeScript', 'Testing'],
+      },
+    });
+    const f = TestBed.createComponent(WizardComponent);
+    f.componentInstance.quickstartForm.setValue({
+      name: 'Lina Beispiel',
+      currentRoleOrStudy: 'Studentin Wirtschaftsinformatik',
+      topSkills: 'Angular, TypeScript, Testing',
+      language: 'de',
+      targetRole: 'Junior Frontend Developer',
+    });
+
+    await f.componentInstance.createQuickstartCv();
+    f.detectChanges();
+
+    expect(api.post).toHaveBeenCalledWith('/cvs/quickstart', {
+      name: 'Lina Beispiel',
+      currentRoleOrStudy: 'Studentin Wirtschaftsinformatik',
+      topSkills: ['Angular', 'TypeScript', 'Testing'],
+      language: 'de',
+      targetRole: 'Junior Frontend Developer',
+    });
+    expect(f.componentInstance.selectedCvId()).toBe('cv-quick');
+    expect(f.nativeElement.textContent).toContain('Entwurf fuer echte Erfahrungen.');
+  });
+
+  it('validates quickstart skill count before calling API', async () => {
+    const f = TestBed.createComponent(WizardComponent);
+    f.componentInstance.quickstartForm.setValue({
+      name: 'Lina Beispiel',
+      currentRoleOrStudy: 'Studentin Wirtschaftsinformatik',
+      topSkills: 'Angular, TypeScript',
+      language: 'de',
+      targetRole: 'Junior Frontend Developer',
+    });
+
+    await f.componentInstance.createQuickstartCv();
+
+    expect(api.post).not.toHaveBeenCalled();
+    expect(f.componentInstance.error()).toContain('3 bis 5 Skills');
+  });
+
+  it('does not generate an application without a selected CV', async () => {
+    const f = TestBed.createComponent(WizardComponent);
+    f.componentInstance.jobForm.setValue({ jobRaw: 'Frontend Developer at Stripe with React skills required for this position...' });
+
+    await f.componentInstance.generate();
+
+    expect(api.post).not.toHaveBeenCalled();
+    expect(f.componentInstance.step()).toBe(1);
+  });
 });

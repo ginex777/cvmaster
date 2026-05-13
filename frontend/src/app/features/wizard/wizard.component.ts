@@ -12,6 +12,10 @@ export interface MasterCv {
   name: string;
   language: string;
   sourceFilename: string;
+  parsedJson?: {
+    summary?: string;
+    skills?: string[];
+  };
   template?: string;
   createdAt: string;
   updatedAt: string;
@@ -35,7 +39,16 @@ export class WizardComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly cvs = signal<MasterCv[]>([]);
   readonly selectedCvId = signal<string | null>(null);
+  readonly quickstartPreview = signal<MasterCv | null>(null);
   readonly upgradeModalOpen = signal(false);
+
+  readonly quickstartForm = new FormGroup({
+    name: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(120)]),
+    currentRoleOrStudy: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(160)]),
+    topSkills: new FormControl('', [Validators.required]),
+    language: new FormControl<'de' | 'en'>('de', { nonNullable: true, validators: [Validators.required] }),
+    targetRole: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(120)]),
+  });
 
   readonly jobForm = new FormGroup({
     jobRaw: new FormControl('', [Validators.required, Validators.minLength(50)]),
@@ -57,7 +70,37 @@ export class WizardComponent implements OnInit {
 
   selectCv(id: string): void {
     this.selectedCvId.set(id);
+    this.quickstartPreview.set(this.cvs().find(cv => cv.id === id && cv.sourceFilename === 'quickstart') ?? null);
     this.step.set(2);
+  }
+
+  async createQuickstartCv(): Promise<void> {
+    if (this.quickstartForm.invalid || this.skillList().length < 3 || this.skillList().length > 5) {
+      this.quickstartForm.markAllAsTouched();
+      this.error.set('Bitte gib 3 bis 5 Skills und alle Pflichtfelder ein.');
+      return;
+    }
+
+    this.loading.set(true);
+    this.error.set(null);
+    try {
+      const cv = await this.api.post<MasterCv>('/cvs/quickstart', {
+        name: this.quickstartForm.controls.name.value ?? '',
+        currentRoleOrStudy: this.quickstartForm.controls.currentRoleOrStudy.value ?? '',
+        topSkills: this.skillList(),
+        language: this.quickstartForm.controls.language.value,
+        targetRole: this.quickstartForm.controls.targetRole.value ?? '',
+      });
+      this.cvs.update(current => [cv, ...current.filter(item => item.id !== cv.id)]);
+      this.selectedCvId.set(cv.id);
+      this.quickstartPreview.set(cv);
+    } catch (e: unknown) {
+      this.error.set(
+        e instanceof HttpErrorResponse ? e.error.message : 'Quickstart-Lebenslauf konnte nicht erstellt werden.',
+      );
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   nextStep(): void {
@@ -68,6 +111,12 @@ export class WizardComponent implements OnInit {
   }
 
   async generate(): Promise<void> {
+    if (!this.selectedCvId()) {
+      this.error.set('Bitte waehle oder erstelle zuerst einen Lebenslauf.');
+      this.step.set(1);
+      return;
+    }
+
     this.loading.set(true);
     this.error.set(null);
     try {
@@ -96,5 +145,13 @@ export class WizardComponent implements OnInit {
   onUpgradeRequested(): void {
     this.upgradeModalOpen.set(false);
     void this.router.navigate(['/app/billing']);
+  }
+
+  skillList(): string[] {
+    return (this.quickstartForm.controls.topSkills.value ?? '')
+      .split(',')
+      .map(skill => skill.trim())
+      .filter(Boolean)
+      .slice(0, 6);
   }
 }
