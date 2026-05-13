@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Resend } from 'resend';
 
+export interface MailAttachment {
+  filename: string;
+  content: Buffer;
+  contentType: string;
+}
+
 @Injectable()
 export class MailService {
   private from = `Lebenslauf-Agent <noreply@${process.env.MAIL_DOMAIN}>`;
@@ -30,13 +36,18 @@ export class MailService {
     });
   }
 
-  async sendApplicationToSelf(to: string, _application: { id: string }) {
+  async sendApplicationToSelf(to: string, application: { id: string }, attachments: MailAttachment[]) {
     await this.resend().emails.send({
       from: this.from,
       to,
       subject: 'Deine Bewerbungsunterlagen',
-      html: `<p>Deine optimierten Unterlagen wurden erstellt. Bitte logge dich ein und exportiere die PDF.</p>`,
-      // TODO: attach rendered PDFs
+      html: `<p>Deine optimierten Unterlagen wurden erstellt. Die PDFs findest du im Anhang.</p>`,
+      attachments: attachments.map(attachment => ({
+        filename: attachment.filename,
+        content: attachment.content,
+        contentType: attachment.contentType,
+      })),
+      tags: [{ name: 'applicationId', value: application.id }],
     });
   }
 

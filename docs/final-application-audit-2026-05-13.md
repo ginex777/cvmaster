@@ -63,7 +63,7 @@ DoD:
 
 Closed in the implementation commit for this task. Verification: backend lint, backend build, backend application controller/service tests, frontend lint, frontend build, and frontend editor tests passed.
 
-### P1 - Email-to-self endpoint sends no generated PDFs
+### Done - P1 - Email-to-self endpoint sends no generated PDFs
 
 Evidence:
 - `backend/src/applications/applications.service.ts:118` still has `TODO: render PDFs and attach to mail`.
@@ -73,11 +73,13 @@ Impact:
 - The endpoint reports success but does not deliver the expected application documents.
 
 DoD:
-- [ ] Render CV and cover letter in memory using the chosen template.
-- [ ] Attach generated PDFs or a zip to the outgoing email.
-- [ ] Keep all generated files in memory only; do not persist PDFs on disk.
-- [ ] Add tests proving attachments are passed to the mail provider.
-- [ ] Add frontend success/error messaging for the actual email action if exposed in UI.
+- [x] Render CV and cover letter in memory using the chosen template.
+- [x] Attach generated PDFs to the outgoing email.
+- [x] Keep all generated files in memory only; do not persist PDFs on disk.
+- [x] Add tests proving attachments are passed to the mail provider.
+- [x] Add frontend success/error messaging for the actual email action if exposed in UI. The endpoint is backend-only in the current UI, so no frontend change was needed.
+
+Closed in the implementation commit for this task. Verification: backend lint, backend build, and backend application service tests passed.
 
 ### P1 - Paddle checkout is not production-ready
 

@@ -17,7 +17,10 @@ const mockPrisma = {
 };
 const mockQueue = { enqueueAiPipeline: fn(), enqueueRegenerateLetter: fn() };
 const mockMail = { sendApplicationToSelf: fn() };
-const mockPdf = { generateCvPdf: jest.fn<() => Promise<Buffer>>() };
+const mockPdf = {
+  generateCvPdf: jest.fn<() => Promise<Buffer>>(),
+  generateLetterPdf: jest.fn<() => Promise<Buffer>>(),
+};
 
 describe('ApplicationsService', () => {
   let service: ApplicationsService;
@@ -200,6 +203,42 @@ describe('ApplicationsService', () => {
       );
       expect(res.set).toHaveBeenCalledWith(expect.objectContaining({ 'Content-Type': 'application/pdf' }));
       expect(res.send).toHaveBeenCalledWith(buffer);
+    });
+  });
+
+  describe('emailToSelf', () => {
+    it('renders CV and cover letter PDFs in memory and attaches them to the email', async () => {
+      const cv = Buffer.from('cv-pdf');
+      const letter = Buffer.from('letter-pdf');
+      mockPrisma.application.findUnique.mockResolvedValue({
+        id: 'a1',
+        userId: 'u1',
+        optimizedCv: { text: 'Profil\nAngular' },
+        coverLetter: { formal: 'Sehr geehrte Damen und Herren' },
+        chosenVariant: 'formal',
+        masterCv: { template: 'classic' },
+        jobPosting: { parsedJson: { company: 'Acme', title: 'Dev' } },
+      } as never);
+      mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ email: 'lina@example.de' } as never);
+      mockPdf.generateCvPdf.mockResolvedValue(cv);
+      mockPdf.generateLetterPdf.mockResolvedValue(letter);
+      mockMail.sendApplicationToSelf.mockResolvedValue(undefined);
+
+      await expect(service.emailToSelf('a1', 'u1')).resolves.toEqual({ message: 'Email sent' });
+
+      expect(mockPdf.generateCvPdf).toHaveBeenCalledWith(
+        { name: 'Lebenslauf_Acme_Dev', sections: [{ heading: 'Profil', lines: ['Angular'] }] },
+        'classic',
+      );
+      expect(mockPdf.generateLetterPdf).toHaveBeenCalledWith(
+        'Sehr geehrte Damen und Herren',
+        'Lebenslauf_Acme_Dev',
+        'classic',
+      );
+      expect(mockMail.sendApplicationToSelf).toHaveBeenCalledWith('lina@example.de', expect.objectContaining({ id: 'a1' }), [
+        { filename: 'Lebenslauf_Acme_Dev.pdf', content: cv, contentType: 'application/pdf' },
+        { filename: 'Lebenslauf_Acme_Dev_Anschreiben.pdf', content: letter, contentType: 'application/pdf' },
+      ]);
     });
   });
 });

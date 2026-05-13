@@ -141,8 +141,17 @@ export class ApplicationsService {
   async emailToSelf(id: string, userId: string) {
     const app = await this.findOne(id, userId);
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
-    // TODO: render PDFs and attach to mail
-    await this.mail.sendApplicationToSelf(user.email, app);
+    const title = this.fileTitle(app);
+    const safeTitle = this.safeFilename(title);
+    const template = this.asLayout(app.masterCv?.template);
+    const [cv, letter] = await Promise.all([
+      this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title), template),
+      this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant), title, template),
+    ]);
+    await this.mail.sendApplicationToSelf(user.email, app, [
+      { filename: `${safeTitle}.pdf`, content: cv, contentType: 'application/pdf' },
+      { filename: `${safeTitle}_Anschreiben.pdf`, content: letter, contentType: 'application/pdf' },
+    ]);
     return { message: 'Email sent' };
   }
 
@@ -221,5 +230,21 @@ export class ApplicationsService {
       typeof (value as { title?: unknown }).title === 'string' &&
       typeof (value as { company?: unknown }).company === 'string'
     );
+  }
+
+  private selectedLetterText(value: unknown, chosenVariant?: string | null): string {
+    const letters = this.hasLetters(value) ? value : {};
+    const variant = chosenVariant ?? 'formal';
+
+    if (variant === 'brief' && typeof letters.concise === 'string') return letters.concise;
+    if (variant === 'concise' && typeof letters.concise === 'string') return letters.concise;
+    if (variant === 'warm' && typeof letters.warm === 'string') return letters.warm;
+    if (variant === 'formal' && typeof letters.formal === 'string') return letters.formal;
+
+    return letters.formal ?? letters.warm ?? letters.brief ?? letters.concise ?? '';
+  }
+
+  private hasLetters(value: unknown): value is { formal?: string; warm?: string; brief?: string; concise?: string } {
+    return typeof value === 'object' && value !== null;
   }
 }
