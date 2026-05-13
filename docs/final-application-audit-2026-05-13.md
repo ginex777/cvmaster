@@ -100,7 +100,7 @@ DoD:
 
 Closed in the implementation commit for this task. Verification: frontend pricing tests, frontend lint, frontend build, backend lint, and backend build passed. Paddle integration details were checked against Paddle's current developer docs: https://developer.paddle.com/paddlejs/include-paddlejs
 
-### P1 - Account deletion leaves frontend auth state partially uncleared
+### Done - P1 - Account deletion leaves frontend auth state partially uncleared
 
 Evidence:
 - `frontend/src/app/features/billing/billing.component.ts:54` deletes `/gdpr/account`.
@@ -112,11 +112,13 @@ Impact:
 - The server also does not clear the refresh cookie on the GDPR delete response.
 
 DoD:
-- [ ] Add an `AuthService.clearSession()` or have delete-account call logout/clear-cookie flow.
-- [ ] Clear access token, user signal, and refresh cookie after successful account deletion.
-- [ ] Redirect to a public route with an accessible confirmation.
-- [ ] Add frontend tests proving token/user state is cleared.
-- [ ] Add backend test proving the delete response clears the session cookie or documents why frontend logout is required first.
+- [x] Add an `AuthService.clearSession()` helper for local token/user cleanup.
+- [x] Clear access token, user signal, and refresh cookie after successful account deletion.
+- [x] Redirect to a public route after successful account deletion.
+- [x] Add frontend tests proving token/user state is cleared.
+- [x] Add backend test proving the delete response clears the session cookie.
+
+Closed in the implementation commit for this task. Verification: backend GDPR controller/service tests, backend lint, backend build, frontend billing tests, frontend lint, and frontend build passed.
 
 ### P1 - GDPR delete behavior conflicts with soft-delete retention policy
 

@@ -42,6 +42,10 @@ export class AuthService {
 
   async logout() {
     await firstValueFrom(this.http.post('/api/auth/logout', {}, { withCredentials: true }));
+    this.clearSession();
+  }
+
+  clearSession(): void {
     this.accessToken.set(null);
     this.user.set(null);
   }

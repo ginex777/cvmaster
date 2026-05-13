@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { provideRouter } from '@angular/router';
 import { ApiService } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -7,7 +8,7 @@ import { BillingComponent } from './billing.component';
 
 describe('BillingComponent', () => {
   let api: jest.Mocked<Pick<ApiService, 'getBlob' | 'delete'>>;
-  let auth: Pick<AuthService, 'user'>;
+  let auth: Pick<AuthService, 'user' | 'clearSession'>;
 
   beforeEach(async () => {
     api = { getBlob: jest.fn(), delete: jest.fn() };
@@ -15,6 +16,7 @@ describe('BillingComponent', () => {
     api.delete.mockResolvedValue({ message: 'ok' });
     auth = {
       user: signal({ id: 'u1', email: 'a@b.de', name: 'Lina', plan: 'free', emailVerified: true, twoFactorEnabled: false }),
+      clearSession: jest.fn(() => auth.user.set(null)),
     };
 
     await TestBed.configureTestingModule({
@@ -58,10 +60,13 @@ describe('BillingComponent', () => {
   it('deletes account after confirmation', async () => {
     Object.defineProperty(window, 'confirm', { configurable: true, value: jest.fn(() => true) });
     const fixture = TestBed.createComponent(BillingComponent);
+    const navigate = jest.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
 
     await fixture.componentInstance.deleteAccount();
 
     expect(api.delete).toHaveBeenCalledWith('/gdpr/account');
+    expect(auth.clearSession).toHaveBeenCalled();
     expect(auth.user()).toBeNull();
+    expect(navigate).toHaveBeenCalledWith(['/']);
   });
 });

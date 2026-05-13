@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -14,6 +15,7 @@ import { AuthService } from '../../core/auth/auth.service';
 })
 export class BillingComponent {
   private readonly api = inject(ApiService);
+  private readonly router = inject(Router);
   readonly auth = inject(AuthService);
 
   readonly loading = signal(false);
@@ -54,8 +56,9 @@ export class BillingComponent {
 
     try {
       await this.api.delete<{ message: string }>('/gdpr/account');
-      this.auth.user.set(null);
+      this.auth.clearSession();
       this.message.set('Konto und alle Daten wurden geloescht.');
+      await this.router.navigate(['/']);
     } catch (e: unknown) {
       this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Konto konnte nicht geloescht werden.');
     } finally {

@@ -20,8 +20,9 @@ export class GdprController {
   }
 
   @Delete('account')
-  async deleteAccount(@Req() req: AuthenticatedRequest) {
+  async deleteAccount(@Req() req: AuthenticatedRequest, @Res({ passthrough: true }) res: Response) {
     await this.gdpr.deleteAccount(req.user.sub);
+    res.clearCookie('__Host-session', { path: '/' });
     return { message: 'Konto und alle Daten geloescht' };
   }
 }
