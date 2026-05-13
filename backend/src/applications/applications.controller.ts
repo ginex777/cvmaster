@@ -65,7 +65,7 @@ export class ApplicationsController {
   async exportLetter(@Param('id') id: string, @Req() req: AuthenticatedRequest, @Res() res: Response) {
     const app = await this.apps.findOne(id, req.user.sub);
     const title = this.fileTitle(app);
-    const buffer = await this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant), title);
+    const buffer = await this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant), title, this.cvTemplate(app));
     this.sendPdf(res, buffer, `${this.safeFilename(title)}_Anschreiben.pdf`);
   }
 
@@ -75,7 +75,7 @@ export class ApplicationsController {
     const title = this.fileTitle(app);
     const safeTitle = this.safeFilename(title);
     const cv = await this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title), this.cvTemplate(app));
-    const letter = await this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant), title);
+    const letter = await this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant), title, this.cvTemplate(app));
     const buffer = await this.pdf.generateZip([
       { filename: `${safeTitle}.pdf`, buffer: cv },
       { filename: `${safeTitle}_Anschreiben.pdf`, buffer: letter },

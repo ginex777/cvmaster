@@ -18,8 +18,8 @@ describe('PdfService', () => {
     expect(buf.subarray(0, 5).toString('ascii')).toBe('%PDF-');
   });
 
-  it('generateLetterPdf returns Buffer starting with %PDF-', async () => {
-    const buf = await service.generateLetterPdf('Sehr geehrte Damen und Herren,\n\nhiermit bewerbe ich mich.', 'Acme GmbH');
+  it.each(['classic', 'modern', 'editorial'] as const)('generateLetterPdf returns a PDF for %s layout', async (layout) => {
+    const buf = await service.generateLetterPdf('Sehr geehrte Damen und Herren,\n\nhiermit bewerbe ich mich.', 'Acme GmbH', layout);
 
     expect(Buffer.isBuffer(buf)).toBe(true);
     expect(buf.subarray(0, 5).toString('ascii')).toBe('%PDF-');
