@@ -125,12 +125,14 @@ export class ApplicationsController {
   }
 
   @Post(':id/regenerate-letter')
+  @Throttle({ default: { limit: 3, ttl: 3_600_000 } })
   @UseGuards(OwnsApplicationGuard)
   regenerateLetter(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
     return this.apps.regenerateLetter(id, req.user.sub);
   }
 
   @Post(':id/retry-generation')
+  @Throttle({ default: { limit: 3, ttl: 3_600_000 } })
   @UseGuards(OwnsApplicationGuard)
   retryGeneration(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
     return this.apps.retryGeneration(id, req.user.sub);

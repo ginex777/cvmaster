@@ -280,6 +280,26 @@ DoD:
 
 Closed in the implementation commit for this task. The older audit/readiness docs were moved under `docs/archive/`, the stale CV-template spec checklist was converted to a superseded note, and this final audit remains the only active checklist. Remaining external legal/compliance items are intentionally still tracked above.
 
+### Done - P2 - AI call safety against prompt hijacking and provider-key abuse
+
+Evidence:
+- AI calls already used schemas and some delimiter-style prompts, but optimizer and letter calls passed raw JSON directly as user content.
+- Regenerate/retry endpoints could enqueue repeated provider calls without route-level throttling.
+- Job-ad text input had a minimum length but no explicit maximum before reaching AI parsing.
+
+Impact:
+- A malicious CV or job ad could try to override system instructions inside user content.
+- Repeated retry/regenerate requests could waste provider quota or stress the API key.
+
+DoD:
+- [x] Wrap all AI user content in explicit untrusted-content delimiters.
+- [x] Add hard AI input size limits before provider calls.
+- [x] Limit job-ad text size at the controller boundary.
+- [x] Throttle application retry/regenerate endpoints.
+- [x] Add tests proving untrusted-content wrappers are sent and oversized inputs never call the provider.
+
+Closed in the implementation commit for this task. Verification: focused AI/controller tests, backend lint, backend build, and full backend test suite passed.
+
 ## Notes On Verified Wiring
 
 - Auth guard wiring exists on protected backend controllers (`auth`, `users`, `cvs`, `jobs`, `applications`, `gdpr`) and ownership checks are applied for application export/regenerate/email/status routes.

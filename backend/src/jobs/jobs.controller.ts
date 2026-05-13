@@ -5,7 +5,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AuthenticatedRequest } from '../common/request.types';
 import { JobsService } from './jobs.service';
 
-const parseSchema = z.object({ type: z.literal('text'), value: z.string().min(50) });
+const parseSchema = z.object({ type: z.literal('text'), value: z.string().min(50).max(20_000) });
 
 @Controller('jobs')
 @UseGuards(JwtAuthGuard)
