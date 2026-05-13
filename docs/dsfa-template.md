@@ -33,7 +33,7 @@
 ## 4. Abhilfe-Maßnahmen
 - TLS 1.3, At-Rest-Verschlüsselung Postgres
 - IONOS BSI C5
-- AI-Provider EU-only (Mistral FR + Aleph Alpha DE)
+- AI-Provider nur nach aktueller AVV- und Transferpruefung freigeben
 - Halluzinations-Guards (Schema-Validation, Citation-Check, Skill-Whitelist)
 - Bias-Testing Suite
 - Anonymisierungs-Toggle für Foto

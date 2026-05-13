@@ -3,7 +3,6 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { z } from 'zod';
 import { LLMProvider, ParsedCVSchema, ParsedJobSchema, ParsedCV, ParsedJob } from './provider';
-import { MistralProvider } from './mistral.provider';
 import { ClaudeProvider } from './claude.provider';
 import { GroqProvider } from './groq.provider';
 import { PrismaService } from '../common/prisma.service';
@@ -38,14 +37,12 @@ export class AiService {
   private modelName: string;
 
   constructor(private prisma: PrismaService) {
-    const p = process.env.AI_PROVIDER ?? 'mistral';
+    const p = process.env.AI_PROVIDER ?? 'groq';
     this.providerName = p;
     this.modelName = this.defaultModelName(p);
     this.provider = p === 'claude'
       ? new ClaudeProvider(requiredEnv('ANTHROPIC_API_KEY'))
-      : p === 'groq'
-        ? new GroqProvider(requiredEnv('GROQ_API_KEY'))
-        : new MistralProvider(requiredEnv('MISTRAL_API_KEY'));
+      : new GroqProvider(requiredEnv('GROQ_API_KEY'));
   }
 
   async parseCv(text: string, audit: AiAuditContext = {}): Promise<ParsedCV> {
@@ -171,7 +168,6 @@ export class AiService {
 
   private defaultModelName(provider: string): string {
     if (provider === 'claude') return process.env.CLAUDE_MODEL ?? 'claude-haiku-4-5-20251001';
-    if (provider === 'groq') return process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile';
-    return process.env.MISTRAL_MODEL ?? 'mistral-small-latest';
+    return process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile';
   }
 }

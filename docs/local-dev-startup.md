@@ -1,9 +1,9 @@
-# Local Development — Startup Guide
+﻿# Local Development â€” Startup Guide
 
 ## Prerequisites
 
 - Docker Desktop running
-- A Mistral API key
+- A Groq API key
 
 ---
 
@@ -25,15 +25,15 @@ If the service name differs on your machine: `Get-Service | Where-Object {$_.Nam
 Create `infra/.env` (already gitignored):
 
 ```env
-AI_PROVIDER=mistral
-MISTRAL_API_KEY=your-mistral-key-here
+AI_PROVIDER=groq
+GROQ_API_KEY=your-groq-key-here
 ```
 
 All other values have safe defaults in `docker-compose.yml` for local dev.
 
 ---
 
-## Option A — Docker (recommended, single command)
+## Option A â€” Docker (recommended, single command)
 
 From the `infra` directory:
 
@@ -67,7 +67,7 @@ docker compose up --build
 
 ---
 
-## Option B — Native (4 terminals, hot reload)
+## Option B â€” Native (4 terminals, hot reload)
 
 Use this when actively developing and need instant code reloading.
 
@@ -86,14 +86,14 @@ JWT_SECRET=replace-with-any-random-string
 IP_SALT=replace-with-any-random-string
 APP_URL=http://localhost:4200
 NODE_ENV=development
-AI_PROVIDER=mistral
-MISTRAL_API_KEY=your-mistral-key-here
+AI_PROVIDER=groq
+GROQ_API_KEY=your-groq-key-here
 MAIL_DOMAIN=localhost
 ```
 
 > In dev mode, no `RESEND_API_KEY` is needed. The email verification link is printed to the backend console instead.
 
-### Terminal 1 — Infrastructure
+### Terminal 1 â€” Infrastructure
 
 ```powershell
 cd infra
@@ -106,7 +106,7 @@ Wait until both show `Up (healthy)`:
 docker compose ps
 ```
 
-### Terminal 2 — Backend API
+### Terminal 2 â€” Backend API
 
 ```powershell
 cd backend
@@ -116,7 +116,7 @@ npm run start:dev
 
 Wait for: `Application is running on: http://[::1]:3000`
 
-### Terminal 3 — AI Worker
+### Terminal 3 â€” AI Worker
 
 ```powershell
 cd backend
@@ -125,7 +125,7 @@ npm run start:worker
 
 Wait for: `AI pipeline worker started`
 
-### Terminal 4 — Frontend
+### Terminal 4 â€” Frontend
 
 ```powershell
 cd frontend
@@ -149,15 +149,15 @@ docker compose down
 ### Account
 
 1. Go to `/register` (Docker: `http://localhost/register`, native: `http://localhost:4200/register`)
-2. Fill in name, email, password — accept the consent checkbox
-3. Submit — you'll see "Registration successful. Please verify your email."
+2. Fill in name, email, password â€” accept the consent checkbox
+3. Submit â€” you'll see "Registration successful. Please verify your email."
 4. Find the verification link:
    - **Docker:** `docker compose logs api | findstr verify`
    - **Native:** look in Terminal 2 for a line like:
      ```
      [dev-email] Verification link for you@example.com: http://localhost:4200/api/auth/verify?token=abc123...
      ```
-5. Open that URL in the browser → redirects to `/login?verified=1`
+5. Open that URL in the browser â†’ redirects to `/login?verified=1`
 6. Log in with your credentials
 
 ### CV Upload
@@ -165,21 +165,21 @@ docker compose down
 1. Go to `/app/cvs`
 2. Upload a PDF or DOCX CV
 3. Confirm the card appears in the list
-4. Try uploading an invalid file (e.g. a `.txt`) — confirm a visible error appears
+4. Try uploading an invalid file (e.g. a `.txt`) â€” confirm a visible error appears
 
 ### New Application (Wizard)
 
 1. Click **Neue Bewerbung** on the dashboard
 2. Step 1: select the CV you uploaded
 3. Step 2: paste a real job ad (min 50 characters)
-4. Step 3: confirm — wizard creates the application and redirects to the editor
+4. Step 3: confirm â€” wizard creates the application and redirects to the editor
 
 ### Editor
 
-1. Editor shows a skeleton with "KI optimiert deinen Lebenslauf…" while the AI job runs (typically 10–30 seconds)
+1. Editor shows a skeleton with "KI optimiert deinen Lebenslaufâ€¦" while the AI job runs (typically 10â€“30 seconds)
 2. Once done, the left panel shows the ATS score, matched keywords, and missing keywords
-3. The center shows the optimized CV text — edit it, click outside to auto-save
-4. The right panel shows 3 cover letter variants (Formal / Herzlich / Kurz) — switch and edit them
+3. The center shows the optimized CV text â€” edit it, click outside to auto-save
+4. The right panel shows 3 cover letter variants (Formal / Herzlich / Kurz) â€” switch and edit them
 5. Click **Als gesendet markieren** to update the status
 
 ### PDF Download
@@ -196,6 +196,6 @@ docker compose down
 ### GDPR
 
 1. Go to `/app/billing` (or the settings area)
-2. Click **Daten exportieren** — confirm the downloaded JSON contains your user, master CVs, applications, and consents
-3. Click **Konto löschen**, confirm the dialog
+2. Click **Daten exportieren** â€” confirm the downloaded JSON contains your user, master CVs, applications, and consents
+3. Click **Konto lÃ¶schen**, confirm the dialog
 4. Confirm that logging in with those credentials no longer works

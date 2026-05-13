@@ -13,7 +13,7 @@ const mockPrisma = {
   },
 };
 
-function mistralResponse(content: object): Response {
+function groqResponse(content: object): Response {
   return {
     ok: true,
     json: async () => ({
@@ -42,8 +42,8 @@ describe('AiService audit trail', () => {
     jest.clearAllMocks();
     process.env = {
       ...originalEnv,
-      AI_PROVIDER: 'mistral',
-      MISTRAL_API_KEY: 'test-key',
+      AI_PROVIDER: 'groq',
+      GROQ_API_KEY: 'test-key',
     };
     mockPrisma.aiJob.create.mockResolvedValue({ id: 'ai-job-1' });
     mockPrisma.aiJob.update.mockResolvedValue({});
@@ -63,7 +63,7 @@ describe('AiService audit trail', () => {
   });
 
   it('creates and completes a redacted audit record for parse calls', async () => {
-    global.fetch = jest.fn<typeof fetch>().mockResolvedValue(mistralResponse(parsedJob()));
+    global.fetch = jest.fn<typeof fetch>().mockResolvedValue(groqResponse(parsedJob()));
 
     await service.parseJob('raw job text', { userId: 'u1' });
 
@@ -74,8 +74,8 @@ describe('AiService audit trail', () => {
         state: 'RUNNING',
         prompt: '[redacted: prompt contains user-provided application data]',
         promptVersion: 'redacted-v1',
-        provider: 'mistral',
-        modelName: 'mistral-small-latest',
+        provider: 'groq',
+        modelName: 'llama-3.3-70b-versatile',
         retentionUntil: expect.any(Date),
       }),
       select: { id: true },
@@ -97,7 +97,7 @@ describe('AiService audit trail', () => {
       text: async () => 'bad gateway',
     } as Response);
 
-    await expect(service.parseJob('raw job text', { userId: 'u1' })).rejects.toThrow('Mistral error 502');
+    await expect(service.parseJob('raw job text', { userId: 'u1' })).rejects.toThrow('Groq error 502');
 
     expect(global.fetch).toHaveBeenCalledTimes(3);
     expect(mockPrisma.aiJob.update).toHaveBeenCalledWith({
@@ -111,7 +111,7 @@ describe('AiService audit trail', () => {
   });
 
   it('stores application context for optimize calls without raw prompts', async () => {
-    global.fetch = jest.fn<typeof fetch>().mockResolvedValue(mistralResponse({
+    global.fetch = jest.fn<typeof fetch>().mockResolvedValue(groqResponse({
       name: 'Lina',
       experience: [],
       education: [],

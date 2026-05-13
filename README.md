@@ -53,7 +53,7 @@ cd ../frontend && pnpm start
 | DB | Postgres 16 |
 | Cache | Redis 7 |
 | Queue | BullMQ |
-| AI | Mistral Free Tier (Pilot) → Mistral Large + Aleph Alpha (Prod) |
+| AI | Groq primary with Claude fallback |
 | Mail | Resend (EU-Region) |
 | Pay | Paddle |
 | Hosting | IONOS Cloud (BSI C5) |
@@ -66,7 +66,7 @@ cd ../frontend && pnpm start
 - [ ] VVT (`docs/vvt.md`) — Pflicht ab Art-9-Verarbeitung
 - [ ] TOM (`docs/tom.md`) — Anhang zu jedem AVV
 - [ ] AGB + Datenschutzerklärung (anwaltlich)
-- [ ] AVV-Sammlung: Mistral, Aleph Alpha, Resend, Paddle, IONOS, Crisp
+- [ ] AVV-Sammlung: Groq, Anthropic, Resend, Paddle, IONOS, Crisp
 
 ## Roadmap-Tracking
 

@@ -64,5 +64,5 @@
 
 ## 6. Auftragskontrolle
 
-- AVV-Sammlung in `docs/avv/` (Mistral, Aleph Alpha, Resend, Paddle, IONOS, Crisp)
+- AVV-Sammlung in `docs/avv/` (Groq, Anthropic, Resend, Paddle, IONOS, Crisp)
 - Kein Subunternehmer ohne dokumentierten AVV

@@ -12,17 +12,14 @@ function validateEnv() {
   }
 
   const provider = process.env.AI_PROVIDER;
-  if (provider === 'mistral' && !process.env.MISTRAL_API_KEY) {
-    throw new Error('MISTRAL_API_KEY is required when AI_PROVIDER=mistral');
-  }
   if (provider === 'claude' && !process.env.ANTHROPIC_API_KEY) {
     throw new Error('ANTHROPIC_API_KEY is required when AI_PROVIDER=claude');
   }
   if (provider === 'groq' && !process.env.GROQ_API_KEY) {
     throw new Error('GROQ_API_KEY is required when AI_PROVIDER=groq');
   }
-  if (provider !== 'mistral' && provider !== 'claude' && provider !== 'groq') {
-    throw new Error(`AI_PROVIDER must be "mistral", "claude", or "groq", got "${provider}"`);
+  if (provider !== 'claude' && provider !== 'groq') {
+    throw new Error(`AI_PROVIDER must be "claude" or "groq", got "${provider}"`);
   }
 
   if (!process.env.JWT_PRIVATE_KEY && !process.env.JWT_SECRET) {

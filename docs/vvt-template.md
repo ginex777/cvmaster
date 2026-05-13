@@ -20,7 +20,7 @@
 | Zweck | CV-Strukturierung |
 | Rechtsgrundlage | Art. 6 Abs. 1 lit. b + Art. 9 Abs. 2 lit. a |
 | Datenkategorien | Vollständige CV-Inhalte inkl. Art-9 |
-| Empfänger | Mistral (FR), Aleph Alpha (DE) |
+| Empfänger | Groq, Anthropic, Resend, Paddle, Hosting- und Supportanbieter nach AVV |
 | Speicherdauer | parsed_json: bis Löschung; AI-Logs: 30d |
 | TOMs | EU-only Provider, AVV, Halluzinations-Guards |
 
