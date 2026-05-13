@@ -8,6 +8,7 @@ import { OwnsApplicationGuard } from '../common/guards/owns-application.guard';
 import { AuthenticatedRequest } from '../common/request.types';
 import { CvLayout, CvPdfData, PdfService } from '../pdf/pdf.service';
 import { ApplicationsService } from './applications.service';
+import type { CvSection } from './applications.service';
 
 const createSchema = z.object({
   masterCvId:   z.string().uuid(),
@@ -28,6 +29,21 @@ const updateSchema = z.object({
   coverLetter: z.unknown().optional(),
   chosenVariant: z.string().optional(),
   chosenLayout: z.string().optional(),
+});
+
+const cvBulletSchema = z.object({
+  id: z.string(),
+  text: z.string(),
+  originalText: z.string().optional(),
+  accepted: z.boolean().optional(),
+});
+
+const cvSectionsSchema = z.object({
+  sections: z.array(z.object({
+    id: z.string(),
+    heading: z.string(),
+    bullets: z.array(cvBulletSchema),
+  })),
 });
 
 @Controller('applications')
@@ -156,6 +172,13 @@ export class ApplicationsController {
   updateStatus(@Param('id') id: string, @Body('status') status: unknown) {
     const parsedStatus = statusSchema.parse(status);
     return this.apps.updateStatus(id, parsedStatus);
+  }
+
+  @Patch(':id/cv')
+  @UseGuards(OwnsApplicationGuard)
+  updateCv(@Param('id') id: string, @Body() body: unknown, @Req() req: AuthenticatedRequest) {
+    const { sections } = cvSectionsSchema.parse(body) as { sections: CvSection[] };
+    return this.apps.updateStructuredCv(id, req.user.sub, sections);
   }
 
   @Get(':id/follow-up-templates')

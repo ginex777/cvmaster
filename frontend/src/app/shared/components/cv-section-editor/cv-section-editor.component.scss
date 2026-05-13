@@ -1,0 +1,150 @@
+:host {
+  display: block;
+}
+
+.cv-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  &__empty {
+    color: var(--ink-3);
+    font-size: 0.875rem;
+  }
+
+  &__add-section {
+    align-self: flex-start;
+    margin-top: var(--space-2);
+  }
+
+  &__saving {
+    font-size: 0.75rem;
+    color: var(--ink-2);
+    margin-top: var(--space-1);
+  }
+}
+
+.cv-section {
+  border: 1px solid color-mix(in srgb, var(--ink) 15%, transparent);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--bg-2);
+
+  &__header {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  &__heading-input {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: var(--space-1) 0;
+    color: var(--ink);
+    outline: none;
+    min-width: 0;
+
+    &:focus-visible {
+      border-bottom-color: var(--accent);
+    }
+  }
+
+  &__remove {
+    flex-shrink: 0;
+  }
+
+  &__bullets {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  &__add-bullet {
+    align-self: flex-start;
+  }
+}
+
+.cv-bullet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  position: relative;
+
+  &--empty {
+    color: var(--ink-3);
+    font-size: 0.875rem;
+    background: transparent;
+    padding: var(--space-1) 0;
+  }
+
+  &__text {
+    resize: vertical;
+    width: 100%;
+    font-size: 0.875rem;
+    padding: var(--space-2);
+    border: 1px solid color-mix(in srgb, var(--ink) 15%, transparent);
+    border-radius: var(--radius-sm);
+    background: var(--bg-2);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+
+    &:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 1px;
+    }
+  }
+
+  &__remove {
+    align-self: flex-end;
+  }
+
+  &__original {
+    border: 1px dashed color-mix(in srgb, var(--ink) 20%, transparent);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2);
+    font-size: 0.8125rem;
+
+    summary {
+      cursor: pointer;
+      color: var(--ink-2);
+      user-select: none;
+
+      &:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
+    }
+  }
+
+  &__original-text {
+    margin: var(--space-2) 0;
+    color: var(--ink-2);
+    font-style: italic;
+  }
+
+  &__original-actions {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  &__accepted {
+    font-size: 0.75rem;
+    color: var(--success);
+    font-weight: 600;
+  }
+}

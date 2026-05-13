@@ -309,7 +309,24 @@ Acceptance criteria:
 - Text remains the reliable default.
 - URL/PDF/screenshot modes either work safely or are hidden behind a clear feature flag until compliant.
 
-### P1.3 Improve Application Editor Editing Model
+### P1.3 Improve Application Editor Editing Model - Done 2026-05-13
+
+Status: Done.
+
+Completion evidence:
+
+- `CvSection` and `CvBullet` interfaces exported from `ApplicationsService`; structured format uses stable IDs for sections and bullets.
+- `PATCH /applications/:id/cv` endpoint accepts `{ sections: CvSection[] }` (Zod-validated), ownership-checked via `OwnsApplicationGuard`.
+- `ApplicationsService.updateStructuredCv()` persists structured sections as a JSON field.
+- 3 new backend service tests: saves sections, ForbiddenException for wrong user, preserves originalText/accepted fields.
+- `CvSectionEditorComponent` (dumb, `shared/components/cv-section-editor/`) — 4 files: signal-input `sections` + `saving`, output `sectionsChange`.
+- Supports add/remove section, add/remove bullet, inline edit of heading and bullet text with autosave on blur.
+- Shows "KI-Original anzeigen" `<details>` toggle when `originalText` differs from current text; Behalten/Zurücksetzen accept-reject controls.
+- Shows "✓ Übernommen" accepted badge on confirmed bullets.
+- 13 unit tests for CvSectionEditorComponent covering all edit operations.
+- `EditorComponent` replaces raw textarea with `<lba-cv-section-editor>`; `normalizeToStructured()` converts all legacy formats (sections with lines, experience bullets, text) to stable format on load.
+- 3 new editor tests: normalization on load, `saveStructuredCv()` calls correct endpoint, `onSectionsChange` updates signal and saves.
+- All 188 frontend and 129 backend tests pass; lint clean; build green.
 
 Problem: The editor works, but it is currently a text-area centered experience rather than the richer source-aware inline CV editor promised in the spec.
 

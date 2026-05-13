@@ -190,17 +190,13 @@
       <section class="panel panel--cv" aria-labelledby="cv-title">
         <div class="panel__heading">
           <h2 id="cv-title">Optimierter Lebenslauf</h2>
-          <span aria-live="polite">{{ isSaving() ? 'Speichert...' : 'Gespeichert' }}</span>
+          <span aria-live="polite" role="status">{{ isSaving() ? 'Speichert…' : 'Gespeichert' }}</span>
         </div>
-        <label for="cv-text">CV-Inhalt</label>
-        <textarea
-          id="cv-text"
-          formControlName="cvText"
-          rows="22"
-          (blur)="saveCv()"
-          aria-describedby="cv-help"
-        ></textarea>
-        <p id="cv-help">Abschnitte durch Leerzeilen trennen. Beim Verlassen des Feldes wird automatisch gespeichert.</p>
+        <lba-cv-section-editor
+          [sections]="structuredCv()"
+          [saving]="isSaving()"
+          (sectionsChange)="onSectionsChange($event)"
+        />
       </section>
 
       <section class="panel panel--letters" aria-labelledby="letters-title">

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { BadGatewayException, ForbiddenException, HttpException, NotFoundException } from '@nestjs/common';
+import type { CvSection } from './applications.service';
 import { Test } from '@nestjs/testing';
 import { ApplicationsService } from './applications.service';
 import { PrismaService } from '../common/prisma.service';
@@ -295,6 +296,46 @@ describe('ApplicationsService', () => {
           payload: { applicationId: 'a1', state: 'failed' },
         },
       });
+    });
+  });
+
+  describe('updateStructuredCv', () => {
+    const sections: CvSection[] = [
+      { id: 's1', heading: 'Erfahrung', bullets: [{ id: 'b1', text: 'Angular-Entwicklung' }] },
+    ];
+
+    it('saves structured sections and returns updated application', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue({ id: 'a1', userId: 'u1', masterCv: null, jobPosting: null } as never);
+      mockPrisma.application.update.mockResolvedValue({ id: 'a1', optimizedCv: { sections } } as never);
+      const result = await service.updateStructuredCv('a1', 'u1', sections);
+      expect(mockPrisma.application.update).toHaveBeenCalledWith({
+        where: { id: 'a1' },
+        data: { optimizedCv: { sections } },
+      });
+      expect(result).toEqual({ id: 'a1', optimizedCv: { sections } });
+    });
+
+    it('throws ForbiddenException when application not owned by user', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue({ id: 'a1', userId: 'other', masterCv: null, jobPosting: null } as never);
+      await expect(service.updateStructuredCv('a1', 'u1', sections)).rejects.toThrow(ForbiddenException);
+    });
+
+    it('preserves originalText and accepted fields on bullets', async () => {
+      const sectionsWithMeta: CvSection[] = [
+        {
+          id: 's1',
+          heading: 'Profil',
+          bullets: [
+            { id: 'b1', text: 'Überarbeiteter Text', originalText: 'KI-Original', accepted: true },
+          ],
+        },
+      ];
+      mockPrisma.application.findUnique.mockResolvedValue({ id: 'a1', userId: 'u1', masterCv: null, jobPosting: null } as never);
+      mockPrisma.application.update.mockResolvedValue({ id: 'a1', optimizedCv: { sections: sectionsWithMeta } } as never);
+      await service.updateStructuredCv('a1', 'u1', sectionsWithMeta);
+      expect(mockPrisma.application.update).toHaveBeenCalledWith(
+        expect.objectContaining({ data: { optimizedCv: { sections: sectionsWithMeta } } }),
+      );
     });
   });
 

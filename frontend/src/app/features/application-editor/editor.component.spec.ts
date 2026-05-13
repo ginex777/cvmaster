@@ -50,13 +50,34 @@ describe('EditorComponent', () => {
     expect(f.componentInstance.error()).toBe('Not found');
   });
 
-  it('patches optimized CV on save', async () => {
+  it('normalizes optimizedCv to structuredCv signal on load', async () => {
     const f = TestBed.createComponent(EditorComponent);
     f.detectChanges();
     await f.whenStable();
-    f.componentInstance.editorForm.controls.cvText.setValue('Erfahrung\nAngular Apps');
-    await f.componentInstance.saveCv();
-    expect(api.patch).toHaveBeenCalledWith('/applications/a1', expect.objectContaining({ optimizedCv: expect.any(Object) }));
+    const sections = f.componentInstance.structuredCv();
+    expect(sections.length).toBeGreaterThan(0);
+    expect(sections[0].heading).toBe('Erfahrung');
+  });
+
+  it('saves structured CV sections via PATCH /cv', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+    const sections = [{ id: 's1', heading: 'Profil', bullets: [{ id: 'b1', text: 'Angular' }] }];
+    f.componentInstance.structuredCv.set(sections);
+    await f.componentInstance.saveStructuredCv();
+    expect(api.patch).toHaveBeenCalledWith('/applications/a1/cv', { sections });
+  });
+
+  it('onSectionsChange updates structuredCv and saves', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+    const sections = [{ id: 's1', heading: 'Neu', bullets: [] }];
+    f.componentInstance.onSectionsChange(sections);
+    expect(f.componentInstance.structuredCv()).toEqual(sections);
+    await f.whenStable();
+    expect(api.patch).toHaveBeenCalledWith('/applications/a1/cv', { sections });
   });
 
   it('switches cover letter selection and persists chosenVariant', async () => {

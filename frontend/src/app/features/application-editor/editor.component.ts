@@ -5,6 +5,8 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../../core/api/api.service';
 import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
+import { CvSectionEditorComponent } from '../../shared/components/cv-section-editor/cv-section-editor.component';
+import type { CvSection } from '../../shared/components/cv-section-editor/cv-section-editor.component';
 
 type LetterVariant = 'formal' | 'warm' | 'brief';
 
@@ -42,7 +44,7 @@ const POLL_MAX_ATTEMPTS = 40;
 @Component({
   selector: 'lba-editor',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, ConfirmDeleteModal],
+  imports: [ReactiveFormsModule, RouterLink, ConfirmDeleteModal, CvSectionEditorComponent],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,9 +70,9 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly followUpLoading = signal(false);
   readonly followUpError = signal<string | null>(null);
   readonly copiedType = signal<string | null>(null);
+  readonly structuredCv = signal<CvSection[]>([]);
 
   readonly editorForm = new FormGroup({
-    cvText: new FormControl('', { nonNullable: true }),
     formal: new FormControl('', { nonNullable: true }),
     warm: new FormControl('', { nonNullable: true }),
     brief: new FormControl('', { nonNullable: true }),
@@ -153,13 +155,22 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  async saveCv(): Promise<void> {
-    await this.patchApplication({
-      optimizedCv: {
-        text: this.editorForm.controls.cvText.value,
-        sections: this.textToSections(this.editorForm.controls.cvText.value),
-      },
-    });
+  onSectionsChange(sections: CvSection[]): void {
+    this.structuredCv.set(sections);
+    void this.saveStructuredCv();
+  }
+
+  async saveStructuredCv(): Promise<void> {
+    if (!this.id) return;
+    this.saving.set(true);
+    this.error.set(null);
+    try {
+      await this.api.patch<ApplicationDto>(`/applications/${this.id}/cv`, { sections: this.structuredCv() });
+    } catch (e: unknown) {
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Änderungen konnten nicht gespeichert werden.');
+    } finally {
+      this.saving.set(false);
+    }
   }
 
   async saveCoverLetter(): Promise<void> {
@@ -365,8 +376,8 @@ export class EditorComponent implements OnInit, OnDestroy {
   }
 
   private populateForm(app: ApplicationDto): void {
+    this.structuredCv.set(this.normalizeToStructured(app.optimizedCv));
     this.editorForm.patchValue({
-      cvText: this.optimizedCvToText(app.optimizedCv),
       formal: app.coverLetter?.['formal'] ?? '',
       warm: app.coverLetter?.['warm'] ?? app.coverLetter?.['casual'] ?? '',
       brief: app.coverLetter?.['brief'] ?? app.coverLetter?.['concise'] ?? '',
@@ -392,35 +403,63 @@ export class EditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  private optimizedCvToText(value: unknown): string {
-    if (!value) return '';
-    if (typeof value === 'string') return value;
-    if (this.hasEditorText(value)) return value.text;
-    if (this.hasSections(value)) {
-      return value.sections.map(section => `${section.heading}\n${section.lines.join('\n')}`).join('\n\n');
-    }
-    if (this.hasExperience(value)) {
-      return value.experience
-        .map(section => `${section.role} @ ${section.company}\n${section.bullets.map(bullet => bullet.text).join('\n')}`)
-        .join('\n\n');
-    }
-    return JSON.stringify(value, null, 2);
-  }
+  private normalizeToStructured(value: unknown): CvSection[] {
+    if (!value) return [];
 
-  private textToSections(text: string): Array<{ heading: string; lines: string[] }> {
+    // New stable format: sections array with id + bullets array with id
+    if (this.isStructuredCvFormat(value)) return value.sections;
+
+    // Old sections format: { sections: [{ heading, lines: string[] }] }
+    if (this.hasOldSections(value)) {
+      return value.sections.map(s => ({
+        id: crypto.randomUUID(),
+        heading: s.heading,
+        bullets: (s.lines ?? []).map(line => ({ id: crypto.randomUUID(), text: line })),
+      }));
+    }
+
+    // Experience format: { experience: [{role, company, bullets: [{text, originalText?}]}] }
+    if (this.hasExperience(value)) {
+      return value.experience.map(exp => ({
+        id: crypto.randomUUID(),
+        heading: `${exp.role} @ ${exp.company}`,
+        bullets: exp.bullets.map(b => ({
+          id: crypto.randomUUID(),
+          text: b.text,
+          originalText: (b as { originalText?: string }).originalText,
+        })),
+      }));
+    }
+
+    // Text format: { text: string } or plain string
+    const text = this.hasEditorText(value) ? value.text : (typeof value === 'string' ? value : '');
+    if (!text) return [];
+
     return text
       .split(/\n{2,}/)
-      .map(block => block.split('\n').map(line => line.trim()).filter(Boolean))
+      .map(block => block.split('\n').map(l => l.trim()).filter(Boolean))
       .filter(lines => lines.length > 0)
-      .map(([heading, ...lines]) => ({ heading, lines }));
+      .map(([heading = '', ...lines]) => ({
+        id: crypto.randomUUID(),
+        heading,
+        bullets: lines.map(line => ({ id: crypto.randomUUID(), text: line })),
+      }));
+  }
+
+  private isStructuredCvFormat(value: unknown): value is { sections: CvSection[] } {
+    if (typeof value !== 'object' || value === null) return false;
+    const sections = (value as { sections?: unknown }).sections;
+    return Array.isArray(sections) && (sections.length === 0 ||
+      (typeof (sections[0] as { id?: unknown }).id === 'string' &&
+       Array.isArray((sections[0] as { bullets?: unknown }).bullets)));
+  }
+
+  private hasOldSections(value: unknown): value is { sections: Array<{ heading: string; lines?: string[] }> } {
+    return typeof value === 'object' && value !== null && Array.isArray((value as { sections?: unknown }).sections);
   }
 
   private hasEditorText(value: unknown): value is { text: string } {
     return typeof value === 'object' && value !== null && 'text' in value && typeof (value as { text?: unknown }).text === 'string';
-  }
-
-  private hasSections(value: unknown): value is { sections: Array<{ heading: string; lines: string[] }> } {
-    return typeof value === 'object' && value !== null && Array.isArray((value as { sections?: unknown }).sections);
   }
 
   private hasExperience(value: unknown): value is {

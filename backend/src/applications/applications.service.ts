@@ -1,5 +1,18 @@
 import { BadGatewayException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 
+export interface CvBullet {
+  id: string;
+  text: string;
+  originalText?: string;
+  accepted?: boolean;
+}
+
+export interface CvSection {
+  id: string;
+  heading: string;
+  bullets: CvBullet[];
+}
+
 export interface FollowUpTemplate {
   type: 'reminder' | 'status' | 'thanks';
   label: string;
@@ -164,6 +177,14 @@ export class ApplicationsService {
 
   async updateStatus(id: string, status: AppStatus) {
     return this.prisma.application.update({ where: { id }, data: { status } });
+  }
+
+  async updateStructuredCv(id: string, userId: string, sections: CvSection[]) {
+    await this.findOne(id, userId);
+    return this.prisma.application.update({
+      where: { id },
+      data: { optimizedCv: { sections } as unknown as Prisma.InputJsonValue },
+    });
   }
 
   async getFollowUpTemplates(id: string, userId: string): Promise<FollowUpTemplate[]> {

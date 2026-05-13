@@ -1,0 +1,94 @@
+<div class="cv-editor" [attr.aria-busy]="saving()" aria-label="Lebenslauf-Abschnitte bearbeiten">
+
+  @for (section of local(); track section.id; let si = $index) {
+    <div class="cv-section">
+      <div class="cv-section__header">
+        <label [for]="'sh-' + section.id" class="sr-only">Abschnittsüberschrift</label>
+        <input
+          [id]="'sh-' + section.id"
+          type="text"
+          class="cv-section__heading-input"
+          [value]="section.heading"
+          (input)="onHeadingInput(si, $any($event.target).value)"
+          (blur)="emitSave()"
+          [attr.aria-label]="'Überschrift: ' + section.heading"
+        />
+        <button
+          type="button"
+          class="btn btn--ghost btn--sm cv-section__remove"
+          (click)="removeSection(si)"
+          [attr.aria-label]="'Abschnitt entfernen: ' + section.heading"
+        >Entfernen</button>
+      </div>
+
+      <ul class="cv-section__bullets" role="list" [attr.aria-label]="section.heading + ': Aufzählungspunkte'">
+        @for (bullet of section.bullets; track bullet.id; let bi = $index) {
+          <li class="cv-bullet">
+            <label [for]="'bt-' + bullet.id" class="sr-only">Aufzählungspunkt {{ bi + 1 }}</label>
+            <textarea
+              [id]="'bt-' + bullet.id"
+              class="cv-bullet__text"
+              rows="2"
+              [value]="bullet.text"
+              (input)="onBulletInput(si, bi, $any($event.target).value)"
+              (blur)="emitSave()"
+            ></textarea>
+
+            @if (bullet.originalText && bullet.originalText !== bullet.text && !bullet.accepted) {
+              <details class="cv-bullet__original">
+                <summary class="cv-bullet__original-toggle">KI-Original anzeigen</summary>
+                <p class="cv-bullet__original-text">{{ bullet.originalText }}</p>
+                <div class="cv-bullet__original-actions">
+                  <button
+                    type="button"
+                    class="btn btn--ghost btn--sm"
+                    (click)="acceptBullet(si, bi)"
+                    [attr.aria-label]="'Bearbeitung behalten für Aufzählungspunkt ' + (bi + 1)"
+                  >Behalten</button>
+                  <button
+                    type="button"
+                    class="btn btn--ghost btn--sm"
+                    (click)="rejectBullet(si, bi)"
+                    [attr.aria-label]="'KI-Original wiederherstellen für Aufzählungspunkt ' + (bi + 1)"
+                  >KI-Text wiederherstellen</button>
+                </div>
+              </details>
+            } @else if (bullet.accepted) {
+              <span class="cv-bullet__accepted" aria-label="Bearbeitung übernommen">✓ Übernommen</span>
+            }
+
+            <button
+              type="button"
+              class="btn btn--ghost btn--sm cv-bullet__remove"
+              (click)="removeBullet(si, bi)"
+              [attr.aria-label]="'Aufzählungspunkt ' + (bi + 1) + ' entfernen'"
+            >–</button>
+          </li>
+        } @empty {
+          <li class="cv-bullet cv-bullet--empty" aria-live="polite">
+            Noch kein Inhalt. Aufzählungspunkt hinzufügen.
+          </li>
+        }
+      </ul>
+
+      <button
+        type="button"
+        class="btn btn--ghost btn--sm cv-section__add-bullet"
+        (click)="addBullet(si)"
+        [attr.aria-label]="'Aufzählungspunkt in ' + section.heading + ' hinzufügen'"
+      >+ Aufzählungspunkt</button>
+    </div>
+  } @empty {
+    <p class="cv-editor__empty" aria-live="polite">Keine Abschnitte vorhanden. Abschnitt hinzufügen.</p>
+  }
+
+  <button
+    type="button"
+    class="btn btn--ghost btn--sm cv-editor__add-section"
+    (click)="addSection()"
+  >+ Abschnitt hinzufügen</button>
+
+  @if (saving()) {
+    <p class="cv-editor__saving" aria-live="polite" role="status">Speichert…</p>
+  }
+</div>
