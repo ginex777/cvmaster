@@ -7,6 +7,10 @@ import { PaymentsService } from './payments.service';
 
 const mockPrisma = {
   user: { update: jest.fn<() => Promise<unknown>>() },
+  auditLog: {
+    findFirst: jest.fn<() => Promise<unknown>>(),
+    create: jest.fn<() => Promise<unknown>>(),
+  },
 };
 
 describe('PaymentsService', () => {
@@ -16,6 +20,11 @@ describe('PaymentsService', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     process.env.PADDLE_WEBHOOK_SECRET = 'paddle-secret';
+    process.env.PADDLE_PRICE_PAY_PER_APP = 'pri_pay_per_app';
+    process.env.PADDLE_PRICE_PRO_MONTHLY = 'pri_pro_monthly';
+    process.env.PADDLE_PRICE_PRO_YEARLY = 'pri_pro_yearly';
+    mockPrisma.auditLog.findFirst.mockResolvedValue(null);
+    mockPrisma.auditLog.create.mockResolvedValue({});
     const module = await Test.createTestingModule({
       providers: [
         PaymentsService,
@@ -37,21 +46,86 @@ describe('PaymentsService', () => {
     mockPrisma.user.update.mockResolvedValue({});
     const event = JSON.stringify({
       event_type: 'subscription.activated',
-      data: { custom_data: { userId: 'u1' } },
+      event_id: 'evt_sub_activated',
+      data: { customer_id: 'ctm_1', custom_data: { userId: 'u1' } },
     });
 
     await service.handleWebhook(Buffer.from(event), signatureFor(event));
 
     expect(mockPrisma.user.update).toHaveBeenCalledWith({
       where: { id: 'u1' },
+      data: { plan: 'PRO', paddleCustomerId: 'ctm_1' },
+    });
+    expect(mockPrisma.auditLog.create).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ event: 'paddle.webhook.processed' }),
+    }));
+  });
+
+  it('upgrades user to PAY_PER_APP on pay-per-app transaction.completed', async () => {
+    mockPrisma.user.update.mockResolvedValue({});
+    const event = JSON.stringify({
+      event_type: 'transaction.completed',
+      event_id: 'evt_pay',
+      data: {
+        customer_id: 'ctm_1',
+        custom_data: { userId: 'u1' },
+        items: [{ price: { id: 'pri_pay_per_app' } }],
+      },
+    });
+
+    await service.handleWebhook(Buffer.from(event), signatureFor(event));
+
+    expect(mockPrisma.user.update).toHaveBeenCalledWith({
+      where: { id: 'u1' },
+      data: { plan: 'PAY_PER_APP', paddleCustomerId: 'ctm_1' },
+    });
+  });
+
+  it('upgrades user to PRO on monthly and yearly transaction.completed', async () => {
+    mockPrisma.user.update.mockResolvedValue({});
+    const monthly = JSON.stringify({
+      event_type: 'transaction.completed',
+      event_id: 'evt_monthly',
+      data: { custom_data: { userId: 'u1' }, items: [{ price: { id: 'pri_pro_monthly' } }] },
+    });
+    const yearly = JSON.stringify({
+      event_type: 'transaction.completed',
+      event_id: 'evt_yearly',
+      data: { custom_data: { userId: 'u1' }, items: [{ price: { id: 'pri_pro_yearly' } }] },
+    });
+
+    await service.handleWebhook(Buffer.from(monthly), signatureFor(monthly));
+    await service.handleWebhook(Buffer.from(yearly), signatureFor(yearly));
+
+    expect(mockPrisma.user.update).toHaveBeenNthCalledWith(1, {
+      where: { id: 'u1' },
       data: { plan: 'PRO' },
     });
+    expect(mockPrisma.user.update).toHaveBeenNthCalledWith(2, {
+      where: { id: 'u1' },
+      data: { plan: 'PRO' },
+    });
+  });
+
+  it('skips duplicate webhook events', async () => {
+    mockPrisma.auditLog.findFirst.mockResolvedValue({ id: 'audit-1' });
+    const event = JSON.stringify({
+      event_type: 'transaction.completed',
+      event_id: 'evt_pay',
+      data: { custom_data: { userId: 'u1' }, items: [{ price: { id: 'pri_pay_per_app' } }] },
+    });
+
+    await service.handleWebhook(Buffer.from(event), signatureFor(event));
+
+    expect(mockPrisma.user.update).not.toHaveBeenCalled();
+    expect(mockPrisma.auditLog.create).not.toHaveBeenCalled();
   });
 
   it('downgrades user to FREE on subscription.cancelled', async () => {
     mockPrisma.user.update.mockResolvedValue({});
     const event = JSON.stringify({
       event_type: 'subscription.cancelled',
+      event_id: 'evt_cancelled',
       data: { custom_data: { userId: 'u1' } },
     });
 

@@ -187,7 +187,16 @@ Acceptance criteria:
 - Support/chat scripts load only after valid consent.
 - GDPR export/delete behavior matches the published privacy policy.
 
-### P0.4 Make Payment Flows Commercially Complete
+### P0.4 Make Payment Flows Commercially Complete - Done 2026-05-13
+
+Status: Done.
+
+Completion evidence:
+
+- Pricing page can open Paddle checkout for Pay-per-App, Pro monthly, and Pro yearly price IDs.
+- Backend webhook handling maps `transaction.completed` events to `PAY_PER_APP` or `PRO`, handles subscription activation/cancellation, stores Paddle customer IDs, and skips duplicate event IDs.
+- Billing page shows the active plan, plan-change CTA, and Paddle customer portal link when configured.
+- Unit tests cover checkout options, missing config, portal link rendering, supported Paddle events, invalid signatures, and duplicate webhook events.
 
 Problem: Pricing checkout can open Pro checkout when configured, and webhooks can activate/cancel Pro, but the full commercial model from the spec is not complete.
 
@@ -590,6 +599,6 @@ Acceptance criteria:
 
 1. Done - Fix the dashboard status API mismatch.
 2. Done - Update `infra/.env.example` so local and production configuration matches the current code.
-3. Complete Pro monthly checkout and webhook handling as the minimum paid launch path.
+3. Done - Complete Pro monthly checkout and webhook handling as the minimum paid launch path.
 4. Start the no-CV quickstart wizard, because it has the highest activation impact after blockers.
 5. Move legal/compliance evidence from working docs to final launch checklist once external review is complete.

@@ -17,8 +17,13 @@
     <article class="settings-panel" aria-labelledby="plan-heading">
       <h2 id="plan-heading">Aktiver Plan</h2>
       <p class="settings-panel__metric">{{ planLabel(auth.user()?.plan) }}</p>
-      <p>Planwechsel und Abrechnung laufen ueber den Zahlungsanbieter.</p>
-      <a routerLink="/preise" class="btn btn--secondary btn--md">Preise ansehen</a>
+      <p>Planwechsel, Rechnungen und Kuendigung laufen ueber Paddle.</p>
+      <div class="settings-panel__actions">
+        <a routerLink="/preise" class="btn btn--secondary btn--md">Plan wechseln</a>
+        @if (customerPortalUrl) {
+          <a [href]="customerPortalUrl" class="btn btn--ghost btn--md" rel="noopener">Paddle Portal</a>
+        }
+      </div>
     </article>
 
     <article class="settings-panel" aria-labelledby="export-heading">

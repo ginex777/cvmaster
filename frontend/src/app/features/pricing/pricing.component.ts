@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth/auth.service';
 
@@ -31,7 +30,12 @@ interface PaddleRuntimeConfig {
   paddleClientToken?: string;
   paddleEnvironment?: 'sandbox' | 'production';
   paddlePriceIdPro?: string;
+  paddlePriceIdPayPerApp?: string;
+  paddlePriceIdProMonthly?: string;
+  paddlePriceIdProYearly?: string;
 }
+
+type CheckoutPlan = 'payPerApp' | 'proMonthly' | 'proYearly';
 
 const PADDLE_SCRIPT_ID = 'paddle-js';
 const PADDLE_SCRIPT_SRC = 'https://cdn.paddle.com/paddle/v2/paddle.js';
@@ -39,7 +43,6 @@ const PADDLE_SCRIPT_SRC = 'https://cdn.paddle.com/paddle/v2/paddle.js';
 @Component({
   selector: 'lba-pricing',
   standalone: true,
-  imports: [RouterLink],
   templateUrl: './pricing.component.html',
   styleUrl: './pricing.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,19 +52,26 @@ export class PricingComponent {
 
   readonly checkoutError = signal<string | null>(null);
   readonly checkoutLoading = signal(false);
+  readonly selectedPlan = signal<CheckoutPlan>('proMonthly');
   private paddleInitialized = false;
 
   get checkoutErrorMessage(): string | null {
     return this.checkoutError();
   }
 
-  async openProCheckout(): Promise<void> {
+  selectPlan(plan: CheckoutPlan): void {
+    this.selectedPlan.set(plan);
+    this.checkoutError.set(null);
+  }
+
+  async openCheckout(plan = this.selectedPlan()): Promise<void> {
     this.checkoutError.set(null);
     this.checkoutLoading.set(true);
 
     try {
       const config = this.getRuntimeConfig();
-      if (!config.paddleClientToken || !config.paddlePriceIdPro) {
+      const priceId = this.priceIdForPlan(config, plan);
+      if (!config.paddleClientToken || !priceId) {
         this.checkoutError.set('Checkout ist noch nicht konfiguriert. Bitte pruefe Paddle Token und Preis-ID.');
         return;
       }
@@ -75,7 +85,7 @@ export class PricingComponent {
       this.initializePaddle(paddle, config);
 
       paddle.Checkout.open({
-        items: [{ priceId: config.paddlePriceIdPro, quantity: 1 }],
+        items: [{ priceId, quantity: 1 }],
         customData: { userId: this.auth.user()?.id },
         customer: { email: this.auth.user()?.email },
         settings: { displayMode: 'overlay', theme: 'light', locale: 'de' },
@@ -94,11 +104,21 @@ export class PricingComponent {
 
   private getRuntimeConfig(): Required<PaddleRuntimeConfig> {
     const overrides = (globalThis as { __LBA_CONFIG__?: PaddleRuntimeConfig }).__LBA_CONFIG__;
+    const proMonthly = overrides?.paddlePriceIdProMonthly ?? environment.paddlePriceIdProMonthly ?? overrides?.paddlePriceIdPro ?? environment.paddlePriceIdPro;
     return {
       paddleClientToken: overrides?.paddleClientToken ?? environment.paddleClientToken,
       paddleEnvironment: overrides?.paddleEnvironment ?? environment.paddleEnvironment,
       paddlePriceIdPro: overrides?.paddlePriceIdPro ?? environment.paddlePriceIdPro,
+      paddlePriceIdPayPerApp: overrides?.paddlePriceIdPayPerApp ?? environment.paddlePriceIdPayPerApp,
+      paddlePriceIdProMonthly: proMonthly,
+      paddlePriceIdProYearly: overrides?.paddlePriceIdProYearly ?? environment.paddlePriceIdProYearly,
     };
+  }
+
+  private priceIdForPlan(config: Required<PaddleRuntimeConfig>, plan: CheckoutPlan): string {
+    if (plan === 'payPerApp') return config.paddlePriceIdPayPerApp;
+    if (plan === 'proYearly') return config.paddlePriceIdProYearly;
+    return config.paddlePriceIdProMonthly;
   }
 
   private async loadPaddle(): Promise<PaddleCheckout | null> {

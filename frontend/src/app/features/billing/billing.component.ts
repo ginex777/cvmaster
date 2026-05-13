@@ -2,8 +2,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
+import { environment } from '../../../environments/environment';
 import { ApiService } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
+
+interface BillingRuntimeConfig {
+  paddleCustomerPortalUrl?: string;
+}
 
 @Component({
   selector: 'lba-billing',
@@ -21,6 +26,11 @@ export class BillingComponent {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly message = signal<string | null>(null);
+
+  get customerPortalUrl(): string {
+    const overrides = (globalThis as { __LBA_CONFIG__?: BillingRuntimeConfig }).__LBA_CONFIG__;
+    return overrides?.paddleCustomerPortalUrl ?? environment.paddleCustomerPortalUrl;
+  }
 
   async exportData(): Promise<void> {
     this.loading.set(true);

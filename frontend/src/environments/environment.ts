@@ -3,4 +3,8 @@ export const environment = {
   paddleClientToken: '',
   paddleEnvironment: 'sandbox' as 'sandbox' | 'production',
   paddlePriceIdPro: '',
+  paddlePriceIdPayPerApp: '',
+  paddlePriceIdProMonthly: '',
+  paddlePriceIdProYearly: '',
+  paddleCustomerPortalUrl: '',
 };

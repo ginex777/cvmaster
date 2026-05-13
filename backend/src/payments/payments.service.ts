@@ -3,8 +3,16 @@ import { createHmac, timingSafeEqual } from 'crypto';
 import { PrismaService } from '../common/prisma.service';
 
 interface PaddleWebhookPayload {
+  event_id?: string;
   event_type?: string;
   data?: {
+    id?: string;
+    customer_id?: string;
+    items?: Array<{
+      price?: {
+        id?: string;
+      };
+    }>;
     custom_data?: {
       userId?: string;
     };
@@ -23,16 +31,31 @@ export class PaymentsService {
     }
 
     const event = JSON.parse(rawBody.toString()) as PaddleWebhookPayload;
+    const eventId = event.event_id ?? event.data?.id;
+    if (eventId && await this.hasProcessedEvent(eventId)) return;
+
     const userId = event.data?.custom_data?.userId;
-    if (!userId) return;
+    if (!userId) {
+      await this.recordProcessedEvent(eventId, event, null);
+      return;
+    }
 
     if (event.event_type === 'subscription.activated') {
-      await this.prisma.user.update({ where: { id: userId }, data: { plan: 'PRO' } });
+      await this.updateUserPlan(userId, 'PRO', event.data?.customer_id);
+    }
+
+    if (event.event_type === 'transaction.completed') {
+      const plan = this.planForTransaction(event);
+      if (plan) {
+        await this.updateUserPlan(userId, plan, event.data?.customer_id);
+      }
     }
 
     if (event.event_type === 'subscription.cancelled' || event.event_type === 'subscription.canceled') {
-      await this.prisma.user.update({ where: { id: userId }, data: { plan: 'FREE' } });
+      await this.updateUserPlan(userId, 'FREE', event.data?.customer_id);
     }
+
+    await this.recordProcessedEvent(eventId, event, userId);
   }
 
   isValidSignature(rawBody: Buffer, signature: string, now = Date.now()): boolean {
@@ -72,5 +95,58 @@ export class PaymentsService {
       .map(([, value]) => value);
 
     return timestamp && signatures.length > 0 ? { timestamp, signatures } : null;
+  }
+
+  private planForTransaction(event: PaddleWebhookPayload): 'PAY_PER_APP' | 'PRO' | null {
+    const priceIds = new Set(
+      event.data?.items
+        ?.map(item => item.price?.id)
+        .filter((priceId): priceId is string => typeof priceId === 'string') ?? [],
+    );
+
+    if (this.matchesPrice(priceIds, process.env.PADDLE_PRICE_PAY_PER_APP)) return 'PAY_PER_APP';
+    if (this.matchesPrice(priceIds, process.env.PADDLE_PRICE_PRO_MONTHLY)) return 'PRO';
+    if (this.matchesPrice(priceIds, process.env.PADDLE_PRICE_PRO_YEARLY)) return 'PRO';
+    return null;
+  }
+
+  private matchesPrice(priceIds: Set<string>, configuredPriceId: string | undefined): boolean {
+    return !!configuredPriceId && priceIds.has(configuredPriceId);
+  }
+
+  private async updateUserPlan(userId: string, plan: 'FREE' | 'PAY_PER_APP' | 'PRO', paddleCustomerId?: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        plan,
+        ...(paddleCustomerId ? { paddleCustomerId } : {}),
+      },
+    });
+  }
+
+  private async hasProcessedEvent(eventId: string): Promise<boolean> {
+    const existing = await this.prisma.auditLog.findFirst({
+      where: {
+        event: 'paddle.webhook.processed',
+        payload: { path: ['eventId'], equals: eventId },
+      },
+    });
+    return !!existing;
+  }
+
+  private async recordProcessedEvent(eventId: string | undefined, event: PaddleWebhookPayload, userId: string | null): Promise<void> {
+    if (!eventId) return;
+
+    await this.prisma.auditLog.create({
+      data: {
+        userId,
+        event: 'paddle.webhook.processed',
+        payload: {
+          eventId,
+          eventType: event.event_type ?? 'unknown',
+          paddleObjectId: event.data?.id ?? null,
+        },
+      },
+    });
   }
 }

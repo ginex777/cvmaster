@@ -11,6 +11,7 @@ describe('BillingComponent', () => {
   let auth: Pick<AuthService, 'user' | 'clearSession'>;
 
   beforeEach(async () => {
+    delete (globalThis as { __LBA_CONFIG__?: unknown }).__LBA_CONFIG__;
     api = { getBlob: jest.fn(), delete: jest.fn() };
     api.getBlob.mockResolvedValue(new Blob(['{}'], { type: 'application/json' }));
     api.delete.mockResolvedValue({ message: 'ok' });
@@ -36,6 +37,18 @@ describe('BillingComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Free');
     expect(fixture.nativeElement.textContent).toContain('Daten exportieren');
     expect(fixture.nativeElement.textContent).toContain('Konto loeschen');
+  });
+
+  it('renders Paddle customer portal link when configured', () => {
+    (globalThis as { __LBA_CONFIG__?: unknown }).__LBA_CONFIG__ = {
+      paddleCustomerPortalUrl: 'https://customer-portal.paddle.com/session',
+    };
+    const fixture = TestBed.createComponent(BillingComponent);
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('a[href="https://customer-portal.paddle.com/session"]');
+    expect(link).toBeTruthy();
+    expect(link.textContent).toContain('Paddle Portal');
   });
 
   it('downloads GDPR export', async () => {

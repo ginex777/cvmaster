@@ -55,12 +55,15 @@ Paddle checkout is configured at runtime through `window.__LBA_CONFIG__` so the 
   window.__LBA_CONFIG__ = {
     paddleClientToken: "client_xxx",
     paddleEnvironment: "production",
-    paddlePriceIdPro: "pri_xxx"
+    paddlePriceIdPayPerApp: "pri_xxx",
+    paddlePriceIdProMonthly: "pri_xxx",
+    paddlePriceIdProYearly: "pri_xxx",
+    paddleCustomerPortalUrl: "https://customer-portal.paddle.com/..."
   };
 </script>
 ```
 
-The current pricing page reads `paddleClientToken`, `paddleEnvironment`, and `paddlePriceIdPro`; pay-per-app and yearly price IDs are already reserved in `infra/.env.example` for the commercial flow work.
+The pricing page reads the three checkout price IDs, while the billing page uses `paddleCustomerPortalUrl` when Paddle's customer portal is configured.
 
 ## Tech-Stack-Lock (siehe SPEC § 21)
 

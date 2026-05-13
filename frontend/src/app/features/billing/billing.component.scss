@@ -94,6 +94,17 @@
   font-weight: 850;
 }
 
+.settings-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: auto;
+
+  .btn {
+    margin-top: 0;
+  }
+}
+
 .settings-panel--danger {
   border-color: color-mix(in oklch, var(--danger) 35%, var(--line));
 }

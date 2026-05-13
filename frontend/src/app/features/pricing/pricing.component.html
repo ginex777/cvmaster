@@ -21,7 +21,9 @@
         <li>PDF-Download</li>
         <li>Match-Score-Report</li>
       </ul>
-      <a routerLink="/register" class="btn btn--secondary btn--md">Jetzt starten</a>
+      <button type="button" class="btn btn--secondary btn--md" (click)="openCheckout('payPerApp')" [disabled]="checkoutLoading()">
+        Pay-per-App kaufen
+      </button>
     </article>
 
     <article class="plan plan--featured" aria-label="Pro Plan empfohlen">
@@ -40,7 +42,25 @@
         <li>TOTP-Zwei-Faktor-Auth</li>
         <li>Follow-up-Vorlagen</li>
       </ul>
-      <button type="button" class="btn btn--primary btn--md" (click)="openProCheckout()" [disabled]="checkoutLoading()">
+      <div class="plan-toggle" role="group" aria-label="Pro Abrechnungszeitraum">
+        <button
+          type="button"
+          class="plan-toggle__option"
+          [class.plan-toggle__option--active]="selectedPlan() === 'proMonthly'"
+          [attr.aria-pressed]="selectedPlan() === 'proMonthly'"
+          (click)="selectPlan('proMonthly')">
+          Monatlich
+        </button>
+        <button
+          type="button"
+          class="plan-toggle__option"
+          [class.plan-toggle__option--active]="selectedPlan() === 'proYearly'"
+          [attr.aria-pressed]="selectedPlan() === 'proYearly'"
+          (click)="selectPlan('proYearly')">
+          Jaehrlich
+        </button>
+      </div>
+      <button type="button" class="btn btn--primary btn--md" (click)="openCheckout()" [disabled]="checkoutLoading()">
         {{ checkoutLoading() ? 'Checkout wird geladen...' : 'Pro starten' }}
       </button>
     </article>
