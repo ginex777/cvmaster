@@ -62,6 +62,7 @@ export class AuthService {
     if (!user || !(await argon2.verify(user.passwordHash, data.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
+    if (user.deletedAt) throw new UnauthorizedException('Account deleted');
     if (!user.emailVerifiedAt) throw new UnauthorizedException('Email not verified');
 
     if (user.twoFactorEnabled && !verifyTotp(data.totp, user.twoFactorSecret)) {
@@ -89,6 +90,7 @@ export class AuthService {
 
     await this.prisma.session.update({ where: { id: session.id }, data: { revokedAt: new Date() } });
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: session.userId } });
+    if (user.deletedAt) throw new UnauthorizedException('Account deleted');
     return this.issueTokens(user, ip, ua);
   }
 

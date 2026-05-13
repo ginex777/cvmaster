@@ -6,9 +6,11 @@ import { GdprService } from './gdpr.service';
 const mockPrisma = {
   user: {
     findUnique: jest.fn<() => Promise<unknown>>(),
+    update: jest.fn<() => Promise<unknown>>(),
     delete: jest.fn<() => Promise<unknown>>(),
     deleteMany: jest.fn<() => Promise<unknown>>(),
   },
+  session: { updateMany: jest.fn<() => Promise<unknown>>() },
   masterCv: { findMany: jest.fn<() => Promise<unknown>>() },
   application: { findMany: jest.fn<() => Promise<unknown>>() },
   consent: { findMany: jest.fn<() => Promise<unknown>>() },
@@ -42,11 +44,19 @@ describe('GdprService', () => {
     expect(result).toHaveProperty('applications');
   });
 
-  it('deleteAccount calls prisma.user.delete', async () => {
-    mockPrisma.user.delete.mockResolvedValue({});
+  it('deleteAccount soft-deletes the user and revokes active sessions', async () => {
+    mockPrisma.user.update.mockResolvedValue({});
+    mockPrisma.session.updateMany.mockResolvedValue({});
 
     await service.deleteAccount('u1');
 
-    expect(mockPrisma.user.delete).toHaveBeenCalledWith({ where: { id: 'u1' } });
+    expect(mockPrisma.user.update).toHaveBeenCalledWith({
+      where: { id: 'u1' },
+      data: { deletedAt: expect.any(Date) },
+    });
+    expect(mockPrisma.session.updateMany).toHaveBeenCalledWith({
+      where: { userId: 'u1', revokedAt: null },
+      data: { revokedAt: expect.any(Date) },
+    });
   });
 });

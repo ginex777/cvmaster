@@ -120,7 +120,7 @@ DoD:
 
 Closed in the implementation commit for this task. Verification: backend GDPR controller/service tests, backend lint, backend build, frontend billing tests, frontend lint, and frontend build passed.
 
-### P1 - GDPR delete behavior conflicts with soft-delete retention policy
+### Done - P1 - GDPR delete behavior conflicts with soft-delete retention policy
 
 Evidence:
 - `backend/src/gdpr/gdpr.service.ts:33` hard-deletes the user immediately.
@@ -132,10 +132,12 @@ Impact:
 - Legal/product expectation is unclear for account deletion versus immediate erasure.
 
 DoD:
-- [ ] Decide and document whether user-triggered GDPR deletion should hard-delete immediately or soft-delete with 30-day purge.
-- [ ] Make `/gdpr/account` and `/users/me` consistent, or clearly separate "delete account" and "request erasure".
-- [ ] Revoke sessions during deletion.
-- [ ] Add tests for deletion, session revocation, and purge behavior.
+- [x] Decide and document user-triggered GDPR deletion as 30-day soft-delete with scheduled hard purge.
+- [x] Make `/gdpr/account` consistent with `/users/me` soft-delete behavior.
+- [x] Revoke active sessions during deletion and reject soft-deleted users during login/JWT validation.
+- [x] Add tests for deletion, session revocation, and soft-deleted login rejection.
+
+Closed in the implementation commit for this task. Verification: backend GDPR/auth tests, backend lint, and backend build passed.
 
 ### P1 - Legal/compliance launch pack is still placeholder-level
 

@@ -133,6 +133,20 @@ describe('AuthService', () => {
         .rejects.toThrow(UnauthorizedException);
     });
 
+    it('throws UnauthorizedException when account is soft-deleted', async () => {
+      const passwordHash = await argon2.hash('validpass123');
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: 'u1',
+        passwordHash,
+        emailVerifiedAt: new Date(),
+        deletedAt: new Date(),
+      } as never);
+
+      await expect(service.login({ email: 'x@y.de', password: 'validpass123' }, '127.0.0.1', 'ua'))
+        .rejects.toThrow(UnauthorizedException);
+      expect(mockPrisma.session.create).not.toHaveBeenCalled();
+    });
+
     it('returns accessToken and user on valid credentials', async () => {
       const passwordHash = await argon2.hash('validpass123');
       mockPrisma.user.findUnique.mockResolvedValue({

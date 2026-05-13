@@ -1,10 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { PrismaService } from '../common/prisma.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private prisma: PrismaService) {
     const useEdDsa = !!process.env.JWT_PUBLIC_KEY;
     // @ts-expect-error EdDSA is supported by jsonwebtoken at runtime but missing from the installed type union.
     super({
@@ -17,8 +18,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: { sub: string; plan: string; ev: boolean; tfa: boolean }) {
+  async validate(payload: { sub: string; plan: string; ev: boolean; tfa: boolean }) {
     if (!payload.ev) throw new UnauthorizedException('Email not verified');
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+      select: { deletedAt: true },
+    });
+    if (!user || user.deletedAt) throw new UnauthorizedException('Account deleted');
     return { sub: payload.sub, plan: payload.plan, tfa: payload.tfa };
   }
 }

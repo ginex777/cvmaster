@@ -31,7 +31,12 @@ export class GdprService {
   }
 
   async deleteAccount(userId: string): Promise<void> {
-    await this.prisma.user.delete({ where: { id: userId } });
+    const deletedAt = new Date();
+    await this.prisma.user.update({ where: { id: userId }, data: { deletedAt } });
+    await this.prisma.session.updateMany({
+      where: { userId, revokedAt: null },
+      data: { revokedAt: deletedAt },
+    });
   }
 
   async exportUserData(userId: string): Promise<Buffer> {
