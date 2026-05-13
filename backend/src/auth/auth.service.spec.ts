@@ -21,9 +21,11 @@ const mockPrisma = {
     update: fn(),
     updateMany: fn(),
   },
+  passwordReset: { deleteMany: fn(), create: fn(), findUnique: fn(), delete: fn() },
+  auditLog: { create: fn() },
 };
 
-const mockMail = { sendVerification: fn() };
+const mockMail = { sendVerification: fn(), sendPasswordReset: fn() };
 const mockJwt = { signAsync: fn() };
 
 describe('AuthService', () => {
@@ -265,6 +267,57 @@ describe('AuthService', () => {
       expect(mockPrisma.session.updateMany).toHaveBeenCalledWith(
         expect.objectContaining({ data: expect.objectContaining({ revokedAt: expect.any(Date) }) }),
       );
+    });
+  });
+
+  describe('forgotPassword', () => {
+    it('creates a reset token and sends email when user exists', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue({ id: 'u1', email: 'a@b.de', deletedAt: null });
+      mockPrisma.passwordReset.deleteMany.mockResolvedValue({});
+      mockPrisma.passwordReset.create.mockResolvedValue({});
+      mockMail.sendPasswordReset.mockResolvedValue(undefined);
+      process.env.RESEND_API_KEY = 'test-key';
+
+      await service.forgotPassword('a@b.de');
+
+      expect(mockPrisma.passwordReset.create).toHaveBeenCalledWith(
+        expect.objectContaining({ data: expect.objectContaining({ userId: 'u1', token: expect.any(String) }) }),
+      );
+      delete process.env.RESEND_API_KEY;
+    });
+
+    it('does nothing when user does not exist (no enumeration)', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+      await service.forgotPassword('unknown@b.de');
+      expect(mockPrisma.passwordReset.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('resetPassword', () => {
+    it('updates password hash and revokes all sessions on valid token', async () => {
+      mockPrisma.passwordReset.findUnique.mockResolvedValue({
+        id: 'r1', userId: 'u1', expiresAt: new Date(Date.now() + 10000),
+      });
+      mockPrisma.user.update.mockResolvedValue({});
+      mockPrisma.passwordReset.delete.mockResolvedValue({});
+      mockPrisma.session.updateMany.mockResolvedValue({});
+      mockPrisma.auditLog.create.mockResolvedValue({});
+
+      await service.resetPassword('valid-token', 'newpassword123');
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({ data: expect.objectContaining({ passwordHash: expect.any(String) }) }),
+      );
+      expect(mockPrisma.session.updateMany).toHaveBeenCalled();
+    });
+
+    it('throws BadRequestException for expired token', async () => {
+      const { BadRequestException } = await import('@nestjs/common');
+      mockPrisma.passwordReset.findUnique.mockResolvedValue({
+        id: 'r1', userId: 'u1', expiresAt: new Date(Date.now() - 1000),
+      });
+      await expect(service.resetPassword('old-token', 'newpassword123'))
+        .rejects.toThrow(BadRequestException);
     });
   });
 });

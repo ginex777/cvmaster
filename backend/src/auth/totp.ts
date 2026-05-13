@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from 'crypto';
+import { createHmac, timingSafeEqual, randomBytes } from 'crypto';
 
 const BASE32_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 const TOTP_DIGITS = 6;
@@ -21,6 +21,17 @@ export function verifyTotp(token: string | undefined, secret: string | null | un
   }
 
   return false;
+}
+
+export function generateTotpSecret(): string {
+  const bytes = randomBytes(20);
+  let bits = '';
+  for (const byte of bytes) bits += byte.toString(2).padStart(8, '0');
+  let secret = '';
+  for (let i = 0; i + 5 <= bits.length; i += 5) {
+    secret += BASE32_ALPHABET[Number.parseInt(bits.slice(i, i + 5), 2)];
+  }
+  return secret;
 }
 
 export function generateTotpCode(secret: string, now = Date.now()): string {

@@ -1,5 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import * as argon2 from 'argon2';
 import { PrismaService } from '../common/prisma.service';
+import { verifyTotp, generateTotpSecret } from '../auth/totp';
+
+const ARGON2_OPTIONS = { memoryCost: 65536, timeCost: 3, parallelism: 4 };
 
 @Injectable()
 export class UsersService {
@@ -62,5 +66,61 @@ export class UsersService {
       where: { id: userId },
       data: { onboardingDismissedAt: new Date() },
     });
+  }
+
+  async getSessions(userId: string) {
+    return this.prisma.session.findMany({
+      where: { userId, revokedAt: null, expiresAt: { gt: new Date() } },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, userAgent: true, createdAt: true, expiresAt: true },
+    });
+  }
+
+  async revokeSession(userId: string, sessionId: string): Promise<void> {
+    const session = await this.prisma.session.findUnique({ where: { id: sessionId } });
+    if (!session || session.userId !== userId) throw new NotFoundException('Session not found');
+    await this.prisma.session.update({ where: { id: sessionId }, data: { revokedAt: new Date() } });
+  }
+
+  async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    if (!(await argon2.verify(user.passwordHash, currentPassword))) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+    const passwordHash = await argon2.hash(newPassword, ARGON2_OPTIONS);
+    await this.prisma.user.update({ where: { id: userId }, data: { passwordHash } });
+  }
+
+  async setupTotp(userId: string) {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { email: true, twoFactorEnabled: true },
+    });
+    if (user.twoFactorEnabled) throw new BadRequestException('Two-factor authentication is already enabled');
+
+    const secret = generateTotpSecret();
+    await this.prisma.user.update({ where: { id: userId }, data: { twoFactorSecret: secret } });
+
+    const uri = `otpauth://totp/${encodeURIComponent(`Lebenslauf-Agent:${user.email}`)}?secret=${secret}&issuer=Lebenslauf-Agent&algorithm=SHA1&digits=6&period=30`;
+    return { secret, uri };
+  }
+
+  async enableTotp(userId: string, code: string): Promise<void> {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { twoFactorSecret: true, twoFactorEnabled: true },
+    });
+    if (user.twoFactorEnabled) throw new BadRequestException('2FA is already enabled');
+    if (!verifyTotp(code, user.twoFactorSecret)) throw new BadRequestException('Invalid verification code');
+    await this.prisma.user.update({ where: { id: userId }, data: { twoFactorEnabled: true } });
+  }
+
+  async disableTotp(userId: string, password: string): Promise<void> {
+    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    if (!user.twoFactorEnabled) throw new BadRequestException('2FA is not enabled');
+    if (!(await argon2.verify(user.passwordHash, password))) {
+      throw new UnauthorizedException('Incorrect password');
+    }
+    await this.prisma.user.update({ where: { id: userId }, data: { twoFactorEnabled: false, twoFactorSecret: null } });
   }
 }

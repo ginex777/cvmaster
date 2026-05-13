@@ -11,6 +11,8 @@ export const routes: Routes = [
   // Auth
   { path: 'login', loadComponent: () => import('./features/auth/login.component').then(m => m.LoginComponent) },
   { path: 'register', loadComponent: () => import('./features/auth/register.component').then(m => m.RegisterComponent) },
+  { path: 'forgot-password', loadComponent: () => import('./features/auth/forgot-password.component').then(m => m.ForgotPasswordComponent) },
+  { path: 'reset-password', loadComponent: () => import('./features/auth/reset-password.component').then(m => m.ResetPasswordComponent) },
 
   // App (authenticated)
   {
@@ -25,6 +27,7 @@ export const routes: Routes = [
           { path: 'cvs', loadComponent: () => import('./features/master-cvs/master-cvs.component').then(m => m.MasterCvsComponent) },
           { path: 'billing', loadComponent: () => import('./features/billing/billing.component').then(m => m.BillingComponent) },
           { path: 'wizard', loadComponent: () => import('./features/wizard/wizard.component').then(m => m.WizardComponent) },
+          { path: 'security', loadComponent: () => import('./features/security/security.component').then(m => m.SecurityComponent) },
         ],
       },
       // Editor: full-screen, no shell

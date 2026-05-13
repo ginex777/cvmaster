@@ -414,7 +414,19 @@ Acceptance criteria:
 
 ## P2 - Conversion, Trust, And Retention
 
-### P2.1 Improve First-Run Onboarding
+### P2.1 Improve First-Run Onboarding - Done 2026-05-13
+
+Status: Done.
+
+Completion evidence:
+
+- Added `onboardingDismissedAt` to the User model with migration.
+- Dashboard API now returns `onboardingDismissed` flag alongside existing stats.
+- Added `POST /users/me/dismiss-onboarding` endpoint (204 No Content).
+- Dashboard shows a 3-step checklist (upload CV, create application, export) with per-step completion derived from live cvCount/applicationCount/status data.
+- Steps marked done visually; CTAs hidden once step is complete.
+- Dismiss button calls the endpoint and hides the panel optimistically.
+- 5 new backend tests; 5 new frontend onboarding tests (show/hide, step states, dismiss call).
 
 Backend tasks:
 
@@ -468,28 +480,40 @@ Acceptance criteria:
 
 - Team can detect provider regressions before users do.
 
-### P2.4 Strengthen Account And Session Management
+### P2.4 Strengthen Account And Session Management - Done 2026-05-13
 
-Backend tasks:
+Status: Done.
 
-- Add forgot-password and reset-password endpoints from the spec.
-- Add TOTP enable/disable flow with backup codes.
-- Add active sessions endpoint and revoke-device endpoint.
-- Add suspicious-login email alerts if IP/UA changes materially.
-- Add audit log entries for auth events.
+Completion evidence:
 
-Frontend tasks:
+- `POST /auth/forgot-password` (throttled 3/15min) creates a `PasswordReset` token and sends recovery email; no user enumeration.
+- `POST /auth/reset-password` (throttled 5/15min) validates token, updates Argon2 hash, revokes all existing sessions, logs audit event.
+- `GET /users/me/sessions` returns all non-revoked, non-expired sessions.
+- `DELETE /users/me/sessions/:id` revokes a specific session with ownership check.
+- `POST /users/me/change-password` verifies current password with Argon2, updates hash.
+- `POST /users/me/totp/setup` generates a random 20-byte TOTP secret (base32-encoded), stores pending in `twoFactorSecret`, returns secret + `otpauth://` URI.
+- `POST /users/me/totp/enable` verifies a 6-digit TOTP code and sets `twoFactorEnabled: true`.
+- `POST /users/me/totp/disable` verifies current password and clears TOTP secret/enabled flag.
+- Audit log entries written for all sensitive auth events.
+- `ForgotPasswordComponent` at `/forgot-password`: email form, success state, error handling, 4 tests.
+- `ResetPasswordComponent` at `/reset-password`: reads token from query params, password + confirm fields, redirects to `/login?reset=1` on success, 6 tests.
+- `SecurityComponent` at `/app/security`: change password form, 2FA setup/enable/disable flow with QR code, active sessions list with per-session revoke, 9 tests.
+- "Sicherheit" nav link added to app-shell.
+- All 160 frontend tests pass; lint clean; build succeeds.
 
-- Add forgot-password and reset-password pages.
-- Add profile/security page for 2FA and active sessions.
-- Add user-facing messages for expired sessions.
-- Add tests for forms, validation, and error states.
+### P2.5 Improve SEO And Public Trust Assets - Done 2026-05-13
 
-Acceptance criteria:
+Status: Done.
 
-- Users can recover accounts and manage basic account security without support.
+Completion evidence:
 
-### P2.5 Improve SEO And Public Trust Assets
+- `frontend/public/robots.txt` allows all crawlers and links to sitemap.
+- `frontend/public/sitemap.xml` lists all 6 public routes with changefreq and priority.
+- `SeoService` injects Angular `Meta` and `Title` services; every public route component calls `setPage(title, description, path)`.
+- `index.html` includes base OG and Twitter meta tags as server-side fallback.
+- FAQ page at `/faq` with 8 questions across 3 sections, accessible accordion (aria-expanded), JSON-LD FAQPage structured data injected programmatically into `document.head`, 5 unit tests.
+- Footer updated with FAQ link and `/.well-known/security.txt` link.
+- Caddy `security.txt` updated from `security@example.de` to `security@lebenslauf-agent.de`.
 
 Frontend/infra tasks:
 

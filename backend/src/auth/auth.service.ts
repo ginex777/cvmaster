@@ -107,6 +107,38 @@ export class AuthService {
     await this.prisma.session.updateMany({ where: { refreshHash: tokenHash }, data: { revokedAt: new Date() } });
   }
 
+  async forgotPassword(email: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user || user.deletedAt) return;
+
+    await this.prisma.passwordReset.deleteMany({ where: { userId: user.id } });
+    const token = randomBytes(32).toString('hex');
+    await this.prisma.passwordReset.create({
+      data: { userId: user.id, token, expiresAt: new Date(Date.now() + 60 * 60 * 1000) },
+    });
+
+    if (process.env.RESEND_API_KEY || process.env.NODE_ENV === 'production') {
+      await this.mail.sendPasswordReset(email, token);
+    } else {
+      console.warn(`[dev-email] Password reset for ${email}: token=${token}`);
+    }
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const reset = await this.prisma.passwordReset.findUnique({ where: { token } });
+    if (!reset || reset.expiresAt < new Date()) throw new BadRequestException('Invalid or expired reset token');
+
+    const passwordHash = await argon2.hash(newPassword, ARGON2_OPTIONS);
+    await this.prisma.user.update({ where: { id: reset.userId }, data: { passwordHash } });
+    await this.prisma.passwordReset.delete({ where: { id: reset.id } });
+    await this.prisma.session.updateMany({ where: { userId: reset.userId }, data: { revokedAt: new Date() } });
+    await this.logAuditEvent(reset.userId, 'auth.password_reset', {});
+  }
+
+  private async logAuditEvent(userId: string, event: string, payload: object): Promise<void> {
+    await this.prisma.auditLog.create({ data: { userId, event, payload } });
+  }
+
   private async issueTokens(user: { id: string; email: string; name: string | null; plan: string; emailVerifiedAt: Date | null; twoFactorEnabled: boolean; twoFactorSecret?: string | null }, ip: string, ua: string) {
     // Enforce max sessions
     const sessions = await this.prisma.session.findMany({

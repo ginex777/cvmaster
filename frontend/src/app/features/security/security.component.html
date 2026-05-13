@@ -1,0 +1,163 @@
+<main id="main" class="security-page" tabindex="-1">
+  <h1 class="security-page__title">Sicherheit</h1>
+
+  <!-- Change Password -->
+  <section class="security-card" aria-labelledby="pw-heading">
+    <h2 id="pw-heading" class="security-card__title">Passwort ändern</h2>
+
+    @if (passwordError()) {
+      <div role="alert" aria-live="polite" class="security-card__error">{{ passwordError() }}</div>
+    }
+    @if (passwordSuccess()) {
+      <div role="status" aria-live="polite" class="security-card__success">Passwort wurde erfolgreich geändert.</div>
+    }
+
+    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" novalidate aria-label="Passwort ändern">
+      <div class="field">
+        <label for="current-password">Aktuelles Passwort</label>
+        <input
+          id="current-password"
+          type="password"
+          formControlName="currentPassword"
+          autocomplete="current-password"
+          aria-required="true"
+          [attr.aria-describedby]="passwordForm.controls.currentPassword.invalid && passwordForm.controls.currentPassword.touched ? 'current-pw-error' : null" />
+        @if (passwordForm.controls.currentPassword.invalid && passwordForm.controls.currentPassword.touched) {
+          <span id="current-pw-error" role="alert" class="field__error">Aktuelles Passwort ist erforderlich.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="new-password">Neues Passwort</label>
+        <input
+          id="new-password"
+          type="password"
+          formControlName="newPassword"
+          autocomplete="new-password"
+          aria-required="true"
+          [attr.aria-describedby]="passwordForm.controls.newPassword.invalid && passwordForm.controls.newPassword.touched ? 'new-pw-error' : null" />
+        @if (passwordForm.controls.newPassword.invalid && passwordForm.controls.newPassword.touched) {
+          <span id="new-pw-error" role="alert" class="field__error">Mindestens 12 Zeichen erforderlich.</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="confirm-new-password">Neues Passwort bestätigen</label>
+        <input
+          id="confirm-new-password"
+          type="password"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+          aria-required="true" />
+      </div>
+
+      <button type="submit" class="btn btn--primary" [disabled]="passwordLoading()">
+        @if (passwordLoading()) { Wird gespeichert… } @else { Passwort speichern }
+      </button>
+    </form>
+  </section>
+
+  <!-- Two-Factor Authentication -->
+  <section class="security-card" aria-labelledby="totp-heading">
+    <h2 id="totp-heading" class="security-card__title">Zwei-Faktor-Authentifizierung</h2>
+
+    @if (totpError()) {
+      <div role="alert" aria-live="polite" class="security-card__error">{{ totpError() }}</div>
+    }
+    @if (totpSuccess()) {
+      <div role="status" aria-live="polite" class="security-card__success">{{ totpSuccess() }}</div>
+    }
+
+    @if (totpEnabled()) {
+      <p class="security-card__desc">2FA ist aktiv. Gib dein Passwort ein, um sie zu deaktivieren.</p>
+      <form [formGroup]="totpDisableForm" (ngSubmit)="disableTotp()" novalidate aria-label="2FA deaktivieren">
+        <div class="field">
+          <label for="totp-disable-password">Passwort</label>
+          <input
+            id="totp-disable-password"
+            type="password"
+            formControlName="password"
+            autocomplete="current-password"
+            aria-required="true"
+            [attr.aria-describedby]="totpDisableForm.controls.password.invalid && totpDisableForm.controls.password.touched ? 'totp-pw-error' : null" />
+          @if (totpDisableForm.controls.password.invalid && totpDisableForm.controls.password.touched) {
+            <span id="totp-pw-error" role="alert" class="field__error">Passwort ist erforderlich.</span>
+          }
+        </div>
+        <button type="submit" class="btn btn--danger" [disabled]="totpLoading()">
+          @if (totpLoading()) { Wird deaktiviert… } @else { 2FA deaktivieren }
+        </button>
+      </form>
+    } @else if (totpSetup()) {
+      <p class="security-card__desc">Scanne den QR-Code mit deiner Authenticator-App und gib den Code ein.</p>
+      <div class="totp-setup">
+        <img
+          [src]="'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(totpSetup()!.uri)"
+          alt="QR-Code für Authenticator-App"
+          width="180"
+          height="180"
+          class="totp-setup__qr" />
+        <p class="totp-setup__secret" aria-label="Manueller Schlüssel">{{ totpSetup()!.secret }}</p>
+      </div>
+      <form [formGroup]="totpEnableForm" (ngSubmit)="enableTotp()" novalidate aria-label="2FA aktivieren">
+        <div class="field">
+          <label for="totp-code">6-stelliger Code</label>
+          <input
+            id="totp-code"
+            type="text"
+            inputmode="numeric"
+            formControlName="code"
+            autocomplete="one-time-code"
+            maxlength="6"
+            aria-required="true"
+            [attr.aria-describedby]="totpEnableForm.controls.code.invalid && totpEnableForm.controls.code.touched ? 'totp-code-error' : null" />
+          @if (totpEnableForm.controls.code.invalid && totpEnableForm.controls.code.touched) {
+            <span id="totp-code-error" role="alert" class="field__error">Bitte gib einen 6-stelligen Code ein.</span>
+          }
+        </div>
+        <button type="submit" class="btn btn--primary" [disabled]="totpLoading()">
+          @if (totpLoading()) { Wird aktiviert… } @else { 2FA aktivieren }
+        </button>
+      </form>
+    } @else {
+      <p class="security-card__desc">2FA ist nicht aktiv. Schütze deinen Account zusätzlich mit einer Authenticator-App.</p>
+      <button type="button" class="btn btn--secondary" (click)="setupTotp()" [disabled]="totpLoading()">
+        @if (totpLoading()) { Wird geladen… } @else { 2FA einrichten }
+      </button>
+    }
+  </section>
+
+  <!-- Active Sessions -->
+  <section class="security-card" aria-labelledby="sessions-heading">
+    <h2 id="sessions-heading" class="security-card__title">Aktive Sitzungen</h2>
+
+    @if (sessionsError()) {
+      <div role="alert" aria-live="polite" class="security-card__error">{{ sessionsError() }}</div>
+    }
+
+    @if (sessionsLoading()) {
+      <p aria-busy="true" class="security-card__desc">Sitzungen werden geladen…</p>
+    } @else if (sessions().length === 0) {
+      <p class="security-card__desc">Keine aktiven Sitzungen gefunden.</p>
+    } @else {
+      <ul class="sessions-list" role="list">
+        @for (session of sessions(); track session.id) {
+          <li class="sessions-list__item">
+            <div class="sessions-list__info">
+              <span class="sessions-list__agent">{{ session.userAgent ?? 'Unbekanntes Gerät' }}</span>
+              <span class="sessions-list__date">Zuletzt aktiv: {{ session.lastUsedAt | date:'dd.MM.yyyy HH:mm' }}</span>
+            </div>
+            <button
+              type="button"
+              class="btn btn--ghost btn--sm"
+              (click)="revokeSession(session.id)"
+              [disabled]="revokingId() === session.id"
+              [attr.aria-label]="'Sitzung beenden: ' + (session.userAgent ?? 'Unbekanntes Gerät')">
+              @if (revokingId() === session.id) { Wird beendet… } @else { Beenden }
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</main>

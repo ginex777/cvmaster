@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ZodError } from 'zod';
 import { Throttle } from '@nestjs/throttler';
 import { Request, Response } from 'express';
@@ -73,6 +73,25 @@ export class AuthController {
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
     return { accessToken: result.accessToken, user: result.user };
+  }
+
+  @Post('forgot-password')
+  @HttpCode(204)
+  @Throttle({ default: { limit: 3, ttl: 900_000 } })
+  async forgotPassword(@Body() body: unknown) {
+    const { email } = z.object({ email: z.string().email() }).parse(body);
+    await this.auth.forgotPassword(email);
+  }
+
+  @Post('reset-password')
+  @HttpCode(204)
+  @Throttle({ default: { limit: 5, ttl: 900_000 } })
+  async resetPassword(@Body() body: unknown) {
+    const { token, newPassword } = z.object({
+      token: z.string().min(1),
+      newPassword: z.string().min(12),
+    }).parse(body);
+    await this.auth.resetPassword(token, newPassword);
   }
 
   @Post('logout')

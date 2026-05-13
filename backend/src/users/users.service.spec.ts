@@ -1,15 +1,17 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { Test } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
+
 import { UsersService } from './users.service';
 import { PrismaService } from '../common/prisma.service';
 
 const fn = () => jest.fn<() => Promise<unknown>>();
 
 const mockPrisma = {
-  user: { findUnique: fn(), update: fn() },
+  user: { findUnique: fn(), findUniqueOrThrow: fn(), update: fn() },
   masterCv: { count: fn() },
   application: { count: fn(), findMany: fn(), aggregate: fn() },
+  session: { findMany: fn(), findUnique: fn(), update: fn() },
 };
 
 const mockDashboardUser = (onboardingDismissedAt: Date | null) =>
@@ -93,6 +95,38 @@ describe('UsersService', () => {
         where: { id: 'u1' },
         data: expect.objectContaining({ onboardingDismissedAt: expect.any(Date) }),
       });
+    });
+  });
+
+  describe('getSessions', () => {
+    it('returns active sessions for user', async () => {
+      const now = new Date();
+      const future = new Date(now.getTime() + 1000 * 60 * 60);
+      mockPrisma.session.findMany.mockResolvedValue([
+        { id: 's1', userAgent: 'Chrome', createdAt: now, expiresAt: future },
+      ]);
+      const result = await service.getSessions('u1') as unknown[];
+      expect(result).toHaveLength(1);
+      expect(mockPrisma.session.findMany).toHaveBeenCalledWith(expect.objectContaining({
+        where: expect.objectContaining({ userId: 'u1', revokedAt: null }),
+      }));
+    });
+  });
+
+  describe('revokeSession', () => {
+    it('revokes a session owned by the user', async () => {
+      mockPrisma.session.findUnique.mockResolvedValue({ id: 's1', userId: 'u1' });
+      mockPrisma.session.update.mockResolvedValue({});
+      await service.revokeSession('u1', 's1');
+      expect(mockPrisma.session.update).toHaveBeenCalledWith({
+        where: { id: 's1' },
+        data: expect.objectContaining({ revokedAt: expect.any(Date) }),
+      });
+    });
+
+    it('throws NotFoundException when session does not belong to user', async () => {
+      mockPrisma.session.findUnique.mockResolvedValue({ id: 's1', userId: 'other-user' });
+      await expect(service.revokeSession('u1', 's1')).rejects.toThrow(NotFoundException);
     });
   });
 });

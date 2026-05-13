@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, type OnDestroy } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { FooterComponent } from '../../shared/components/footer.component';
 import { NavbarComponent } from '../../shared/components/navbar.component';
