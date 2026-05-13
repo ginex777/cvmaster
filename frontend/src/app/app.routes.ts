@@ -32,6 +32,9 @@ export const routes: Routes = [
     ],
   },
 
+  // FAQ
+  { path: 'faq', loadComponent: () => import('./features/faq/faq.component').then(m => m.FaqComponent) },
+
   // Legal
   { path: 'datenschutz', loadComponent: () => import('./features/legal/privacy.component').then(m => m.PrivacyComponent) },
   { path: 'agb', loadComponent: () => import('./features/legal/terms.component').then(m => m.TermsComponent) },

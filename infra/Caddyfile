@@ -22,7 +22,7 @@
   }
 
   handle_path /.well-known/security.txt {
-    respond `Contact: mailto:security@example.de
+    respond `Contact: mailto:security@lebenslauf-agent.de
 Expires: 2027-01-01T00:00:00.000Z
 Preferred-Languages: de, en` 200
   }

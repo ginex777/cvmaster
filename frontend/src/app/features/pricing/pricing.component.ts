@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth/auth.service';
+import { SeoService } from '../../core/seo/seo.service';
 
 interface PaddleCheckout {
   Environment?: {
@@ -49,6 +50,14 @@ const PADDLE_SCRIPT_SRC = 'https://cdn.paddle.com/paddle/v2/paddle.js';
 })
 export class PricingComponent {
   private readonly auth = inject(AuthService);
+
+  constructor() {
+    inject(SeoService).setPage(
+      'Preise',
+      'Kostenlos starten, Pay-per-App oder Pro. Transparente Preise ohne versteckte Kosten.',
+      '/preise',
+    );
+  }
 
   readonly checkoutError = signal<string | null>(null);
   readonly checkoutLoading = signal(false);

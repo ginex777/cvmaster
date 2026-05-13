@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { TrialApiService } from '../../core/api/trial.service';
 import type { TrialResponse } from '../../core/api/trial.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { SeoService } from '../../core/seo/seo.service';
 import { FooterComponent } from '../../shared/components/footer.component';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { BeforeAfterComponent } from './sections/before-after.component';
@@ -41,6 +42,14 @@ export class LandingComponent {
   private readonly trialApi = inject(TrialApiService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+
+  constructor() {
+    inject(SeoService).setPage(
+      'KI-optimierte Bewerbungsunterlagen',
+      'Lebenslauf-Agent optimiert deinen Lebenslauf auf jede Stelle und schreibt ein passendes Anschreiben – in weniger als einer Minute.',
+      '/',
+    );
+  }
 
   protected readonly activeDialog = signal<LandingDialog | null>(null);
   protected readonly tryStep = signal<TryDialogStep>('cv');

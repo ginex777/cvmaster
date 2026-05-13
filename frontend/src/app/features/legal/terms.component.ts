@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FooterComponent } from '../../shared/components/footer.component';
 import { NavbarComponent } from '../../shared/components/navbar.component';
+import { SeoService } from '../../core/seo/seo.service';
 
 @Component({
   selector: 'lba-terms',
@@ -10,4 +11,12 @@ import { NavbarComponent } from '../../shared/components/navbar.component';
   styleUrl: './terms.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TermsComponent {}
+export class TermsComponent {
+  constructor() {
+    inject(SeoService).setPage(
+      'Allgemeine Geschäftsbedingungen',
+      'AGB für die Nutzung des Lebenslauf-Agenten.',
+      '/agb',
+    );
+  }
+}
