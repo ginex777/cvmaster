@@ -161,7 +161,7 @@ Repo-action completed in this pass, but legal sign-off and vendor AVV evidence c
 
 ## Important Open Checklist
 
-### P2 - Landing-page modal login does not support 2FA
+### Done - P2 - Landing-page modal login does not support 2FA
 
 Evidence:
 - `frontend/src/app/features/auth/login.component.html:41` includes a 2FA field on the dedicated login page.
@@ -172,9 +172,11 @@ Impact:
 - Users with two-factor authentication enabled can log in on `/login` but not through the landing-page modal.
 
 DoD:
-- [ ] Add optional 2FA code field to the landing modal login or route modal login to `/login`.
-- [ ] Reuse the same validation semantics as the dedicated login component.
-- [ ] Add landing component test for 2FA submission.
+- [x] Add optional 2FA code field to the landing modal login.
+- [x] Reuse the same 6-digit optional validation semantics as the dedicated login component.
+- [x] Add landing component test for 2FA submission.
+
+Closed in the implementation commit for this task. Verification: landing component test, frontend lint, and frontend build passed.
 
 ### P2 - Protected-route visual/a11y smoke is missing
 

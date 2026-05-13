@@ -150,6 +150,20 @@
                 (input)="loginPassword.set($any($event.target).value)"
               />
             </label>
+            <label class="field">
+              <span>2FA-Code</span>
+              <small>Nur ausfuellen, wenn Zwei-Faktor-Auth aktiv ist.</small>
+              <input
+                name="loginTotp"
+                type="text"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                maxlength="6"
+                pattern="[0-9]{6}"
+                [value]="loginTotp()"
+                (input)="loginTotp.set($any($event.target).value)"
+              />
+            </label>
             <button type="submit" class="btn btn--primary btn--md" [disabled]="!canSubmitLogin() || authLoading()">
               {{ authLoading() ? 'Anmeldung laeuft...' : 'Anmelden' }}
             </button>

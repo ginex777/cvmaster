@@ -52,6 +52,7 @@ export class LandingComponent {
   protected readonly trialResult = signal<TrialResponse | null>(null);
   protected readonly loginEmail = signal('');
   protected readonly loginPassword = signal('');
+  protected readonly loginTotp = signal('');
   protected readonly registerName = signal('');
   protected readonly registerEmail = signal('');
   protected readonly registerPassword = signal('');
@@ -64,7 +65,10 @@ export class LandingComponent {
     () => this.canContinueCv() && this.jobText().trim().length >= 40,
   );
   protected readonly canSubmitLogin = computed(
-    () => this.loginEmail().trim().length > 3 && this.loginPassword().trim().length >= 6,
+    () =>
+      this.loginEmail().trim().length > 3 &&
+      this.loginPassword().trim().length >= 6 &&
+      (this.loginTotp().trim().length === 0 || /^\d{6}$/.test(this.loginTotp().trim())),
   );
   protected readonly canSubmitRegister = computed(
     () =>
@@ -128,7 +132,7 @@ export class LandingComponent {
     this.modalMessage.set('');
 
     try {
-      await this.auth.login(this.loginEmail().trim(), this.loginPassword());
+      await this.auth.login(this.loginEmail().trim(), this.loginPassword(), this.loginTotp().trim() || undefined);
       await this.router.navigate(['/app']);
       this.closeDialog();
     } catch (error: unknown) {
