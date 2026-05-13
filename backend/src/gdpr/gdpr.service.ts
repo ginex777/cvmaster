@@ -7,7 +7,7 @@ export class GdprService {
   constructor(private prisma: PrismaService) {}
 
   async exportData(userId: string) {
-    const [user, masterCvs, applications, consents] = await Promise.all([
+    const [user, masterCvs, applications, consents, aiJobs] = await Promise.all([
       this.prisma.user.findUnique({
         where: { id: userId },
         select: {
@@ -25,9 +25,25 @@ export class GdprService {
       this.prisma.masterCv.findMany({ where: { userId } }),
       this.prisma.application.findMany({ where: { userId } }),
       this.prisma.consent.findMany({ where: { userId } }),
+      this.prisma.aiJob.findMany({
+        where: { userId },
+        select: {
+          id: true,
+          applicationId: true,
+          type: true,
+          state: true,
+          promptVersion: true,
+          modelName: true,
+          provider: true,
+          error: true,
+          createdAt: true,
+          finishedAt: true,
+          retentionUntil: true,
+        },
+      }),
     ]);
 
-    return { user, masterCvs, applications, consents, exportedAt: new Date().toISOString() };
+    return { user, masterCvs, applications, consents, aiJobs, exportedAt: new Date().toISOString() };
   }
 
   async deleteAccount(userId: string): Promise<void> {
@@ -56,6 +72,13 @@ export class GdprService {
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async purgeOldAiJobs() {
     const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    await this.prisma.aiJob.deleteMany({ where: { createdAt: { lte: cutoff } } });
+    await this.prisma.aiJob.deleteMany({
+      where: {
+        OR: [
+          { retentionUntil: { lte: new Date() } },
+          { retentionUntil: null, createdAt: { lte: cutoff } },
+        ],
+      },
+    });
   }
 }

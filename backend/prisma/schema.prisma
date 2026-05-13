@@ -27,6 +27,7 @@ model User {
   applications        Application[]
   sessions            Session[]
   consents            Consent[]
+  aiJobs              AiJob[]
 }
 
 model Session {
@@ -109,8 +110,10 @@ model Application {
 
 model AiJob {
   id              String     @id @default(uuid()) @db.Uuid
-  applicationId   String     @db.Uuid
-  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  userId          String?    @db.Uuid
+  user            User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applicationId   String?    @db.Uuid
+  application     Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   type            String
   state           String
   prompt          String     @db.Text
@@ -123,8 +126,12 @@ model AiJob {
   error           String?
   createdAt       DateTime   @default(now())
   finishedAt      DateTime?
+  retentionUntil  DateTime?
 
   // Auto-Purge nach 30 Tagen via Cron
+
+  @@index([userId])
+  @@index([applicationId])
 }
 
 model AuditLog {

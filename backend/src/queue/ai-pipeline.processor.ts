@@ -99,13 +99,15 @@ export class AiPipelineProcessor implements OnModuleInit {
     await this.updateProgress(applicationId, job, 10);
 
     // Step 1: Optimize CV
-    const rawOptimizedCv = await this.ai.optimizeCv(originalCv, parsedJob);
+    const auditContext = { userId: app.userId, applicationId };
+
+    const rawOptimizedCv = await this.ai.optimizeCv(originalCv, parsedJob, auditContext);
     const guardedCv = filterHallucinatedSkills(rawOptimizedCv, originalCv);
     const optimizedCv = sanitizeCv(guardedCv);
     await this.updateProgress(applicationId, job, 50);
 
     // Step 2: Generate cover letters (3 variants)
-    const rawLetter = await this.ai.generateCoverLetter(optimizedCv, parsedJob);
+    const rawLetter = await this.ai.generateCoverLetter(optimizedCv, parsedJob, auditContext);
     const coverLetter = sanitizeLetter(rawLetter);
     await this.updateProgress(applicationId, job, 85);
 
@@ -148,7 +150,10 @@ export class AiPipelineProcessor implements OnModuleInit {
 
     await this.updateProgress(applicationId, job, 20);
 
-    const rawLetter = await this.ai.generateCoverLetter(optimizedCv, parsedJob);
+    const rawLetter = await this.ai.generateCoverLetter(optimizedCv, parsedJob, {
+      userId: app.userId,
+      applicationId,
+    });
     const coverLetter = sanitizeLetter(rawLetter);
 
     await this.prisma.application.update({

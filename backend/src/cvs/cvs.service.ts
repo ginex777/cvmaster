@@ -41,7 +41,7 @@ export class CvsService {
     if (existing) return existing;
 
     const text = await this.extractText(file, kind);
-    const parsedJson = await this.ai.parseCv(text);
+    const parsedJson = await this.ai.parseCv(text, { userId });
 
     const cv = await this.prisma.masterCv.create({
       data: { userId, name: name || file.originalname, language: 'de', parsedJson, sourceFilename: file.originalname, sourceHash },

@@ -7,7 +7,7 @@ export class MistralProvider implements LLMProvider {
   constructor(private apiKey: string) {}
 
   async generate<T>(opts: { system: string; user: string; schema: ZodSchema<T>; model?: string }): Promise<T> {
-    const model = opts.model ?? 'mistral-small-latest';
+    const model = opts.model ?? process.env.MISTRAL_MODEL ?? 'mistral-small-latest';
     const res = await fetch(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.apiKey}` },

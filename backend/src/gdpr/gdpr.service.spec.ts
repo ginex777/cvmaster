@@ -14,7 +14,10 @@ const mockPrisma = {
   masterCv: { findMany: jest.fn<() => Promise<unknown>>() },
   application: { findMany: jest.fn<() => Promise<unknown>>() },
   consent: { findMany: jest.fn<() => Promise<unknown>>() },
-  aiJob: { deleteMany: jest.fn<() => Promise<unknown>>() },
+  aiJob: {
+    findMany: jest.fn<() => Promise<unknown>>(),
+    deleteMany: jest.fn<() => Promise<unknown>>(),
+  },
 };
 
 describe('GdprService', () => {
@@ -36,12 +39,18 @@ describe('GdprService', () => {
     mockPrisma.masterCv.findMany.mockResolvedValue([]);
     mockPrisma.application.findMany.mockResolvedValue([]);
     mockPrisma.consent.findMany.mockResolvedValue([]);
+    mockPrisma.aiJob.findMany.mockResolvedValue([]);
 
     const result = await service.exportData('u1');
 
     expect(result).toHaveProperty('user');
     expect(result).toHaveProperty('masterCvs');
     expect(result).toHaveProperty('applications');
+    expect(result).toHaveProperty('aiJobs');
+    expect(mockPrisma.aiJob.findMany).toHaveBeenCalledWith({
+      where: { userId: 'u1' },
+      select: expect.objectContaining({ promptVersion: true, error: true }),
+    });
   });
 
   it('deleteAccount soft-deletes the user and revokes active sessions', async () => {
@@ -57,6 +66,21 @@ describe('GdprService', () => {
     expect(mockPrisma.session.updateMany).toHaveBeenCalledWith({
       where: { userId: 'u1', revokedAt: null },
       data: { revokedAt: expect.any(Date) },
+    });
+  });
+
+  it('purges AI jobs by retention deadline and legacy createdAt cutoff', async () => {
+    mockPrisma.aiJob.deleteMany.mockResolvedValue({});
+
+    await service.purgeOldAiJobs();
+
+    expect(mockPrisma.aiJob.deleteMany).toHaveBeenCalledWith({
+      where: {
+        OR: [
+          { retentionUntil: { lte: expect.any(Date) } },
+          { retentionUntil: null, createdAt: { lte: expect.any(Date) } },
+        ],
+      },
     });
   });
 });

@@ -213,7 +213,7 @@ DoD:
 
 Closed in the implementation commit for this task. Verification: backend CV service tests, backend lint, backend build, and full backend test suite passed.
 
-### P2 - AI job audit table is not populated
+### Done - P2 - AI job audit table is not populated
 
 Evidence:
 - `backend/prisma/schema.prisma` defines `AiJob`.
@@ -224,11 +224,13 @@ Impact:
 - Retention cleanup exists, but there is no audit trail for provider calls, failures, durations, or output validation.
 
 DoD:
-- [ ] Create an `AiJob` record for every parse/optimize/letter call.
-- [ ] Store provider, status, timing, sanitized error category, and retention deadline.
-- [ ] Do not store raw sensitive prompts unless the privacy policy explicitly allows it.
-- [ ] Include records in GDPR export only if legally appropriate.
-- [ ] Add tests around create, fail, complete, and purge paths.
+- [x] Create an `AiJob` record for every parse/optimize/letter call.
+- [x] Store provider, status, timing, sanitized error category, and retention deadline.
+- [x] Do not store raw sensitive prompts unless the privacy policy explicitly allows it.
+- [x] Include records in GDPR export only if legally appropriate.
+- [x] Add tests around create, fail, complete, and purge paths.
+
+Closed in the implementation commit for this task. Verification: Prisma client regenerated, backend AI audit tests, GDPR purge/export tests, backend lint, backend build, and full backend test suite passed. The local Prisma schema engine still returns a generic `Schema engine error` for `migrate deploy`; the SQL migration was applied manually to Docker Postgres and recorded in `_prisma_migrations`.
 
 ### P2 - Public `/health` is frontend HTML, not service health
 

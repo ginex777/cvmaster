@@ -150,7 +150,7 @@ describe('CvsService', () => {
       await service.parseAndStore(file, '', 'u1');
 
       expect(mammothMock).toHaveBeenCalled();
-      expect(mockAi.parseCv).toHaveBeenCalledWith('extracted docx text');
+      expect(mockAi.parseCv).toHaveBeenCalledWith('extracted docx text', { userId: 'u1' });
     });
 
     it('throws BadRequestException for ZIP input missing DOCX entries', async () => {

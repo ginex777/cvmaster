@@ -8,7 +8,7 @@ export class ClaudeProvider implements LLMProvider {
   constructor(private apiKey: string) {}
 
   async generate<T>(opts: { system: string; user: string; schema: ZodSchema<T>; model?: string }): Promise<T> {
-    const model = opts.model ?? 'claude-haiku-4-5-20251001';
+    const model = opts.model ?? process.env.CLAUDE_MODEL ?? 'claude-haiku-4-5-20251001';
     const res = await fetch(`${this.baseUrl}/messages`, {
       method: 'POST',
       headers: {

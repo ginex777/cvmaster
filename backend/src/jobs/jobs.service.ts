@@ -14,7 +14,7 @@ export class JobsService {
     const existing = await this.prisma.jobPosting.findFirst({ where: { userId, sourceHash } });
     if (existing) return existing;
 
-    const parsedJson = await this.ai.parseJob(text);
+    const parsedJson = await this.ai.parseJob(text, { userId });
 
     return this.prisma.jobPosting.create({
       data: { userId, sourceType: data.type, sourceValue: data.value.slice(0, 2000), sourceHash, parsedJson },
