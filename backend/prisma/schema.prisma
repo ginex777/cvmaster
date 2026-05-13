@@ -19,9 +19,10 @@ model User {
   emailVerifiedAt     DateTime?
   twoFactorEnabled    Boolean   @default(false)
   twoFactorSecret     String?
-  trialUsed           Boolean   @default(false)
-  createdAt           DateTime  @default(now())
-  deletedAt           DateTime?
+  trialUsed               Boolean   @default(false)
+  onboardingDismissedAt   DateTime?
+  createdAt               DateTime  @default(now())
+  deletedAt               DateTime?
 
   masterCvs           MasterCv[]
   applications        Application[]

@@ -24,7 +24,8 @@ export class UsersService {
   }
 
   async getDashboard(userId: string) {
-    const [cvCount, applicationCount, recentApplications, averageMatchScore] = await Promise.all([
+    const [user, cvCount, applicationCount, recentApplications, averageMatchScore] = await Promise.all([
+      this.prisma.user.findUnique({ where: { id: userId }, select: { onboardingDismissedAt: true } }),
       this.prisma.masterCv.count({ where: { userId } }),
       this.prisma.application.count({ where: { userId } }),
       this.prisma.application.findMany({
@@ -45,6 +46,7 @@ export class UsersService {
       }),
     ]);
     return {
+      onboardingDismissed: user?.onboardingDismissedAt !== null && user?.onboardingDismissedAt !== undefined,
       cvCount,
       applicationCount,
       avgMatchScore:
@@ -53,5 +55,12 @@ export class UsersService {
           : null,
       recentApplications,
     };
+  }
+
+  async dismissOnboarding(userId: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { onboardingDismissedAt: new Date() },
+    });
   }
 }

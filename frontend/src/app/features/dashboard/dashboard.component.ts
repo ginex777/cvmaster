@@ -1,4 +1,4 @@
-import { type OnInit, Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
+import { type OnInit, Component, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -14,6 +14,7 @@ interface RecentApplication {
 }
 
 interface DashboardData {
+  onboardingDismissed: boolean;
   cvCount: number;
   applicationCount: number;
   avgMatchScore: number | null;
@@ -35,6 +36,16 @@ export class DashboardComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly data = signal<DashboardData | null>(null);
   readonly deletingId = signal<string | null>(null);
+  readonly dismissingOnboarding = signal(false);
+
+  readonly onboardingSteps = computed(() => {
+    const d = this.data();
+    if (!d) return null;
+    const exported = d.recentApplications.some(a =>
+      ['EXPORTED', 'SENT', 'REPLIED', 'INTERVIEW', 'OFFER'].includes(a.status),
+    );
+    return { cvUploaded: d.cvCount > 0, applicationCreated: d.applicationCount > 0, exported };
+  });
 
   async ngOnInit(): Promise<void> {
     await this.loadData();
@@ -113,6 +124,18 @@ export class DashboardComponent implements OnInit {
       this.error.set(this.errorMessage(e, 'Löschen fehlgeschlagen. Bitte erneut versuchen.'));
     } finally {
       this.deletingId.set(null);
+    }
+  }
+
+  async dismissOnboarding(): Promise<void> {
+    this.dismissingOnboarding.set(true);
+    try {
+      await this.api.post('/users/me/dismiss-onboarding', {});
+      this.data.update(d => d ? { ...d, onboardingDismissed: true } : d);
+    } catch {
+      // silently fail — checklist stays visible if the request fails
+    } finally {
+      this.dismissingOnboarding.set(false);
     }
   }
 

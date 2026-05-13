@@ -12,6 +12,9 @@ const mockPrisma = {
   application: { count: fn(), findMany: fn(), aggregate: fn() },
 };
 
+const mockDashboardUser = (onboardingDismissedAt: Date | null) =>
+  mockPrisma.user.findUnique.mockResolvedValue({ onboardingDismissedAt });
+
 describe('UsersService', () => {
   let service: UsersService;
 
@@ -35,6 +38,7 @@ describe('UsersService', () => {
 
   describe('getDashboard', () => {
     it('returns cvCount, applicationCount, recentApplications', async () => {
+      mockDashboardUser(null);
       mockPrisma.masterCv.count.mockResolvedValue(2);
       mockPrisma.application.count.mockResolvedValue(5);
       mockPrisma.application.findMany.mockResolvedValue([
@@ -43,6 +47,7 @@ describe('UsersService', () => {
       mockPrisma.application.aggregate.mockResolvedValue({ _avg: { matchScore: 76.4 } });
 
       const result = await service.getDashboard('u1') as {
+        onboardingDismissed: boolean;
         cvCount: number;
         applicationCount: number;
         avgMatchScore: number | null;
@@ -53,9 +58,22 @@ describe('UsersService', () => {
       expect(result.applicationCount).toBe(5);
       expect(result.avgMatchScore).toBe(76);
       expect(result.recentApplications).toHaveLength(1);
+      expect(result.onboardingDismissed).toBe(false);
+    });
+
+    it('returns onboardingDismissed true when field is set', async () => {
+      mockDashboardUser(new Date());
+      mockPrisma.masterCv.count.mockResolvedValue(1);
+      mockPrisma.application.count.mockResolvedValue(1);
+      mockPrisma.application.findMany.mockResolvedValue([]);
+      mockPrisma.application.aggregate.mockResolvedValue({ _avg: { matchScore: null } });
+
+      const result = await service.getDashboard('u1') as { onboardingDismissed: boolean };
+      expect(result.onboardingDismissed).toBe(true);
     });
 
     it('returns null avgMatchScore when no application has a score', async () => {
+      mockDashboardUser(null);
       mockPrisma.masterCv.count.mockResolvedValue(0);
       mockPrisma.application.count.mockResolvedValue(0);
       mockPrisma.application.findMany.mockResolvedValue([]);
@@ -64,6 +82,17 @@ describe('UsersService', () => {
       const result = await service.getDashboard('u1') as { avgMatchScore: number | null };
 
       expect(result.avgMatchScore).toBeNull();
+    });
+  });
+
+  describe('dismissOnboarding', () => {
+    it('updates onboardingDismissedAt on the user', async () => {
+      mockPrisma.user.update.mockResolvedValue({});
+      await service.dismissOnboarding('u1');
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: 'u1' },
+        data: expect.objectContaining({ onboardingDismissedAt: expect.any(Date) }),
+      });
     });
   });
 });

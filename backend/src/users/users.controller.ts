@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Delete, Body, Req, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Delete, Body, Req, UseGuards, Request, HttpCode } from '@nestjs/common';
 import { z } from 'zod';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AuthenticatedRequest } from '../common/request.types';
@@ -28,6 +28,12 @@ export class UsersController {
   updateMe(@Req() req: AuthenticatedRequest, @Body() body: unknown) {
     const data = updateSchema.parse(body);
     return this.users.update(req.user.sub, data);
+  }
+
+  @Post('me/dismiss-onboarding')
+  @HttpCode(204)
+  dismissOnboarding(@Req() req: AuthenticatedRequest) {
+    return this.users.dismissOnboarding(req.user.sub);
   }
 
   @Delete('me')

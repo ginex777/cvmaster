@@ -36,6 +36,57 @@
       </article>
     </div>
 
+    @if (!data()!.onboardingDismissed) {
+      <section class="onboarding" aria-labelledby="onboarding-heading">
+        <div class="onboarding__header">
+          <h2 id="onboarding-heading">Erste Schritte</h2>
+          <button
+            type="button"
+            class="btn btn--ghost btn--sm"
+            [disabled]="dismissingOnboarding()"
+            (click)="dismissOnboarding()"
+            aria-label="Erste-Schritte-Hinweis ausblenden">
+            Nicht mehr anzeigen
+          </button>
+        </div>
+        <ol class="onboarding__steps" aria-label="Erste Schritte im Überblick">
+          <li class="onboarding__step" [class.onboarding__step--done]="onboardingSteps()!.cvUploaded">
+            <span class="onboarding__step-num" aria-hidden="true">
+              @if (onboardingSteps()!.cvUploaded) { ✓ } @else { 1 }
+            </span>
+            <div class="onboarding__step-body">
+              <strong>Lebenslauf hinzufügen</strong>
+              <p>Lade deinen Lebenslauf als PDF oder DOCX hoch, oder erstelle direkt im Assistenten ein Kurzprofil.</p>
+              @if (!onboardingSteps()!.cvUploaded) {
+                <a routerLink="/app/cvs" class="btn btn--secondary btn--sm">Lebenslauf hochladen</a>
+              }
+            </div>
+          </li>
+          <li class="onboarding__step" [class.onboarding__step--done]="onboardingSteps()!.applicationCreated">
+            <span class="onboarding__step-num" aria-hidden="true">
+              @if (onboardingSteps()!.applicationCreated) { ✓ } @else { 2 }
+            </span>
+            <div class="onboarding__step-body">
+              <strong>Erste Bewerbung erstellen</strong>
+              <p>Füge eine Stellenanzeige ein und lass die KI deinen Lebenslauf optimieren und ein Anschreiben verfassen.</p>
+              @if (!onboardingSteps()!.applicationCreated) {
+                <a routerLink="/app/wizard" class="btn btn--secondary btn--sm">Bewerbung erstellen</a>
+              }
+            </div>
+          </li>
+          <li class="onboarding__step" [class.onboarding__step--done]="onboardingSteps()!.exported">
+            <span class="onboarding__step-num" aria-hidden="true">
+              @if (onboardingSteps()!.exported) { ✓ } @else { 3 }
+            </span>
+            <div class="onboarding__step-body">
+              <strong>Bewerbung exportieren und versenden</strong>
+              <p>Lade Lebenslauf und Anschreiben als PDF herunter oder sende sie direkt per E-Mail an dich selbst.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+    }
+
     @if (data()!.recentApplications.length > 0) {
       <section class="applications" aria-label="Letzte Bewerbungen">
         <div class="applications__heading">

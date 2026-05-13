@@ -4,13 +4,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DashboardComponent } from './dashboard.component';
 import { ApiService } from '../../core/api/api.service';
 
-const emptyDashboard = { cvCount: 0, applicationCount: 0, avgMatchScore: null, recentApplications: [] };
+const emptyDashboard = { onboardingDismissed: false, cvCount: 0, applicationCount: 0, avgMatchScore: null, recentApplications: [] };
 
 describe('DashboardComponent', () => {
-  let api: jest.Mocked<Pick<ApiService, 'get' | 'patch' | 'delete'>>;
+  let api: jest.Mocked<Pick<ApiService, 'get' | 'patch' | 'delete' | 'post'>>;
 
   beforeEach(async () => {
-    api = { get: jest.fn(), patch: jest.fn(), delete: jest.fn() };
+    api = { get: jest.fn(), patch: jest.fn(), delete: jest.fn(), post: jest.fn() };
     await TestBed.configureTestingModule({
       imports: [DashboardComponent],
       providers: [
@@ -26,7 +26,7 @@ describe('DashboardComponent', () => {
     const fixture = TestBed.createComponent(DashboardComponent);
     fixture.detectChanges();
     expect(fixture.componentInstance.loading()).toBe(true);
-    resolve({ cvCount: 2, applicationCount: 5, avgMatchScore: 81, recentApplications: [] });
+    resolve({ onboardingDismissed: false, cvCount: 2, applicationCount: 5, avgMatchScore: 81, recentApplications: [] });
     await fixture.whenStable();
     expect(fixture.componentInstance.loading()).toBe(false);
     expect(fixture.componentInstance.data()?.cvCount).toBe(2);
@@ -52,7 +52,7 @@ describe('DashboardComponent', () => {
   });
 
   it('renders stat cards when data is loaded', async () => {
-    api.get.mockResolvedValue({ cvCount: 3, applicationCount: 7, avgMatchScore: 75, recentApplications: [] });
+    api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 3, applicationCount: 7, avgMatchScore: 75, recentApplications: [] });
     const fixture = TestBed.createComponent(DashboardComponent);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -85,6 +85,7 @@ describe('DashboardComponent', () => {
 
   it('toggles application status optimistically and persists it', async () => {
     api.get.mockResolvedValue({
+      onboardingDismissed: true,
       cvCount: 1,
       applicationCount: 1,
       avgMatchScore: 80,
@@ -106,6 +107,7 @@ describe('DashboardComponent', () => {
 
   it('rolls status back and sets error when status persistence fails', async () => {
     api.get.mockResolvedValue({
+      onboardingDismissed: true,
       cvCount: 1,
       applicationCount: 1,
       avgMatchScore: 80,
@@ -126,6 +128,7 @@ describe('DashboardComponent', () => {
 
   it('deletes an application after confirmation', async () => {
     api.get.mockResolvedValue({
+      onboardingDismissed: true,
       cvCount: 1,
       applicationCount: 1,
       avgMatchScore: 80,
@@ -144,5 +147,70 @@ describe('DashboardComponent', () => {
     expect(api.delete).toHaveBeenCalledWith('/applications/app-1');
     expect(fixture.componentInstance.data()?.recentApplications).toHaveLength(0);
     expect(fixture.componentInstance.data()?.applicationCount).toBe(0);
+  });
+
+  describe('onboarding', () => {
+    it('shows onboarding panel when onboardingDismissed is false', async () => {
+      api.get.mockResolvedValue({ ...emptyDashboard, onboardingDismissed: false });
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.onboarding')).toBeTruthy();
+    });
+
+    it('hides onboarding panel when onboardingDismissed is true', async () => {
+      api.get.mockResolvedValue({ ...emptyDashboard, onboardingDismissed: true });
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.onboarding')).toBeNull();
+    });
+
+    it('marks CV step done when cvCount > 0', async () => {
+      api.get.mockResolvedValue({ ...emptyDashboard, cvCount: 1 });
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      const steps = fixture.componentInstance.onboardingSteps();
+      expect(steps?.cvUploaded).toBe(true);
+      expect(steps?.applicationCreated).toBe(false);
+    });
+
+    it('marks application step done when applicationCount > 0', async () => {
+      api.get.mockResolvedValue({ ...emptyDashboard, applicationCount: 2 });
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(fixture.componentInstance.onboardingSteps()?.applicationCreated).toBe(true);
+    });
+
+    it('marks exported step done when a recent application has status SENT', async () => {
+      api.get.mockResolvedValue({
+        ...emptyDashboard,
+        applicationCount: 1,
+        recentApplications: [
+          { id: 'a1', status: 'SENT', matchScore: null, createdAt: '2026-05-10T00:00:00Z', jobPosting: { parsedJson: {} } },
+        ],
+      });
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(fixture.componentInstance.onboardingSteps()?.exported).toBe(true);
+    });
+
+    it('calls POST /users/me/dismiss-onboarding and hides panel', async () => {
+      api.get.mockResolvedValue({ ...emptyDashboard, onboardingDismissed: false });
+      api.post.mockResolvedValue({});
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      await fixture.componentInstance.dismissOnboarding();
+
+      expect(api.post).toHaveBeenCalledWith('/users/me/dismiss-onboarding', {});
+      expect(fixture.componentInstance.data()?.onboardingDismissed).toBe(true);
+    });
   });
 });
