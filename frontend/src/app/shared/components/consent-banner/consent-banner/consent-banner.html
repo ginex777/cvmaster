@@ -1,0 +1,27 @@
+<button type="button" class="consent-settings" (click)="consent.openSettings()">
+  Cookie-Einstellungen
+</button>
+
+@if (consent.needsBanner()) {
+  <section class="consent-panel" role="dialog" aria-modal="false" aria-labelledby="consent-title">
+    <div>
+      <p class="consent-panel__eyebrow">Datenschutz</p>
+      <h2 id="consent-title">Support-Cookies verwalten</h2>
+      <p>
+        Notwendige Cookies sichern Login und CSRF-Schutz. Support-Chat laden wir nur, wenn du ihn erlaubst.
+      </p>
+    </div>
+
+    <div class="consent-panel__actions" aria-label="Cookie-Auswahl">
+      <button type="button" class="btn btn--primary btn--md" (click)="consent.acceptAll()">
+        Alle akzeptieren
+      </button>
+      <button type="button" class="btn btn--secondary btn--md" (click)="consent.acceptNecessary()">
+        Nur notwendige
+      </button>
+      <button type="button" class="btn btn--ghost btn--md" (click)="consent.revoke()">
+        Widerrufen
+      </button>
+    </div>
+  </section>
+}

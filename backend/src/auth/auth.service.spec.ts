@@ -61,6 +61,14 @@ describe('AuthService', () => {
       expect(mockPrisma.emailVerification.create).toHaveBeenCalledWith(
         expect.objectContaining({ data: expect.objectContaining({ userId: 'u1' }) }),
       );
+      expect(mockPrisma.consent.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          userId: 'u1',
+          type: 'art9_processing',
+          granted: true,
+          version: 'art9-processing-v1.0-2026-05-13',
+        }),
+      });
     });
 
     it('throws ConflictException when email is already registered', async () => {

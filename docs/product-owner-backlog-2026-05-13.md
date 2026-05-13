@@ -156,7 +156,18 @@ Acceptance criteria:
 - A developer can copy `.env.example`, fill current variables, and start API/worker without provider mismatch.
 - CI or deploy script catches missing required production variables.
 
-### P0.3 Complete Legal And Compliance Launch Evidence
+### P0.3 Complete Legal And Compliance Launch Evidence - Engineering Done 2026-05-13
+
+Status: Engineering done; external legal sign-off still required before public launch.
+
+Completion evidence:
+
+- GDPR export already excludes raw AI prompts and raw AI responses, exporting AI job metadata only.
+- Art. 9 registration consent now stores an immutable evidence-oriented version reference.
+- A global support-cookie settings entry point allows users to accept necessary cookies, accept support chat, reopen settings, and revoke consent.
+- Crisp loads only after support consent and a configured website ID.
+- Register consent copy links to privacy policy and AGB.
+- Launch evidence checklist added at `docs/legal-compliance-launch-checklist-2026-05-13.md`.
 
 Problem: DSFA/VVT/TOM working docs exist, but lawyer-reviewed AGB/privacy, signed AVVs, and final evidence links are still open.
 

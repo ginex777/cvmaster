@@ -3,11 +3,12 @@ import { ChangeDetectionStrategy, Component, DestroyRef, PLATFORM_ID, inject } f
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
+import { ConsentBanner } from './shared/components/consent-banner/consent-banner/consent-banner';
 
 @Component({
   selector: 'lba-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ConsentBanner],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

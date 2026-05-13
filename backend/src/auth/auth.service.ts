@@ -8,6 +8,7 @@ import { verifyTotp } from './totp';
 
 const ARGON2_OPTIONS = { memoryCost: 65536, timeCost: 3, parallelism: 4 };
 const MAX_SESSIONS = 5;
+const ART9_CONSENT_VERSION = 'art9-processing-v1.0-2026-05-13';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +28,13 @@ export class AuthService {
     });
 
     await this.prisma.consent.create({
-      data: { userId: user.id, type: 'art9_processing', granted: true, version: '1.0', ipHash: this.hashIp(ip) },
+      data: {
+        userId: user.id,
+        type: 'art9_processing',
+        granted: true,
+        version: ART9_CONSENT_VERSION,
+        ipHash: this.hashIp(ip),
+      },
     });
 
     const verifyToken = randomBytes(32).toString('hex');
