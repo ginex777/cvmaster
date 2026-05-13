@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../core/auth/auth.service';
+import { AnalyticsService } from '../../core/analytics/analytics.service';
 
 @Component({
   selector: 'lba-register',
@@ -15,6 +16,7 @@ import { AuthService } from '../../core/auth/auth.service';
 export class RegisterComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly analytics = inject(AnalyticsService);
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -41,6 +43,7 @@ export class RegisterComponent {
         password: v.password ?? '',
         art9Consent: v.art9Consent ?? false,
       });
+      this.analytics.track('register-completed');
       await this.router.navigate(['/login'], { queryParams: { registered: '1' } });
     } catch (e: unknown) {
       this.error.set(

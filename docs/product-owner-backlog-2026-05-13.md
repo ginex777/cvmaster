@@ -441,7 +441,18 @@ Acceptance criteria:
 
 - A first-time user always knows the next useful action.
 
-### P2.2 Add Product Analytics Without Cookies
+### P2.2 Add Product Analytics Without Cookies - Done 2026-05-13
+
+Status: Done.
+
+Completion evidence:
+
+- `AnalyticsService` (`core/analytics/`) reads `window.__LBA_CONFIG__.plausibleDomain` and lazy-injects the Plausible script on first use; no cookies, no consent banner changes required.
+- Typed `AnalyticsEvent` union (`register-started`, `register-completed`, `cv-uploaded`, `app-generated`, `export-clicked`, `checkout-opened`, `checkout-completed`) prevents uncontrolled event names.
+- `track(event, props?)` accepts only `Record<string, string | number | boolean>` props — no PII types allowed by design.
+- Tracking wired to three key funnel points: `register-completed` on successful registration, `export-clicked` on every PDF download, `checkout-opened` on Paddle checkout open with plan name.
+- 8 analytics service tests: event dispatch, safe props, no-op without Plausible loaded, no-op on SSR platform, no script injection without domain, correct data-domain attribute, props contain only primitives, event names are kebab-case without PII.
+- All 196 frontend tests pass; lint clean; build green.
 
 Backend/infra tasks:
 

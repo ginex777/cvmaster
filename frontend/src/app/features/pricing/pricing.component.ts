@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth/auth.service';
 import { SeoService } from '../../core/seo/seo.service';
+import { AnalyticsService } from '../../core/analytics/analytics.service';
 
 interface PaddleCheckout {
   Environment?: {
@@ -50,6 +51,7 @@ const PADDLE_SCRIPT_SRC = 'https://cdn.paddle.com/paddle/v2/paddle.js';
 })
 export class PricingComponent {
   private readonly auth = inject(AuthService);
+  private readonly analytics = inject(AnalyticsService);
 
   constructor() {
     inject(SeoService).setPage(
@@ -93,6 +95,7 @@ export class PricingComponent {
 
       this.initializePaddle(paddle, config);
 
+      this.analytics.track('checkout-opened', { plan });
       paddle.Checkout.open({
         items: [{ priceId, quantity: 1 }],
         customData: { userId: this.auth.user()?.id },

@@ -7,6 +7,7 @@ import { ApiService } from '../../core/api/api.service';
 import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
 import { CvSectionEditorComponent } from '../../shared/components/cv-section-editor/cv-section-editor.component';
 import type { CvSection } from '../../shared/components/cv-section-editor/cv-section-editor.component';
+import { AnalyticsService } from '../../core/analytics/analytics.service';
 
 type LetterVariant = 'formal' | 'warm' | 'brief';
 
@@ -52,6 +53,7 @@ const POLL_MAX_ATTEMPTS = 40;
 export class EditorComponent implements OnInit, OnDestroy {
   private readonly api = inject(ApiService);
   private readonly route = inject(ActivatedRoute);
+  private readonly analytics = inject(AnalyticsService);
   private pollTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly id = this.route.snapshot.paramMap.get('id') ?? '';
@@ -326,6 +328,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     if (!this.id) return;
     this.downloading.set(true);
     this.error.set(null);
+    this.analytics.track('export-clicked');
     try {
       const blob = await this.api.getBlob(path);
       const url = URL.createObjectURL(blob);
