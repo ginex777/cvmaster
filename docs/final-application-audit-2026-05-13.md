@@ -195,7 +195,7 @@ DoD:
 
 Closed in the implementation commit for this task. Verification: frontend unit suite, frontend lint, frontend build, and `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4200 npm run test:e2e --prefix frontend` passed with 10 protected-route axe checks across desktop and mobile.
 
-### P2 - Upload security is minimal
+### Done - P2 - Upload security is minimal
 
 Evidence:
 - `backend/src/cvs/cvs.service.ts:56` validates only PDF and ZIP magic bytes.
@@ -206,10 +206,12 @@ Impact:
 - The product processes sensitive user-uploaded documents. Even RAM-only processing should reject suspicious files before parsing.
 
 DoD:
-- [ ] Add size, page/entry, and decompression limits around PDF/DOCX extraction.
-- [ ] Validate DOCX structure rather than accepting any ZIP signature.
-- [ ] Add optional malware scanning if required by deployment policy, still without persisting uploads.
-- [ ] Add tests for invalid ZIP, oversized input, malformed PDF, and valid PDF/DOCX.
+- [x] Add size, page/entry, and decompression limits around PDF/DOCX extraction.
+- [x] Validate DOCX structure rather than accepting any ZIP signature.
+- [x] Add optional malware scanning if required by deployment policy, still without persisting uploads. Current deployment policy does not configure a scanner, so the implementation keeps RAM-only processing and rejects suspicious documents before parser handoff.
+- [x] Add tests for invalid ZIP, oversized input, malformed PDF, and valid PDF/DOCX.
+
+Closed in the implementation commit for this task. Verification: backend CV service tests, backend lint, backend build, and full backend test suite passed.
 
 ### P2 - AI job audit table is not populated
 

@@ -2,9 +2,11 @@ import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
-jest.mock('pdf-parse', () => jest.fn<() => Promise<{ text: string }>>().mockResolvedValue({ text: 'extracted pdf text' }));
+jest.mock('pdf-parse', () => jest.fn<() => Promise<{ text: string; numpages: number }>>().mockResolvedValue({ text: 'extracted pdf text', numpages: 1 }));
 jest.mock('mammoth', () => ({ extractRawText: jest.fn<() => Promise<{ value: string }>>().mockResolvedValue({ value: 'extracted docx text' }) }));
 
+import pdfParse from 'pdf-parse';
+import * as mammoth from 'mammoth';
 import { CvsService } from './cvs.service';
 import { PrismaService } from '../common/prisma.service';
 import { AiService } from '../ai/ai.service';
@@ -16,12 +18,69 @@ const mockPrisma = {
 };
 
 const mockAi = { parseCv: fn() };
+const pdfParseMock = jest.mocked(pdfParse);
+const mammothMock = jest.mocked(mammoth.extractRawText);
+
+interface ZipEntrySpec {
+  name: string;
+  compressedSize?: number;
+  uncompressedSize?: number;
+}
+
+function createDocxBuffer(entries: ZipEntrySpec[] = [
+  { name: '[Content_Types].xml', compressedSize: 12, uncompressedSize: 12 },
+  { name: 'word/document.xml', compressedSize: 16, uncompressedSize: 16 },
+]) {
+  const localParts: Buffer[] = [];
+  const centralParts: Buffer[] = [];
+  let localOffset = 0;
+
+  for (const entry of entries) {
+    const name = Buffer.from(entry.name, 'utf8');
+    const compressedSize = entry.compressedSize ?? 4;
+    const uncompressedSize = entry.uncompressedSize ?? compressedSize;
+    const local = Buffer.alloc(30 + name.length + compressedSize);
+    local.writeUInt32LE(0x04034b50, 0);
+    local.writeUInt16LE(20, 4);
+    local.writeUInt16LE(8, 8);
+    local.writeUInt32LE(compressedSize, 18);
+    local.writeUInt32LE(uncompressedSize, 22);
+    local.writeUInt16LE(name.length, 26);
+    name.copy(local, 30);
+    localParts.push(local);
+
+    const central = Buffer.alloc(46 + name.length);
+    central.writeUInt32LE(0x02014b50, 0);
+    central.writeUInt16LE(20, 6);
+    central.writeUInt16LE(8, 10);
+    central.writeUInt32LE(compressedSize, 20);
+    central.writeUInt32LE(uncompressedSize, 24);
+    central.writeUInt16LE(name.length, 28);
+    central.writeUInt32LE(localOffset, 42);
+    name.copy(central, 46);
+    centralParts.push(central);
+
+    localOffset += local.length;
+  }
+
+  const centralDirectory = Buffer.concat(centralParts);
+  const eocd = Buffer.alloc(22);
+  eocd.writeUInt32LE(0x06054b50, 0);
+  eocd.writeUInt16LE(entries.length, 8);
+  eocd.writeUInt16LE(entries.length, 10);
+  eocd.writeUInt32LE(centralDirectory.length, 12);
+  eocd.writeUInt32LE(localOffset, 16);
+
+  return Buffer.concat([...localParts, centralDirectory, eocd]);
+}
 
 describe('CvsService', () => {
   let service: CvsService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    pdfParseMock.mockResolvedValue({ text: 'extracted pdf text', numpages: 1 } as Awaited<ReturnType<typeof pdfParse>>);
+    mammothMock.mockResolvedValue({ value: 'extracted docx text', messages: [] });
     const module = await Test.createTestingModule({
       providers: [
         CvsService,
@@ -38,6 +97,15 @@ describe('CvsService', () => {
       await expect(service.parseAndStore(file, '', 'u1')).rejects.toThrow(BadRequestException);
     });
 
+    it('throws BadRequestException for oversized input before parsing', async () => {
+      const buf = Buffer.alloc(10 * 1024 * 1024 + 1);
+      buf.write('%PDF-', 0, 'ascii');
+      const file = { buffer: buf, originalname: 'large.pdf' } as Express.Multer.File;
+
+      await expect(service.parseAndStore(file, '', 'u1')).rejects.toThrow(BadRequestException);
+      expect(mockAi.parseCv).not.toHaveBeenCalled();
+    });
+
     it('calls AiService.parseCv with extracted text for PDF', async () => {
       const buf = Buffer.alloc(10);
       buf.write('%PDF-', 0, 'ascii');
@@ -49,6 +117,60 @@ describe('CvsService', () => {
       await service.parseAndStore(file, '', 'u1');
 
       expect(mockAi.parseCv).toHaveBeenCalled();
+    });
+
+    it('throws BadRequestException when PDF parsing fails', async () => {
+      const buf = Buffer.alloc(10);
+      buf.write('%PDF-', 0, 'ascii');
+      const file = { buffer: buf, originalname: 'bad.pdf' } as Express.Multer.File;
+      mockPrisma.masterCv.findFirst.mockResolvedValue(null);
+      pdfParseMock.mockRejectedValueOnce(new Error('malformed pdf'));
+
+      await expect(service.parseAndStore(file, '', 'u1')).rejects.toThrow(BadRequestException);
+      expect(mockAi.parseCv).not.toHaveBeenCalled();
+    });
+
+    it('throws BadRequestException when PDF page limit is exceeded', async () => {
+      const buf = Buffer.alloc(10);
+      buf.write('%PDF-', 0, 'ascii');
+      const file = { buffer: buf, originalname: 'long.pdf' } as Express.Multer.File;
+      mockPrisma.masterCv.findFirst.mockResolvedValue(null);
+      pdfParseMock.mockResolvedValueOnce({ text: 'too long', numpages: 31 } as Awaited<ReturnType<typeof pdfParse>>);
+
+      await expect(service.parseAndStore(file, '', 'u1')).rejects.toThrow(BadRequestException);
+      expect(mockAi.parseCv).not.toHaveBeenCalled();
+    });
+
+    it('calls AiService.parseCv with extracted text for valid DOCX structure', async () => {
+      const file = { buffer: createDocxBuffer(), originalname: 'cv.docx' } as Express.Multer.File;
+      mockPrisma.masterCv.findFirst.mockResolvedValue(null);
+      mockAi.parseCv.mockResolvedValue({ name: 'Lina', skills: ['Angular'] });
+      mockPrisma.masterCv.create.mockResolvedValue({ id: 'cv-docx', name: 'cv' });
+
+      await service.parseAndStore(file, '', 'u1');
+
+      expect(mammothMock).toHaveBeenCalled();
+      expect(mockAi.parseCv).toHaveBeenCalledWith('extracted docx text');
+    });
+
+    it('throws BadRequestException for ZIP input missing DOCX entries', async () => {
+      const file = { buffer: createDocxBuffer([{ name: 'plain.txt' }]), originalname: 'bad.docx' } as Express.Multer.File;
+
+      await expect(service.parseAndStore(file, '', 'u1')).rejects.toThrow(BadRequestException);
+      expect(mockAi.parseCv).not.toHaveBeenCalled();
+    });
+
+    it('throws BadRequestException for suspicious DOCX compression ratio', async () => {
+      const file = {
+        buffer: createDocxBuffer([
+          { name: '[Content_Types].xml', compressedSize: 1, uncompressedSize: 12 },
+          { name: 'word/document.xml', compressedSize: 1, uncompressedSize: 512 },
+        ]),
+        originalname: 'bomb.docx',
+      } as Express.Multer.File;
+
+      await expect(service.parseAndStore(file, '', 'u1')).rejects.toThrow(BadRequestException);
+      expect(mockAi.parseCv).not.toHaveBeenCalled();
     });
 
     it('returns existing CV when same hash already stored', async () => {
