@@ -7,6 +7,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ApiService } from '../../core/api/api.service';
 import { UpgradeModal } from '../../shared/components/upgrade-modal/upgrade-modal';
 
+type JobInputMode = 'text' | 'url' | 'pdf' | 'screenshot';
+
 export interface MasterCv {
   id: string;
   name: string;
@@ -41,6 +43,7 @@ export class WizardComponent implements OnInit {
   readonly selectedCvId = signal<string | null>(null);
   readonly quickstartPreview = signal<MasterCv | null>(null);
   readonly upgradeModalOpen = signal(false);
+  readonly jobInputMode = signal<JobInputMode>('text');
 
   readonly quickstartForm = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(120)]),
@@ -52,6 +55,7 @@ export class WizardComponent implements OnInit {
 
   readonly jobForm = new FormGroup({
     jobRaw: new FormControl('', [Validators.required, Validators.minLength(50)]),
+    jobUrl: new FormControl('', [Validators.maxLength(2048)]),
   });
 
   async ngOnInit(): Promise<void> {
@@ -103,11 +107,27 @@ export class WizardComponent implements OnInit {
     }
   }
 
+  selectJobInputMode(mode: JobInputMode): void {
+    if (mode === 'pdf' || mode === 'screenshot') {
+      this.error.set('PDF und Screenshot folgen nach der RAM-only Sicherheitsfreigabe. Nutze bitte Text oder URL.');
+      return;
+    }
+
+    this.jobInputMode.set(mode);
+    this.error.set(null);
+  }
+
   nextStep(): void {
-    if (this.jobForm.valid) {
+    if (this.currentJobInputValid()) {
       this.error.set(null);
       this.step.set(3);
+      return;
     }
+
+    this.jobForm.markAllAsTouched();
+    this.error.set(this.jobInputMode() === 'url'
+      ? 'Bitte gib eine gueltige URL zur Stellenanzeige ein.'
+      : 'Bitte fuege mindestens 50 Zeichen Stellentext ein.');
   }
 
   async generate(): Promise<void> {
@@ -117,12 +137,20 @@ export class WizardComponent implements OnInit {
       return;
     }
 
+    if (!this.currentJobInputValid()) {
+      this.error.set(this.jobInputMode() === 'url'
+        ? 'Bitte gib eine gueltige URL zur Stellenanzeige ein.'
+        : 'Bitte fuege mindestens 50 Zeichen Stellentext ein.');
+      this.step.set(2);
+      return;
+    }
+
     this.loading.set(true);
     this.error.set(null);
     try {
       const job = await this.api.post<{ id: string }>('/jobs/parse', {
-        type: 'text',
-        value: this.jobForm.value.jobRaw,
+        type: this.jobInputMode(),
+        value: this.currentJobInputValue(),
       });
       const app = await this.api.post<{ id: string }>('/applications', {
         masterCvId: this.selectedCvId(),
@@ -153,5 +181,27 @@ export class WizardComponent implements OnInit {
       .map(skill => skill.trim())
       .filter(Boolean)
       .slice(0, 6);
+  }
+
+  currentJobInputValid(): boolean {
+    if (this.jobInputMode() === 'url') {
+      const value = this.currentJobInputValue();
+      try {
+        const url = new URL(value);
+        return (url.protocol === 'https:' || url.protocol === 'http:') && value.length <= 2048;
+      } catch {
+        return false;
+      }
+    }
+
+    if (this.jobInputMode() !== 'text') return false;
+
+    return this.currentJobInputValue().length >= 50;
+  }
+
+  currentJobInputValue(): string {
+    return this.jobInputMode() === 'url'
+      ? (this.jobForm.controls.jobUrl.value ?? '').trim()
+      : (this.jobForm.controls.jobRaw.value ?? '').trim();
   }
 }

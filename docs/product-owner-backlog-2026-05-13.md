@@ -27,7 +27,7 @@ The remaining product work is not "more screens" first. The next business-critic
 - Backend modules are wired for auth, users, CVs, jobs, applications, AI, queue, PDF, payments, mail, GDPR, health.
 - Prisma schema covers users, sessions, consents, master CVs, job postings, applications, AI jobs, and audit logs.
 - CV upload supports PDF and DOCX with RAM-only parsing and improved structure checks.
-- Job parsing currently supports pasted text.
+- Job parsing currently supports pasted text and guarded public URL import.
 - Application generation queues AI work and persists generation progress/error.
 - CV/letter/bundle exports exist and use selected CV templates.
 - GDPR export/delete exists, with soft-delete and AI job retention cleanup.
@@ -63,7 +63,7 @@ This is the recommended build order if the goal is maximum business impact first
 | 4 | P0.3 Complete legal and compliance launch evidence | Required for public launch in Germany with CV/AI/Art. 9-adjacent data. | Legal + Backend + Frontend |
 | 5 | P1.1 Complete new application wizard | Biggest activation lever: lets first-time users succeed even without an existing CV. | Frontend + Backend |
 | 6 | P1.4 Finish mail-to-self and mailto UX | Completes the user outcome after export: documents can actually be used for applying. | Frontend + Backend |
-| 7 | P1.2 Add job input modes beyond text | Increases completion rate for real users who have links or PDFs instead of clean text. | Frontend + Backend |
+| 7 | P1.2 Add job input modes beyond text - Done | Increases completion rate for real users who have links or PDFs instead of clean text. | Frontend + Backend |
 | 8 | P2.1 Improve first-run onboarding | Reduces drop-off after login and guides users to the first successful application. | Frontend |
 | 9 | P2.5 Improve SEO and public trust assets | Supports acquisition and credibility before paid traffic or public launch. | Frontend + Infra |
 | 10 | P2.4 Strengthen account and session management | Reduces support risk through password reset, 2FA management, and session visibility. | Frontend + Backend |
@@ -273,7 +273,17 @@ Acceptance criteria:
 - A new user with no CV can create an application without uploading a file.
 - Generated CV skeleton is clearly editable and not falsely presented as verified work history.
 
-### P1.2 Add Job Input Modes Beyond Text
+### P1.2 Add Job Input Modes Beyond Text - Done 2026-05-13
+
+Status: Done.
+
+Completion evidence:
+
+- `POST /jobs/parse` now accepts `text`, `url`, `pdf`, and `screenshot` request shapes.
+- Text remains the default path; URL mode fetches public HTTP/HTTPS job pages with DNS-based private-network blocking, timeouts, size limits, content-type checks, and sanitized text extraction before AI parsing.
+- PDF and screenshot modes return user-safe disabled-mode errors until RAM-only PDF extraction and approved multimodal processing are compliance-cleared.
+- Wizard step 2 now has input-mode tabs for Text, URL, PDF, and Screenshot; PDF/screenshot are clearly unavailable and do not switch the active mode.
+- Tests cover URL happy path, SSRF/private target rejection, disabled PDF handling, controller validation, frontend URL submission, and unavailable modes.
 
 Problem: Backend `JobsService` has `url`, `screenshot`, and `pdf` cases marked as not implemented, while the spec lists them as V1 input methods.
 

@@ -76,7 +76,7 @@ describe('WizardComponent', () => {
     api.post.mockRejectedValue(new HttpErrorResponse({ error: { message: 'Fehler' } }));
     const f = TestBed.createComponent(WizardComponent);
     f.componentInstance.selectedCvId.set('cv1');
-    f.componentInstance.jobForm.setValue({ jobRaw: 'Frontend Developer at Stripe with React skills required for this position...' });
+    f.componentInstance.jobForm.patchValue({ jobRaw: 'Frontend Developer at Stripe with React skills required for this position...' });
     await f.componentInstance.generate();
     expect(f.componentInstance.error()).toBe('Fehler');
   });
@@ -88,7 +88,7 @@ describe('WizardComponent', () => {
     });
     const f = TestBed.createComponent(WizardComponent);
     f.componentInstance.selectedCvId.set('cv1');
-    f.componentInstance.jobForm.setValue({ jobRaw: 'Frontend Developer at Stripe with React skills required for this position...' });
+    f.componentInstance.jobForm.patchValue({ jobRaw: 'Frontend Developer at Stripe with React skills required for this position...' });
 
     await f.componentInstance.generate();
 
@@ -100,7 +100,7 @@ describe('WizardComponent', () => {
     api.post.mockRejectedValue(new Error('network'));
     const f = TestBed.createComponent(WizardComponent);
     f.componentInstance.selectedCvId.set('cv1');
-    f.componentInstance.jobForm.setValue({ jobRaw: 'Frontend Developer at Stripe with React skills required for this position...' });
+    f.componentInstance.jobForm.patchValue({ jobRaw: 'Frontend Developer at Stripe with React skills required for this position...' });
     await f.componentInstance.generate();
     expect(f.componentInstance.error()).toBe('Bewerbung konnte nicht erstellt werden.');
   });
@@ -109,7 +109,7 @@ describe('WizardComponent', () => {
     api.post.mockRejectedValue(new Error('fail'));
     const f = TestBed.createComponent(WizardComponent);
     f.componentInstance.selectedCvId.set('cv1');
-    f.componentInstance.jobForm.setValue({ jobRaw: 'Frontend Developer at Stripe with React skills required for this position...' });
+    f.componentInstance.jobForm.patchValue({ jobRaw: 'Frontend Developer at Stripe with React skills required for this position...' });
     await f.componentInstance.generate();
     expect(f.componentInstance.loading()).toBe(false);
   });
@@ -179,11 +179,38 @@ describe('WizardComponent', () => {
 
   it('does not generate an application without a selected CV', async () => {
     const f = TestBed.createComponent(WizardComponent);
-    f.componentInstance.jobForm.setValue({ jobRaw: 'Frontend Developer at Stripe with React skills required for this position...' });
+    f.componentInstance.jobForm.patchValue({ jobRaw: 'Frontend Developer at Stripe with React skills required for this position...' });
 
     await f.componentInstance.generate();
 
     expect(api.post).not.toHaveBeenCalled();
     expect(f.componentInstance.step()).toBe(1);
+  });
+
+  it('parses a job URL when URL mode is selected', async () => {
+    api.post.mockImplementation((path: string) => {
+      if (path === '/jobs/parse') return Promise.resolve({ id: 'job-url' });
+      return Promise.resolve({ id: 'app1' });
+    });
+    const f = TestBed.createComponent(WizardComponent);
+    f.componentInstance.selectedCvId.set('cv1');
+    f.componentInstance.selectJobInputMode('url');
+    f.componentInstance.jobForm.patchValue({ jobUrl: 'https://example.com/jobs/frontend' });
+
+    await f.componentInstance.generate();
+
+    expect(api.post).toHaveBeenCalledWith('/jobs/parse', {
+      type: 'url',
+      value: 'https://example.com/jobs/frontend',
+    });
+  });
+
+  it('keeps PDF and screenshot modes unavailable until safe extraction is enabled', () => {
+    const f = TestBed.createComponent(WizardComponent);
+
+    f.componentInstance.selectJobInputMode('pdf');
+
+    expect(f.componentInstance.jobInputMode()).toBe('text');
+    expect(f.componentInstance.error()).toContain('PDF und Screenshot');
   });
 });

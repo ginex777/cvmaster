@@ -121,23 +121,86 @@
     <section class="wizard-step" aria-labelledby="step2-heading">
       <h2 id="step2-heading" class="wizard-step__title">Stellenanzeige einfügen</h2>
       <form [formGroup]="jobForm" (ngSubmit)="nextStep()" novalidate aria-label="Stellenanzeige-Formular">
-        <div class="field">
-          <label for="job-raw">Stellentext</label>
-          <textarea
-            id="job-raw"
-            formControlName="jobRaw"
-            class="field__textarea"
-            rows="12"
-            placeholder="Füge hier den vollständigen Text der Stellenanzeige ein (mindestens 50 Zeichen)…"
-            aria-required="true"
-            [attr.aria-describedby]="jobForm.get('jobRaw')?.invalid && jobForm.get('jobRaw')?.touched ? 'job-raw-error' : null">
-          </textarea>
-          @if (jobForm.get('jobRaw')?.invalid && jobForm.get('jobRaw')?.touched) {
-            <span id="job-raw-error" role="alert" class="field__error">
-              Bitte mindestens 50 Zeichen eingeben.
-            </span>
-          }
+        <div class="job-input-tabs" role="tablist" aria-label="Eingabeart fuer Stellenanzeige">
+          <button
+            id="job-mode-text"
+            type="button"
+            role="tab"
+            class="job-input-tabs__tab"
+            [class.job-input-tabs__tab--active]="jobInputMode() === 'text'"
+            [attr.aria-selected]="jobInputMode() === 'text'"
+            aria-controls="job-panel-text"
+            (click)="selectJobInputMode('text')">
+            Text
+          </button>
+          <button
+            id="job-mode-url"
+            type="button"
+            role="tab"
+            class="job-input-tabs__tab"
+            [class.job-input-tabs__tab--active]="jobInputMode() === 'url'"
+            [attr.aria-selected]="jobInputMode() === 'url'"
+            aria-controls="job-panel-url"
+            (click)="selectJobInputMode('url')">
+            URL
+          </button>
+          <button type="button" role="tab" class="job-input-tabs__tab" aria-selected="false" aria-disabled="true" (click)="selectJobInputMode('pdf')">
+            PDF
+          </button>
+          <button type="button" role="tab" class="job-input-tabs__tab" aria-selected="false" aria-disabled="true" (click)="selectJobInputMode('screenshot')">
+            Screenshot
+          </button>
         </div>
+
+        @if (jobInputMode() === 'text') {
+          <div id="job-panel-text" class="field" role="tabpanel" aria-labelledby="job-mode-text">
+            <label for="job-raw">Stellentext</label>
+            <textarea
+              id="job-raw"
+              formControlName="jobRaw"
+              class="field__textarea"
+              rows="12"
+              placeholder="Fuege hier den vollstaendigen Text der Stellenanzeige ein (mindestens 50 Zeichen)..."
+              aria-required="true"
+              [attr.aria-describedby]="jobForm.get('jobRaw')?.invalid && jobForm.get('jobRaw')?.touched ? 'job-raw-error' : 'job-raw-note'">
+            </textarea>
+            <span id="job-raw-note" class="field__note">Zuverlaessigste Variante, wenn Job-Portale Crawling blockieren.</span>
+            @if (jobForm.get('jobRaw')?.invalid && jobForm.get('jobRaw')?.touched) {
+              <span id="job-raw-error" role="alert" class="field__error">
+                Bitte mindestens 50 Zeichen eingeben.
+              </span>
+            }
+          </div>
+        }
+
+        @if (jobInputMode() === 'url') {
+          <div id="job-panel-url" class="field" role="tabpanel" aria-labelledby="job-mode-url">
+            <label for="job-url">Link zur Stellenanzeige</label>
+            <input
+              id="job-url"
+              type="url"
+              formControlName="jobUrl"
+              autocomplete="url"
+              placeholder="https://unternehmen.de/jobs/frontend"
+              aria-required="true"
+              [attr.aria-describedby]="!currentJobInputValid() && jobForm.get('jobUrl')?.touched ? 'job-url-error' : 'job-url-note'" />
+            <span id="job-url-note" class="field__note">Wir laden nur oeffentliche HTTP/HTTPS-Seiten und speichern keine Originalseite.</span>
+            @if (!currentJobInputValid() && jobForm.get('jobUrl')?.touched) {
+              <span id="job-url-error" role="alert" class="field__error">
+                Bitte eine gueltige HTTP- oder HTTPS-URL eingeben.
+              </span>
+            }
+          </div>
+        }
+
+        <aside class="job-input-status" aria-live="polite">
+          <strong>Aktiv:</strong>
+          @if (jobInputMode() === 'url') {
+            URL-Import mit Sicherheitspruefung und Text-Extraktion.
+          } @else {
+            Direkter Text-Import ohne Crawling-Risiko.
+          }
+        </aside>
         <div class="wizard-step__actions">
           <button type="button" class="btn btn--ghost btn--md" (click)="step.set(1)">Zurück</button>
           <button type="submit" class="btn btn--primary btn--md">Weiter</button>

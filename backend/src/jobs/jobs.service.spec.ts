@@ -1,10 +1,15 @@
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import { BadRequestException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { lookup } from 'dns/promises';
 import { JobsService } from './jobs.service';
 import { PrismaService } from '../common/prisma.service';
 import { AiService } from '../ai/ai.service';
 
+jest.mock('dns/promises', () => ({ lookup: jest.fn() }));
+
 const fn = () => jest.fn<() => Promise<unknown>>();
+const lookupMock = jest.mocked(lookup);
 
 const mockPrisma = {
   jobPosting: { findFirst: fn(), create: fn() },
@@ -16,6 +21,7 @@ describe('JobsService', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    lookupMock.mockResolvedValue([{ address: '93.184.216.34', family: 4 }] as never);
     const module = await Test.createTestingModule({
       providers: [
         JobsService,
@@ -24,6 +30,10 @@ describe('JobsService', () => {
       ],
     }).compile();
     service = module.get(JobsService);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   describe('parse', () => {
@@ -68,6 +78,54 @@ describe('JobsService', () => {
       expect(mockPrisma.jobPosting.create).toHaveBeenCalledWith({
         data: expect.objectContaining({ userId: 'u2', sourceHash: expect.any(String) }),
       });
+    });
+
+    it('fetches, sanitizes, parses, and stores a job posting from a public URL', async () => {
+      const fetchMock = jest.spyOn(globalThis, 'fetch').mockResolvedValue(
+        new Response(
+          '<html><head><style>.x{}</style></head><body><script>alert(1)</script><h1>Frontend Developer</h1><p>React skills and accessibility experience required for this position.</p></body></html>',
+          { headers: { 'content-type': 'text/html', 'content-length': '180' } },
+        ),
+      );
+      mockPrisma.jobPosting.findFirst.mockResolvedValue(null);
+      mockAi.parseJob.mockResolvedValue({
+        title: 'Frontend Developer',
+        company: 'Example GmbH',
+        mustHaves: [],
+        niceToHaves: [],
+        skills: ['React'],
+        responsibilities: [],
+        language: 'de',
+      } as never);
+      mockPrisma.jobPosting.create.mockResolvedValue({ id: 'jp-url' } as never);
+
+      const result = await service.parse({ type: 'url', value: 'https://jobs.example.com/frontend' }, 'u1');
+
+      expect(lookupMock).toHaveBeenCalledWith('jobs.example.com', { all: true, verbatim: true });
+      expect(fetchMock).toHaveBeenCalledWith('https://jobs.example.com/frontend', expect.objectContaining({ redirect: 'follow' }));
+      expect(mockAi.parseJob).toHaveBeenCalledWith(
+        expect.stringContaining('Frontend Developer'),
+        { userId: 'u1' },
+      );
+      expect(mockPrisma.jobPosting.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ sourceType: 'url', sourceValue: 'https://jobs.example.com/frontend' }),
+      });
+      expect(result).toHaveProperty('id', 'jp-url');
+    });
+
+    it('rejects private URL targets before fetching', async () => {
+      const fetchMock = jest.spyOn(globalThis, 'fetch');
+      lookupMock.mockResolvedValue([{ address: '127.0.0.1', family: 4 }] as never);
+
+      await expect(service.parse({ type: 'url', value: 'https://internal.example.com/job' }, 'u1')).rejects.toBeInstanceOf(BadRequestException);
+
+      expect(fetchMock).not.toHaveBeenCalled();
+      expect(mockAi.parseJob).not.toHaveBeenCalled();
+    });
+
+    it('rejects disabled PDF mode with a user-safe error', async () => {
+      await expect(service.parse({ type: 'pdf', value: 'job.pdf' }, 'u1')).rejects.toBeInstanceOf(BadRequestException);
+      expect(mockAi.parseJob).not.toHaveBeenCalled();
     });
   });
 });
