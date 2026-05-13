@@ -21,6 +21,7 @@ describe('PricingComponent', () => {
     }).compileComponents();
 
     delete (globalThis as { Paddle?: unknown }).Paddle;
+    delete (globalThis as { __LBA_CONFIG__?: unknown }).__LBA_CONFIG__;
   });
 
   it('renders both pricing cards', () => {
@@ -31,24 +32,39 @@ describe('PricingComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Pro');
   });
 
-  it('opens Paddle checkout with current user id', () => {
+  it('opens Paddle checkout with current user id', async () => {
     const open = jest.fn();
-    (globalThis as { Paddle?: unknown }).Paddle = { Checkout: { open } };
+    const initialize = jest.fn();
+    const setEnvironment = jest.fn();
+    (globalThis as { __LBA_CONFIG__?: unknown }).__LBA_CONFIG__ = {
+      paddleClientToken: 'test_token',
+      paddleEnvironment: 'sandbox',
+      paddlePriceIdPro: 'pri_test_pro',
+    };
+    (globalThis as { Paddle?: unknown }).Paddle = {
+      Environment: { set: setEnvironment },
+      Initialize: initialize,
+      Checkout: { open },
+    };
     const fixture = TestBed.createComponent(PricingComponent);
 
-    fixture.componentInstance.openProCheckout();
+    await fixture.componentInstance.openProCheckout();
 
+    expect(setEnvironment).toHaveBeenCalledWith('sandbox');
+    expect(initialize).toHaveBeenCalledWith(expect.objectContaining({ token: 'test_token' }));
     expect(open).toHaveBeenCalledWith({
-      items: [{ priceId: 'pri_pro_monthly_placeholder', quantity: 1 }],
+      items: [{ priceId: 'pri_test_pro', quantity: 1 }],
       customData: { userId: 'u1' },
+      customer: { email: 'a@b.de' },
+      settings: { displayMode: 'overlay', theme: 'light', locale: 'de' },
     });
   });
 
-  it('sets an error when Paddle is unavailable', () => {
+  it('sets an error when Paddle config is missing', async () => {
     const fixture = TestBed.createComponent(PricingComponent);
 
-    fixture.componentInstance.openProCheckout();
+    await fixture.componentInstance.openProCheckout();
 
-    expect(fixture.componentInstance.checkoutError()).toContain('Checkout konnte nicht geladen werden');
+    expect(fixture.componentInstance.checkoutError()).toContain('Checkout ist noch nicht konfiguriert');
   });
 });

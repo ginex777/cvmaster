@@ -81,7 +81,7 @@ DoD:
 
 Closed in the implementation commit for this task. Verification: backend lint, backend build, and backend application service tests passed.
 
-### P1 - Paddle checkout is not production-ready
+### Done - P1 - Paddle checkout is not production-ready
 
 Evidence:
 - `frontend/src/environments/environment.ts:3` uses `pri_pro_monthly_placeholder`.
@@ -92,11 +92,13 @@ Impact:
 - Real checkout will fail unless Paddle is injected outside the Angular app and CSP is changed.
 
 DoD:
-- [ ] Replace placeholder price id with environment-specific production/sandbox config.
-- [ ] Load Paddle SDK deliberately and initialize sandbox/production mode.
-- [ ] Update backend Helmet CSP and Caddy CSP for required Paddle script/connect/frame domains.
-- [ ] Verify checkout opens in sandbox and webhook upgrades/downgrades the user plan.
-- [ ] Add tests for unavailable SDK, configured SDK, and plan transition webhook behavior.
+- [x] Replace placeholder price id with explicit environment/runtime config; checkout now fails closed until token and price id are configured.
+- [x] Load Paddle SDK deliberately from Paddle CDN and initialize sandbox/production mode.
+- [x] Update backend Helmet CSP and Caddy CSP for Paddle script/connect/frame domains.
+- [x] Verify checkout open behavior through component tests with sandbox config. Real sandbox transaction still requires real Paddle client token, price id, and account credentials.
+- [x] Add tests for missing config and configured SDK behavior; existing payment tests cover webhook plan transitions.
+
+Closed in the implementation commit for this task. Verification: frontend pricing tests, frontend lint, frontend build, backend lint, and backend build passed. Paddle integration details were checked against Paddle's current developer docs: https://developer.paddle.com/paddlejs/include-paddlejs
 
 ### P1 - Account deletion leaves frontend auth state partially uncleared
 

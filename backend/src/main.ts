@@ -52,11 +52,12 @@ async function bootstrap() {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: ["'self'"],
+          scriptSrc: ["'self'", 'https://cdn.paddle.com'],
           styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
           fontSrc: ['fonts.gstatic.com'],
-          imgSrc: ["'self'", 'data:'],
-          connectSrc: ["'self'"],
+          imgSrc: ["'self'", 'data:', 'https://*.paddle.com'],
+          connectSrc: ["'self'", 'https://*.paddle.com'],
+          frameSrc: ['https://*.paddle.com'],
         },
       },
       hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },

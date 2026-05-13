@@ -40,7 +40,9 @@
         <li>TOTP-Zwei-Faktor-Auth</li>
         <li>Follow-up-Vorlagen</li>
       </ul>
-      <button type="button" class="btn btn--primary btn--md" (click)="openProCheckout()">Pro starten</button>
+      <button type="button" class="btn btn--primary btn--md" (click)="openProCheckout()" [disabled]="checkoutLoading()">
+        {{ checkoutLoading() ? 'Checkout wird geladen...' : 'Pro starten' }}
+      </button>
     </article>
   </div>
 
