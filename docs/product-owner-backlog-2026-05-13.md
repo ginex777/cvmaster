@@ -365,28 +365,17 @@ Acceptance criteria:
 - User can get generated documents by email and can prepare an email to an employer.
 - No SMTP relay or disk storage is introduced.
 
-### P1.5 Add Follow-Up Templates
+### P1.5 Add Follow-Up Templates - Done 2026-05-13
 
-Problem: Follow-up templates are in V1 scope but not surfaced in the current app.
+Status: Done.
 
-Backend tasks:
+Completion evidence:
 
-- Add deterministic template generation for reminder, status request, and thank-you follow-up.
-- Optionally allow AI-assisted personalization through `AiService`.
-- Persist chosen follow-up text only if the user saves it.
-- Add tests for template output and user ownership.
-
-Frontend tasks:
-
-- Add follow-up action in application editor or dashboard row.
-- Provide three template cards: Erinnerung, Status-Anfrage, Dank.
-- Add copy-to-clipboard and mailto actions.
-- Add tests for selection and copy feedback.
-
-Acceptance criteria:
-
-- Users can quickly send a follow-up after status changes.
-- Feature works without requiring employer API integration.
+- `GET /applications/:id/follow-up-templates` returns 3 deterministic templates (reminder, status, thanks) with job title and company filled in from the application's job posting; ownership-checked via `OwnsApplicationGuard`.
+- 4 backend service tests: returns 3 templates, subject uses job title, fallback for missing parsed title, ForbiddenException for wrong user.
+- Application editor gains a "Nachfassen" panel in the Match Report sidebar: lazy-loads templates on button click, displays 3 cards each with a copy-to-clipboard button (with 2s "Kopiert!" feedback) and an "E-Mail öffnen" mailto button.
+- 5 frontend tests: initial null state, load success, no-reload guard, error state, copy feedback.
+- All 165 frontend tests and 124 backend tests pass; lint clean; build succeeds.
 
 ### P1.6 Add LinkedIn Profile Text Optimization
 

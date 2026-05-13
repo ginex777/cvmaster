@@ -1,4 +1,11 @@
 import { BadGatewayException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+
+export interface FollowUpTemplate {
+  type: 'reminder' | 'status' | 'thanks';
+  label: string;
+  subject: string;
+  body: string;
+}
 import { AppStatus, Prisma } from '@prisma/client';
 import { Response } from 'express';
 import { PrismaService } from '../common/prisma.service';
@@ -157,6 +164,34 @@ export class ApplicationsService {
 
   async updateStatus(id: string, status: AppStatus) {
     return this.prisma.application.update({ where: { id }, data: { status } });
+  }
+
+  async getFollowUpTemplates(id: string, userId: string): Promise<FollowUpTemplate[]> {
+    const app = await this.findOne(id, userId);
+    const parsed = app.jobPosting?.parsedJson;
+    const title = this.hasJobTitle(parsed) ? parsed.title : 'die ausgeschriebene Stelle';
+    const company = this.hasJobTitle(parsed) ? parsed.company : 'Ihr Unternehmen';
+
+    return [
+      {
+        type: 'reminder',
+        label: 'Erinnerung',
+        subject: `Nachfrage zu meiner Bewerbung – ${title}`,
+        body: `Sehr geehrte Damen und Herren,\n\nvor einigen Tagen habe ich mich für die Position „${title}" bei ${company} beworben. Gerne möchte ich mein Interesse an der Stelle nochmals bekräftigen und fragen, ob meine Unterlagen vollständig vorliegen.\n\nFür Rückfragen stehe ich jederzeit zur Verfügung.\n\nMit freundlichen Grüßen`,
+      },
+      {
+        type: 'status',
+        label: 'Status-Anfrage',
+        subject: `Statusanfrage zu meiner Bewerbung – ${title}`,
+        body: `Sehr geehrte Damen und Herren,\n\nich beziehe mich auf meine Bewerbung für die Stelle „${title}" bei ${company}. Da mir die Position sehr am Herzen liegt, würde ich mich freuen zu erfahren, ob Sie bereits eine Vorauswahl getroffen haben und wann ich mit einer Rückmeldung rechnen darf.\n\nVielen Dank für Ihre Zeit.\n\nMit freundlichen Grüßen`,
+      },
+      {
+        type: 'thanks',
+        label: 'Dankesnachricht',
+        subject: `Vielen Dank für das Gespräch – ${title}`,
+        body: `Sehr geehrte Damen und Herren,\n\nvielen Dank für das angenehme Gespräch über die Position „${title}" bei ${company}. Die Unterhaltung hat mein Interesse an der Stelle und Ihrem Unternehmen noch weiter bestärkt.\n\nIch freue mich auf die nächsten Schritte.\n\nMit freundlichen Grüßen`,
+      },
+    ];
   }
 
   private asLayout(value: string | null | undefined): CvLayout {

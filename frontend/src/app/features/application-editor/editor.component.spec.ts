@@ -209,4 +209,74 @@ describe('EditorComponent', () => {
     expect(href).toContain('Bewerbung%20als%20Frontend%20Developer');
     expect(href).toContain('Bitte%20fuege%20die%20heruntergeladenen%20PDF-Dateien');
   });
+
+  describe('follow-up templates', () => {
+    const mockTemplates = [
+      { type: 'reminder', label: 'Erinnerung', subject: 'Nachfrage', body: 'Sehr geehrte...' },
+      { type: 'status', label: 'Status-Anfrage', subject: 'Statusanfrage', body: 'Ich beziehe mich...' },
+      { type: 'thanks', label: 'Dankesnachricht', subject: 'Vielen Dank', body: 'Vielen Dank...' },
+    ];
+
+    it('followUpTemplates is null initially', async () => {
+      const f = TestBed.createComponent(EditorComponent);
+      f.detectChanges();
+      await f.whenStable();
+      expect(f.componentInstance.followUpTemplates()).toBeNull();
+    });
+
+    it('loads templates and sets signal on success', async () => {
+      api.get
+        .mockResolvedValueOnce({ id: 'a1', status: 'OPEN', matchScore: 88, optimizedCv: { text: 'cv' }, coverLetter: {}, chosenVariant: 'formal', jobPosting: { parsedJson: { title: 'Dev', company: 'Acme' } } })
+        .mockResolvedValueOnce(mockTemplates);
+      const f = TestBed.createComponent(EditorComponent);
+      f.detectChanges();
+      await f.whenStable();
+
+      await f.componentInstance.loadFollowUpTemplates();
+
+      expect(api.get).toHaveBeenCalledWith('/applications/a1/follow-up-templates');
+      expect(f.componentInstance.followUpTemplates()).toEqual(mockTemplates);
+    });
+
+    it('does not reload if templates already loaded', async () => {
+      const f = TestBed.createComponent(EditorComponent);
+      f.detectChanges();
+      await f.whenStable();
+      f.componentInstance.followUpTemplates.set(mockTemplates as never);
+
+      await f.componentInstance.loadFollowUpTemplates();
+
+      expect(api.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('sets followUpError on load failure', async () => {
+      api.get
+        .mockResolvedValueOnce({ id: 'a1', status: 'OPEN', matchScore: 88, optimizedCv: { text: 'cv' }, coverLetter: {}, chosenVariant: 'formal', jobPosting: {} })
+        .mockRejectedValueOnce(new HttpErrorResponse({ error: { message: 'Fehler' } }));
+      const f = TestBed.createComponent(EditorComponent);
+      f.detectChanges();
+      await f.whenStable();
+
+      await f.componentInstance.loadFollowUpTemplates();
+
+      expect(f.componentInstance.followUpError()).toBe('Fehler');
+    });
+
+    it('copiedType is set after copyFollowUp and cleared after 2s', async () => {
+      jest.useFakeTimers();
+      Object.assign(navigator, { clipboard: { writeText: jest.fn().mockResolvedValue(undefined) } });
+
+      const f = TestBed.createComponent(EditorComponent);
+      f.detectChanges();
+      await f.whenStable();
+
+      const p = f.componentInstance.copyFollowUp('Text', 'reminder');
+      await p;
+
+      expect(f.componentInstance.copiedType()).toBe('reminder');
+      jest.advanceTimersByTime(2000);
+      expect(f.componentInstance.copiedType()).toBeNull();
+      jest.useRealTimers();
+    });
+  });
 });

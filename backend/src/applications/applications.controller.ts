@@ -158,6 +158,12 @@ export class ApplicationsController {
     return this.apps.updateStatus(id, parsedStatus);
   }
 
+  @Get(':id/follow-up-templates')
+  @UseGuards(OwnsApplicationGuard)
+  getFollowUpTemplates(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    return this.apps.getFollowUpTemplates(id, req.user.sub);
+  }
+
   private toPdfData(value: unknown, fallbackName: string): CvPdfData {
     if (this.hasPdfSections(value)) {
       return {

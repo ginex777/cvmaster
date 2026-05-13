@@ -138,6 +138,53 @@
           </button>
           <p class="send-panel__hint">Anhange koennen per mailto nicht automatisch gesetzt werden. Lade die PDFs herunter und haenge sie manuell an.</p>
         </section>
+
+        <section class="follow-up-panel" aria-labelledby="follow-up-title">
+          <div class="follow-up-panel__header">
+            <h3 id="follow-up-title">Nachfassen</h3>
+            <p>Vorlagen für Nachfass-E-Mails nach dem Absenden.</p>
+          </div>
+
+          @if (followUpError()) {
+            <div role="alert" aria-live="polite" class="follow-up-panel__error">{{ followUpError() }}</div>
+          }
+
+          @if (followUpTemplates() === null) {
+            <button
+              type="button"
+              class="btn btn--ghost btn--sm"
+              (click)="loadFollowUpTemplates()"
+              [disabled]="followUpLoading()">
+              @if (followUpLoading()) { Wird geladen… } @else { Vorlagen laden }
+            </button>
+          } @else {
+            <ul class="follow-up-list" role="list">
+              @for (tpl of followUpTemplates()!; track tpl.type) {
+                <li class="follow-up-card">
+                  <strong class="follow-up-card__label">{{ tpl.label }}</strong>
+                  <p class="follow-up-card__subject">Betreff: {{ tpl.subject }}</p>
+                  <p class="follow-up-card__preview">{{ tpl.body.slice(0, 80) }}…</p>
+                  <div class="follow-up-card__actions">
+                    <button
+                      type="button"
+                      class="btn btn--ghost btn--sm"
+                      (click)="copyFollowUp(tpl.body, tpl.type)"
+                      [attr.aria-label]="'Text kopieren: ' + tpl.label">
+                      @if (copiedType() === tpl.type) { Kopiert! } @else { Kopieren }
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn--ghost btn--sm"
+                      (click)="openFollowUpMailto(tpl.subject, tpl.body)"
+                      [attr.aria-label]="'Per E-Mail senden: ' + tpl.label">
+                      E-Mail öffnen
+                    </button>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </section>
       </aside>
 
       <section class="panel panel--cv" aria-labelledby="cv-title">

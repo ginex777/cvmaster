@@ -8,6 +8,13 @@ import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal
 
 type LetterVariant = 'formal' | 'warm' | 'brief';
 
+interface FollowUpTemplate {
+  type: 'reminder' | 'status' | 'thanks';
+  label: string;
+  subject: string;
+  body: string;
+}
+
 interface MatchReport {
   summary?: string;
   keywords?: string[];
@@ -57,6 +64,10 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly selectedLetter = signal<LetterVariant>('formal');
   readonly regenConfirmOpen = signal(false);
   readonly letterVariants: LetterVariant[] = ['formal', 'warm', 'brief'];
+  readonly followUpTemplates = signal<FollowUpTemplate[] | null>(null);
+  readonly followUpLoading = signal(false);
+  readonly followUpError = signal<string | null>(null);
+  readonly copiedType = signal<string | null>(null);
 
   readonly editorForm = new FormGroup({
     cvText: new FormControl('', { nonNullable: true }),
@@ -262,6 +273,38 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   variantLabel(variant: LetterVariant): string {
     return { formal: 'Formal', warm: 'Freundlich', brief: 'Knapp' }[variant];
+  }
+
+  async loadFollowUpTemplates(): Promise<void> {
+    if (this.followUpTemplates() !== null) return;
+    this.followUpLoading.set(true);
+    this.followUpError.set(null);
+    try {
+      const templates = await this.api.get<FollowUpTemplate[]>(`/applications/${this.id}/follow-up-templates`);
+      this.followUpTemplates.set(templates);
+    } catch (e: unknown) {
+      this.followUpError.set(e instanceof HttpErrorResponse ? e.error.message : 'Vorlagen konnten nicht geladen werden.');
+    } finally {
+      this.followUpLoading.set(false);
+    }
+  }
+
+  async copyFollowUp(body: string, type: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(body);
+      this.copiedType.set(type);
+      setTimeout(() => this.copiedType.set(null), 2000);
+    } catch {
+      this.followUpError.set('Text konnte nicht in die Zwischenablage kopiert werden.');
+    }
+  }
+
+  openFollowUpMailto(subject: string, body: string): void {
+    const recipient = this.editorForm.controls.recipientEmail.value.trim();
+    const href = `mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    if (typeof window !== 'undefined') {
+      window.location.href = href;
+    }
   }
 
   private jobTitle(): string {

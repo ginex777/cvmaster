@@ -297,4 +297,40 @@ describe('ApplicationsService', () => {
       });
     });
   });
+
+  describe('getFollowUpTemplates', () => {
+    const appWithJob = {
+      id: 'a1',
+      userId: 'u1',
+      masterCv: null,
+      jobPosting: { parsedJson: { title: 'Frontend-Entwickler', company: 'Acme GmbH' } },
+    };
+
+    it('returns three templates with correct types', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue(appWithJob as never);
+      const templates = await service.getFollowUpTemplates('a1', 'u1');
+      expect(templates).toHaveLength(3);
+      expect(templates.map(t => t.type)).toEqual(['reminder', 'status', 'thanks']);
+    });
+
+    it('uses job title and company in template subject', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue(appWithJob as never);
+      const templates = await service.getFollowUpTemplates('a1', 'u1');
+      expect(templates[0].subject).toContain('Frontend-Entwickler');
+      expect(templates[0].body).toContain('Acme GmbH');
+    });
+
+    it('uses fallback text when job posting has no parsed title', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue({
+        id: 'a1', userId: 'u1', masterCv: null, jobPosting: { parsedJson: {} },
+      } as never);
+      const templates = await service.getFollowUpTemplates('a1', 'u1');
+      expect(templates[0].subject).toContain('die ausgeschriebene Stelle');
+    });
+
+    it('throws ForbiddenException for wrong user', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue({ ...appWithJob, userId: 'other' } as never);
+      await expect(service.getFollowUpTemplates('a1', 'u1')).rejects.toThrow(ForbiddenException);
+    });
+  });
 });
