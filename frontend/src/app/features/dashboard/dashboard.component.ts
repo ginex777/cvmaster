@@ -86,7 +86,7 @@ export class DashboardComponent implements OnInit {
     this.error.set(null);
 
     try {
-      await this.api.patch(`/applications/${id}`, { status });
+      await this.api.patch(`/applications/${id}/status`, { status });
     } catch (e: unknown) {
       this.updateApplicationInList(id, { status: previous });
       this.error.set(this.errorMessage(e, 'Status konnte nicht geändert werden.'));

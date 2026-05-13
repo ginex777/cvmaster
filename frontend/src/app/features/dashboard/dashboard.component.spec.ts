@@ -101,7 +101,7 @@ describe('DashboardComponent', () => {
 
     expect(fixture.componentInstance.data()?.recentApplications[0].status).toBe('DONE');
     await promise;
-    expect(api.patch).toHaveBeenCalledWith('/applications/app-1', { status: 'DONE' });
+    expect(api.patch).toHaveBeenCalledWith('/applications/app-1/status', { status: 'DONE' });
   });
 
   it('rolls status back and sets error when status persistence fails', async () => {
