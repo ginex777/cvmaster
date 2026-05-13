@@ -161,7 +161,8 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.application.update(app => app ? { ...app, status } : app);
 
     try {
-      await this.patchApplication({ status });
+      const updated = await this.api.patch<ApplicationDto>(`/applications/${this.id}/status`, { status });
+      this.application.update(current => ({ ...(current ?? { id: this.id }), ...updated }));
     } catch {
       this.application.set(previous);
     }

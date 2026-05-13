@@ -44,7 +44,7 @@ DoD:
 
 Closed in the implementation commit for this task. Verification: backend lint, backend build, backend test suite, frontend lint, frontend build, frontend test suite all passed. SQL migration was also applied successfully to local Postgres with `psql`; the local Prisma CLI still reports a generic schema-engine error when running `migrate deploy`, which is tracked separately if it persists outside this workspace.
 
-### P1 - Client can write server-owned application integrity fields
+### Done - P1 - Client can write server-owned application integrity fields
 
 Evidence:
 - `backend/src/applications/applications.controller.ts:24` to `31` accepts `matchReport`, `matchScore`, and `status` in the general PATCH schema.
@@ -55,11 +55,13 @@ Impact:
 - Editing CV/letter drafts is legitimate, but AI scoring and workflow state should be server-owned.
 
 DoD:
-- [ ] Split client-editable draft fields from server-owned fields.
-- [ ] Keep user-editable `optimizedCv`, `coverLetter`, `chosenVariant`, and `chosenLayout` if product needs manual editing.
-- [ ] Remove `matchScore`, `matchReport`, and broad `status` writes from the generic PATCH endpoint.
-- [ ] Keep explicit status transitions behind a validated enum and allowed-transition policy.
-- [ ] Add controller/service tests proving clients cannot forge score/report/status.
+- [x] Split client-editable draft fields from server-owned fields.
+- [x] Keep user-editable `optimizedCv`, `coverLetter`, `chosenVariant`, and `chosenLayout` for manual editing.
+- [x] Remove `matchScore`, `matchReport`, and broad `status` writes from the generic PATCH endpoint.
+- [x] Keep explicit status transitions behind a validated enum on the dedicated status endpoint.
+- [x] Add controller tests proving clients cannot forge score/report/status through the generic PATCH endpoint.
+
+Closed in the implementation commit for this task. Verification: backend lint, backend build, backend application controller/service tests, frontend lint, frontend build, and frontend editor tests passed.
 
 ### P1 - Email-to-self endpoint sends no generated PDFs
 

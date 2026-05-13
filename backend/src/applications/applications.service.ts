@@ -146,8 +146,8 @@ export class ApplicationsService {
     return { message: 'Email sent' };
   }
 
-  async updateStatus(id: string, status: string) {
-    return this.prisma.application.update({ where: { id }, data: { status: status as AppStatus } });
+  async updateStatus(id: string, status: AppStatus) {
+    return this.prisma.application.update({ where: { id }, data: { status } });
   }
 
   private asLayout(value: string | null | undefined): CvLayout {

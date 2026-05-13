@@ -26,11 +26,8 @@ const statusSchema = z.preprocess(
 const updateSchema = z.object({
   optimizedCv: z.unknown().optional(),
   coverLetter: z.unknown().optional(),
-  matchReport: z.unknown().optional(),
-  matchScore: z.number().int().min(0).max(100).nullable().optional(),
   chosenVariant: z.string().optional(),
   chosenLayout: z.string().optional(),
-  status: statusSchema.optional(),
 });
 
 @Controller('applications')
@@ -154,8 +151,9 @@ export class ApplicationsController {
 
   @Patch(':id/status')
   @UseGuards(OwnsApplicationGuard)
-  updateStatus(@Param('id') id: string, @Body('status') status: string) {
-    return this.apps.updateStatus(id, status);
+  updateStatus(@Param('id') id: string, @Body('status') status: unknown) {
+    const parsedStatus = statusSchema.parse(status);
+    return this.apps.updateStatus(id, parsedStatus);
   }
 
   private toPdfData(value: unknown, fallbackName: string): CvPdfData {

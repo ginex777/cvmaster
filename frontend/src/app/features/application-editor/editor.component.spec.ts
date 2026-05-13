@@ -89,7 +89,7 @@ describe('EditorComponent', () => {
     await f.componentInstance.setStatus('DONE');
 
     expect(f.componentInstance.application()?.status).toBe('DONE');
-    expect(api.patch).toHaveBeenCalledWith('/applications/a1', { status: 'DONE' });
+    expect(api.patch).toHaveBeenCalledWith('/applications/a1/status', { status: 'DONE' });
   });
 
   it('opens and confirms letter regeneration', async () => {
