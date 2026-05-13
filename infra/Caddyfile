@@ -16,6 +16,11 @@
     reverse_proxy api:3000
   }
 
+  handle /health {
+    rewrite * /api/health
+    reverse_proxy api:3000
+  }
+
   handle_path /.well-known/security.txt {
     respond `Contact: mailto:security@example.de
 Expires: 2027-01-01T00:00:00.000Z

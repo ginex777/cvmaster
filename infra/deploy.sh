@@ -7,19 +7,22 @@ set -euo pipefail
 REMOTE="${REMOTE:-deploy@example.de}"
 REMOTE_PATH="${REMOTE_PATH:-/opt/lba}"
 
-echo "→ Build Frontend"
+echo "-> Build Frontend"
 cd ../frontend && pnpm install --frozen-lockfile && pnpm build
 
-echo "→ Build Backend"
+echo "-> Build Backend"
 cd ../backend && pnpm install --frozen-lockfile && pnpm build
 
-echo "→ Sync to $REMOTE"
+echo "-> Sync to $REMOTE"
 cd ..
 rsync -avz --delete \
   --exclude node_modules --exclude .git --exclude '*.log' \
   ./ "$REMOTE:$REMOTE_PATH/"
 
-echo "→ Restart on remote"
+echo "-> Restart on remote"
 ssh "$REMOTE" "cd $REMOTE_PATH/infra && docker compose pull && docker compose up -d --build"
 
-echo "✓ Deploy abgeschlossen."
+echo "-> Verify public health endpoint"
+ssh "$REMOTE" "health=\$(curl -fsS http://localhost/health) && printf '%s' \"\$health\" | grep -q '\"status\":\"ok\"'"
+
+echo "Deploy abgeschlossen."

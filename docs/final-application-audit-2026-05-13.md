@@ -232,7 +232,7 @@ DoD:
 
 Closed in the implementation commit for this task. Verification: Prisma client regenerated, backend AI audit tests, GDPR purge/export tests, backend lint, backend build, and full backend test suite passed. The local Prisma schema engine still returns a generic `Schema engine error` for `migrate deploy`; the SQL migration was applied manually to Docker Postgres and recorded in `_prisma_migrations`.
 
-### P2 - Public `/health` is frontend HTML, not service health
+### Done - P2 - Public `/health` is frontend HTML, not service health
 
 Evidence:
 - `GET http://localhost/health` returned the Angular index HTML.
@@ -242,8 +242,10 @@ Impact:
 - External uptime monitors pointed at `/health` will receive 200 even if API dependencies are down.
 
 DoD:
-- [ ] Add a Caddy route for `/health` that proxies to `/api/health`, or document `/api/health` as the only health endpoint.
-- [ ] Add a deploy/readiness check that asserts JSON health output.
+- [x] Add a Caddy route for `/health` that proxies to `/api/health`, or document `/api/health` as the only health endpoint.
+- [x] Add a deploy/readiness check that asserts JSON health output.
+
+Closed in the implementation commit for this task. Verification: Caddy was reloaded locally and `GET http://localhost/health` returned `{"status":"ok","checks":{"database":"ok","redis":"ok"}}`.
 
 ### P2 - PlanGuard exists but product gates are mostly manual
 
