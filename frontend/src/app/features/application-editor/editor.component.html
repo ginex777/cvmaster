@@ -22,6 +22,10 @@
     <p class="editor__alert" aria-live="polite">{{ errorMessage() }}</p>
   }
 
+  @if (statusMessage()) {
+    <p class="editor__status" aria-live="polite">{{ statusMessage() }}</p>
+  }
+
   @if (isLoading()) {
     <section class="editor__grid editor__grid--loading" aria-label="Editor wird geladen">
       <div class="skeleton skeleton--panel"></div>
@@ -117,6 +121,22 @@
               Erledigt
             </button>
           </div>
+        </section>
+
+        <section class="send-panel" aria-labelledby="send-title">
+          <div>
+            <h3 id="send-title">Versand</h3>
+            <p>PDFs an dich senden oder dein E-Mail-Programm vorbereiten.</p>
+          </div>
+          <button type="button" class="btn btn--secondary btn--sm" (click)="sendToSelf()" [disabled]="isSending()">
+            @if (isSending()) { Wird gesendet... } @else { An mich senden }
+          </button>
+          <label for="recipient-email">Empfaenger</label>
+          <input id="recipient-email" type="email" formControlName="recipientEmail" placeholder="recruiting@example.de" autocomplete="email" />
+          <button type="button" class="btn btn--ghost btn--sm" (click)="openMailto()">
+            In E-Mail-Programm oeffnen
+          </button>
+          <p class="send-panel__hint">Anhange koennen per mailto nicht automatisch gesetzt werden. Lade die PDFs herunter und haenge sie manuell an.</p>
         </section>
       </aside>
 

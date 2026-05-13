@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
-import { ForbiddenException, HttpException, NotFoundException } from '@nestjs/common';
+import { BadGatewayException, ForbiddenException, HttpException, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { ApplicationsService } from './applications.service';
 import { PrismaService } from '../common/prisma.service';
@@ -15,6 +15,7 @@ const mockPrisma = {
   jobPosting: { findFirst: fn() },
   application: { count: fn(), create: fn(), findMany: fn(), findUnique: fn(), findUniqueOrThrow: fn(), update: fn(), delete: fn() },
   user: { findUniqueOrThrow: fn() },
+  auditLog: { create: fn() },
 };
 const mockQueue = { enqueueAiPipeline: fn(), enqueueRegenerateLetter: fn() };
 const mockMail = { sendApplicationToSelf: fn() };
@@ -262,6 +263,38 @@ describe('ApplicationsService', () => {
         { filename: 'Lebenslauf_Acme_Dev.pdf', content: cv, contentType: 'application/pdf' },
         { filename: 'Lebenslauf_Acme_Dev_Anschreiben.pdf', content: letter, contentType: 'application/pdf' },
       ]);
+      expect(mockPrisma.auditLog.create).toHaveBeenCalledWith({
+        data: {
+          userId: 'u1',
+          event: 'application.email_to_self',
+          payload: { applicationId: 'a1', state: 'sent' },
+        },
+      });
+    });
+
+    it('throws a user-safe error and audits failure when email delivery fails', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue({
+        id: 'a1',
+        userId: 'u1',
+        optimizedCv: { text: 'Profil\nAngular' },
+        coverLetter: { formal: 'Sehr geehrte Damen und Herren' },
+        chosenVariant: 'formal',
+        masterCv: { template: 'classic' },
+        jobPosting: { parsedJson: { company: 'Acme', title: 'Dev' } },
+      } as never);
+      mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ email: 'lina@example.de' } as never);
+      mockPdf.generateCvPdf.mockResolvedValue(Buffer.from('cv-pdf'));
+      mockPdf.generateLetterPdf.mockResolvedValue(Buffer.from('letter-pdf'));
+      mockMail.sendApplicationToSelf.mockRejectedValue(new Error('resend down'));
+
+      await expect(service.emailToSelf('a1', 'u1')).rejects.toThrow(BadGatewayException);
+      expect(mockPrisma.auditLog.create).toHaveBeenCalledWith({
+        data: {
+          userId: 'u1',
+          event: 'application.email_to_self',
+          payload: { applicationId: 'a1', state: 'failed' },
+        },
+      });
     });
   });
 });

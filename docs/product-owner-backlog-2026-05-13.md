@@ -323,7 +323,16 @@ Acceptance criteria:
 - Users can edit the generated CV without understanding JSON-like data.
 - Source attribution and hallucination safeguards survive manual edits where applicable.
 
-### P1.4 Finish Mail-To-Self And Mailto UX
+### P1.4 Finish Mail-To-Self And Mailto UX - Done 2026-05-13
+
+Status: Done.
+
+Completion evidence:
+
+- Editor exposes "An mich senden" and calls `POST /applications/:id/email-to-self`.
+- Backend keeps PDF generation in memory, audits email-to-self success/failure, and returns a user-safe delivery error if mail delivery fails.
+- Editor exposes a recipient field and builds a `mailto:` link with subject/body plus a visible attachment limitation reminder.
+- Tests cover backend attachments/audit/failure handling and frontend send/mailto success/error states.
 
 Problem: Backend email-to-self exists, but the editor should expose both "send to myself" and "open email program" workflows from the spec.
 

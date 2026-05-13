@@ -50,7 +50,9 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly generating = signal(false);
   readonly saving = signal(false);
   readonly downloading = signal(false);
+  readonly sending = signal(false);
   readonly error = signal<string | null>(null);
+  readonly message = signal<string | null>(null);
   readonly application = signal<ApplicationDto | null>(null);
   readonly selectedLetter = signal<LetterVariant>('formal');
   readonly regenConfirmOpen = signal(false);
@@ -61,6 +63,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     formal: new FormControl('', { nonNullable: true }),
     warm: new FormControl('', { nonNullable: true }),
     brief: new FormControl('', { nonNullable: true }),
+    recipientEmail: new FormControl('', { nonNullable: true }),
   });
 
   readonly score = computed(() => this.application()?.matchScore ?? this.application()?.atsScore ?? null);
@@ -75,7 +78,9 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly isGenerating = computed(() => this.generating());
   readonly isSaving = computed(() => this.saving());
   readonly isDownloading = computed(() => this.downloading());
+  readonly isSending = computed(() => this.sending());
   readonly errorMessage = computed(() => this.error());
+  readonly statusMessage = computed(() => this.message());
   readonly generationProgress = computed(() => this.application()?.generationProgress ?? 0);
   readonly generationError = computed(() => this.application()?.generationError ?? null);
   readonly generationFailed = computed(() => this.application()?.status === 'FAILED' || !!this.generationError());
@@ -184,6 +189,40 @@ export class EditorComponent implements OnInit, OnDestroy {
     await this.downloadFile(`/applications/${this.id}/export/bundle`, 'Bewerbung.zip');
   }
 
+  async sendToSelf(): Promise<void> {
+    if (!this.id) return;
+    this.sending.set(true);
+    this.error.set(null);
+    this.message.set(null);
+    try {
+      await this.api.post(`/applications/${this.id}/email-to-self`, {});
+      this.message.set('Bewerbungsunterlagen wurden an deine E-Mail-Adresse gesendet.');
+    } catch (e: unknown) {
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'E-Mail konnte nicht gesendet werden.');
+    } finally {
+      this.sending.set(false);
+    }
+  }
+
+  openMailto(): void {
+    const href = this.mailtoHref();
+    if (typeof window !== 'undefined') {
+      window.location.href = href;
+    }
+  }
+
+  mailtoHref(): string {
+    const recipient = this.editorForm.controls.recipientEmail.value.trim();
+    const subject = `Bewerbung${this.jobTitle() ? ` als ${this.jobTitle()}` : ''}`;
+    const body = [
+      this.letterControl().value,
+      '',
+      'Hinweis: Bitte fuege die heruntergeladenen PDF-Dateien als Anhang hinzu.',
+    ].join('\n');
+
+    return `mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
   openRegenConfirm(): void {
     this.regenConfirmOpen.set(true);
   }
@@ -223,6 +262,10 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   variantLabel(variant: LetterVariant): string {
     return { formal: 'Formal', warm: 'Freundlich', brief: 'Knapp' }[variant];
+  }
+
+  private jobTitle(): string {
+    return this.application()?.jobPosting?.parsedJson?.title ?? '';
   }
 
   private async downloadFile(path: string, filename: string): Promise<void> {

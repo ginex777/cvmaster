@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadGatewayException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { AppStatus, Prisma } from '@prisma/client';
 import { Response } from 'express';
 import { PrismaService } from '../common/prisma.service';
@@ -142,10 +142,16 @@ export class ApplicationsService {
       this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title), template),
       this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant), title, template),
     ]);
-    await this.mail.sendApplicationToSelf(user.email, app, [
-      { filename: `${safeTitle}.pdf`, content: cv, contentType: 'application/pdf' },
-      { filename: `${safeTitle}_Anschreiben.pdf`, content: letter, contentType: 'application/pdf' },
-    ]);
+    try {
+      await this.mail.sendApplicationToSelf(user.email, app, [
+        { filename: `${safeTitle}.pdf`, content: cv, contentType: 'application/pdf' },
+        { filename: `${safeTitle}_Anschreiben.pdf`, content: letter, contentType: 'application/pdf' },
+      ]);
+      await this.recordEmailAudit(userId, id, 'sent');
+    } catch {
+      await this.recordEmailAudit(userId, id, 'failed');
+      throw new BadGatewayException('E-Mail konnte nicht zugestellt werden. Bitte lade die PDFs herunter und versuche es erneut.');
+    }
     return { message: 'Email sent' };
   }
 
@@ -155,6 +161,16 @@ export class ApplicationsService {
 
   private asLayout(value: string | null | undefined): CvLayout {
     return value === 'classic' || value === 'editorial' || value === 'modern' ? value : 'modern';
+  }
+
+  private async recordEmailAudit(userId: string, applicationId: string, state: 'sent' | 'failed'): Promise<void> {
+    await this.prisma.auditLog.create({
+      data: {
+        userId,
+        event: 'application.email_to_self',
+        payload: { applicationId, state },
+      },
+    });
   }
 
   private toPdfData(value: unknown, fallbackName: string): CvPdfData {

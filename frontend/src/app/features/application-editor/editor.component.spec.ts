@@ -18,6 +18,7 @@ describe('EditorComponent', () => {
       coverLetter: { formal: 'x', warm: 'y', brief: 'z' },
       chosenVariant: 'formal',
       matchReport: { summary: 'Sehr passend', keywords: ['Angular'] },
+      jobPosting: { parsedJson: { title: 'Frontend Developer', company: 'Acme' } },
     });
     api.patch.mockResolvedValue({ id: 'a1', matchScore: 88 });
     api.post.mockResolvedValue({ message: 'queued' });
@@ -170,5 +171,42 @@ describe('EditorComponent', () => {
     expect(anchor.download).toBe('Bewerbung.zip');
 
     createElement.mockRestore();
+  });
+
+  it('sends generated documents to the user email address', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+
+    await f.componentInstance.sendToSelf();
+
+    expect(api.post).toHaveBeenCalledWith('/applications/a1/email-to-self', {});
+    expect(f.componentInstance.statusMessage()).toContain('E-Mail-Adresse');
+    expect(f.componentInstance.isSending()).toBe(false);
+  });
+
+  it('shows a user-facing error when email-to-self fails', async () => {
+    api.post.mockRejectedValueOnce(new HttpErrorResponse({ error: { message: 'Mail nicht erreichbar' } }));
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+
+    await f.componentInstance.sendToSelf();
+
+    expect(f.componentInstance.errorMessage()).toBe('Mail nicht erreichbar');
+    expect(f.componentInstance.statusMessage()).toBeNull();
+  });
+
+  it('builds mailto link from recipient, job title, and selected letter', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+    f.componentInstance.editorForm.controls.recipientEmail.setValue('jobs@example.de');
+
+    const href = f.componentInstance.mailtoHref();
+
+    expect(href).toContain('mailto:jobs%40example.de');
+    expect(href).toContain('Bewerbung%20als%20Frontend%20Developer');
+    expect(href).toContain('Bitte%20fuege%20die%20heruntergeladenen%20PDF-Dateien');
   });
 });
