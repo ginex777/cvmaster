@@ -122,7 +122,16 @@ Acceptance criteria:
 - Backend tests prove score/report/status cannot be forged through generic PATCH.
 - Frontend test verifies the dedicated endpoint is used.
 
-### P0.2 Align Production Environment Configuration
+### P0.2 Align Production Environment Configuration - Done 2026-05-13
+
+Status: Done.
+
+Completion evidence:
+
+- `infra/.env.example` now uses `AI_PROVIDER=groq`, `GROQ_API_KEY`, optional Claude fallback keys/models, `MAIL_DOMAIN`, Paddle runtime/server variables, monitoring, support, and backup variables.
+- Stale `MISTRAL_API_KEY` and `ALEPH_ALPHA_API_KEY` examples were removed.
+- `infra/deploy.sh` now validates required production variables and provider-specific AI keys before restarting containers.
+- README documents the current `window.__LBA_CONFIG__` shape used by the frontend pricing checkout.
 
 Problem: `infra/.env.example` still references `AI_PROVIDER=mistral`, `MISTRAL_API_KEY`, and `ALEPH_ALPHA_API_KEY`, while `backend/src/main.ts` only allows `groq` or `claude`.
 
@@ -579,8 +588,8 @@ Acceptance criteria:
 
 ## Immediate Next Actions
 
-1. Fix the dashboard status API mismatch.
-2. Update `infra/.env.example` so local and production configuration matches the current code.
+1. Done - Fix the dashboard status API mismatch.
+2. Done - Update `infra/.env.example` so local and production configuration matches the current code.
 3. Complete Pro monthly checkout and webhook handling as the minimum paid launch path.
 4. Start the no-CV quickstart wizard, because it has the highest activation impact after blockers.
 5. Move legal/compliance evidence from working docs to final launch checklist once external review is complete.

@@ -44,6 +44,24 @@ cd ../frontend && pnpm start
    ```
 4. **Caddy** holt Let's-Encrypt-SSL automatisch beim ersten Start.
 
+The local `infra/deploy.sh` script validates `.env.production` on the remote server before it restarts containers.
+
+### Frontend Runtime-Konfiguration
+
+Paddle checkout is configured at runtime through `window.__LBA_CONFIG__` so the same frontend build can be promoted between environments:
+
+```html
+<script>
+  window.__LBA_CONFIG__ = {
+    paddleClientToken: "client_xxx",
+    paddleEnvironment: "production",
+    paddlePriceIdPro: "pri_xxx"
+  };
+</script>
+```
+
+The current pricing page reads `paddleClientToken`, `paddleEnvironment`, and `paddlePriceIdPro`; pay-per-app and yearly price IDs are already reserved in `infra/.env.example` for the commercial flow work.
+
 ## Tech-Stack-Lock (siehe SPEC § 21)
 
 | Layer | Tech |
