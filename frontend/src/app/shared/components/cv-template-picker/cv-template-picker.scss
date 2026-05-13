@@ -34,7 +34,8 @@
 
   &--active {
     border-color: var(--accent);
-    background: color-mix(in oklch, var(--accent), transparent 90%);
-    color: var(--accent);
+    background: color-mix(in oklch, var(--accent) 14%, var(--surface));
+    color: oklch(34% 0.16 255);
+    font-weight: 800;
   }
 }

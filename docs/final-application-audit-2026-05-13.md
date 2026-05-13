@@ -178,7 +178,7 @@ DoD:
 
 Closed in the implementation commit for this task. Verification: landing component test, frontend lint, and frontend build passed.
 
-### P2 - Protected-route visual/a11y smoke is missing
+### Done - P2 - Protected-route visual/a11y smoke is missing
 
 Evidence:
 - `frontend/scripts/a11y-smoke.mjs` only checks public routes by default: `/`, `/preise`, `/try`.
@@ -188,10 +188,12 @@ Impact:
 - Public marketing accessibility is verified, but the authenticated UX can regress without a smoke test.
 
 DoD:
-- [ ] Add a seeded/authenticated Playwright smoke that logs in or uses a test session.
-- [ ] Cover `/app`, `/app/cvs`, `/app/wizard`, `/app/applications/:id`, and `/app/billing`.
-- [ ] Include desktop and mobile viewport checks.
-- [ ] Keep axe checks and at least one screenshot per protected workflow.
+- [x] Add a seeded/authenticated Playwright smoke that logs in or uses a test session.
+- [x] Cover `/app`, `/app/cvs`, `/app/wizard`, `/app/applications/:id`, and `/app/billing`.
+- [x] Include desktop and mobile viewport checks.
+- [x] Keep axe checks and at least one screenshot per protected workflow.
+
+Closed in the implementation commit for this task. Verification: frontend unit suite, frontend lint, frontend build, and `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4200 npm run test:e2e --prefix frontend` passed with 10 protected-route axe checks across desktop and mobile.
 
 ### P2 - Upload security is minimal
 

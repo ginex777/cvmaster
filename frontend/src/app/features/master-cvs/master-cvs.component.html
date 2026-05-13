@@ -1,10 +1,9 @@
-<main id="main" class="master-cvs" [attr.aria-busy]="loading() || uploading()">
+<main id="main" class="master-cvs" tabindex="-1" [attr.aria-busy]="loading() || uploading()">
   <header class="master-cvs__header">
     <h1>Meine Lebensläufe</h1>
     <label
       class="btn btn--primary btn--md"
       for="cv-upload"
-      role="button"
       tabindex="0"
       [class.btn--loading]="uploading()"
       [attr.aria-disabled]="uploading()">

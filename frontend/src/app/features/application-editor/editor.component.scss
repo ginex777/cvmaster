@@ -157,7 +157,7 @@
 }
 
 .keyword-list--muted li {
-  color: var(--warning);
+  color: oklch(34% 0.12 70);
 }
 
 .letters-header {
@@ -209,7 +209,7 @@
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-full);
   background: var(--accent);
-  color: var(--accent-ink);
+  color: #fff;
   font-size: 0.75rem;
   font-weight: 800;
 }

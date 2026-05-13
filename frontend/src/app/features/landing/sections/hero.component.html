@@ -32,48 +32,95 @@
       <span>4.7 / 5</span>
     </div>
 
-    <div class="app-preview" [lbaReveal]="300" aria-label="Produktvorschau Lebenslauf-Optimierung">
+    <div class="app-preview" [lbaReveal]="300" aria-label="Produktvorschau Wizard und Editor">
       <div class="preview-sidebar">
-        <div class="preview-sidebar__brand"></div>
+        <div class="preview-sidebar__brand">Bewerbungs-Wizard</div>
         <div class="preview-item preview-item--active">
-          <span aria-hidden="true">✓</span>
-          Master-CV
+          <span aria-hidden="true">1</span>
+          Lebenslauf
         </div>
         <div class="preview-item">
-          <span aria-hidden="true"></span>
-          Anschreiben
+          <span aria-hidden="true">2</span>
+          Stelle
+        </div>
+        <div class="preview-item">
+          <span aria-hidden="true">3</span>
+          KI-Entwurf
+        </div>
+        <div class="preview-item preview-item--current">
+          <span aria-hidden="true">4</span>
+          Editor
         </div>
       </div>
 
       <div class="preview-doc">
-        <div class="doc-header">
-          <span></span>
-          <span></span>
+        <div class="doc-toolbar" aria-hidden="true">
+          <span>Template Modern</span>
+          <span>CV PDF</span>
+          <span>Anschreiben PDF</span>
         </div>
-        <div class="doc-title"></div>
-        <div class="doc-line doc-line--wide"></div>
-        <div class="doc-line"></div>
-        <h2>ERFAHRUNG</h2>
-        <p>Frontend Developer · Mediahaus GmbH</p>
-        <div class="doc-highlight">Stripe Checkout Integrationen</div>
-        <div class="doc-line doc-line--wide"></div>
-        <h2>SKILLS</h2>
-        <div class="skill-tags" aria-hidden="true">
-          <span>React</span>
-          <span>TypeScript</span>
-          <span>a11y</span>
+
+        <div class="doc-title">
+          <span>Optimierter Lebenslauf</span>
+          <strong>Frontend Developer</strong>
+        </div>
+
+        <div class="editor-block">
+          <h2>Profil</h2>
+          <p>
+            Angular-Entwicklerin mit Fokus auf barrierefreie SaaS-Oberflächen,
+            sichere API-Integrationen und messbare Conversion-Verbesserungen.
+          </p>
+        </div>
+
+        <div class="editor-block editor-block--highlight">
+          <h2>Erfahrung</h2>
+          <p>Mediahaus GmbH · Frontend Developer</p>
+          <ul>
+            <li>Checkout-Flow mit Angular, NestJS und Webhooks produktionsreif ausgeliefert.</li>
+            <li>Design-System Komponenten auf WCAG 2.2 AAA Kontrast geprüft.</li>
+          </ul>
+        </div>
+
+        <div class="letter-variants" aria-label="Anschreiben Varianten">
+          <article>
+            <strong>Formal</strong>
+            <span>Ausgewählt</span>
+          </article>
+          <article>
+            <strong>Warm</strong>
+            <span>Alternative</span>
+          </article>
+          <article>
+            <strong>Kurz</strong>
+            <span>Alternative</span>
+          </article>
         </div>
       </div>
 
       <div class="preview-panel">
-        <h2>Match Keywords</h2>
-        <div class="bar bar--typescript"><span>TypeScript</span><strong></strong></div>
-        <div class="bar bar--stripe"><span>Stripe API</span><strong></strong></div>
-        <div class="bar bar--design"><span>Design Systems</span><strong></strong></div>
-        <div class="bar bar--accessibility"><span>Accessibility</span><strong></strong></div>
+        <div class="match-score">
+          <span>Match Report</span>
+          <strong>88%</strong>
+        </div>
+
+        <h2>Keyword Treffer</h2>
+        <div class="keyword-list" aria-hidden="true">
+          <span>Angular</span>
+          <span>TypeScript</span>
+          <span>Accessibility</span>
+          <span>NestJS</span>
+        </div>
+
+        <h2>Noch offen</h2>
+        <div class="keyword-list keyword-list--missing" aria-hidden="true">
+          <span>RxJS</span>
+          <span>Testing Library</span>
+        </div>
+
         <div class="suggestion">
           <strong>Vorschlag</strong>
-          <p>Erwähne deine Erfahrung mit WCAG 2.2. Stripe nennt Accessibility explizit in der Anzeige.</p>
+          <p>Füge RxJS und automatisierte Tests in der Erfahrung ein. Die Stelle nennt beides als Muss-Kriterium.</p>
           <div>
             <button class="mini-button mini-button--primary" type="button" (click)="optimizeRequested.emit()">
               Übernehmen
@@ -85,4 +132,3 @@
     </div>
   </div>
 </section>
-

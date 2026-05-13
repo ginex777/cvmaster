@@ -135,9 +135,9 @@
   font-weight: 700;
   font-size: 0.8rem;
 
-  &--high { background: color-mix(in oklch, var(--success) 15%, transparent); color: var(--success); }
-  &--mid  { background: color-mix(in oklch, var(--warning) 15%, transparent); color: oklch(50% 0.18 80); }
-  &--low  { background: color-mix(in oklch, var(--danger)  10%, transparent); color: var(--danger); }
+  &--high { background: color-mix(in oklch, var(--success) 15%, var(--surface)); color: oklch(34% 0.12 155); }
+  &--mid  { background: color-mix(in oklch, var(--warning) 18%, var(--surface)); color: oklch(34% 0.12 70); }
+  &--low  { background: color-mix(in oklch, var(--danger)  10%, var(--surface)); color: oklch(36% 0.14 25); }
 }
 
 .status-toggle {
@@ -164,8 +164,8 @@
 
   &--done {
     border-color: color-mix(in oklch, var(--success) 25%, var(--line));
-    background: color-mix(in oklch, var(--success) 12%, transparent);
-    color: var(--success);
+    background: color-mix(in oklch, var(--success) 12%, var(--surface));
+    color: oklch(34% 0.12 155);
   }
 }
 

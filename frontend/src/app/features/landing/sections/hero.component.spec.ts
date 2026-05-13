@@ -19,5 +19,8 @@ describe('HeroComponent', () => {
     expect(text).toContain('Bewerbung optimieren');
     expect(text).toContain("So funktioniert's");
     expect(text).toContain('4.900 Bewerbungen eingereicht');
+    expect(text).toContain('Bewerbungs-Wizard');
+    expect(text).toContain('Optimierter Lebenslauf');
+    expect(text).toContain('Match Report');
   });
 });
