@@ -101,7 +101,7 @@ export class ApplicationsService {
   async exportPdf(id: string, layout: string, res: Response) {
     const app = await this.findById(id);
     const title = this.fileTitle(app);
-    const template = this.asLayout(layout);
+    const template = this.asLayout(app.masterCv?.template ?? layout);
     const buffer = await this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title), template);
 
     res.set({
@@ -124,7 +124,7 @@ export class ApplicationsService {
     return this.prisma.application.update({ where: { id }, data: { status: status as AppStatus } });
   }
 
-  private asLayout(value: string): CvLayout {
+  private asLayout(value: string | null | undefined): CvLayout {
     return value === 'classic' || value === 'editorial' || value === 'modern' ? value : 'modern';
   }
 

@@ -169,6 +169,7 @@ describe('ApplicationsService', () => {
       mockPrisma.application.findUniqueOrThrow.mockResolvedValue({
         id: 'a1',
         optimizedCv: { text: 'Profil\nAngular' },
+        masterCv: { template: 'editorial' },
         jobPosting: { parsedJson: { company: 'Acme', title: 'Dev' } },
       } as never);
       mockPdf.generateCvPdf.mockResolvedValue(buffer);
@@ -177,7 +178,7 @@ describe('ApplicationsService', () => {
 
       expect(mockPdf.generateCvPdf).toHaveBeenCalledWith(
         { name: 'Lebenslauf_Acme_Dev', sections: [{ heading: 'Profil', lines: ['Angular'] }] },
-        'classic',
+        'editorial',
       );
       expect(res.set).toHaveBeenCalledWith(expect.objectContaining({ 'Content-Type': 'application/pdf' }));
       expect(res.send).toHaveBeenCalledWith(buffer);
