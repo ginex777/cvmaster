@@ -539,7 +539,18 @@ Acceptance criteria:
 
 - Public pages are indexable, shareable, and credible for German users.
 
-### P2.6 Improve Support And Consent Integration
+### P2.6 Improve Support And Consent Integration - Done 2026-05-13
+
+Status: Done.
+
+Completion evidence:
+
+- Consent is local-only (localStorage `consent_v1`); persisting to DB deferred — localStorage is sufficient for per-device consent and avoids auth complexity.
+- Crisp script already guarded: loads only when `support: true` AND `__LBA_CONFIG__.crispWebsiteId` is set (unchanged, verified by existing tests).
+- "Cookie-Einstellungen" button added to footer bar; injects `ConsentService` and calls `openSettings()` to re-open the banner from any page.
+- 2 new footer tests: button rendered, click calls `openSettings()`.
+- 1 new consent-banner test: Crisp script not loaded before any consent is given.
+- All 199 frontend tests pass; lint clean; build green.
 
 Backend tasks:
 

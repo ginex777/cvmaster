@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ConsentService } from '../../core/consent/consent.service';
 
 @Component({
   selector: 'lba-footer',
@@ -9,4 +10,6 @@ import { RouterLink } from '@angular/router';
   styleUrl: './footer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FooterComponent {}
+export class FooterComponent {
+  readonly consent = inject(ConsentService);
+}

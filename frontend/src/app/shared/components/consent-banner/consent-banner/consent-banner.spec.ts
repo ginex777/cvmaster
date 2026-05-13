@@ -54,6 +54,15 @@ describe('ConsentBanner', () => {
     expect(document.head.querySelector('script[src="https://client.crisp.chat/l.js"]')).toBeTruthy();
   });
 
+  it('does not load Crisp script before any consent is given', () => {
+    (window as Window & { __LBA_CONFIG__?: { crispWebsiteId: string } }).__LBA_CONFIG__ = {
+      crispWebsiteId: 'crisp-id',
+    };
+    fixture.detectChanges();
+    // Banner is shown, no consent given yet
+    expect(document.head.querySelector('script[src="https://client.crisp.chat/l.js"]')).toBeNull();
+  });
+
   it('lets users reopen settings and revoke consent', () => {
     component.consent.acceptNecessary();
     fixture.detectChanges();
