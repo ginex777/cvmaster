@@ -1,14 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { LandingComponent } from './landing.component';
 import { AuthService } from '../../core/auth/auth.service';
 
 describe('LandingComponent', () => {
   let auth: Pick<AuthService, 'login' | 'register'>;
+  let queryParamMap = convertToParamMap({});
 
   beforeEach(async () => {
+    queryParamMap = convertToParamMap({});
     auth = {
       login: jest.fn().mockResolvedValue(undefined) as AuthService['login'],
       register: jest.fn().mockResolvedValue(undefined) as AuthService['register'],
@@ -21,6 +23,16 @@ describe('LandingComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: AuthService, useValue: auth },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              get queryParamMap() {
+                return queryParamMap;
+              },
+            },
+          },
+        },
       ],
     }).compileComponents();
   });
@@ -72,5 +84,59 @@ describe('LandingComponent', () => {
 
     expect(auth.login).toHaveBeenCalledWith('lina@example.de', 'validpass123', '123456');
     expect(navigate).toHaveBeenCalledWith(['/app']);
+  });
+
+  it('keeps the login modal open when the backdrop is clicked', () => {
+    const fixture = TestBed.createComponent(LandingComponent);
+    fixture.detectChanges();
+
+    const loginButton = fixture.nativeElement.querySelector('.nav__actions .btn--ghost') as HTMLButtonElement;
+    loginButton.click();
+    fixture.detectChanges();
+
+    const backdrop = fixture.nativeElement.querySelector('.modal-backdrop') as HTMLElement;
+    backdrop.click();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('#login-dialog-title')).toBeTruthy();
+  });
+
+  it('keeps the register modal open when the backdrop is clicked', () => {
+    const fixture = TestBed.createComponent(LandingComponent);
+    fixture.detectChanges();
+
+    const registerButton = fixture.nativeElement.querySelector('.nav__actions .btn--primary') as HTMLButtonElement;
+    registerButton.click();
+    fixture.detectChanges();
+
+    const backdrop = fixture.nativeElement.querySelector('.modal-backdrop') as HTMLElement;
+    backdrop.click();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('#register-dialog-title')).toBeTruthy();
+  });
+
+  it('still closes the login modal through the explicit close button', () => {
+    const fixture = TestBed.createComponent(LandingComponent);
+    fixture.detectChanges();
+
+    const loginButton = fixture.nativeElement.querySelector('.nav__actions .btn--ghost') as HTMLButtonElement;
+    loginButton.click();
+    fixture.detectChanges();
+
+    const closeButton = fixture.nativeElement.querySelector('.modal__close') as HTMLButtonElement;
+    closeButton.click();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[role="dialog"]')).toBeNull();
+  });
+
+  it('opens the login modal after email verification redirects to the landing page', () => {
+    queryParamMap = convertToParamMap({ auth: 'login', verified: '1' });
+    const fixture = TestBed.createComponent(LandingComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('#login-dialog-title')).toBeTruthy();
+    expect(fixture.nativeElement.textContent).toContain('E-Mail bestaetigt');
   });
 });

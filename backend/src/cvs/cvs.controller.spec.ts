@@ -22,4 +22,19 @@ describe('CvsController', () => {
     await expect(controller.createQuickstart(body, request)).resolves.toEqual({ id: 'cv1' });
     expect(cvs.createQuickstart).toHaveBeenCalledWith(body, 'u1');
   });
+
+  it('delegates pasted CV text creation to the service with the authenticated user', async () => {
+    const cvs = {
+      createFromText: jest.fn<() => Promise<unknown>>().mockResolvedValue({ id: 'cv-text' }),
+    } as unknown as CvsService;
+    const controller = new CvsController(cvs);
+    const body = {
+      name: 'Lina Text CV',
+      language: 'de',
+      text: 'Lina Beispiel arbeitet mit Angular, TypeScript, Testing und barrierearmen Web-Oberflaechen.',
+    };
+
+    await expect(controller.createFromText(body, request)).resolves.toEqual({ id: 'cv-text' });
+    expect(cvs.createFromText).toHaveBeenCalledWith(body, 'u1');
+  });
 });

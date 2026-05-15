@@ -2,12 +2,108 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
   margin-bottom: var(--space-8);
 
-  h1 { font-size: 1.75rem; font-weight: 800; }
+  h1 {
+    margin-right: auto;
+    font-size: 1.75rem;
+    font-weight: 800;
+  }
 }
 
-.empty-state { color: var(--ink-2); padding: var(--space-12) 0; }
+.empty-state {
+  color: var(--ink-2);
+  padding: var(--space-12) 0;
+  text-align: center;
+}
+
+.text-cv-panel {
+  width: min(100%, 900px);
+  margin: 0 0 var(--space-8);
+  padding: var(--space-6);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.text-cv-panel__intro {
+  margin-bottom: var(--space-6);
+
+  h2 {
+    margin: 0 0 var(--space-2);
+    color: var(--ink);
+    font-size: 1.15rem;
+    font-weight: 800;
+  }
+
+  p {
+    max-width: 64ch;
+    color: var(--ink-2);
+    font-size: 0.95rem;
+  }
+}
+
+.text-cv-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.35fr);
+  gap: var(--space-4);
+}
+
+.text-cv-form__actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  &--wide {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    color: var(--ink);
+    font-size: 0.9rem;
+    font-weight: 800;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: var(--space-3);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+  }
+
+  textarea {
+    min-height: 16rem;
+    resize: vertical;
+    line-height: 1.5;
+  }
+}
+
+.field__note {
+  color: var(--ink-2);
+  font-size: 0.82rem;
+}
+
+.field__error {
+  color: var(--danger);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
 
 .cv-list {
   list-style: none;
@@ -60,6 +156,27 @@
 }
 
 @media (max-width: 760px) {
+  .master-cvs__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .master-cvs__header > .btn {
+    width: 100%;
+  }
+
+  .text-cv-form {
+    grid-template-columns: 1fr;
+  }
+
+  .text-cv-form__actions {
+    justify-content: stretch;
+
+    .btn {
+      width: 100%;
+    }
+  }
+
   .cv-card {
     align-items: stretch;
     flex-direction: column;

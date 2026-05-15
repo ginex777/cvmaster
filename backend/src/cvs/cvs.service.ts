@@ -16,6 +16,7 @@ const MAX_PDF_PAGES = 30;
 const MAX_DOCX_ENTRIES = 256;
 const MAX_DOCX_UNCOMPRESSED_BYTES = 20 * 1024 * 1024;
 const MAX_DOCX_COMPRESSION_RATIO = 100;
+const MAX_TEXT_CV_CHARS = 50_000;
 const ZIP_EOCD_SIGNATURE = 0x06054b50;
 const ZIP_CENTRAL_DIRECTORY_SIGNATURE = 0x02014b50;
 const ZIP64_SENTINEL = 0xffff;
@@ -35,6 +36,12 @@ const quickstartSchema = z.object({
   topSkills: z.array(z.string().trim().min(1).max(60)).min(3).max(5),
   language: z.enum(['de', 'en']),
   targetRole: z.string().trim().min(3).max(120),
+});
+
+const textCvSchema = z.object({
+  name: z.string().trim().min(2).max(120),
+  language: z.enum(['de', 'en']),
+  text: z.string().trim().min(40).max(MAX_TEXT_CV_CHARS),
 });
 
 @Injectable()
@@ -84,6 +91,31 @@ export class CvsService {
         language: parsed.data.language,
         parsedJson,
         sourceFilename: 'quickstart',
+        sourceHash,
+      },
+    });
+  }
+
+  async createFromText(data: unknown, userId: string) {
+    const parsed = textCvSchema.safeParse(data);
+    if (!parsed.success) {
+      throw new BadRequestException(parsed.error.message);
+    }
+
+    const sourceHash = createHash('sha256')
+      .update(JSON.stringify({ language: parsed.data.language, text: parsed.data.text }))
+      .digest('hex');
+    const existing = await this.prisma.masterCv.findFirst({ where: { userId, sourceHash } });
+    if (existing) return existing;
+
+    const parsedJson = await this.ai.parseCv(parsed.data.text, { userId });
+    return this.prisma.masterCv.create({
+      data: {
+        userId,
+        name: parsed.data.name,
+        language: parsed.data.language,
+        parsedJson,
+        sourceFilename: 'text-input',
         sourceHash,
       },
     });

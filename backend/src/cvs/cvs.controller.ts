@@ -23,6 +23,12 @@ export class CvsController {
     return this.cvs.createQuickstart(body, req.user.sub);
   }
 
+  @Post('text')
+  @Throttle({ default: { limit: 5, ttl: 3_600_000 } })
+  createFromText(@Body() body: unknown, @Req() req: AuthenticatedRequest) {
+    return this.cvs.createFromText(body, req.user.sub);
+  }
+
   @Get()
   list(@Req() req: AuthenticatedRequest) {
     return this.cvs.listForUser(req.user.sub);

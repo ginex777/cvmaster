@@ -303,6 +303,15 @@ describe('DashboardComponent', () => {
       expect(fixture.nativeElement.querySelector('.onboarding')).toBeTruthy();
     });
 
+    it('centers the guided onboarding layout when there are no applications yet', async () => {
+      api.get.mockResolvedValue({ ...emptyDashboard, onboardingDismissed: false });
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.dashboard')?.classList.contains('dashboard--onboarding-focus')).toBe(true);
+    });
+
     it('hides onboarding panel when onboardingDismissed is true', async () => {
       api.get.mockResolvedValue({ ...emptyDashboard, onboardingDismissed: true });
       const fixture = TestBed.createComponent(DashboardComponent);

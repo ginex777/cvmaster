@@ -61,7 +61,7 @@ export class AuthController {
     if (!token) throw new BadRequestException('Verification token is required');
     await this.auth.verifyEmail(token);
     const appUrl = process.env.APP_URL ?? 'http://localhost:4200';
-    return res.redirect(`${appUrl}/login?verified=1`);
+    return res.redirect(`${appUrl}/?auth=login&verified=1`);
   }
 
   @Post('refresh')

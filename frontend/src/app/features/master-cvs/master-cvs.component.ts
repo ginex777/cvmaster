@@ -2,10 +2,13 @@ import type { OnInit } from '@angular/core';
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../core/api/api.service';
 import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
 import { CvTemplatePicker, type CvTemplate } from '../../shared/components/cv-template-picker/cv-template-picker';
+
+type CvLanguage = 'de' | 'en';
 
 export interface MasterCv {
   id: string;
@@ -20,7 +23,7 @@ export interface MasterCv {
 @Component({
   selector: 'lba-master-cvs',
   standalone: true,
-  imports: [DatePipe, ConfirmDeleteModal, CvTemplatePicker],
+  imports: [DatePipe, ReactiveFormsModule, ConfirmDeleteModal, CvTemplatePicker],
   templateUrl: './master-cvs.component.html',
   styleUrl: './master-cvs.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,10 +35,26 @@ export class MasterCvsComponent implements OnInit {
   readonly cvs = signal<MasterCv[]>([]);
   readonly loading = signal(false);
   readonly uploading = signal(false);
+  readonly savingTextCv = signal(false);
+  readonly textFormOpen = signal(false);
   readonly error = signal<string | null>(null);
   readonly deletingId = signal<string | null>(null);
   readonly renamingId = signal<string | null>(null);
   readonly renameValue = signal('');
+  readonly textCvForm = new FormGroup({
+    name: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(2), Validators.maxLength(120)],
+    }),
+    language: new FormControl<CvLanguage>('de', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    text: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(40), Validators.maxLength(50_000)],
+    }),
+  });
 
   async ngOnInit(): Promise<void> {
     this.loading.set(true);
@@ -72,6 +91,36 @@ export class MasterCvsComponent implements OnInit {
     }
   }
 
+  toggleTextForm(): void {
+    this.textFormOpen.update(open => !open);
+  }
+
+  closeTextForm(): void {
+    this.textFormOpen.set(false);
+    this.textCvForm.reset({ name: '', language: 'de', text: '' });
+  }
+
+  async createFromText(): Promise<void> {
+    if (this.textCvForm.invalid) {
+      this.textCvForm.markAllAsTouched();
+      return;
+    }
+
+    this.savingTextCv.set(true);
+    this.error.set(null);
+    try {
+      const cv = await this.api.post<MasterCv>('/cvs/text', this.textCvForm.getRawValue());
+      this.cvs.update((list) => [cv, ...list.filter((item) => item.id !== cv.id)]);
+      this.closeTextForm();
+    } catch (e: unknown) {
+      this.error.set(
+        e instanceof HttpErrorResponse ? e.error.message : 'Text-Lebenslauf konnte nicht gespeichert werden.',
+      );
+    } finally {
+      this.savingTextCv.set(false);
+    }
+  }
+
   requestDelete(id: string): void {
     this.deletingId.set(id);
   }
@@ -104,6 +153,11 @@ export class MasterCvsComponent implements OnInit {
       this.cvs.update((list) => list.map((cv) => cv.id === id ? { ...cv, template: previous } : cv));
       this.error.set('Template konnte nicht gespeichert werden.');
     }
+  }
+
+  sourceLabel(cv: MasterCv): string {
+    if (cv.sourceFilename === 'text-input') return 'Text-Eingabe';
+    return cv.sourceFilename;
   }
 
   useInWizard(id: string): void {

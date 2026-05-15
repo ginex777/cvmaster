@@ -5,10 +5,10 @@ import { MasterCvsComponent } from './master-cvs.component';
 import { ApiService } from '../../core/api/api.service';
 
 describe('MasterCvsComponent', () => {
-  let api: jest.Mocked<Pick<ApiService, 'get' | 'upload' | 'delete' | 'patch'>>;
+  let api: jest.Mocked<Pick<ApiService, 'get' | 'upload' | 'delete' | 'patch' | 'post'>>;
 
   beforeEach(async () => {
-    api = { get: jest.fn(), upload: jest.fn(), delete: jest.fn(), patch: jest.fn() };
+    api = { get: jest.fn(), upload: jest.fn(), delete: jest.fn(), patch: jest.fn(), post: jest.fn() };
     await TestBed.configureTestingModule({
       imports: [MasterCvsComponent],
       providers: [
@@ -98,6 +98,60 @@ describe('MasterCvsComponent', () => {
 
     expect(fixture.componentInstance.cvs()).toHaveLength(1);
     expect(fixture.componentInstance.cvs()[0].id).toBe('cv2');
+  });
+
+  it('shows a text CV form when requested', async () => {
+    api.get.mockResolvedValue([]);
+    const fixture = TestBed.createComponent(MasterCvsComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fixture.componentInstance.toggleTextForm();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('#text-cv-panel')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('#text-cv-text')).toBeTruthy();
+  });
+
+  it('posts pasted CV text and prepends the saved CV', async () => {
+    api.get.mockResolvedValue([]);
+    const newCv = { id: 'cv-text', name: 'Text CV', language: 'de', sourceFilename: 'text-input', template: 'modern' as const, createdAt: '2026-05-15T00:00:00.000Z', updatedAt: '2026-05-15T00:00:00.000Z' };
+    api.post.mockResolvedValue(newCv);
+    const fixture = TestBed.createComponent(MasterCvsComponent);
+    fixture.componentInstance.textCvForm.setValue({
+      name: 'Text CV',
+      language: 'de',
+      text: 'Lina Beispiel arbeitet mit Angular, TypeScript, Testing und barrierearmen Web-Oberflaechen.',
+    });
+
+    await fixture.componentInstance.createFromText();
+
+    expect(api.post).toHaveBeenCalledWith('/cvs/text', {
+      name: 'Text CV',
+      language: 'de',
+      text: 'Lina Beispiel arbeitet mit Angular, TypeScript, Testing und barrierearmen Web-Oberflaechen.',
+    });
+    expect(fixture.componentInstance.cvs()[0].id).toBe('cv-text');
+    expect(fixture.componentInstance.textFormOpen()).toBe(false);
+  });
+
+  it('validates pasted CV text before calling the API', async () => {
+    api.get.mockResolvedValue([]);
+    const fixture = TestBed.createComponent(MasterCvsComponent);
+    fixture.componentInstance.textCvForm.setValue({ name: 'A', language: 'de', text: 'zu kurz' });
+
+    await fixture.componentInstance.createFromText();
+
+    expect(api.post).not.toHaveBeenCalled();
+    expect(fixture.componentInstance.textCvForm.touched).toBe(true);
+  });
+
+  it('renders a friendly source label for pasted CVs', async () => {
+    api.get.mockResolvedValue([]);
+    const fixture = TestBed.createComponent(MasterCvsComponent);
+    const cv = { id: 'cv-text', name: 'CV', language: 'de', sourceFilename: 'text-input', template: 'modern' as const, createdAt: '', updatedAt: '' };
+
+    expect(fixture.componentInstance.sourceLabel(cv)).toBe('Text-Eingabe');
   });
 
   it('requestDelete stores the pending CV id', async () => {

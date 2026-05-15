@@ -271,6 +271,51 @@ describe('CvsService', () => {
     });
   });
 
+  describe('createFromText', () => {
+    const input = {
+      name: 'Lina Text CV',
+      language: 'de',
+      text: 'Lina Beispiel arbeitet mit Angular, TypeScript, Testing und barrierearmen Web-Oberflaechen.',
+    };
+
+    it('validates pasted CV text before AI parsing', async () => {
+      await expect(service.createFromText({ ...input, text: 'zu kurz' }, 'u1')).rejects.toThrow(BadRequestException);
+      expect(mockAi.parseCv).not.toHaveBeenCalled();
+    });
+
+    it('parses and stores a pasted text CV', async () => {
+      const parsedCv = { name: 'Lina Beispiel', experience: [], education: [], skills: ['Angular'], languages: [] };
+      mockPrisma.masterCv.findFirst.mockResolvedValue(null);
+      mockAi.parseCv.mockResolvedValue(parsedCv);
+      mockPrisma.masterCv.create.mockResolvedValue({ id: 'cv-text', parsedJson: parsedCv });
+
+      const result = await service.createFromText(input, 'u1') as { id: string };
+
+      expect(result.id).toBe('cv-text');
+      expect(mockAi.parseCv).toHaveBeenCalledWith(input.text, { userId: 'u1' });
+      expect(mockPrisma.masterCv.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          userId: 'u1',
+          name: 'Lina Text CV',
+          language: 'de',
+          parsedJson: parsedCv,
+          sourceFilename: 'text-input',
+        }),
+      });
+    });
+
+    it('returns an existing text CV when the same pasted content already exists', async () => {
+      const existing = { id: 'cv-existing' };
+      mockPrisma.masterCv.findFirst.mockResolvedValue(existing);
+
+      const result = await service.createFromText(input, 'u1');
+
+      expect(result).toBe(existing);
+      expect(mockAi.parseCv).not.toHaveBeenCalled();
+      expect(mockPrisma.masterCv.create).not.toHaveBeenCalled();
+    });
+  });
+
   describe('remove', () => {
     it('throws NotFoundException when CV does not exist or not owned', async () => {
       mockPrisma.masterCv.findFirst.mockResolvedValue(null);

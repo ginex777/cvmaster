@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TrialApiService } from '../../core/api/trial.service';
 import type { TrialResponse } from '../../core/api/trial.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -42,6 +42,7 @@ export class LandingComponent {
   private readonly trialApi = inject(TrialApiService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   constructor() {
     inject(SeoService).setPage(
@@ -49,6 +50,7 @@ export class LandingComponent {
       'Lebenslauf-Agent optimiert deinen Lebenslauf auf jede Stelle und schreibt ein passendes Anschreiben – in weniger als einer Minute.',
       '/',
     );
+    this.applyAuthQuery();
   }
 
   protected readonly activeDialog = signal<LandingDialog | null>(null);
@@ -102,6 +104,27 @@ export class LandingComponent {
   protected closeDialog(): void {
     this.activeDialog.set(null);
     this.modalMessage.set('');
+  }
+
+  protected handleBackdropClick(dialog: LandingDialog): void {
+    if (dialog === 'try') {
+      this.closeDialog();
+    }
+  }
+
+  private applyAuthQuery(): void {
+    const params = this.route.snapshot.queryParamMap;
+    const requestedAuth = params.get('auth');
+
+    if (requestedAuth === 'login' || params.get('verified') === '1') {
+      this.activeDialog.set('login');
+    } else if (requestedAuth === 'register') {
+      this.activeDialog.set('register');
+    }
+
+    if (params.get('verified') === '1') {
+      this.modalMessage.set('E-Mail bestaetigt. Du kannst dich jetzt anmelden.');
+    }
   }
 
   protected continueToJob(): void {

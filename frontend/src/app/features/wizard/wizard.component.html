@@ -53,7 +53,7 @@
       <section class="quickstart" aria-labelledby="quickstart-heading">
         <div class="quickstart__header">
           <h3 id="quickstart-heading">Ohne vorhandenen Lebenslauf starten</h3>
-          <p>Erstelle ein vorsichtiges CV-Geruest, das du im Editor mit echten Erfahrungen ergaenzt.</p>
+          <p>Erstelle ein vorsichtiges CV-Gerüst, das du im Editor mit echten Erfahrungen ergaenzt.</p>
         </div>
 
         <form class="quickstart-form" [formGroup]="quickstartForm" (ngSubmit)="createQuickstartCv()" novalidate aria-label="Quickstart Lebenslauf">
@@ -93,14 +93,14 @@
           </div>
 
           <button type="submit" class="btn btn--secondary btn--md" [disabled]="loading()">
-            @if (loading()) { CV-Geruest wird erstellt... } @else { CV-Geruest erstellen }
+            @if (loading()) { CV-Gerüst wird erstellt... } @else { CV-Gerüst erstellen }
           </button>
         </form>
 
         @if (quickstartPreview()) {
           <article class="quickstart-preview" aria-live="polite" aria-labelledby="quickstart-preview-heading">
             <h3 id="quickstart-preview-heading">{{ quickstartPreview()?.name }}</h3>
-            <p>{{ quickstartPreview()?.parsedJson?.summary ?? 'CV-Geruest wurde erstellt und kann im Editor erweitert werden.' }}</p>
+            <p>{{ quickstartPreview()?.parsedJson?.summary ?? 'CV-Gerüst wurde erstellt und kann im Editor erweitert werden.' }}</p>
             @if (quickstartPreview()?.parsedJson?.skills?.length) {
               <ul class="quickstart-preview__skills" role="list" aria-label="Uebernommene Skills">
                 @for (skill of quickstartPreview()?.parsedJson?.skills ?? []; track skill) {
