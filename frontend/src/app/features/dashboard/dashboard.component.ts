@@ -146,7 +146,7 @@ export class DashboardComponent implements OnInit {
 
   readonly filteredApplications = computed(() => {
     const apps = this.data()?.recentApplications ?? [];
-    const { query, minScore, hasReminder } = this.pipelineFilter();
+    const { query, minScore, hasReminder, dateRange } = this.pipelineFilter();
     const q = query.trim().toLowerCase();
 
     return apps.filter(app => {
@@ -156,6 +156,11 @@ export class DashboardComponent implements OnInit {
         const title   = (app.jobPosting?.parsedJson?.title   ?? '').toLowerCase();
         const company = (app.jobPosting?.parsedJson?.company ?? '').toLowerCase();
         if (!title.includes(q) && !company.includes(q)) return false;
+      }
+      if (dateRange) {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - (dateRange === 'week' ? 7 : 30));
+        if (new Date(app.createdAt) < cutoff) return false;
       }
       return true;
     });

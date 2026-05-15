@@ -272,6 +272,25 @@ describe('DashboardComponent', () => {
       expect(fixture.componentInstance.filteredApplications().length).toBe(1);
       expect(fixture.componentInstance.filteredApplications()[0].id).toBe('1');
     });
+
+    it('filteredApplications filters by dateRange week', async () => {
+      const now = new Date();
+      const oldDate = new Date(now);
+      oldDate.setDate(oldDate.getDate() - 10);
+      const appsWithDates = [
+        { id: '1', status: 'OPEN', matchScore: 85, createdAt: now.toISOString(), reminderAt: null, jobPosting: { parsedJson: { title: 'Dev', company: 'A' } } },
+        { id: '2', status: 'OPEN', matchScore: 80, createdAt: oldDate.toISOString(), reminderAt: null, jobPosting: { parsedJson: { title: 'Dev', company: 'B' } } },
+      ];
+      api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 1, applicationCount: 2, avgMatchScore: 82, recentApplications: appsWithDates });
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      fixture.componentInstance.onFilterChange({ query: '', minScore: null, hasReminder: null, dateRange: 'week' });
+
+      expect(fixture.componentInstance.filteredApplications().length).toBe(1);
+      expect(fixture.componentInstance.filteredApplications()[0].id).toBe('1');
+    });
   });
 
   describe('onboarding', () => {
