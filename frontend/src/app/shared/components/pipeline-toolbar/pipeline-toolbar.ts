@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy, input, output, signal, computed } from '@angular/core';
-import { ReactiveFormsModule, FormControl } from '@angular/forms';
 
 export interface PipelineFilter {
   query: string;
@@ -8,12 +7,10 @@ export interface PipelineFilter {
   dateRange: 'week' | 'month' | null;
 }
 
-const DEFAULT_FILTER: PipelineFilter = { query: '', minScore: null, hasReminder: null, dateRange: null };
-
 @Component({
   selector: 'lba-pipeline-toolbar',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [],
   templateUrl: './pipeline-toolbar.html',
   styleUrl: './pipeline-toolbar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,7 +19,7 @@ export class PipelineToolbar {
   readonly totalCount = input.required<number>();
   readonly filterChange = output<PipelineFilter>();
 
-  readonly queryControl = new FormControl('');
+  readonly query = signal('');
   readonly minScoreActive = signal(false);
   readonly hasReminderActive = signal(false);
   readonly dateRange = signal<'week' | 'month' | null>(null);
@@ -34,28 +31,28 @@ export class PipelineToolbar {
   );
 
   onQueryInput(event: Event): void {
-    const query = (event.target as HTMLInputElement).value;
-    this.emit(query);
+    this.query.set((event.target as HTMLInputElement).value);
+    this.emitFilter();
   }
 
   toggleMinScore(): void {
     this.minScoreActive.update(v => !v);
-    this.emit(this.queryControl.value ?? '');
+    this.emitFilter();
   }
 
   toggleReminder(): void {
     this.hasReminderActive.update(v => !v);
-    this.emit(this.queryControl.value ?? '');
+    this.emitFilter();
   }
 
   setDateRange(range: 'week' | 'month' | null): void {
     this.dateRange.set(range);
-    this.emit(this.queryControl.value ?? '');
+    this.emitFilter();
   }
 
-  private emit(query: string): void {
+  private emitFilter(): void {
     this.filterChange.emit({
-      query,
+      query: this.query(),
       minScore: this.minScoreActive() ? 70 : null,
       hasReminder: this.hasReminderActive() ? true : null,
       dateRange: this.dateRange(),
