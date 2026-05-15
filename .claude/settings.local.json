@@ -63,7 +63,11 @@
       "Bash(npx ng *)",
       "Bash(PowerShell -Command \"Get-ChildItem 'c:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\shared\\\\components\\\\pipeline-board'\")",
       "Bash(PowerShell -Command \"Get-ChildItem 'c:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\shared\\\\components' -Directory | Select-Object -First 5 Name\")",
-      "Bash(PowerShell -Command \"Get-ChildItem 'c:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\shared\\\\components\\\\confirm-delete-modal'\")"
+      "Bash(PowerShell -Command \"Get-ChildItem 'c:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\shared\\\\components\\\\confirm-delete-modal'\")",
+      "Bash(scripts/start-server.sh --project-dir \"c:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\")",
+      "Read(//c/Users/Schuh/.claude/plugins/**)",
+      "Bash(bash \"C:\\\\Users\\\\Schuh\\\\.claude\\\\plugins\\\\cache\\\\claude-plugins-official\\\\superpowers\\\\5.1.0\\\\skills\\\\brainstorming\\\\scripts\\\\start-server.sh\" --project-dir \"c:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\")",
+      "Bash(git checkout *)"
     ]
   }
 }

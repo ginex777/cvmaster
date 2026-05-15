@@ -32,8 +32,9 @@ export class RemindersService {
     for (const app of due) {
       try {
         const parsed = app.jobPosting?.parsedJson;
-        const title = this.hasJobTitle(parsed) ? parsed.title : 'Ihre Bewerbung';
-        const company = this.hasJobTitle(parsed) ? parsed.company : '';
+        const hasTitle = this.hasJobTitle(parsed);
+        const title = hasTitle ? parsed.title : 'Ihre Bewerbung';
+        const company = hasTitle ? parsed.company : '';
 
         await this.mail.sendReminderNotification(app.user.email, { id: app.id, title, company });
         await this.prisma.application.update({

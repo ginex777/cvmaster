@@ -13,7 +13,7 @@ export class MailService {
 
   async sendVerification(to: string, token: string) {
     const link = `${process.env.APP_URL}/api/auth/verify?token=${token}`;
-    if (!process.env.RESEND_API_KEY && process.env.NODE_ENV !== 'production') {
+    if (this.isDevMode()) {
       console.warn(`[dev-email] Verification link for ${to}: ${link}`);
       return;
     }
@@ -58,7 +58,7 @@ export class MailService {
       : `Erinnerung: ${application.title}`;
     const html = `<p>Du hast eine Erinnerung für deine Bewerbung gesetzt.</p><p><strong>${application.title}</strong>${application.company ? ` bei ${application.company}` : ''}</p><p><a href="${link}">Bewerbung öffnen</a></p>`;
 
-    if (!process.env.RESEND_API_KEY && process.env.NODE_ENV !== 'production') {
+    if (this.isDevMode()) {
       console.warn(`[dev-email] Reminder for ${to}: ${link}`);
       return;
     }
@@ -73,6 +73,10 @@ export class MailService {
       subject: `Sicherheitshinweis: ${event}`,
       html: `<p>Es wurde ein unbekannter Login von einer neuen Region erkannt. Falls du das nicht warst, ändere sofort dein Passwort.</p>`,
     });
+  }
+
+  private isDevMode(): boolean {
+    return !process.env.RESEND_API_KEY && process.env.NODE_ENV !== 'production';
   }
 
   private resend(): Resend {
