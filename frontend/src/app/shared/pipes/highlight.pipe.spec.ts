@@ -31,4 +31,8 @@ describe('HighlightPipe', () => {
   it('escapes special regex characters in query', () => {
     expect(() => pipe.transform('some text', 'a.b*c')).not.toThrow();
   });
+
+  it('returns original text when query is whitespace-only', () => {
+    expect(pipe.transform('Frontend Developer', '   ')).toBe('Frontend Developer');
+  });
 });
