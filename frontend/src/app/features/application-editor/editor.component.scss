@@ -59,6 +59,40 @@
   font-weight: 700;
 }
 
+.editor__tab-bar {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+
+.editor__tab-btn {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-4);
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.editor__tab-btn:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.editor__tab-btn--active {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
+}
+
+.editor__analyse-panel {
+  max-width: 880px;
+}
+
 .editor__grid {
   display: grid;
   grid-template-columns: minmax(240px, 0.7fr) minmax(360px, 1.1fr) minmax(420px, 1.4fr);

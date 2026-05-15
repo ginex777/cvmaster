@@ -23,7 +23,11 @@ export const ParsedCVSchema = z.object({
     role:        z.string(),
     start:       z.string().optional(),
     end:         z.string().optional(),
-    bullets:     z.array(z.object({ id: z.string(), text: z.string() })),
+    bullets:     z.array(z.object({
+      id:     z.string(),
+      text:   z.string(),
+      reason: z.string().optional(),
+    })),
   })),
   education:  z.array(z.object({
     institution: z.string(),

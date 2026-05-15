@@ -7,6 +7,8 @@ import { ApiService } from '../../core/api/api.service';
 import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
 import { CvSectionEditorComponent } from '../../shared/components/cv-section-editor/cv-section-editor.component';
 import type { CvSection } from '../../shared/components/cv-section-editor/cv-section-editor.component';
+import { AtsPanel } from '../../shared/components/ats-panel/ats-panel';
+import type { OptimizationDiffEntry } from '../../shared/components/ats-panel/ats-panel';
 import { AnalyticsService } from '../../core/analytics/analytics.service';
 
 type LetterVariant = 'formal' | 'warm' | 'brief';
@@ -21,8 +23,10 @@ interface FollowUpTemplate {
 interface MatchReport {
   summary?: string;
   keywords?: string[];
+  matchedKeywords?: string[];
   missingKeywords?: string[];
   strengths?: string[];
+  risks?: string[];
 }
 
 interface ApplicationDto {
@@ -33,6 +37,7 @@ interface ApplicationDto {
   optimizedCv?: unknown;
   coverLetter?: Record<string, string>;
   matchReport?: MatchReport;
+  optimizationDiff?: OptimizationDiffEntry[] | null;
   chosenVariant?: string | null;
   generationProgress?: number;
   generationError?: string | null;
@@ -45,7 +50,7 @@ const POLL_MAX_ATTEMPTS = 40;
 @Component({
   selector: 'lba-editor',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, ConfirmDeleteModal, CvSectionEditorComponent],
+  imports: [ReactiveFormsModule, RouterLink, ConfirmDeleteModal, CvSectionEditorComponent, AtsPanel],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -66,6 +71,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly message = signal<string | null>(null);
   readonly application = signal<ApplicationDto | null>(null);
   readonly selectedLetter = signal<LetterVariant>('formal');
+  readonly activeTab = signal<'bewerbung' | 'analyse'>('bewerbung');
   readonly regenConfirmOpen = signal(false);
   readonly letterVariants: LetterVariant[] = ['formal', 'warm', 'brief'];
   readonly followUpTemplates = signal<FollowUpTemplate[] | null>(null);
@@ -86,9 +92,10 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly keywords = computed(() => {
     const report = this.matchReport();
     const jobKeywords = this.application()?.jobPosting?.parsedJson?.keywords ?? [];
-    return report.keywords?.length ? report.keywords : jobKeywords;
+    return report.matchedKeywords?.length ? report.matchedKeywords : report.keywords?.length ? report.keywords : jobKeywords;
   });
   readonly missingKeywords = computed(() => this.matchReport().missingKeywords ?? []);
+  readonly optimizationDiff = computed(() => this.application()?.optimizationDiff ?? null);
   readonly isLoading = computed(() => this.loading());
   readonly isGenerating = computed(() => this.generating());
   readonly isSaving = computed(() => this.saving());

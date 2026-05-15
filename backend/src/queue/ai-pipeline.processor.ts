@@ -2,9 +2,11 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Worker, Job } from 'bullmq';
 import IORedis from 'ioredis';
 import sanitizeHtml from 'sanitize-html';
+import type { Prisma } from '@prisma/client';
 import { PrismaService } from '../common/prisma.service';
 import { AiService } from '../ai/ai.service';
 import { MatchScoringService } from '../match/match-scoring.service';
+import { DiffComputerService } from '../applications/diff-computer.service';
 import type { ParsedCV, ParsedJob } from '../ai/provider';
 
 function redisUrl(): string {
@@ -26,7 +28,11 @@ function sanitizeCv(cv: ParsedCV): ParsedCV {
       ...e,
       role: sanitizeText(e.role),
       company: sanitizeText(e.company),
-      bullets: e.bullets.map(b => ({ ...b, text: sanitizeText(b.text) })),
+      bullets: e.bullets.map(b => ({
+        ...b,
+        text: sanitizeText(b.text),
+        reason: b.reason ? sanitizeText(b.reason) : undefined,
+      })),
     })),
   };
 }
@@ -63,6 +69,7 @@ export class AiPipelineProcessor implements OnModuleInit {
     private prisma: PrismaService,
     private ai: AiService,
     private scoring: MatchScoringService,
+    private diffComputer: DiffComputerService,
   ) {}
 
   onModuleInit() {
@@ -106,6 +113,18 @@ export class AiPipelineProcessor implements OnModuleInit {
     const optimizedCv = sanitizeCv(guardedCv);
     await this.updateProgress(applicationId, job, 50);
 
+    let optimizationDiff: Prisma.InputJsonValue = [];
+    try {
+      optimizationDiff = this.diffComputer.compute(originalCv, optimizedCv).map(entry => ({
+        section: entry.section,
+        before: entry.before,
+        after: entry.after,
+        reason: entry.reason,
+      }));
+    } catch (error: unknown) {
+      this.logger.error('DiffComputerService.compute failed; continuing without optimizationDiff', error);
+    }
+
     // Step 2: Generate cover letters (3 variants)
     const rawLetter = await this.ai.generateCoverLetter(optimizedCv, parsedJob, auditContext);
     const coverLetter = sanitizeLetter(rawLetter);
@@ -128,6 +147,7 @@ export class AiPipelineProcessor implements OnModuleInit {
         coverLetter,
         matchScore: result.score,
         matchReport,
+        optimizationDiff,
         status: 'OPEN',
         generationProgress: 100,
         generationError: null,

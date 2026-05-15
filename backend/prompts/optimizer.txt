@@ -17,3 +17,6 @@ Rules:
 8. NEVER return null for "name" — preserve the original name string.
 9. NEVER return null for "start" in experience entries — preserve the original value or use "".
 10. NEVER return null for "company" or "role" — preserve the original values.
+11. For each bullet you MODIFY (change text, not just reorder), add a "reason" field explaining the change in one sentence.
+12. Bullets you did not change must NOT include a "reason" field.
+13. Example changed bullet: { "id": "abc", "text": "Improved Angular performance by 40%", "reason": "Added quantified result to strengthen ATS impact" }

@@ -62,7 +62,31 @@
       </button>
     </section>
   } @else {
-    <form class="editor__grid" [formGroup]="editorForm">
+    <nav class="editor__tab-bar" role="tablist" aria-label="Editoransicht waehlen">
+      <button
+        type="button"
+        role="tab"
+        class="editor__tab-btn"
+        [class.editor__tab-btn--active]="activeTab() === 'bewerbung'"
+        [attr.aria-selected]="activeTab() === 'bewerbung'"
+        aria-controls="tab-panel-bewerbung"
+        (click)="activeTab.set('bewerbung')">
+        Bewerbung
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="editor__tab-btn"
+        [class.editor__tab-btn--active]="activeTab() === 'analyse'"
+        [attr.aria-selected]="activeTab() === 'analyse'"
+        aria-controls="tab-panel-analyse"
+        (click)="activeTab.set('analyse')">
+        Analyse
+      </button>
+    </nav>
+
+    @if (activeTab() === 'bewerbung') {
+    <form id="tab-panel-bewerbung" role="tabpanel" class="editor__grid" [formGroup]="editorForm" aria-label="Bewerbung">
       <aside class="panel panel--match" aria-labelledby="match-title">
         <h2 id="match-title">Match Report</h2>
         <div class="score" role="status" [attr.aria-label]="'ATS Score ' + (currentScore() ?? 0) + ' Prozent'">
@@ -238,6 +262,17 @@
         <p id="chosen-letter-hint" class="sr-only">Diese Variante wird beim PDF-Export verwendet.</p>
       </section>
     </form>
+    }
+
+    @if (activeTab() === 'analyse') {
+      <section id="tab-panel-analyse" role="tabpanel" tabindex="0" aria-label="Analyse" class="panel editor__analyse-panel">
+        <lba-ats-panel
+          [score]="currentScore()"
+          [matchReport]="currentMatchReport()"
+          [optimizationDiff]="optimizationDiff()"
+        />
+      </section>
+    }
   }
 </main>
 

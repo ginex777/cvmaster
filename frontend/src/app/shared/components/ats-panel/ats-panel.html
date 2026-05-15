@@ -1,0 +1,79 @@
+<section class="ats-panel" aria-label="Analyse">
+  @if (!hasData()) {
+    <div class="ats-panel__empty" role="status" aria-live="polite">
+      <p>Analyse nicht verfuegbar fuer aeltere Bewerbungen.</p>
+      <p>Erstelle eine neue Bewerbung, um den ATS-Score zu sehen.</p>
+    </div>
+  } @else {
+    <div class="ats-panel__overview">
+      <div class="ats-panel__score" role="status" [attr.aria-label]="scoreAriaLabel()">
+        <lba-score-ring [value]="scoreValue()" />
+        <div>
+          <p class="ats-panel__score-label">{{ scoreLabel() }}</p>
+          <p class="ats-panel__score-caption">{{ scoreValue() }} Prozent Match</p>
+        </div>
+      </div>
+
+      @if (matchReport()?.summary) {
+        <p class="ats-panel__summary">{{ matchReport()!.summary }}</p>
+      }
+    </div>
+
+    <section class="ats-panel__section" aria-labelledby="ats-keywords-title">
+      <div class="ats-panel__section-heading">
+        <h3 id="ats-keywords-title">Schluesselbegriffe</h3>
+        <span>{{ matchedKeywords().length }} Treffer</span>
+      </div>
+
+      <div class="ats-panel__chips" role="list" aria-label="Keyword-Abdeckung">
+        @for (keyword of matchedKeywords(); track keyword) {
+          <span class="ats-panel__chip ats-panel__chip--matched" role="listitem">{{ keyword }}</span>
+        }
+        @for (keyword of missingRequired(); track keyword) {
+          <span class="ats-panel__chip ats-panel__chip--missing-required" role="listitem">{{ keyword }}</span>
+        }
+        @for (keyword of missingOptional(); track keyword) {
+          <span class="ats-panel__chip ats-panel__chip--missing-optional" role="listitem">{{ keyword }}</span>
+        }
+        @if (matchedKeywords().length === 0 && missingRequired().length === 0 && missingOptional().length === 0) {
+          <p class="ats-panel__muted">Keine Schluesselbegriffe verfuegbar.</p>
+        }
+      </div>
+    </section>
+
+    <section class="ats-panel__section" aria-labelledby="ats-diff-title">
+      <div class="ats-panel__section-heading">
+        <h3 id="ats-diff-title">KI-Aenderungen</h3>
+        <span>{{ diffEntries().length }} Eintraege</span>
+      </div>
+
+      @if (diffEntries().length === 0) {
+        <p class="ats-panel__muted">Keine Aenderungen aufgezeichnet.</p>
+      } @else {
+        <ul class="ats-panel__diff-list" aria-label="Auflistung aller KI-Aenderungen">
+          @for (entry of diffEntries(); track entry.section + entry.before + entry.after) {
+            <li class="ats-panel__diff-entry">
+              <div class="ats-panel__diff-meta">
+                <p>{{ entry.section }}</p>
+                @if (entry.reason) {
+                  <span>{{ entry.reason }}</span>
+                }
+              </div>
+
+              <div class="ats-panel__diff-grid">
+                <div class="ats-panel__diff-block ats-panel__diff-block--before" aria-label="Vorher">
+                  <span>Vorher</span>
+                  <p>{{ entry.before }}</p>
+                </div>
+                <div class="ats-panel__diff-block ats-panel__diff-block--after" aria-label="Nachher">
+                  <span>Nachher</span>
+                  <p>{{ entry.after }}</p>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</section>
