@@ -1,0 +1,60 @@
+import { TestBed } from '@angular/core/testing';
+import type { ComponentFixture } from '@angular/core/testing';
+import { PipelineToolbar, type PipelineFilter } from './pipeline-toolbar';
+
+describe('PipelineToolbar', () => {
+  let fixture: ComponentFixture<PipelineToolbar>;
+  let component: PipelineToolbar;
+
+  function create(totalCount = 5) {
+    fixture = TestBed.createComponent(PipelineToolbar);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('totalCount', totalCount);
+    fixture.detectChanges();
+  }
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({ imports: [PipelineToolbar] }).compileComponents();
+  });
+
+  it('renders search input', () => {
+    create();
+    expect(fixture.nativeElement.querySelector('.toolbar__search')).toBeTruthy();
+  });
+
+  it('emits filterChange with updated query when search input changes', () => {
+    create();
+    const emitted: PipelineFilter[] = [];
+    component.filterChange.subscribe((v: PipelineFilter) => emitted.push(v));
+
+    const input = fixture.nativeElement.querySelector('.toolbar__search') as HTMLInputElement;
+    input.value = 'Acme';
+    input.dispatchEvent(new Event('input'));
+
+    expect(emitted).toHaveLength(1);
+    expect(emitted[0].query).toBe('Acme');
+  });
+
+  it('emits filterChange when minScore chip is toggled', () => {
+    create();
+    const emitted: PipelineFilter[] = [];
+    component.filterChange.subscribe((v: PipelineFilter) => emitted.push(v));
+
+    const chip = fixture.nativeElement.querySelector('[data-filter="minScore"]') as HTMLButtonElement;
+    chip?.click();
+
+    expect(emitted.length).toBeGreaterThan(0);
+  });
+
+  it('shows total count of applications', () => {
+    create(7);
+    expect(fixture.nativeElement.textContent).toContain('7');
+  });
+
+  it('shows active filter count when filters are applied', () => {
+    create();
+    component.toggleMinScore();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.toolbar__active-chip')).toBeTruthy();
+  });
+});

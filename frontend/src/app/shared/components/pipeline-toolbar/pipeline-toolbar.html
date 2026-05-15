@@ -1,0 +1,63 @@
+<div class="toolbar" role="search" aria-label="Bewerbungen filtern">
+  <div class="toolbar__search-wrap">
+    <span class="toolbar__search-icon" aria-hidden="true">⌕</span>
+    <input
+      type="search"
+      class="toolbar__search"
+      placeholder="Bewerbungen durchsuchen…"
+      [formControl]="queryControl"
+      (input)="onQueryInput($event)"
+      aria-label="Bewerbungen durchsuchen"
+    />
+  </div>
+
+  <div class="toolbar__filters" role="group" aria-label="Filter">
+    <span class="toolbar__filter-label">Filter:</span>
+
+    @if (minScoreActive()) {
+      <button
+        type="button"
+        class="toolbar__active-chip"
+        data-filter="minScore"
+        (click)="toggleMinScore()"
+        [attr.aria-pressed]="true"
+        aria-label="Filter 'Score ≥ 70' entfernen">
+        Score ≥ 70 ✕
+      </button>
+    } @else {
+      <button
+        type="button"
+        class="toolbar__chip"
+        data-filter="minScore"
+        (click)="toggleMinScore()"
+        [attr.aria-pressed]="false"
+        aria-label="Nur Bewerbungen mit Score 70 oder höher anzeigen">
+        + Score ≥ 70
+      </button>
+    }
+
+    <button
+      type="button"
+      class="toolbar__chip"
+      [class.toolbar__active-chip]="hasReminderActive()"
+      (click)="toggleReminder()"
+      [attr.aria-pressed]="hasReminderActive()"
+      aria-label="Nur Bewerbungen mit gesetzter Erinnerung anzeigen">
+      @if (hasReminderActive()) { Erinnerung ✕ } @else { + Erinnerung }
+    </button>
+
+    <button
+      type="button"
+      class="toolbar__chip"
+      [class.toolbar__active-chip]="dateRange() === 'week'"
+      (click)="setDateRange(dateRange() === 'week' ? null : 'week')"
+      [attr.aria-pressed]="dateRange() === 'week'"
+      aria-label="Nur Bewerbungen aus dieser Woche anzeigen">
+      @if (dateRange() === 'week') { Diese Woche ✕ } @else { + Diese Woche }
+    </button>
+
+    <span class="toolbar__count" aria-live="polite" aria-atomic="true">
+      {{ totalCount() }} Bewerbungen
+    </span>
+  </div>
+</div>
