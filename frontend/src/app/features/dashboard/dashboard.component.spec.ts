@@ -256,6 +256,22 @@ describe('DashboardComponent', () => {
       expect(fixture.componentInstance.filteredApplications().length).toBe(1);
       expect(fixture.componentInstance.filteredApplications()[0].id).toBe('1');
     });
+
+    it('filteredApplications excludes apps with null matchScore when minScore is active', async () => {
+      const appsWithNull = [
+        { id: '1', status: 'OPEN', matchScore: 85, createdAt: new Date().toISOString(), reminderAt: null, jobPosting: { parsedJson: { title: 'Dev', company: 'A' } } },
+        { id: '2', status: 'OPEN', matchScore: null, createdAt: new Date().toISOString(), reminderAt: null, jobPosting: { parsedJson: { title: 'Dev', company: 'B' } } },
+      ];
+      api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 1, applicationCount: 2, avgMatchScore: 85, recentApplications: appsWithNull });
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      fixture.componentInstance.onFilterChange({ query: '', minScore: 50, hasReminder: null, dateRange: null });
+
+      expect(fixture.componentInstance.filteredApplications().length).toBe(1);
+      expect(fixture.componentInstance.filteredApplications()[0].id).toBe('1');
+    });
   });
 
   describe('onboarding', () => {
