@@ -110,6 +110,7 @@
           />
           <lba-pipeline-board
             [applications]="filteredApplications()"
+            [highlightQuery]="pipelineFilter().query"
             (statusChange)="onStatusChange($event)"
             (reminderChange)="onReminderChange($event)"
           />

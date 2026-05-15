@@ -1,7 +1,7 @@
 <div class="pipeline" role="region" aria-label="Bewerbungs-Pipeline">
   <div class="pipeline__columns">
     @for (col of columns; track col.key) {
-      <div class="pipeline__col" [attr.aria-label]="col.label">
+      <div class="pipeline__col" [attr.aria-label]="col.label" [class.pipeline__col--dimmed]="dimmedColumnKeys().has(col.key)">
         <h3 class="pipeline__col-heading">
           {{ col.label }}
           <span class="pipeline__col-count" aria-hidden="true">{{ appsForColumn(col).length }}</span>
@@ -9,8 +9,9 @@
         <ul class="pipeline__cards" role="list">
           @for (app of appsForColumn(col); track app.id) {
             <li class="pipeline__card">
-              <a class="pipeline__card-title" [routerLink]="['/app/applications', app.id]">
-                {{ jobTitle(app) }}
+              <a class="pipeline__card-title"
+                 [routerLink]="['/app/applications', app.id]"
+                 [innerHTML]="jobTitle(app) | highlight:highlightQuery()">
               </a>
               @if (company(app)) {
                 <span class="pipeline__card-company">{{ company(app) }}</span>

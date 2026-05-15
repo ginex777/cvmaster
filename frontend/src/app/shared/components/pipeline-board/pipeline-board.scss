@@ -171,6 +171,20 @@
   text-align: center;
 }
 
+.pipeline__col--dimmed {
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.pipeline__card-title {
+  ::ng-deep mark.highlight {
+    background: color-mix(in oklch, var(--accent) 25%, transparent);
+    color: var(--accent);
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+}
+
 @media (max-width: 900px) {
   .pipeline__columns {
     grid-template-columns: repeat(3, minmax(140px, 1fr));

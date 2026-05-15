@@ -130,4 +130,36 @@ describe('PipelineBoard', () => {
     const cards = fixture.nativeElement.querySelectorAll('.pipeline__card-company');
     expect(cards[0].textContent.trim()).toBe('Acme GmbH');
   });
+
+  describe('highlighting and dimming', () => {
+    it('dims columns with no apps after filtering', async () => {
+      await setup([makeApp({ status: 'OPEN' })]);
+      fixture.componentRef.setInput('highlightQuery', '');
+      fixture.detectChanges();
+
+      // Any column that has no apps should be dimmed
+      const cols = fixture.nativeElement.querySelectorAll('.pipeline__col') as NodeListOf<HTMLElement>;
+      const dimmedCols = Array.from(cols).filter(col => col.classList.contains('pipeline__col--dimmed'));
+      expect(dimmedCols.length).toBeGreaterThan(0);
+    });
+
+    it('does not dim the column that has apps', async () => {
+      await setup([makeApp({ status: 'OPEN' })]);
+      fixture.componentRef.setInput('highlightQuery', '');
+      fixture.detectChanges();
+
+      const cols = fixture.nativeElement.querySelectorAll('.pipeline__col') as NodeListOf<HTMLElement>;
+      const openCol = Array.from(cols).find(col => col.getAttribute('aria-label') === 'Offen') as HTMLElement | undefined;
+      expect(openCol?.classList.contains('pipeline__col--dimmed')).toBe(false);
+    });
+
+    it('highlights query text in card title using innerHTML', async () => {
+      await setup([makeApp({ status: 'OPEN' })]);
+      fixture.componentRef.setInput('highlightQuery', 'Frontend');
+      fixture.detectChanges();
+
+      const title = fixture.nativeElement.querySelector('.pipeline__card-title');
+      expect(title?.innerHTML).toContain('<mark');
+    });
+  });
 });

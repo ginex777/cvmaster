@@ -1,6 +1,8 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { scoreClass } from '../../utils/score.utils';
+import { HighlightPipe } from '../../pipes/highlight.pipe';
 
 export interface PipelineApplication {
   id: string;
@@ -39,18 +41,28 @@ export const PIPELINE_COLUMNS: PipelineColumn[] = [
 @Component({
   selector: 'lba-pipeline-board',
   standalone: true,
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, HighlightPipe],
   templateUrl: './pipeline-board.html',
   styleUrl: './pipeline-board.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PipelineBoard {
   readonly applications = input.required<PipelineApplication[]>();
+  readonly highlightQuery = input<string>('');
 
   readonly statusChange = output<StatusChangeEvent>();
   readonly reminderChange = output<ReminderChangeEvent>();
 
   readonly columns = PIPELINE_COLUMNS;
+
+  readonly dimmedColumnKeys = computed(() => {
+    const apps = this.applications();
+    return new Set(
+      this.columns
+        .filter(col => apps.filter(a => col.statuses.includes(a.status)).length === 0)
+        .map(col => col.key)
+    );
+  });
 
   appsForColumn(column: PipelineColumn): PipelineApplication[] {
     return this.applications().filter(app => column.statuses.includes(app.status));
@@ -76,11 +88,7 @@ export class PipelineBoard {
     return app.jobPosting.parsedJson.company ?? '';
   }
 
-  scoreClass(score: number): string {
-    if (score >= 80) return 'score--high';
-    if (score >= 60) return 'score--mid';
-    return 'score--low';
-  }
+  readonly scoreClass = scoreClass;
 
   reminderDateValue(app: PipelineApplication): string {
     if (!app.reminderAt) return '';
