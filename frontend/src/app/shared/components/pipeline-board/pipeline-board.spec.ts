@@ -132,7 +132,7 @@ describe('PipelineBoard', () => {
   });
 
   describe('highlighting and dimming', () => {
-    it('dims columns with no apps after filtering', async () => {
+    it('dims columns that have no applications', async () => {
       await setup([makeApp({ status: 'OPEN' })]);
       fixture.componentRef.setInput('highlightQuery', '');
       fixture.detectChanges();

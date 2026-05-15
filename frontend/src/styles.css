@@ -232,6 +232,13 @@ a {
   }
 }
 
+mark.highlight {
+  background: color-mix(in oklch, var(--accent) 25%, transparent);
+  color: var(--accent);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
