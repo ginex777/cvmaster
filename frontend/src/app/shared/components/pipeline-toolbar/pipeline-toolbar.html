@@ -13,27 +13,16 @@
   <div class="toolbar__filters" role="group" aria-label="Filter">
     <span class="toolbar__filter-label">Filter:</span>
 
-    @if (minScoreActive()) {
-      <button
-        type="button"
-        class="toolbar__active-chip"
-        data-filter="minScore"
-        (click)="toggleMinScore()"
-        [attr.aria-pressed]="true"
-        aria-label="Filter 'Score ≥ 70' entfernen">
-        Score ≥ 70 ✕
-      </button>
-    } @else {
-      <button
-        type="button"
-        class="toolbar__chip"
-        data-filter="minScore"
-        (click)="toggleMinScore()"
-        [attr.aria-pressed]="false"
-        aria-label="Nur Bewerbungen mit Score 70 oder höher anzeigen">
-        + Score ≥ 70
-      </button>
-    }
+    <button
+      type="button"
+      class="toolbar__chip"
+      [class.toolbar__active-chip]="minScoreActive()"
+      data-filter="minScore"
+      (click)="toggleMinScore()"
+      [attr.aria-pressed]="minScoreActive()"
+      aria-label="Nur Bewerbungen mit Score 70 oder höher anzeigen">
+      @if (minScoreActive()) { Score ≥ 70 ✕ } @else { + Score ≥ 70 }
+    </button>
 
     <button
       type="button"

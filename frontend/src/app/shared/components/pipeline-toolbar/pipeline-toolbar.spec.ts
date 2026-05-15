@@ -51,7 +51,7 @@ describe('PipelineToolbar', () => {
     expect(fixture.nativeElement.textContent).toContain('7');
   });
 
-  it('shows active filter count when filters are applied', () => {
+  it('shows active chip class when minScore filter is toggled', () => {
     create();
     component.toggleMinScore();
     fixture.detectChanges();

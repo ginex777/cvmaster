@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, signal } from '@angular/core';
 
 export interface PipelineFilter {
   query: string;
@@ -24,11 +24,7 @@ export class PipelineToolbar {
   readonly hasReminderActive = signal(false);
   readonly dateRange = signal<'week' | 'month' | null>(null);
 
-  readonly activeFilterCount = computed(() =>
-    (this.minScoreActive() ? 1 : 0) +
-    (this.hasReminderActive() ? 1 : 0) +
-    (this.dateRange() !== null ? 1 : 0)
-  );
+  protected readonly MIN_SCORE_THRESHOLD = 70;
 
   onQueryInput(event: Event): void {
     this.query.set((event.target as HTMLInputElement).value);
@@ -53,8 +49,8 @@ export class PipelineToolbar {
   private emitFilter(): void {
     this.filterChange.emit({
       query: this.query(),
-      minScore: this.minScoreActive() ? 70 : null,
-      hasReminder: this.hasReminderActive() ? true : null,
+      minScore: this.minScoreActive() ? this.MIN_SCORE_THRESHOLD : null,
+      hasReminder: this.hasReminderActive() || null,
       dateRange: this.dateRange(),
     });
   }
