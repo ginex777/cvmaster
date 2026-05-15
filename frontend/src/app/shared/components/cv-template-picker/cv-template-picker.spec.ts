@@ -1,13 +1,14 @@
-import { TestBed } from '@angular/core/testing';
 import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { CvTemplatePicker } from './cv-template-picker';
+import type { CvTemplate } from './cv-template-picker';
 
 describe('CvTemplatePicker', () => {
   let component: CvTemplatePicker;
   let fixture: ComponentFixture<CvTemplatePicker>;
 
-  function create(template: 'classic' | 'modern' | 'editorial') {
+  function create(template: CvTemplate) {
     fixture = TestBed.createComponent(CvTemplatePicker);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('template', template);
@@ -26,19 +27,19 @@ describe('CvTemplatePicker', () => {
     expect(component).toBeTruthy();
   });
 
-  it('renders three template buttons', () => {
+  it('renders five template cards', () => {
     create('modern');
 
-    expect(fixture.nativeElement.querySelectorAll('button')).toHaveLength(3);
+    expect(fixture.nativeElement.querySelectorAll('.picker__card')).toHaveLength(5);
   });
 
   it('marks the active template with aria-pressed', () => {
-    create('editorial');
+    create('minimal');
 
-    const active = Array.from(fixture.nativeElement.querySelectorAll('button'))
+    const active = Array.from(fixture.nativeElement.querySelectorAll('.picker__card'))
       .find((button): button is HTMLButtonElement => button instanceof HTMLButtonElement && button.getAttribute('aria-pressed') === 'true');
 
-    expect(active?.textContent?.trim()).toBe('Creative');
+    expect(active?.getAttribute('aria-label')).toContain('Minimal');
   });
 
   it('emits templateChange when a different option is clicked', () => {
@@ -46,10 +47,18 @@ describe('CvTemplatePicker', () => {
     const emitted: string[] = [];
     component.templateChange.subscribe(value => emitted.push(value));
 
-    const classicButton = Array.from(fixture.nativeElement.querySelectorAll('button'))
-      .find((button): button is HTMLButtonElement => button instanceof HTMLButtonElement && button.textContent?.trim() === 'Classic');
-    classicButton?.click();
+    const executiveButton = Array.from(fixture.nativeElement.querySelectorAll('.picker__card'))
+      .find((button): button is HTMLButtonElement =>
+        button instanceof HTMLButtonElement && button.getAttribute('aria-label')?.includes('Executive') === true,
+      );
+    executiveButton?.click();
 
-    expect(emitted).toEqual(['classic']);
+    expect(emitted).toEqual(['executive']);
+  });
+
+  it('renders a mini-preview for every template option', () => {
+    create('classic');
+
+    expect(fixture.nativeElement.querySelectorAll('.picker__preview')).toHaveLength(5);
   });
 });

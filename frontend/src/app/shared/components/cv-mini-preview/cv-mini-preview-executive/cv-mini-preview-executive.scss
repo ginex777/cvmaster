@@ -1,0 +1,77 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.mini-executive {
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #dfe4ec;
+  font-family: var(--font-sans);
+}
+
+.mini-executive__header {
+  display: grid;
+  align-content: center;
+  gap: 0.24rem;
+  height: 1.95rem;
+  padding: 0.45rem 0.7rem;
+  background: #0f1729;
+}
+
+.mini-executive__name {
+  width: 58%;
+  height: 0.46rem;
+  background: #fff;
+}
+
+.mini-executive__role {
+  width: 42%;
+  height: 0.24rem;
+  background: #94a3b8;
+}
+
+.mini-executive__contact {
+  width: 32%;
+  height: 0.2rem;
+  background: #64748b;
+}
+
+.mini-executive__body {
+  display: grid;
+  align-content: start;
+  gap: 0.3rem;
+  padding: 0.72rem 0.75rem;
+}
+
+.mini-executive__heading {
+  width: 26%;
+  height: 0.22rem;
+  background: #0f1729;
+}
+
+.mini-executive__heading--second {
+  margin-top: 0.18rem;
+}
+
+.mini-executive__rule {
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.mini-executive__line {
+  width: 78%;
+  height: 0.3rem;
+  background: #475569;
+}
+
+.mini-executive__line--wide {
+  width: 94%;
+}
+
+.mini-executive__skills {
+  width: 68%;
+  height: 0.32rem;
+  background: #364253;
+}

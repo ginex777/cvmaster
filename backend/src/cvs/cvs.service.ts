@@ -26,7 +26,7 @@ type UploadKind = 'pdf' | 'docx';
 const updateCvSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   language: z.string().min(2).max(8).optional(),
-  template: z.enum(['classic', 'modern', 'editorial']).optional(),
+  template: z.enum(['classic', 'modern', 'editorial', 'minimal', 'executive']).optional(),
 });
 
 const quickstartSchema = z.object({

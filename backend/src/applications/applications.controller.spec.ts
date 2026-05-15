@@ -11,6 +11,7 @@ describe('ApplicationsController', () => {
   const apps = {
     update: jest.fn(),
     updateStatus: jest.fn(),
+    updateTone: jest.fn(),
   } as unknown as ApplicationsService;
 
   const pdf = {} as PdfService;
@@ -37,5 +38,15 @@ describe('ApplicationsController', () => {
     expect(updateStatus).toHaveBeenCalledWith('a1', 'DONE');
 
     expect(() => controller.updateStatus('a1', 'SCORE_100')).toThrow(ZodError);
+  });
+
+  it('validates and persists cover letter tone through the dedicated endpoint', async () => {
+    const controller = new ApplicationsController(apps, pdf);
+    const updateTone = jest.spyOn(apps, 'updateTone').mockReturnValue({ id: 'a1', coverLetterTone: 'creative' } as never);
+
+    await controller.updateTone('a1', { tone: 'creative' }, request);
+
+    expect(updateTone).toHaveBeenCalledWith('a1', 'u1', 'creative');
+    expect(() => controller.updateTone('a1', { tone: 'playful' }, request)).toThrow(ZodError);
   });
 });

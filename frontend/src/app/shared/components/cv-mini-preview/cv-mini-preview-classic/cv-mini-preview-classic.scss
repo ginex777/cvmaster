@@ -1,0 +1,65 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.mini-classic {
+  display: grid;
+  align-content: start;
+  gap: 0.28rem;
+  height: 100%;
+  padding: 0.75rem;
+  background: #fff;
+  border: 1px solid #e7e2da;
+  font-family: var(--font-sans);
+}
+
+.mini-classic__name {
+  width: 62%;
+  height: 0.7rem;
+  background: #171717;
+}
+
+.mini-classic__role {
+  width: 42%;
+  height: 0.32rem;
+  background: #7a746e;
+}
+
+.mini-classic__rule {
+  height: 1px;
+  margin: 0.22rem 0;
+  background: #171717;
+}
+
+.mini-classic__heading {
+  width: 30%;
+  height: 0.26rem;
+  background: #171717;
+}
+
+.mini-classic__heading--small {
+  width: 24%;
+}
+
+.mini-classic__line,
+.mini-classic__skills {
+  height: 0.32rem;
+  background: #5f5a55;
+}
+
+.mini-classic__line {
+  width: 88%;
+}
+
+.mini-classic__line--wide {
+  width: 96%;
+}
+
+.mini-classic__line--short {
+  width: 68%;
+}
+
+.mini-classic__skills {
+  width: 74%;
+}

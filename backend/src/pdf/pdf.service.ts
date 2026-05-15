@@ -2,8 +2,10 @@ import { Injectable } from '@nestjs/common';
 import archiver from 'archiver';
 import { ClassicRenderer } from './renderers/classic.renderer';
 import { ClassicLetterRenderer } from './renderers/classic-letter.renderer';
+import { ExecutiveRenderer } from './renderers/executive.renderer';
 import { EditorialRenderer } from './renderers/editorial.renderer';
 import { EditorialLetterRenderer } from './renderers/editorial-letter.renderer';
+import { MinimalRenderer } from './renderers/minimal.renderer';
 import { ModernRenderer } from './renderers/modern.renderer';
 import { ModernLetterRenderer } from './renderers/modern-letter.renderer';
 import type { CvLayout, CvPdfData, CvRenderer, LetterRenderer } from './renderers/renderer.interface';
@@ -50,6 +52,10 @@ export class PdfService {
         return new ClassicRenderer();
       case 'editorial':
         return new EditorialRenderer();
+      case 'minimal':
+        return new MinimalRenderer();
+      case 'executive':
+        return new ExecutiveRenderer();
       case 'modern':
       default:
         return new ModernRenderer();
@@ -62,6 +68,9 @@ export class PdfService {
         return new ClassicLetterRenderer();
       case 'editorial':
         return new EditorialLetterRenderer();
+      case 'minimal':
+      case 'executive':
+        return new ModernLetterRenderer();
       case 'modern':
       default:
         return new ModernLetterRenderer();

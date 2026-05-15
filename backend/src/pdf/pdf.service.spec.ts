@@ -8,7 +8,7 @@ describe('PdfService', () => {
     service = new PdfService();
   });
 
-  it.each(['classic', 'modern', 'editorial'] as const)('generateCvPdf returns a PDF for %s layout', async (layout) => {
+  it.each(['classic', 'modern', 'editorial', 'minimal', 'executive'] as const)('generateCvPdf returns a PDF for %s layout', async (layout) => {
     const buf = await service.generateCvPdf({
       name: 'Lina Hartmann',
       sections: [{ heading: 'Erfahrung', lines: ['Stripe - 2 Jahre'] }],
@@ -18,7 +18,7 @@ describe('PdfService', () => {
     expect(buf.subarray(0, 5).toString('ascii')).toBe('%PDF-');
   });
 
-  it.each(['classic', 'modern', 'editorial'] as const)('generateLetterPdf returns a PDF for %s layout', async (layout) => {
+  it.each(['classic', 'modern', 'editorial', 'minimal', 'executive'] as const)('generateLetterPdf returns a PDF for %s layout', async (layout) => {
     const buf = await service.generateLetterPdf('Sehr geehrte Damen und Herren,\n\nhiermit bewerbe ich mich.', 'Acme GmbH', layout);
 
     expect(Buffer.isBuffer(buf)).toBe(true);

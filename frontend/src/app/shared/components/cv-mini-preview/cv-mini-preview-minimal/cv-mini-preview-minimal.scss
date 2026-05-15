@@ -1,0 +1,56 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.mini-minimal {
+  display: grid;
+  align-content: start;
+  gap: 0.42rem;
+  height: 100%;
+  padding: 1rem 0.95rem;
+  background: #fff;
+  border: 1px solid #ece8e2;
+  font-family: var(--font-sans);
+}
+
+.mini-minimal__name {
+  width: 50%;
+  height: 0.48rem;
+  background: #222;
+}
+
+.mini-minimal__role {
+  width: 38%;
+  height: 0.26rem;
+  background: #85807a;
+}
+
+.mini-minimal__rule {
+  height: 1px;
+  background: #e5e5e5;
+}
+
+.mini-minimal__heading {
+  width: 22%;
+  height: 0.22rem;
+  background: #a1a1a1;
+}
+
+.mini-minimal__heading--short {
+  width: 18%;
+}
+
+.mini-minimal__line {
+  width: 76%;
+  height: 0.28rem;
+  background: #565656;
+}
+
+.mini-minimal__line--wide {
+  width: 88%;
+}
+
+.mini-minimal__line--short {
+  width: 58%;
+}

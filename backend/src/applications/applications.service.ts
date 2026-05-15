@@ -19,6 +19,9 @@ export interface FollowUpTemplate {
   subject: string;
   body: string;
 }
+
+export type CoverLetterTone = 'formal' | 'modern' | 'creative';
+
 import { AppStatus, Prisma } from '@prisma/client';
 import { Response } from 'express';
 import { PrismaService } from '../common/prisma.service';
@@ -160,7 +163,7 @@ export class ApplicationsService {
     const template = this.asLayout(app.masterCv?.template);
     const [cv, letter] = await Promise.all([
       this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title), template),
-      this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant), title, template),
+      this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant, app.coverLetterTone), title, template),
     ]);
     try {
       await this.mail.sendApplicationToSelf(user.email, app, [
@@ -184,6 +187,17 @@ export class ApplicationsService {
     return this.prisma.application.update({
       where: { id },
       data: { reminderAt, reminderSentAt: reminderAt === null ? null : undefined },
+    });
+  }
+
+  async updateTone(id: string, userId: string, tone: CoverLetterTone) {
+    await this.findOne(id, userId);
+    return this.prisma.application.update({
+      where: { id },
+      data: {
+        coverLetterTone: tone,
+        chosenVariant: this.variantForTone(tone),
+      },
     });
   }
 
@@ -224,7 +238,9 @@ export class ApplicationsService {
   }
 
   private asLayout(value: string | null | undefined): CvLayout {
-    return value === 'classic' || value === 'editorial' || value === 'modern' ? value : 'modern';
+    return value === 'classic' || value === 'editorial' || value === 'modern' || value === 'minimal' || value === 'executive'
+      ? value
+      : 'modern';
   }
 
   private async recordEmailAudit(userId: string, applicationId: string, state: 'sent' | 'failed'): Promise<void> {
@@ -306,9 +322,9 @@ export class ApplicationsService {
     );
   }
 
-  private selectedLetterText(value: unknown, chosenVariant?: string | null): string {
+  private selectedLetterText(value: unknown, chosenVariant?: string | null, coverLetterTone?: string | null): string {
     const letters = this.hasLetters(value) ? value : {};
-    const variant = chosenVariant ?? 'formal';
+    const variant = chosenVariant ?? this.variantForTone(coverLetterTone);
 
     if (variant === 'brief' && typeof letters.concise === 'string') return letters.concise;
     if (variant === 'concise' && typeof letters.concise === 'string') return letters.concise;
@@ -320,5 +336,11 @@ export class ApplicationsService {
 
   private hasLetters(value: unknown): value is { formal?: string; warm?: string; brief?: string; concise?: string } {
     return typeof value === 'object' && value !== null;
+  }
+
+  private variantForTone(tone: string | null | undefined): 'formal' | 'warm' | 'concise' {
+    if (tone === 'modern') return 'warm';
+    if (tone === 'creative') return 'concise';
+    return 'formal';
   }
 }

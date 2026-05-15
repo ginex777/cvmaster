@@ -5,13 +5,14 @@ import { WizardComponent } from './wizard.component';
 import { ApiService } from '../../core/api/api.service';
 
 describe('WizardComponent', () => {
-  let api: jest.Mocked<Pick<ApiService, 'get' | 'post'>>;
+  let api: jest.Mocked<Pick<ApiService, 'get' | 'post' | 'patch'>>;
   let queryParamMap = convertToParamMap({});
 
   beforeEach(async () => {
     queryParamMap = convertToParamMap({});
-    api = { get: jest.fn(), post: jest.fn() };
+    api = { get: jest.fn(), post: jest.fn(), patch: jest.fn() };
     api.get.mockResolvedValue([]);
+    api.patch.mockResolvedValue({});
     await TestBed.configureTestingModule({
       imports: [WizardComponent],
       providers: [
@@ -203,6 +204,21 @@ describe('WizardComponent', () => {
       type: 'url',
       value: 'https://example.com/jobs/frontend',
     });
+  });
+
+  it('persists the selected cover letter tone after creating the application', async () => {
+    api.post.mockImplementation((path: string) => {
+      if (path === '/jobs/parse') return Promise.resolve({ id: 'job1' });
+      return Promise.resolve({ id: 'app1' });
+    });
+    const f = TestBed.createComponent(WizardComponent);
+    f.componentInstance.selectedCvId.set('cv1');
+    f.componentInstance.selectedTone.set('modern');
+    f.componentInstance.jobForm.patchValue({ jobRaw: 'Frontend Developer at Stripe with React skills required for this position...' });
+
+    await f.componentInstance.generate();
+
+    expect(api.patch).toHaveBeenCalledWith('/applications/app1/tone', { tone: 'modern' });
   });
 
   it('keeps PDF and screenshot modes unavailable until safe extraction is enabled', () => {

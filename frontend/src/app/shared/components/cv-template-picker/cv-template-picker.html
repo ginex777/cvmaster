@@ -1,13 +1,25 @@
-<div class="picker" role="group" aria-label="CV-Template auswahlen">
+<div class="picker" role="group" aria-label="CV-Template auswaehlen">
   @for (option of options; track option.value) {
     <button
       type="button"
-      class="picker__button"
-      [class.picker__button--active]="template() === option.value"
+      class="picker__card"
+      [class.picker__card--active]="template() === option.value"
       [attr.aria-pressed]="template() === option.value"
-      [attr.aria-label]="'Template: ' + option.label"
+      [attr.aria-label]="'Template: ' + option.label + ' - ' + option.description"
       (click)="templateChange.emit(option.value)">
-      {{ option.label }}
+      <span class="picker__preview">
+        @switch (option.value) {
+          @case ('classic') { <lba-cv-mini-preview-classic /> }
+          @case ('modern') { <lba-cv-mini-preview-modern /> }
+          @case ('editorial') { <lba-cv-mini-preview-editorial /> }
+          @case ('minimal') { <lba-cv-mini-preview-minimal /> }
+          @case ('executive') { <lba-cv-mini-preview-executive /> }
+        }
+      </span>
+      <span class="picker__copy">
+        <span class="picker__label">{{ option.label }}</span>
+        <span class="picker__desc">{{ option.description }}</span>
+      </span>
     </button>
   }
 </div>

@@ -291,15 +291,15 @@ describe('CvsService', () => {
   describe('update', () => {
     it('persists a valid template for an owned CV', async () => {
       mockPrisma.masterCv.findFirst.mockResolvedValue({ id: 'cv1', userId: 'u1' });
-      mockPrisma.masterCv.update.mockResolvedValue({ id: 'cv1', template: 'editorial' });
+      mockPrisma.masterCv.update.mockResolvedValue({ id: 'cv1', template: 'executive' });
 
-      await expect(service.update('cv1', 'u1', { template: 'editorial' })).resolves.toEqual({
+      await expect(service.update('cv1', 'u1', { template: 'executive' })).resolves.toEqual({
         id: 'cv1',
-        template: 'editorial',
+        template: 'executive',
       });
       expect(mockPrisma.masterCv.update).toHaveBeenCalledWith({
         where: { id: 'cv1' },
-        data: { template: 'editorial' },
+        data: { template: 'executive' },
       });
     });
 

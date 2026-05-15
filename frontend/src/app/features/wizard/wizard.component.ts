@@ -5,6 +5,8 @@ import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApiService } from '../../core/api/api.service';
+import { CoverLetterTonePicker } from '../../shared/components/cover-letter-tone-picker/cover-letter-tone-picker';
+import type { CoverLetterTone } from '../../shared/components/cover-letter-tone-picker/cover-letter-tone-picker';
 import { UpgradeModal } from '../../shared/components/upgrade-modal/upgrade-modal';
 
 type JobInputMode = 'text' | 'url' | 'pdf' | 'screenshot';
@@ -26,7 +28,7 @@ export interface MasterCv {
 @Component({
   selector: 'lba-wizard',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, UpgradeModal],
+  imports: [ReactiveFormsModule, RouterLink, UpgradeModal, CoverLetterTonePicker],
   templateUrl: './wizard.component.html',
   styleUrl: './wizard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,6 +46,7 @@ export class WizardComponent implements OnInit {
   readonly quickstartPreview = signal<MasterCv | null>(null);
   readonly upgradeModalOpen = signal(false);
   readonly jobInputMode = signal<JobInputMode>('text');
+  readonly selectedTone = signal<CoverLetterTone>('formal');
 
   readonly quickstartForm = new FormGroup({
     name: new FormControl('', [Validators.required, Validators.minLength(2), Validators.maxLength(120)]),
@@ -156,6 +159,7 @@ export class WizardComponent implements OnInit {
         masterCvId: this.selectedCvId(),
         jobPostingId: job.id,
       });
+      await this.persistTonePreference(app.id);
       await this.router.navigate(['/app/applications', app.id]);
     } catch (e: unknown) {
       if (e instanceof HttpErrorResponse && e.status === 402) {
@@ -173,6 +177,10 @@ export class WizardComponent implements OnInit {
   onUpgradeRequested(): void {
     this.upgradeModalOpen.set(false);
     void this.router.navigate(['/app/billing']);
+  }
+
+  onToneChange(tone: CoverLetterTone): void {
+    this.selectedTone.set(tone);
   }
 
   skillList(): string[] {
@@ -203,5 +211,13 @@ export class WizardComponent implements OnInit {
     return this.jobInputMode() === 'url'
       ? (this.jobForm.controls.jobUrl.value ?? '').trim()
       : (this.jobForm.controls.jobRaw.value ?? '').trim();
+  }
+
+  private async persistTonePreference(applicationId: string): Promise<void> {
+    try {
+      await this.api.patch(`/applications/${applicationId}/tone`, { tone: this.selectedTone() });
+    } catch {
+      // The generated formal letter remains a usable fallback if the preference write fails.
+    }
   }
 }

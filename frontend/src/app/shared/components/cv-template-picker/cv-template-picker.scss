@@ -3,27 +3,27 @@
 }
 
 .picker {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
+  display: grid;
+  grid-template-columns: repeat(5, minmax(7rem, 1fr));
+  gap: var(--space-3);
 }
 
-.picker__button {
+.picker__card {
   min-height: 44px;
-  padding: var(--space-1) var(--space-3);
+  padding: 0;
   border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background: var(--surface);
-  color: var(--ink-2);
+  color: var(--ink);
   font: inherit;
-  font-size: 0.75rem;
-  font-weight: 600;
   cursor: pointer;
+  overflow: hidden;
+  text-align: left;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 
   &:hover {
-    border-color: var(--accent);
-    background: var(--surface-2);
+    border-color: color-mix(in oklch, var(--accent) 45%, var(--line));
+    background: var(--surface);
     color: var(--ink);
   }
 
@@ -34,8 +34,53 @@
 
   &--active {
     border-color: var(--accent);
-    background: color-mix(in oklch, var(--accent) 14%, var(--surface));
-    color: oklch(34% 0.16 255);
-    font-weight: 800;
+    background: color-mix(in oklch, var(--accent) 7%, var(--surface));
+    box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--accent) 45%, transparent);
+  }
+}
+
+.picker__preview {
+  display: block;
+  height: 7.25rem;
+  overflow: hidden;
+  background: #fff;
+}
+
+.picker__copy {
+  display: grid;
+  gap: 0.1rem;
+  min-height: 4.8rem;
+  padding: var(--space-3);
+}
+
+.picker__label {
+  color: var(--ink);
+  font-size: 0.83rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.picker__desc {
+  color: var(--ink-2);
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+@media (max-width: 1100px) {
+  .picker {
+    grid-template-columns: repeat(3, minmax(7rem, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .picker {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 440px) {
+  .picker {
+    grid-template-columns: 1fr;
   }
 }

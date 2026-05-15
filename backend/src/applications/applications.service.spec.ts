@@ -297,6 +297,27 @@ describe('ApplicationsService', () => {
         },
       });
     });
+
+    it('uses coverLetterTone when no explicit letter variant is selected', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue({
+        id: 'a1',
+        userId: 'u1',
+        optimizedCv: { text: 'Profil\nAngular' },
+        coverLetter: { formal: 'Formal', warm: 'Warm', concise: 'Kurz' },
+        chosenVariant: null,
+        coverLetterTone: 'creative',
+        masterCv: { template: 'minimal' },
+        jobPosting: { parsedJson: { company: 'Acme', title: 'Dev' } },
+      } as never);
+      mockPrisma.user.findUniqueOrThrow.mockResolvedValue({ email: 'lina@example.de' } as never);
+      mockPdf.generateCvPdf.mockResolvedValue(Buffer.from('cv-pdf'));
+      mockPdf.generateLetterPdf.mockResolvedValue(Buffer.from('letter-pdf'));
+      mockMail.sendApplicationToSelf.mockResolvedValue(undefined);
+
+      await service.emailToSelf('a1', 'u1');
+
+      expect(mockPdf.generateLetterPdf).toHaveBeenCalledWith('Kurz', 'Lebenslauf_Acme_Dev', 'minimal');
+    });
   });
 
   describe('updateStructuredCv', () => {
@@ -369,6 +390,41 @@ describe('ApplicationsService', () => {
     it('throws ForbiddenException for wrong user', async () => {
       mockPrisma.application.findUnique.mockResolvedValue({ ...mockApp, userId: 'other' } as never);
       await expect(service.updateReminder('a1', 'u1', new Date())).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe('updateTone', () => {
+    const mockApp = { id: 'a1', userId: 'u1', masterCv: null, jobPosting: null };
+
+    it('updates coverLetterTone and chosenVariant for own application', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue(mockApp as never);
+      mockPrisma.application.update.mockResolvedValue({ ...mockApp, coverLetterTone: 'modern', chosenVariant: 'warm' } as never);
+
+      const result = await service.updateTone('a1', 'u1', 'modern');
+
+      expect(mockPrisma.application.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'a1' },
+          data: { coverLetterTone: 'modern', chosenVariant: 'warm' },
+        }),
+      );
+      expect(result).toBeTruthy();
+    });
+
+    it('maps creative tone to the concise generated letter', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue(mockApp as never);
+      mockPrisma.application.update.mockResolvedValue({ ...mockApp, coverLetterTone: 'creative', chosenVariant: 'concise' } as never);
+
+      await service.updateTone('a1', 'u1', 'creative');
+
+      expect(mockPrisma.application.update).toHaveBeenCalledWith(
+        expect.objectContaining({ data: { coverLetterTone: 'creative', chosenVariant: 'concise' } }),
+      );
+    });
+
+    it('throws ForbiddenException for wrong user', async () => {
+      mockPrisma.application.findUnique.mockResolvedValue({ ...mockApp, userId: 'other' } as never);
+      await expect(service.updateTone('a1', 'u1', 'formal')).rejects.toThrow(ForbiddenException);
     });
   });
 

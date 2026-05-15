@@ -1,0 +1,90 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.mini-modern {
+  display: grid;
+  grid-template-columns: 38% 1fr;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e4e7f2;
+  font-family: var(--font-sans);
+}
+
+.mini-modern__side {
+  display: grid;
+  align-content: start;
+  gap: 0.34rem;
+  padding: 0.7rem 0.55rem;
+  background: #1d2544;
+}
+
+.mini-modern__avatar {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: var(--radius-full);
+  background: #8fb3ff;
+}
+
+.mini-modern__name,
+.mini-modern__role,
+.mini-modern__side-line {
+  height: 0.28rem;
+  background: #eaf0ff;
+}
+
+.mini-modern__name {
+  width: 78%;
+}
+
+.mini-modern__role {
+  width: 56%;
+  background: #aab7d8;
+}
+
+.mini-modern__side-rule {
+  height: 1px;
+  background: #53607e;
+}
+
+.mini-modern__side-line {
+  width: 70%;
+  background: #c6d0ed;
+}
+
+.mini-modern__side-line--short {
+  width: 52%;
+}
+
+.mini-modern__body {
+  display: grid;
+  align-content: start;
+  gap: 0.34rem;
+  padding: 0.85rem 0.7rem;
+}
+
+.mini-modern__heading {
+  width: 34%;
+  height: 0.28rem;
+  background: #2d3b72;
+}
+
+.mini-modern__heading--second {
+  margin-top: 0.24rem;
+}
+
+.mini-modern__line {
+  width: 82%;
+  height: 0.32rem;
+  background: #6a7285;
+}
+
+.mini-modern__line--wide {
+  width: 96%;
+}
+
+.mini-modern__line--short {
+  width: 64%;
+}

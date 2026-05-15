@@ -1,4 +1,4 @@
-export type CvLayout = 'classic' | 'modern' | 'editorial';
+export type CvLayout = 'classic' | 'modern' | 'editorial' | 'minimal' | 'executive';
 
 export interface CvPdfData {
   name: string;

@@ -1,0 +1,83 @@
+:host {
+  display: block;
+}
+
+.tone {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.tone__card {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    border-color: color-mix(in oklch, var(--accent) 45%, var(--line));
+    background: var(--surface);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  &--active {
+    border-color: var(--accent);
+    background: color-mix(in oklch, var(--accent) 7%, var(--surface));
+    box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--accent) 45%, transparent);
+  }
+}
+
+.tone__kicker {
+  width: max-content;
+  padding: 0.18rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  color: var(--ink-2);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.tone__label {
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.tone__desc {
+  color: var(--ink-2);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.tone__example {
+  display: block;
+  margin-top: var(--space-1);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--ink-3);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .tone {
+    grid-template-columns: 1fr;
+  }
+}

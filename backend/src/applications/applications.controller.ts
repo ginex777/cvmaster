@@ -16,7 +16,11 @@ const createSchema = z.object({
 });
 
 const exportSchema = z.object({
-  layout: z.enum(['classic', 'modern', 'editorial']),
+  layout: z.enum(['classic', 'modern', 'editorial', 'minimal', 'executive']),
+});
+
+const toneSchema = z.object({
+  tone: z.enum(['formal', 'modern', 'creative']),
 });
 
 const statusSchema = z.preprocess(
@@ -78,7 +82,7 @@ export class ApplicationsController {
   async exportLetter(@Param('id') id: string, @Req() req: AuthenticatedRequest, @Res() res: Response) {
     const app = await this.apps.findOne(id, req.user.sub);
     const title = this.fileTitle(app);
-    const buffer = await this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant), title, this.cvTemplate(app));
+    const buffer = await this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant, app.coverLetterTone), title, this.cvTemplate(app));
     this.sendPdf(res, buffer, `${this.safeFilename(title)}_Anschreiben.pdf`);
   }
 
@@ -88,7 +92,7 @@ export class ApplicationsController {
     const title = this.fileTitle(app);
     const safeTitle = this.safeFilename(title);
     const cv = await this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title), this.cvTemplate(app));
-    const letter = await this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant), title, this.cvTemplate(app));
+    const letter = await this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant, app.coverLetterTone), title, this.cvTemplate(app));
     const buffer = await this.pdf.generateZip([
       { filename: `${safeTitle}.pdf`, buffer: cv },
       { filename: `${safeTitle}_Anschreiben.pdf`, buffer: letter },
@@ -189,6 +193,13 @@ export class ApplicationsController {
     return this.apps.updateReminder(id, req.user.sub, reminderAt ? new Date(reminderAt) : null);
   }
 
+  @Patch(':id/tone')
+  @UseGuards(OwnsApplicationGuard)
+  updateTone(@Param('id') id: string, @Body() body: unknown, @Req() req: AuthenticatedRequest) {
+    const { tone } = toneSchema.parse(body);
+    return this.apps.updateTone(id, req.user.sub, tone);
+  }
+
   @Get(':id/follow-up-templates')
   @UseGuards(OwnsApplicationGuard)
   getFollowUpTemplates(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
@@ -252,14 +263,14 @@ export class ApplicationsController {
 
   private cvTemplate(app: { masterCv?: { template?: string | null } }): CvLayout {
     const template = app.masterCv?.template;
-    return template === 'classic' || template === 'editorial' || template === 'modern'
+    return template === 'classic' || template === 'editorial' || template === 'modern' || template === 'minimal' || template === 'executive'
       ? template
       : 'modern';
   }
 
-  private selectedLetterText(value: unknown, chosenVariant?: string | null): string {
+  private selectedLetterText(value: unknown, chosenVariant?: string | null, coverLetterTone?: string | null): string {
     const letters = this.hasLetters(value) ? value : {};
-    const variant = chosenVariant ?? 'formal';
+    const variant = chosenVariant ?? this.variantForTone(coverLetterTone);
 
     if (variant === 'brief' && typeof letters.concise === 'string') return letters.concise;
     if (variant === 'concise' && typeof letters.concise === 'string') return letters.concise;
@@ -271,6 +282,12 @@ export class ApplicationsController {
 
   private hasLetters(value: unknown): value is { formal?: string; warm?: string; brief?: string; concise?: string } {
     return typeof value === 'object' && value !== null;
+  }
+
+  private variantForTone(tone: string | null | undefined): 'formal' | 'warm' | 'concise' {
+    if (tone === 'modern') return 'warm';
+    if (tone === 'creative') return 'concise';
+    return 'formal';
   }
 
   private hasPdfSections(value: unknown): value is CvPdfData {

@@ -216,6 +216,16 @@
         Die KI optimiert deinen Lebenslauf auf die Stelle und erstellt ein passendes Anschreiben.
         Dieser Vorgang dauert etwa 30–60 Sekunden.
       </p>
+      <section class="wizard-section" aria-labelledby="tone-heading">
+        <div class="wizard-section__header">
+          <h3 id="tone-heading">Anschreiben-Ton</h3>
+          <p>Waehle, welche der drei Varianten fuer Export und Versand vorausgewaehlt wird.</p>
+        </div>
+        <lba-cover-letter-tone-picker
+          [tone]="selectedTone()"
+          (toneChange)="onToneChange($event)"
+        />
+      </section>
       <div class="wizard-step__actions">
         <button type="button" class="btn btn--ghost btn--md" [disabled]="loading()" (click)="step.set(2)">Zurück</button>
         <button

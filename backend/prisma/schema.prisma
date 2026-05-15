@@ -108,6 +108,7 @@ model Application {
   exportedAt      DateTime?
   reminderAt      DateTime?
   reminderSentAt  DateTime?
+  coverLetterTone String       @default("formal")
 
   aiJobs          AiJob[]
 }
