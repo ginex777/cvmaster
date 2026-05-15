@@ -6,6 +6,8 @@ import { ApiService } from '../../core/api/api.service';
 import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
 import { PipelineBoard } from '../../shared/components/pipeline-board/pipeline-board';
 import type { StatusChangeEvent, ReminderChangeEvent } from '../../shared/components/pipeline-board/pipeline-board';
+import { PipelineToolbar, type PipelineFilter } from '../../shared/components/pipeline-toolbar/pipeline-toolbar';
+import { scoreClass } from '../../shared/utils/score.utils';
 
 interface RecentApplication {
   id: string;
@@ -27,7 +29,7 @@ interface DashboardData {
 @Component({
   selector: 'lba-dashboard',
   standalone: true,
-  imports: [RouterLink, DatePipe, ConfirmDeleteModal, PipelineBoard],
+  imports: [RouterLink, DatePipe, ConfirmDeleteModal, PipelineBoard, PipelineToolbar],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,11 +70,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  scoreClass(score: number): string {
-    if (score >= 80) return 'score--high';
-    if (score >= 60) return 'score--mid';
-    return 'score--low';
-  }
+  readonly scoreClass = scoreClass;
 
   statusLabel(status: string): string {
     const labels: Record<string, string> = {
@@ -144,6 +142,29 @@ export class DashboardComponent implements OnInit {
 
   readonly showPipeline = signal(false);
 
+  readonly pipelineFilter = signal<PipelineFilter>({ query: '', minScore: null, hasReminder: null, dateRange: null });
+
+  readonly filteredApplications = computed(() => {
+    const apps = this.data()?.recentApplications ?? [];
+    const { query, minScore, hasReminder } = this.pipelineFilter();
+    const q = query.trim().toLowerCase();
+
+    return apps.filter(app => {
+      if (minScore !== null && (app.matchScore ?? 0) < minScore) return false;
+      if (hasReminder === true && !app.reminderAt) return false;
+      if (q) {
+        const title   = (app.jobPosting?.parsedJson?.title   ?? '').toLowerCase();
+        const company = (app.jobPosting?.parsedJson?.company ?? '').toLowerCase();
+        if (!title.includes(q) && !company.includes(q)) return false;
+      }
+      return true;
+    });
+  });
+
+  onFilterChange(filter: PipelineFilter): void {
+    this.pipelineFilter.set(filter);
+  }
+
   toggleView(): void {
     this.showPipeline.update(v => !v);
   }
@@ -160,11 +181,13 @@ export class DashboardComponent implements OnInit {
   }
 
   async onReminderChange(event: ReminderChangeEvent): Promise<void> {
+    const previous = this.data()?.recentApplications.find(a => a.id === event.id)?.reminderAt;
     const reminderAt = event.reminderAt ? new Date(event.reminderAt).toISOString() : null;
     this.updateApplicationInList(event.id, { reminderAt });
     try {
       await this.api.patch(`/applications/${event.id}/reminder`, { reminderAt });
     } catch (e: unknown) {
+      this.updateApplicationInList(event.id, { reminderAt: previous ?? null });
       this.error.set(this.errorMessage(e, 'Erinnerung konnte nicht gespeichert werden.'));
     }
   }

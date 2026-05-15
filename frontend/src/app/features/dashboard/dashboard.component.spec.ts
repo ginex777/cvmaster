@@ -205,6 +205,59 @@ describe('DashboardComponent', () => {
     });
   });
 
+  describe('pipeline filtering', () => {
+    const apps = [
+      { id: '1', status: 'OPEN',   matchScore: 85, createdAt: new Date().toISOString(), reminderAt: '2026-06-01', jobPosting: { parsedJson: { title: 'Frontend Dev', company: 'Acme' } } },
+      { id: '2', status: 'SENT',   matchScore: 55, createdAt: new Date().toISOString(), reminderAt: null,         jobPosting: { parsedJson: { title: 'Backend Dev',  company: 'BigCo' } } },
+      { id: '3', status: 'OPEN',   matchScore: 90, createdAt: new Date().toISOString(), reminderAt: null,         jobPosting: { parsedJson: { title: 'UX Designer',   company: 'Acme' } } },
+    ];
+
+    it('filteredApplications returns all apps when no filter active', async () => {
+      api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 1, applicationCount: 3, avgMatchScore: 77, recentApplications: apps });
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(fixture.componentInstance.filteredApplications().length).toBe(3);
+    });
+
+    it('filteredApplications filters by minScore', async () => {
+      api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 1, applicationCount: 3, avgMatchScore: 77, recentApplications: apps });
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      fixture.componentInstance.onFilterChange({ query: '', minScore: 70, hasReminder: null, dateRange: null });
+
+      expect(fixture.componentInstance.filteredApplications().length).toBe(2);
+      expect(fixture.componentInstance.filteredApplications().every(a => (a.matchScore ?? 0) >= 70)).toBe(true);
+    });
+
+    it('filteredApplications filters by query (title)', async () => {
+      api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 1, applicationCount: 3, avgMatchScore: 77, recentApplications: apps });
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      fixture.componentInstance.onFilterChange({ query: 'frontend', minScore: null, hasReminder: null, dateRange: null });
+
+      expect(fixture.componentInstance.filteredApplications().length).toBe(1);
+      expect(fixture.componentInstance.filteredApplications()[0].id).toBe('1');
+    });
+
+    it('filteredApplications filters by hasReminder', async () => {
+      api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 1, applicationCount: 3, avgMatchScore: 77, recentApplications: apps });
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      fixture.componentInstance.onFilterChange({ query: '', minScore: null, hasReminder: true, dateRange: null });
+
+      expect(fixture.componentInstance.filteredApplications().length).toBe(1);
+      expect(fixture.componentInstance.filteredApplications()[0].id).toBe('1');
+    });
+  });
+
   describe('onboarding', () => {
     it('shows onboarding panel when onboardingDismissed is false', async () => {
       api.get.mockResolvedValue({ ...emptyDashboard, onboardingDismissed: false });

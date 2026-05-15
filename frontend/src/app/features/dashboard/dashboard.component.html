@@ -104,13 +104,16 @@
           </div>
         </div>
         @if (showPipeline()) {
+          <lba-pipeline-toolbar
+            [totalCount]="filteredApplications().length"
+            (filterChange)="onFilterChange($event)"
+          />
           <lba-pipeline-board
-            [applications]="data()!.recentApplications"
+            [applications]="filteredApplications()"
             (statusChange)="onStatusChange($event)"
             (reminderChange)="onReminderChange($event)"
           />
-        }
-        @if (!showPipeline()) {
+        } @else {
         <div class="app-table-wrap">
           <table class="app-table" role="grid">
             <caption class="sr-only">Letzte 5 Bewerbungen</caption>
