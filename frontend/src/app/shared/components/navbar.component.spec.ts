@@ -15,7 +15,7 @@ describe('NavbarComponent', () => {
     fixture.detectChanges();
     const text = fixture.nativeElement.textContent;
 
-    expect(text).toContain('Lebenslauf-Agent');
+    expect(text).toContain('Hireflow AI');
     expect(text).toContain('Features');
     expect(text).toContain("So funktioniert's");
     expect(text).toContain('Beispiel');

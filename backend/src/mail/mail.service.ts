@@ -9,7 +9,7 @@ export interface MailAttachment {
 
 @Injectable()
 export class MailService {
-  private from = `Lebenslauf-Agent <noreply@${process.env.MAIL_DOMAIN}>`;
+  private from = `Hireflow AI <noreply@${process.env.MAIL_DOMAIN}>`;
 
   async sendVerification(to: string, token: string) {
     const link = `${process.env.APP_URL}/api/auth/verify?token=${token}`;

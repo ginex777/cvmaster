@@ -2,7 +2,7 @@ import type { ParsedCV, ParsedJob } from './provider';
 
 export const FIXTURE_CV_TEXT = `
 Anna Schmidt
-Berlin | anna@example.de
+Heidelberg | anna@example.de
 
 Berufserfahrung
 Frontend Developer – Acme GmbH (2021–heute)
@@ -10,14 +10,14 @@ Frontend Developer – Acme GmbH (2021–heute)
 - Performance-Optimierungen um 40 %
 
 Ausbildung
-B.Sc. Informatik – TU Berlin (2021)
+B.Sc. Informatik – Universität Heidelberg (2021)
 
 Kenntnisse: TypeScript, Angular, NestJS, CSS
 Sprachen: Deutsch (Muttersprache), Englisch (C1)
 `.trim();
 
 export const FIXTURE_JOB_TEXT = `
-Senior Frontend Developer (w/m/d) – TechCorp GmbH, Berlin
+Senior Frontend Developer (w/m/d) – TechCorp GmbH, Heidelberg
 
 Pflichtanforderungen: Angular, TypeScript
 Optional: NestJS, Testing
@@ -27,7 +27,7 @@ Aufgaben: Feature-Entwicklung, Code-Reviews, Tests schreiben
 export const FIXTURE_CV: ParsedCV = {
   name: 'Anna Schmidt',
   email: 'anna@example.de',
-  location: 'Berlin',
+  location: 'Heidelberg',
   summary: 'Erfahrene Frontend-Entwicklerin',
   experience: [
     {
@@ -42,7 +42,7 @@ export const FIXTURE_CV: ParsedCV = {
     },
   ],
   education: [
-    { institution: 'TU Berlin', degree: 'B.Sc.', field: 'Informatik', end: '2021' },
+    { institution: 'Universität Heidelberg', degree: 'B.Sc.', field: 'Informatik', end: '2021' },
   ],
   skills: ['TypeScript', 'Angular', 'NestJS', 'CSS'],
   languages: [
@@ -54,7 +54,7 @@ export const FIXTURE_CV: ParsedCV = {
 export const FIXTURE_JOB: ParsedJob = {
   title: 'Senior Frontend Developer',
   company: 'TechCorp GmbH',
-  location: 'Berlin',
+  location: 'Heidelberg',
   mustHaves: ['Angular', 'TypeScript'],
   niceToHaves: ['NestJS', 'Testing'],
   skills: ['Angular', 'TypeScript', 'CSS'],

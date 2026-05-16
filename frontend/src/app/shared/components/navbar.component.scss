@@ -32,17 +32,11 @@
 .nav__logo {
   display: flex;
   align-items: center;
-  gap: 8px;
   flex: 0 0 auto;
   font-size: 15px;
   font-weight: 600;
   color: var(--ink);
   text-decoration: none;
-
-  svg {
-    width: 28px;
-    height: 28px;
-  }
 }
 
 .nav__links {

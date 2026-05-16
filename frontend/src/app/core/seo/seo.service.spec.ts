@@ -16,12 +16,12 @@ describe('SeoService', () => {
 
   it('sets page title with site suffix', () => {
     service.setPage('FAQ', 'Häufige Fragen', '/faq');
-    expect(title.getTitle()).toBe('FAQ – Lebenslauf-Agent');
+    expect(title.getTitle()).toBe('FAQ – Hireflow AI');
   });
 
   it('sets og:title and og:description meta tags', () => {
     service.setPage('FAQ', 'Häufige Fragen', '/faq');
-    expect(meta.getTag('property="og:title"')?.content).toBe('FAQ – Lebenslauf-Agent');
+    expect(meta.getTag('property="og:title"')?.content).toBe('FAQ – Hireflow AI');
     expect(meta.getTag('property="og:description"')?.content).toBe('Häufige Fragen');
   });
 

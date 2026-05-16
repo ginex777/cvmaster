@@ -47,7 +47,7 @@ export class LandingComponent {
   constructor() {
     inject(SeoService).setPage(
       'KI-optimierte Bewerbungsunterlagen',
-      'Lebenslauf-Agent optimiert deinen Lebenslauf auf jede Stelle und schreibt ein passendes Anschreiben – in weniger als einer Minute.',
+      'Hireflow AI optimiert deinen Lebenslauf auf jede Stelle und schreibt ein passendes Anschreiben – in weniger als einer Minute.',
       '/',
     );
     this.applyAuthQuery();

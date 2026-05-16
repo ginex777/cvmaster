@@ -26,7 +26,7 @@ describe('FooterComponent', () => {
     expect(text).toContain('PRODUKT');
     expect(text).toContain('RESSOURCEN');
     expect(text).toContain('RECHTLICHES');
-    expect(text).toContain('© 2026 Lebenslauf-Agent GmbH');
+    expect(text).toContain('© 2026 Hireflow AI');
   });
 
   it('renders Cookie-Einstellungen button', () => {

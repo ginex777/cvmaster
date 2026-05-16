@@ -10,13 +10,13 @@ const FAQ_LD_JSON = JSON.stringify({
   mainEntity: [
     {
       '@type': 'Question',
-      name: 'Was ist der Lebenslauf-Agent?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Der Lebenslauf-Agent ist ein KI-gestütztes Tool, das deinen Lebenslauf automatisch auf jede Stellenanzeige optimiert und ein passendes Anschreiben generiert.' },
+      name: 'Was ist Hireflow AI?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Hireflow AI ist ein KI-gestütztes Tool, das deinen Lebenslauf automatisch auf jede Stellenanzeige optimiert und ein passendes Anschreiben generiert.' },
     },
     {
       '@type': 'Question',
       name: 'Ist der Dienst DSGVO-konform?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Ja. Der Lebenslauf-Agent wird in Deutschland betrieben und verarbeitet Daten nach DSGVO. Dateien werden nie dauerhaft gespeichert.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'Ja. Hireflow AI wird in Deutschland betrieben und verarbeitet Daten nach DSGVO. Dateien werden nie dauerhaft gespeichert.' },
     },
     {
       '@type': 'Question',
@@ -41,7 +41,7 @@ export class FaqComponent implements OnDestroy {
   constructor() {
     inject(SeoService).setPage(
       'FAQ – Häufige Fragen',
-      'Antworten auf die häufigsten Fragen zum Lebenslauf-Agenten: Datenschutz, Formate, KI, Preise und mehr.',
+      'Antworten auf die häufigsten Fragen zu Hireflow AI: Datenschutz, Formate, KI, Preise und mehr.',
       '/faq',
     );
 

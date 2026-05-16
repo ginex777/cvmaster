@@ -101,7 +101,7 @@ export class UsersService {
     const secret = generateTotpSecret();
     await this.prisma.user.update({ where: { id: userId }, data: { twoFactorSecret: secret } });
 
-    const uri = `otpauth://totp/${encodeURIComponent(`Lebenslauf-Agent:${user.email}`)}?secret=${secret}&issuer=Lebenslauf-Agent&algorithm=SHA1&digits=6&period=30`;
+    const uri = `otpauth://totp/${encodeURIComponent(`Hireflow AI:${user.email}`)}?secret=${secret}&issuer=Hireflow%20AI&algorithm=SHA1&digits=6&period=30`;
     return { secret, uri };
   }
 

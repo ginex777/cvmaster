@@ -7,7 +7,7 @@ import { FIXTURE_JOB } from './eval.fixtures';
 const mockParsedCv = {
   name: 'Anna Schmidt',
   email: 'anna@example.de',
-  location: 'Berlin',
+  location: 'Heidelberg',
   experience: [
     { id: 'exp1', company: 'Acme', role: 'Dev', bullets: [{ id: 'b1', text: 'Did stuff' }, { id: 'b2', text: 'More stuff' }] },
   ],
@@ -19,7 +19,7 @@ const mockParsedCv = {
 const mockParsedJob = {
   title: 'Senior Frontend Developer',
   company: 'TechCorp',
-  location: 'Berlin',
+  location: 'Heidelberg',
   mustHaves: ['Angular'],
   niceToHaves: [],
   skills: ['Angular'],

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 
-const SITE_NAME = 'Lebenslauf-Agent';
+const SITE_NAME = 'Hireflow AI';
 const BASE_URL = 'https://lebenslauf-agent.de';
 
 @Injectable({ providedIn: 'root' })

@@ -15,7 +15,7 @@ export class ImprintComponent {
   constructor() {
     inject(SeoService).setPage(
       'Impressum',
-      'Pflichtangaben gemäß § 5 TMG für den Lebenslauf-Agenten.',
+      'Pflichtangaben gemäß § 5 DDG für Hireflow AI.',
       '/impressum',
     );
   }

@@ -15,7 +15,7 @@ export class TermsComponent {
   constructor() {
     inject(SeoService).setPage(
       'Allgemeine Geschäftsbedingungen',
-      'AGB für die Nutzung des Lebenslauf-Agenten.',
+      'AGB für die Nutzung von Hireflow AI.',
       '/agb',
     );
   }

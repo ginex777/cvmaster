@@ -61,7 +61,7 @@ export class JobsService {
         signal: controller.signal,
         headers: {
           Accept: 'text/html, text/plain;q=0.9',
-          'User-Agent': 'Lebenslauf-Agent Job Parser/1.0',
+          'User-Agent': 'Hireflow AI Job Parser/1.0',
         },
         redirect: 'follow',
       });

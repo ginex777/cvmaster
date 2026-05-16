@@ -26,7 +26,7 @@ function parsedJob() {
   return {
     title: 'Frontend Developer',
     company: 'Acme',
-    location: 'Berlin',
+    location: 'Heidelberg',
     mustHaves: ['Angular'],
     niceToHaves: ['NestJS'],
     skills: ['TypeScript'],
