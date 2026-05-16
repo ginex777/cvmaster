@@ -27,7 +27,8 @@ import { Response } from 'express';
 import { PrismaService } from '../common/prisma.service';
 import { QueueService } from '../queue/queue.service';
 import { MailService } from '../mail/mail.service';
-import { CvLayout, CvPdfData, PdfService } from '../pdf/pdf.service';
+import { CvLayout, PdfService } from '../pdf/pdf.service';
+import { toCvPdfData } from '../pdf/cv-pdf-data.mapper';
 import { PlanPolicyService } from '../common/plan-policy.service';
 
 @Injectable()
@@ -149,7 +150,7 @@ export class ApplicationsService {
     const app = await this.findById(id);
     const title = this.fileTitle(app);
     const template = this.asLayout(app.masterCv?.template ?? layout);
-    const buffer = await this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title), template);
+    const buffer = await this.pdf.generateCvPdf(toCvPdfData(app.optimizedCv, title), template);
 
     res.set({
       'Content-Type': 'application/pdf',
@@ -166,7 +167,7 @@ export class ApplicationsService {
     const safeTitle = this.safeFilename(title);
     const template = this.asLayout(app.masterCv?.template);
     const [cv, letter] = await Promise.all([
-      this.pdf.generateCvPdf(this.toPdfData(app.optimizedCv, title), template),
+      this.pdf.generateCvPdf(toCvPdfData(app.optimizedCv, title), template),
       this.pdf.generateLetterPdf(this.selectedLetterText(app.coverLetter, app.chosenVariant, app.coverLetterTone), title, template),
     ]);
     try {
@@ -257,42 +258,6 @@ export class ApplicationsService {
     });
   }
 
-  private toPdfData(value: unknown, fallbackName: string): CvPdfData {
-    if (this.hasPdfSections(value)) {
-      return {
-        name: typeof value.name === 'string' ? value.name : fallbackName,
-        sections: value.sections,
-      };
-    }
-
-    if (this.hasEditorText(value)) {
-      return { name: fallbackName, sections: this.textToSections(value.text) };
-    }
-
-    if (this.hasExperience(value)) {
-      return {
-        name: fallbackName,
-        sections: value.experience.map(section => ({
-          heading: `${section.role} @ ${section.company}`,
-          lines: section.bullets.map(bullet => bullet.text),
-        })),
-      };
-    }
-
-    return {
-      name: fallbackName,
-      sections: [{ heading: 'Lebenslauf', lines: [typeof value === 'string' ? value : JSON.stringify(value ?? {})] }],
-    };
-  }
-
-  private textToSections(text: string): CvPdfData['sections'] {
-    return text
-      .split(/\n{2,}/)
-      .map(block => block.split('\n').map(line => line.trim()).filter(Boolean))
-      .filter(lines => lines.length > 0)
-      .map(([heading, ...lines]) => ({ heading, lines }));
-  }
-
   private fileTitle(app: { jobPosting?: { parsedJson?: unknown } }): string {
     const parsed = app.jobPosting?.parsedJson;
     if (this.hasJobTitle(parsed)) return `Lebenslauf_${parsed.company}_${parsed.title}`;
@@ -301,20 +266,6 @@ export class ApplicationsService {
 
   private safeFilename(value: string): string {
     return value.replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'Lebenslauf';
-  }
-
-  private hasPdfSections(value: unknown): value is CvPdfData {
-    return typeof value === 'object' && value !== null && Array.isArray((value as { sections?: unknown }).sections);
-  }
-
-  private hasEditorText(value: unknown): value is { text: string } {
-    return typeof value === 'object' && value !== null && typeof (value as { text?: unknown }).text === 'string';
-  }
-
-  private hasExperience(value: unknown): value is {
-    experience: Array<{ company: string; role: string; bullets: Array<{ text: string }> }>;
-  } {
-    return typeof value === 'object' && value !== null && Array.isArray((value as { experience?: unknown }).experience);
   }
 
   private hasJobTitle(value: unknown): value is { title: string; company: string } {

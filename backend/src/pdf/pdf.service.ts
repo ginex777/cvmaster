@@ -9,6 +9,7 @@ import { MinimalRenderer } from './renderers/minimal.renderer';
 import { ModernRenderer } from './renderers/modern.renderer';
 import { ModernLetterRenderer } from './renderers/modern-letter.renderer';
 import type { CvLayout, CvPdfData, CvRenderer, LetterRenderer } from './renderers/renderer.interface';
+import { toCvPdfData } from './cv-pdf-data.mapper';
 export type { CvLayout, CvPdfData } from './renderers/renderer.interface';
 
 @Injectable()
@@ -39,7 +40,7 @@ export class PdfService {
   }
 
   async render(parsedCv: Record<string, unknown>, _layout: CvLayout): Promise<Buffer> {
-    return this.generateCvPdf(this.recordToPdfData(parsedCv), _layout);
+    return this.generateCvPdf(toCvPdfData(parsedCv), _layout);
   }
 
   async renderZip(parsedCv: Record<string, unknown>, layout: CvLayout): Promise<Buffer> {
@@ -77,21 +78,4 @@ export class PdfService {
     }
   }
 
-  private recordToPdfData(parsedCv: Record<string, unknown>): CvPdfData {
-    const name = typeof parsedCv['name'] === 'string' ? parsedCv['name'] : 'Lebenslauf';
-    const sections = Array.isArray(parsedCv['sections'])
-      ? parsedCv['sections'].filter(this.isSection)
-      : [{ heading: 'Lebenslauf', lines: [JSON.stringify(parsedCv)] }];
-
-    return { name, sections };
-  }
-
-  private isSection(value: unknown): value is { heading: string; lines: string[] } {
-    return (
-      typeof value === 'object' &&
-      value !== null &&
-      typeof (value as { heading?: unknown }).heading === 'string' &&
-      Array.isArray((value as { lines?: unknown }).lines)
-    );
-  }
 }
