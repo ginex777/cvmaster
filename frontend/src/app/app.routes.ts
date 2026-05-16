@@ -25,9 +25,9 @@ export const routes: Routes = [
         children: [
           { path: '', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
           { path: 'cvs', loadComponent: () => import('./features/master-cvs/master-cvs.component').then(m => m.MasterCvsComponent) },
-          { path: 'billing', loadComponent: () => import('./features/billing/billing.component').then(m => m.BillingComponent) },
+          { path: 'billing',  redirectTo: '', pathMatch: 'full' },
           { path: 'wizard', loadComponent: () => import('./features/wizard/wizard.component').then(m => m.WizardComponent) },
-          { path: 'security', loadComponent: () => import('./features/security/security.component').then(m => m.SecurityComponent) },
+          { path: 'security', redirectTo: '', pathMatch: 'full' },
           { path: 'linkedin', loadComponent: () => import('./features/linkedin/linkedin.component').then(m => m.LinkedInComponent) },
         ],
       },
