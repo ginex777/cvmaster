@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApiService } from '../../core/api/api.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { SeoService } from '../../core/seo/seo.service';
+import { UpgradeService } from '../../shared/services/upgrade.service';
 
 interface ExperienceOptimization {
   role: string;
@@ -26,11 +28,18 @@ interface LinkedInOptimization {
 })
 export class LinkedInComponent {
   private readonly api = inject(ApiService);
+  private readonly auth = inject(AuthService);
+  private readonly upgradeService = inject(UpgradeService);
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly result = signal<LinkedInOptimization | null>(null);
   readonly copiedField = signal<string | null>(null);
+
+  readonly isPro = computed(() => {
+    const plan = this.auth.user()?.plan;
+    return plan === 'PRO' || plan === 'pro';
+  });
 
   readonly form = new FormGroup({
     profileText: new FormControl('', [Validators.required, Validators.minLength(50)]),
@@ -39,6 +48,10 @@ export class LinkedInComponent {
 
   constructor() {
     inject(SeoService).setPage('LinkedIn-Profil optimieren', 'LinkedIn-Profil mit KI optimieren — Headline, About und Erfahrungen verbessern.', '/app/linkedin');
+  }
+
+  openUpgrade(): void {
+    this.upgradeService.request();
   }
 
   async optimize(): Promise<void> {
@@ -53,11 +66,7 @@ export class LinkedInComponent {
       });
       this.result.set(data);
     } catch (e: unknown) {
-      if (e instanceof HttpErrorResponse && e.status === 403) {
-        this.error.set('Diese Funktion ist nur für PRO-Nutzer verfügbar. Bitte upgraden.');
-      } else {
-        this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Optimierung fehlgeschlagen. Bitte erneut versuchen.');
-      }
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Optimierung fehlgeschlagen. Bitte erneut versuchen.');
     } finally {
       this.loading.set(false);
     }

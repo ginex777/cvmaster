@@ -1,123 +1,56 @@
-.linkedin-page {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: var(--space-8);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-
-  &__title { font-size: 1.5rem; font-weight: 800; margin: 0; }
-  &__desc { margin: 0; color: var(--ink-2); line-height: 1.6; }
-
-  &__error {
-    color: var(--danger);
-    background: color-mix(in oklch, var(--danger) 8%, var(--bg));
-    border-radius: var(--radius-md);
-    padding: var(--space-3) var(--space-4);
-    font-size: 0.875rem;
-  }
+.linkedin-error {
+  margin-bottom: var(--space-4);
 }
 
 .linkedin-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-
-  label { font-weight: 600; font-size: 0.875rem; }
-
-  input, textarea {
-    padding: var(--space-3) var(--space-4);
-    border: 1.5px solid oklch(80% 0 0);
-    border-radius: var(--radius-md);
-    font-size: 1rem;
-    font-family: var(--font-sans);
-    background: var(--bg-2);
-    color: var(--ink);
-    min-height: 44px;
-    resize: vertical;
-
-    &:focus-visible {
-      outline: 3px solid var(--accent);
-      outline-offset: 2px;
-      border-color: var(--accent);
-    }
-  }
-
-  &__error { color: var(--danger); font-size: 0.8125rem; }
+  max-width: 680px;
+  margin-bottom: var(--space-8);
 }
 
 .linkedin-results {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-
-  &__title { font-size: 1.125rem; font-weight: 700; margin: 0; }
+  margin-top: var(--space-6);
+  max-width: 680px;
 }
 
-.result-card {
-  background: var(--bg-2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-  }
-
-  &__label { font-size: 1rem; font-weight: 700; margin: 0; }
-
-  &__text {
-    margin: 0;
-    color: var(--ink);
-    line-height: 1.6;
-    font-size: 0.9375rem;
-
-    &--pre { white-space: pre-wrap; }
-  }
+.linkedin-result-text {
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.6;
+  margin-top: var(--space-3);
+  white-space: pre-wrap;
 }
 
-.experience-list {
+.linkedin-experience {
   list-style: none;
-  padding: 0;
-  margin: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
 
-.experience-item {
+.linkedin-exp-item {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+}
 
-  &__header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    flex-wrap: wrap;
-    font-size: 0.9375rem;
-  }
+.linkedin-exp-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
 
-  &__bullets {
-    list-style: disc;
-    padding-left: var(--space-6);
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-    font-size: 0.9375rem;
-    line-height: 1.5;
-  }
+  strong { color: var(--ink); }
+}
+
+.linkedin-exp-bullets {
+  list-style: disc;
+  padding-left: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+
+  li { font-size: 13px; color: var(--ink-2); }
 }
