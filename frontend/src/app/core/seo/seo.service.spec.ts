@@ -27,7 +27,7 @@ describe('SeoService', () => {
 
   it('sets og:url from path', () => {
     service.setPage('Preise', 'Preisübersicht', '/preise');
-    expect(meta.getTag('property="og:url"')?.content).toBe('https://lebenslauf-agent.de/preise');
+    expect(meta.getTag('property="og:url"')?.content).toBe('https://hireflow.ai/preise');
   });
 
   it('sets twitter:card to summary', () => {
