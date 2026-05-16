@@ -5,6 +5,7 @@ import { AppShellComponent } from './app-shell.component';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ApiService } from '../../../core/api/api.service';
 import { SeoService } from '../../../core/seo/seo.service';
+import { UpgradeService } from '../../services/upgrade.service';
 
 interface MockUser {
   id: string; email: string; name: string;
@@ -112,5 +113,16 @@ describe('AppShellComponent', () => {
     (btn.nativeElement as HTMLButtonElement).click();
     fixture.detectChanges();
     expect(fixture.componentInstance['einstellungenOpen']()).toBe(true);
+  });
+
+  it('opens Einstellungen modal when UpgradeService.request() is called', async () => {
+    const { fixture } = await setup();
+    const upgradeService = TestBed.inject(UpgradeService);
+    expect(fixture.componentInstance['einstellungenOpen']()).toBe(false);
+    upgradeService.request();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.componentInstance['einstellungenOpen']()).toBe(true);
+    expect(upgradeService.requested()).toBe(false); // cleared after handling
   });
 });

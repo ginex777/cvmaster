@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { EinstellungenModalComponent } from '../einstellungen-modal/einstellungen-modal.component';
+import { UpgradeService } from '../../services/upgrade.service';
 
 @Component({
   selector: 'lba-app-shell',
@@ -14,8 +15,18 @@ import { EinstellungenModalComponent } from '../einstellungen-modal/einstellunge
 export class AppShellComponent {
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly upgradeService = inject(UpgradeService);
 
   protected readonly einstellungenOpen = signal(false);
+
+  constructor() {
+    effect(() => {
+      if (this.upgradeService.requested()) {
+        this.einstellungenOpen.set(true);
+        this.upgradeService.clear();
+      }
+    }, { allowSignalWrites: true });
+  }
 
   protected isPro(): boolean {
     const plan = this.auth.user()?.plan;
