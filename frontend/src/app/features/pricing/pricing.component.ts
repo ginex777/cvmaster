@@ -83,7 +83,7 @@ export class PricingComponent {
       const config = this.getRuntimeConfig();
       const priceId = this.priceIdForPlan(config, plan);
       if (!config.paddleClientToken || !priceId) {
-        this.checkoutError.set('Checkout ist noch nicht konfiguriert. Bitte pruefe Paddle Token und Preis-ID.');
+        this.checkoutError.set('Checkout ist noch nicht konfiguriert. Bitte prüfe Paddle-Token und Preis-ID.');
         return;
       }
 

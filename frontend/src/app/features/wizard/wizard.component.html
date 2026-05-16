@@ -53,7 +53,7 @@
       <section class="quickstart" aria-labelledby="quickstart-heading">
         <div class="quickstart__header">
           <h3 id="quickstart-heading">Ohne vorhandenen Lebenslauf starten</h3>
-          <p>Erstelle ein vorsichtiges CV-Gerüst, das du im Editor mit echten Erfahrungen ergaenzt.</p>
+          <p>Erstelle ein vorsichtiges CV-Gerüst, das du im Editor mit echten Erfahrungen ergänzt.</p>
         </div>
 
         <form class="quickstart-form" [formGroup]="quickstartForm" (ngSubmit)="createQuickstartCv()" novalidate aria-label="Quickstart Lebenslauf">
@@ -93,7 +93,7 @@
           </div>
 
           <button type="submit" class="btn btn--secondary btn--md" [disabled]="loading()">
-            @if (loading()) { CV-Gerüst wird erstellt... } @else { CV-Gerüst erstellen }
+            @if (loading()) { CV-Gerüst wird erstellt… } @else { CV-Gerüst erstellen }
           </button>
         </form>
 
@@ -102,7 +102,7 @@
             <h3 id="quickstart-preview-heading">{{ quickstartPreview()?.name }}</h3>
             <p>{{ quickstartPreview()?.parsedJson?.summary ?? 'CV-Gerüst wurde erstellt und kann im Editor erweitert werden.' }}</p>
             @if (quickstartPreview()?.parsedJson?.skills?.length) {
-              <ul class="quickstart-preview__skills" role="list" aria-label="Uebernommene Skills">
+              <ul class="quickstart-preview__skills" role="list" aria-label="Übernommene Skills">
                 @for (skill of quickstartPreview()?.parsedJson?.skills ?? []; track skill) {
                   <li>{{ skill }}</li>
                 }
@@ -121,7 +121,7 @@
     <section class="wizard-step" aria-labelledby="step2-heading">
       <h2 id="step2-heading" class="wizard-step__title">Stellenanzeige einfügen</h2>
       <form [formGroup]="jobForm" (ngSubmit)="nextStep()" novalidate aria-label="Stellenanzeige-Formular">
-        <div class="job-input-tabs" role="tablist" aria-label="Eingabeart fuer Stellenanzeige">
+        <div class="job-input-tabs" role="tablist" aria-label="Eingabeart für Stellenanzeige">
           <button
             id="job-mode-text"
             type="button"
@@ -160,11 +160,11 @@
               formControlName="jobRaw"
               class="field__textarea"
               rows="12"
-              placeholder="Fuege hier den vollstaendigen Text der Stellenanzeige ein (mindestens 50 Zeichen)..."
+              placeholder="Füge hier den vollständigen Text der Stellenanzeige ein (mindestens 50 Zeichen)…"
               aria-required="true"
               [attr.aria-describedby]="jobForm.get('jobRaw')?.invalid && jobForm.get('jobRaw')?.touched ? 'job-raw-error' : 'job-raw-note'">
             </textarea>
-            <span id="job-raw-note" class="field__note">Zuverlaessigste Variante, wenn Job-Portale Crawling blockieren.</span>
+            <span id="job-raw-note" class="field__note">Zuverlässigste Variante, wenn Job-Portale Crawling blockieren.</span>
             @if (jobForm.get('jobRaw')?.invalid && jobForm.get('jobRaw')?.touched) {
               <span id="job-raw-error" role="alert" class="field__error">
                 Bitte mindestens 50 Zeichen eingeben.
@@ -184,10 +184,10 @@
               placeholder="https://unternehmen.de/jobs/frontend"
               aria-required="true"
               [attr.aria-describedby]="!currentJobInputValid() && jobForm.get('jobUrl')?.touched ? 'job-url-error' : 'job-url-note'" />
-            <span id="job-url-note" class="field__note">Wir laden nur oeffentliche HTTP/HTTPS-Seiten und speichern keine Originalseite.</span>
+            <span id="job-url-note" class="field__note">Wir laden nur öffentliche HTTP/HTTPS-Seiten und speichern keine Originalseite.</span>
             @if (!currentJobInputValid() && jobForm.get('jobUrl')?.touched) {
               <span id="job-url-error" role="alert" class="field__error">
-                Bitte eine gueltige HTTP- oder HTTPS-URL eingeben.
+                Bitte eine gültige HTTP- oder HTTPS-URL eingeben.
               </span>
             }
           </div>
@@ -196,7 +196,7 @@
         <aside class="job-input-status" aria-live="polite">
           <strong>Aktiv:</strong>
           @if (jobInputMode() === 'url') {
-            URL-Import mit Sicherheitspruefung und Text-Extraktion.
+            URL-Import mit Sicherheitsprüfung und Text-Extraktion.
           } @else {
             Direkter Text-Import ohne Crawling-Risiko.
           }
@@ -219,7 +219,7 @@
       <section class="wizard-section" aria-labelledby="tone-heading">
         <div class="wizard-section__header">
           <h3 id="tone-heading">Anschreiben-Ton</h3>
-          <p>Waehle, welche der drei Varianten fuer Export und Versand vorausgewaehlt wird.</p>
+          <p>Wähle, welche der drei Varianten für Export und Versand vorausgewählt wird.</p>
         </div>
         <lba-cover-letter-tone-picker
           [tone]="selectedTone()"

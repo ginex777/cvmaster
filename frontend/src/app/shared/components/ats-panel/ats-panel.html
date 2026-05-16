@@ -1,7 +1,7 @@
 <section class="ats-panel" aria-label="Analyse">
   @if (!hasData()) {
     <div class="ats-panel__empty" role="status" aria-live="polite">
-      <p>Analyse nicht verfuegbar fuer aeltere Bewerbungen.</p>
+      <p>Analyse für ältere Bewerbungen nicht verfügbar.</p>
       <p>Erstelle eine neue Bewerbung, um den ATS-Score zu sehen.</p>
     </div>
   } @else {
@@ -21,7 +21,7 @@
 
     <section class="ats-panel__section" aria-labelledby="ats-keywords-title">
       <div class="ats-panel__section-heading">
-        <h3 id="ats-keywords-title">Schluesselbegriffe</h3>
+        <h3 id="ats-keywords-title">Schlüsselbegriffe</h3>
         <span>{{ matchedKeywords().length }} Treffer</span>
       </div>
 
@@ -36,21 +36,21 @@
           <span class="ats-panel__chip ats-panel__chip--missing-optional" role="listitem">{{ keyword }}</span>
         }
         @if (matchedKeywords().length === 0 && missingRequired().length === 0 && missingOptional().length === 0) {
-          <p class="ats-panel__muted">Keine Schluesselbegriffe verfuegbar.</p>
+          <p class="ats-panel__muted">Keine Schlüsselbegriffe verfügbar.</p>
         }
       </div>
     </section>
 
     <section class="ats-panel__section" aria-labelledby="ats-diff-title">
       <div class="ats-panel__section-heading">
-        <h3 id="ats-diff-title">KI-Aenderungen</h3>
-        <span>{{ diffEntries().length }} Eintraege</span>
+        <h3 id="ats-diff-title">KI-Änderungen</h3>
+        <span>{{ diffEntries().length }} Einträge</span>
       </div>
 
       @if (diffEntries().length === 0) {
-        <p class="ats-panel__muted">Keine Aenderungen aufgezeichnet.</p>
+        <p class="ats-panel__muted">Keine Änderungen aufgezeichnet.</p>
       } @else {
-        <ul class="ats-panel__diff-list" aria-label="Auflistung aller KI-Aenderungen">
+        <ul class="ats-panel__diff-list" aria-label="Auflistung aller KI-Änderungen">
           @for (entry of diffEntries(); track entry.section + entry.before + entry.after) {
             <li class="ats-panel__diff-entry">
               <div class="ats-panel__diff-meta">

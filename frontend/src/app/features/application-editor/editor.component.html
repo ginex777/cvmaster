@@ -57,10 +57,10 @@
 
     @if (isModal()) {
       <button type="button" class="btn btn--ghost btn--sm editor__close" (click)="closeRequested.emit()">
-        Schliessen
+        Schließen
       </button>
     } @else {
-      <a routerLink="/app" class="btn btn--ghost btn--sm editor__close">Zurueck</a>
+      <a routerLink="/app" class="btn btn--ghost btn--sm editor__close">Zurück</a>
     }
   </header>
 
@@ -111,7 +111,7 @@
               @if (showAnalyse()) { Analyse } @else { Optimierter Lebenslauf }
             </h2>
           </div>
-          <span aria-live="polite" role="status">{{ saving() ? 'Speichert...' : 'Gespeichert' }}</span>
+          <span aria-live="polite" role="status">{{ saving() ? 'Speichert…' : 'Gespeichert' }}</span>
         </div>
 
         <div class="editor__scroll-area">
@@ -143,7 +143,7 @@
                 class="btn btn--ghost btn--sm"
                 (click)="loadFollowUpTemplates()"
                 [disabled]="followUpLoading()">
-                @if (followUpLoading()) { Laedt... } @else { Nachfassen }
+                @if (followUpLoading()) { Lädt… } @else { Nachfassen }
               </button>
             }
           </div>
@@ -158,7 +158,7 @@
                 <li class="follow-up-card">
                   <strong class="follow-up-card__label">{{ tpl.label }}</strong>
                   <p class="follow-up-card__subject">Betreff: {{ tpl.subject }}</p>
-                  <p class="follow-up-card__preview">{{ tpl.body.slice(0, 120) }}...</p>
+                  <p class="follow-up-card__preview">{{ tpl.body.slice(0, 120) }}…</p>
                   <div class="follow-up-card__actions">
                     <button
                       type="button"
@@ -172,7 +172,7 @@
                       class="btn btn--ghost btn--sm"
                       (click)="openFollowUpMailto(tpl.subject, tpl.body)"
                       [attr.aria-label]="'Per E-Mail senden: ' + tpl.label">
-                      E-Mail oeffnen
+                      E-Mail öffnen
                     </button>
                   </div>
                 </li>
@@ -193,7 +193,7 @@
           </button>
         </div>
 
-        <div class="letter-tabs" role="tablist" aria-label="Anschreiben-Variante waehlen">
+        <div class="letter-tabs" role="tablist" aria-label="Anschreiben-Variante wählen">
           @for (variant of letterVariants; track variant) {
             <button
               type="button"
@@ -222,7 +222,7 @@
         </div>
 
         <footer class="send-row">
-          <label for="recipient-email" class="send-row__label">Empfaenger</label>
+          <label for="recipient-email" class="send-row__label">Empfänger</label>
           <input
             id="recipient-email"
             type="email"
@@ -233,13 +233,13 @@
           />
           <div class="send-row__actions">
             <button type="button" class="btn btn--secondary btn--sm" (click)="sendToSelf()" [disabled]="sending()">
-              @if (sending()) { Sendet... } @else { An mich senden }
+              @if (sending()) { Sendet… } @else { An mich senden }
             </button>
             <button type="button" class="btn btn--ghost btn--sm" (click)="openMailto()">
-              In E-Mail-Programm oeffnen
+              In E-Mail-Programm öffnen
             </button>
           </div>
-          <p class="send-row__hint">Bitte fuege heruntergeladene PDFs manuell als Anhang hinzu.</p>
+          <p class="send-row__hint">Bitte füge heruntergeladene PDFs manuell als Anhang hinzu.</p>
         </footer>
       </section>
     </form>
@@ -249,7 +249,7 @@
 <lba-confirm-delete-modal
   [open]="regenConfirmOpen()"
   title="Anschreiben neu generieren?"
-  body="Alle drei Varianten werden neu erstellt. Deine manuellen Aenderungen gehen verloren."
+  body="Alle drei Varianten werden neu erstellt. Deine manuellen Änderungen gehen verloren."
   confirmLabel="Ja, neu generieren"
   (confirmed)="confirmRegen()"
   (cancelled)="regenConfirmOpen.set(false)"

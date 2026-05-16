@@ -104,6 +104,6 @@ export class ExecutiveRenderer implements CvRenderer {
 
   private isSkillSection(heading: string): boolean {
     const normalized = heading.toLowerCase();
-    return normalized.includes('skill') || normalized.includes('kenntnis') || normalized.includes('faehigkeit');
+    return normalized.includes('skill') || normalized.includes('kenntnis') || normalized.includes('fähigkeit');
   }
 }

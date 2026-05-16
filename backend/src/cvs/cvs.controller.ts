@@ -14,7 +14,7 @@ export class CvsController {
   @Throttle({ default: { limit: 5, ttl: 3_600_000 } })
   @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 10 * 1024 * 1024 } }))
   async upload(@UploadedFile() file: Express.Multer.File, @Req() req: AuthenticatedRequest, @Body('name') name: string) {
-    if (!file) throw new BadRequestException('File required');
+    if (!file) throw new BadRequestException('Bitte lade eine Datei hoch.');
     return this.cvs.parseAndStore(file, name, req.user.sub);
   }
 

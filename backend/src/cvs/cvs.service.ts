@@ -76,7 +76,7 @@ export class CvsService {
   async createQuickstart(data: unknown, userId: string) {
     const parsed = quickstartSchema.safeParse(data);
     if (!parsed.success) {
-      throw new BadRequestException(parsed.error.message);
+      throw new BadRequestException('Bitte fülle alle Quickstart-Felder korrekt aus.');
     }
 
     const sourceHash = createHash('sha256').update(JSON.stringify(parsed.data)).digest('hex');
@@ -99,7 +99,7 @@ export class CvsService {
   async createFromText(data: unknown, userId: string) {
     const parsed = textCvSchema.safeParse(data);
     if (!parsed.success) {
-      throw new BadRequestException(parsed.error.message);
+      throw new BadRequestException('Bitte gib einen Namen, eine Sprache und mindestens 40 Zeichen Lebenslauftext ein.');
     }
 
     const sourceHash = createHash('sha256')
@@ -124,7 +124,7 @@ export class CvsService {
   async update(id: string, userId: string, data: unknown) {
     const parsed = updateCvSchema.safeParse(data);
     if (!parsed.success) {
-      throw new BadRequestException(parsed.error.message);
+      throw new BadRequestException('Lebenslauf konnte nicht aktualisiert werden. Bitte prüfe die Angaben.');
     }
 
     const cv = await this.prisma.masterCv.findFirst({ where: { id, userId } });
@@ -141,7 +141,7 @@ export class CvsService {
 
   private validateUpload(buf: Buffer): UploadKind {
     if (buf.length === 0 || buf.length > MAX_UPLOAD_BYTES) {
-      throw new BadRequestException('File size is not supported');
+      throw new BadRequestException('Die Datei ist leer oder größer als 10 MB.');
     }
 
     const isPdf = buf.slice(0, 4).equals(ALLOWED_MAGIC.pdf);
@@ -151,7 +151,7 @@ export class CvsService {
 
     const isDocx = buf.slice(0, 4).equals(ALLOWED_MAGIC.docx);
     if (!isDocx) {
-      throw new BadRequestException('Unsupported file type');
+      throw new BadRequestException('Bitte lade eine PDF- oder DOCX-Datei hoch.');
     }
 
     this.validateDocxStructure(buf);
@@ -161,7 +161,7 @@ export class CvsService {
   private validateDocxStructure(buf: Buffer) {
     const centralDirectory = this.findCentralDirectory(buf);
     if (centralDirectory.entryCount < 1 || centralDirectory.entryCount > MAX_DOCX_ENTRIES) {
-      throw new BadRequestException('DOCX structure is not supported');
+      throw new BadRequestException('Diese DOCX-Datei wird nicht unterstützt.');
     }
 
     let offset = centralDirectory.offset;
@@ -170,7 +170,7 @@ export class CvsService {
 
     for (let index = 0; index < centralDirectory.entryCount; index += 1) {
       if (offset + 46 > buf.length || buf.readUInt32LE(offset) !== ZIP_CENTRAL_DIRECTORY_SIGNATURE) {
-        throw new BadRequestException('DOCX structure is invalid');
+        throw new BadRequestException('Die DOCX-Datei ist beschädigt oder ungültig.');
       }
 
       const compressedSize = buf.readUInt32LE(offset + 20);
@@ -183,25 +183,25 @@ export class CvsService {
       const nextOffset = nameEnd + extraLength + commentLength;
 
       if (nextOffset > buf.length || compressedSize === ZIP64_SIZE_SENTINEL || uncompressedSize === ZIP64_SIZE_SENTINEL) {
-        throw new BadRequestException('DOCX structure is not supported');
+        throw new BadRequestException('Diese DOCX-Datei wird nicht unterstützt.');
       }
 
       const entryName = buf.toString('utf8', nameStart, nameEnd);
       if (entryName.includes('..') || entryName.startsWith('/') || entryName.startsWith('\\')) {
-        throw new BadRequestException('DOCX structure is invalid');
+        throw new BadRequestException('Die DOCX-Datei ist beschädigt oder ungültig.');
       }
 
       if (uncompressedSize > 0 && compressedSize === 0) {
-        throw new BadRequestException('DOCX compression is invalid');
+        throw new BadRequestException('Die DOCX-Datei enthält ungültige Komprimierungsdaten.');
       }
 
       if (compressedSize > 0 && uncompressedSize / compressedSize > MAX_DOCX_COMPRESSION_RATIO) {
-        throw new BadRequestException('DOCX compression ratio is too high');
+        throw new BadRequestException('Die DOCX-Datei ist zu stark komprimiert.');
       }
 
       totalUncompressedBytes += uncompressedSize;
       if (totalUncompressedBytes > MAX_DOCX_UNCOMPRESSED_BYTES) {
-        throw new BadRequestException('DOCX expanded size is too large');
+        throw new BadRequestException('Die DOCX-Datei ist nach dem Entpacken zu groß.');
       }
 
       names.add(entryName);
@@ -209,7 +209,7 @@ export class CvsService {
     }
 
     if (!names.has('[Content_Types].xml') || !names.has('word/document.xml')) {
-      throw new BadRequestException('DOCX structure is invalid');
+      throw new BadRequestException('Die DOCX-Datei ist beschädigt oder ungültig.');
     }
   }
 
@@ -225,17 +225,17 @@ export class CvsService {
       const directoryOffset = buf.readUInt32LE(offset + 16);
 
       if (entryCount === ZIP64_SENTINEL || directoryOffset === ZIP64_SIZE_SENTINEL || directorySize === ZIP64_SIZE_SENTINEL) {
-        throw new BadRequestException('DOCX structure is not supported');
+        throw new BadRequestException('Diese DOCX-Datei wird nicht unterstützt.');
       }
 
       if (directoryOffset + directorySize > buf.length) {
-        throw new BadRequestException('DOCX structure is invalid');
+        throw new BadRequestException('Die DOCX-Datei ist beschädigt oder ungültig.');
       }
 
       return { entryCount, offset: directoryOffset };
     }
 
-    throw new BadRequestException('DOCX structure is invalid');
+    throw new BadRequestException('Die DOCX-Datei ist beschädigt oder ungültig.');
   }
 
   private async extractText(file: Express.Multer.File, kind: UploadKind): Promise<string> {
@@ -252,7 +252,7 @@ export class CvsService {
     try {
       const result = await pdfParse(buffer, { max: MAX_PDF_PAGES + 1 });
       if (result.numpages > MAX_PDF_PAGES) {
-        throw new BadRequestException(`PDF page limit exceeded (${MAX_PDF_PAGES})`);
+        throw new BadRequestException(`Die PDF-Datei hat mehr als ${MAX_PDF_PAGES} Seiten.`);
       }
 
       return result;
@@ -261,7 +261,7 @@ export class CvsService {
         throw error;
       }
 
-      throw new BadRequestException('PDF could not be parsed');
+      throw new BadRequestException('PDF-Datei konnte nicht gelesen werden.');
     }
   }
 
@@ -269,7 +269,7 @@ export class CvsService {
     try {
       return await mammoth.extractRawText({ buffer });
     } catch {
-      throw new BadRequestException('DOCX could not be parsed');
+      throw new BadRequestException('DOCX-Datei konnte nicht gelesen werden.');
     }
   }
 }

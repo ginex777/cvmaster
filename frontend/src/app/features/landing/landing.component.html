@@ -60,7 +60,7 @@
                 rows="8"
                 [value]="cvText()"
                 (input)="cvText.set($any($event.target).value)"
-                placeholder="Kurzprofil, Erfahrung, Skills und relevante Projekte..."
+                placeholder="Kurzprofil, Erfahrung, Skills und relevante Projekte…"
               ></textarea>
             </label>
             <button type="button" class="btn btn--primary btn--md" [disabled]="!canContinueCv()" (click)="continueToJob()">
@@ -76,7 +76,7 @@
                 rows="8"
                 [value]="jobText()"
                 (input)="jobText.set($any($event.target).value)"
-                placeholder="Rolle, Aufgaben, Anforderungen, gewünschte Keywords..."
+                placeholder="Rolle, Aufgaben, Anforderungen, gewünschte Keywords…"
               ></textarea>
             </label>
             <div class="modal__actions">
@@ -87,7 +87,7 @@
                 [disabled]="!canRunOptimization() || trialLoading()"
                 (click)="runOptimization()"
               >
-                {{ trialLoading() ? 'Wird berechnet...' : 'Match berechnen' }}
+                {{ trialLoading() ? 'Wird berechnet…' : 'Match berechnen' }}
               </button>
             </div>
             @if (trialError()) {
@@ -152,7 +152,7 @@
             </label>
             <label class="field">
               <span>2FA-Code</span>
-              <small>Nur ausfuellen, wenn Zwei-Faktor-Auth aktiv ist.</small>
+              <small>Nur ausfüllen, wenn Zwei-Faktor-Auth aktiv ist.</small>
               <input
                 name="loginTotp"
                 type="text"
@@ -165,7 +165,7 @@
               />
             </label>
             <button type="submit" class="btn btn--primary btn--md" [disabled]="!canSubmitLogin() || authLoading()">
-              {{ authLoading() ? 'Anmeldung laeuft...' : 'Anmelden' }}
+              {{ authLoading() ? 'Anmeldung läuft…' : 'Anmelden' }}
             </button>
           </form>
 
@@ -176,7 +176,7 @@
           <div class="modal__header">
             <p class="eyebrow">Kostenlos starten</p>
             <h2 id="register-dialog-title">Account erstellen</h2>
-            <p>Nach der Registrierung bestaetigst du deine E-Mail-Adresse und kannst dich einloggen.</p>
+            <p>Nach der Registrierung bestätigst du deine E-Mail-Adresse und kannst dich einloggen.</p>
           </div>
 
           <form class="modal-form" (submit)="$event.preventDefault(); submitRegister()">
@@ -220,7 +220,7 @@
               <span>Ich stimme der Verarbeitung meiner Bewerbungsdaten für diesen Test zu.</span>
             </label>
             <button type="submit" class="btn btn--primary btn--md" [disabled]="!canSubmitRegister() || authLoading()">
-              {{ authLoading() ? 'Account wird erstellt...' : 'Account erstellen' }}
+              {{ authLoading() ? 'Account wird erstellt…' : 'Account erstellen' }}
             </button>
           </form>
 

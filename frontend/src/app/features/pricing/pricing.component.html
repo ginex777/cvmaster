@@ -2,7 +2,7 @@
   <header class="pricing__header">
     <p class="pricing__eyebrow">Preise</p>
     <h1 id="pricing-title">Einzelne Bewerbung oder unbegrenzt optimieren</h1>
-    <p>Waehle den Umfang, der zu deiner aktuellen Suche passt. Beide Plaene enthalten den Match-Report und PDF-Export.</p>
+    <p>Wähle den Umfang, der zu deiner aktuellen Suche passt. Beide Pläne enthalten den Match-Report und PDF-Export.</p>
   </header>
 
   @if (checkoutErrorMessage) {
@@ -13,7 +13,7 @@
     <article class="plan" aria-label="Pay-per-Application Plan">
       <div class="plan__topline">
         <h2 class="plan__name">Pay-per-App</h2>
-        <p class="plan__price"><strong>4,90 &euro;</strong> <span>pro Bewerbung</span></p>
+        <p class="plan__price"><strong>4,90 €</strong> <span>pro Bewerbung</span></p>
       </div>
       <ul class="plan__features" role="list">
         <li>1 optimierter Lebenslauf</li>
@@ -31,8 +31,8 @@
       <div class="plan__topline">
         <h2 class="plan__name">Pro</h2>
         <p class="plan__price">
-          <strong>14 &euro;</strong> <span>/Monat</span>
-          <small>oder 130 &euro;/Jahr</small>
+          <strong>14 €</strong> <span>/Monat</span>
+          <small>oder 130 €/Jahr</small>
         </p>
       </div>
       <ul class="plan__features" role="list">
@@ -57,16 +57,16 @@
           [class.plan-toggle__option--active]="selectedPlan() === 'proYearly'"
           [attr.aria-pressed]="selectedPlan() === 'proYearly'"
           (click)="selectPlan('proYearly')">
-          Jaehrlich
+          Jährlich
         </button>
       </div>
       <button type="button" class="btn btn--primary btn--md" (click)="openCheckout()" [disabled]="checkoutLoading()">
-        {{ checkoutLoading() ? 'Checkout wird geladen...' : 'Pro starten' }}
+        {{ checkoutLoading() ? 'Checkout wird geladen…' : 'Pro starten' }}
       </button>
     </article>
   </div>
 
   <p class="guarantee">
-    30 Tage Rueckgaberecht. Bei Match-Score unter 80&nbsp;% pruefen wir den Refund automatisch.
+    30 Tage Rückgaberecht. Bei Match-Score unter 80 % prüfen wir den Refund automatisch.
   </p>
 </main>

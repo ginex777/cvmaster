@@ -18,6 +18,6 @@ export class PlanGuard implements CanActivate {
     if (!required) return true;
     const user = ctx.switchToHttp().getRequest().user;
     if (PLAN_RANK[user?.plan] >= PLAN_RANK[required]) return true;
-    throw new ForbiddenException('Plan upgrade required');
+    throw new ForbiddenException('Für diese Funktion ist ein höherer Plan erforderlich.');
   }
 }

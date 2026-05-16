@@ -18,7 +18,7 @@ export class TrialController {
     const result = trialSchema.safeParse(body);
 
     if (!result.success) {
-      throw new BadRequestException('CV and job text must each contain at least 40 characters.');
+      throw new BadRequestException('Lebenslauf und Stellenanzeige müssen jeweils mindestens 40 Zeichen enthalten.');
     }
 
     return this.trial.run(result.data);

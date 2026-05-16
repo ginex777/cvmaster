@@ -26,10 +26,10 @@ export class CvTemplatePicker {
   readonly templateChange = output<CvTemplate>();
 
   readonly options: Array<{ value: CvTemplate; label: string; description: string }> = [
-    { value: 'classic', label: 'Klassisch', description: 'Einspaltig und serioes' },
+    { value: 'classic', label: 'Klassisch', description: 'Einspaltig und seriös' },
     { value: 'modern', label: 'Modern', description: 'Sidebar mit klarer Struktur' },
-    { value: 'editorial', label: 'Editorial', description: 'Praesent und gestalterisch' },
-    { value: 'minimal', label: 'Minimal', description: 'Ruhig mit viel Weissraum' },
+    { value: 'editorial', label: 'Editorial', description: 'Präsent und gestalterisch' },
+    { value: 'minimal', label: 'Minimal', description: 'Ruhig mit viel Weißraum' },
     { value: 'executive', label: 'Executive', description: 'Senior Look mit Kopfbereich' },
   ];
 }

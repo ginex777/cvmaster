@@ -30,7 +30,7 @@ describe('ConfirmDeleteModal', () => {
     const emit = jest.spyOn(component.confirmed, 'emit');
 
     const button = Array.from(fixture.nativeElement.querySelectorAll('button'))
-      .find((item): item is HTMLButtonElement => item instanceof HTMLButtonElement && item.textContent?.includes('loschen'));
+      .find((item): item is HTMLButtonElement => item instanceof HTMLButtonElement && item.textContent?.includes('löschen'));
     button?.dispatchEvent(new Event('click'));
 
     expect(emit).toHaveBeenCalled();

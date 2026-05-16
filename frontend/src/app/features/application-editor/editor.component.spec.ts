@@ -240,7 +240,7 @@ describe('EditorComponent', () => {
 
     expect(href).toContain('mailto:jobs%40example.de');
     expect(href).toContain('Bewerbung%20als%20Frontend%20Developer');
-    expect(href).toContain('Bitte%20fuege%20die%20heruntergeladenen%20PDF-Dateien');
+    expect(decodeURIComponent(href)).toContain('Bitte füge die heruntergeladenen PDF-Dateien');
   });
 
   describe('follow-up templates', () => {

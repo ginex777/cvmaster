@@ -11,8 +11,8 @@ export class OwnsApplicationGuard implements CanActivate {
     const userId = req.user?.sub;
 
     const app = await this.prisma.application.findUnique({ where: { id: applicationId } });
-    if (!app) throw new NotFoundException('Application not found');
-    if (app.userId !== userId) throw new ForbiddenException('Access denied');
+    if (!app) throw new NotFoundException('Bewerbung nicht gefunden.');
+    if (app.userId !== userId) throw new ForbiddenException('Kein Zugriff auf diese Bewerbung.');
     req.application = app;
     return true;
   }

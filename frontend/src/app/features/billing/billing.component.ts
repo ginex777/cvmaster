@@ -56,7 +56,7 @@ export class BillingComponent {
   async deleteAccount(): Promise<void> {
     const confirmed = typeof window === 'undefined'
       ? false
-      : window.confirm('Konto und alle Daten dauerhaft loeschen? Diese Aktion kann nicht rueckgaengig gemacht werden.');
+      : window.confirm('Konto und alle Daten dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.');
 
     if (!confirmed) return;
 
@@ -67,10 +67,10 @@ export class BillingComponent {
     try {
       await this.api.delete<{ message: string }>('/gdpr/account');
       this.auth.clearSession();
-      this.message.set('Konto und alle Daten wurden geloescht.');
+      this.message.set('Konto und alle Daten wurden gelöscht.');
       await this.router.navigate(['/']);
     } catch (e: unknown) {
-      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Konto konnte nicht geloescht werden.');
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Konto konnte nicht gelöscht werden.');
     } finally {
       this.loading.set(false);
     }

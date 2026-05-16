@@ -8,9 +8,9 @@ import { ChangeDetectionStrategy, Component, HostListener, input, output } from 
 })
 export class ConfirmDeleteModal {
   readonly open = input(false);
-  readonly title = input('Wirklich loschen?');
-  readonly body = input('Diese Aktion kann nicht ruckgangig gemacht werden.');
-  readonly confirmLabel = input('Ja, loschen');
+  readonly title = input('Wirklich löschen?');
+  readonly body = input('Diese Aktion kann nicht rückgängig gemacht werden.');
+  readonly confirmLabel = input('Ja, löschen');
 
   readonly confirmed = output<void>();
   readonly cancelled = output<void>();

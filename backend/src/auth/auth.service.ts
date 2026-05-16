@@ -20,7 +20,7 @@ export class AuthService {
 
   async register(data: { email: string; password: string; name: string; art9Consent: true }, ip: string) {
     const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
-    if (existing) throw new ConflictException('Email already registered');
+    if (existing) throw new ConflictException('Diese E-Mail-Adresse ist bereits registriert.');
 
     const passwordHash = await argon2.hash(data.password, ARGON2_OPTIONS);
     const user = await this.prisma.user.create({
@@ -47,13 +47,13 @@ export class AuthService {
     });
     await this.mail.sendVerification(user.email, verifyToken);
 
-    return { message: 'Registration successful. Please verify your email.' };
+    return { message: 'Registrierung erfolgreich. Bitte bestätige deine E-Mail-Adresse.' };
   }
 
   async verifyEmail(token: string) {
     const verification = await this.prisma.emailVerification.findUnique({ where: { token } });
-    if (!verification) throw new NotFoundException('Verification token not found');
-    if (verification.expiresAt < new Date()) throw new BadRequestException('Verification token expired');
+    if (!verification) throw new NotFoundException('Bestätigungslink nicht gefunden.');
+    if (verification.expiresAt < new Date()) throw new BadRequestException('Bestätigungslink ist abgelaufen.');
 
     await this.prisma.user.update({
       where: { id: verification.userId },
@@ -61,26 +61,26 @@ export class AuthService {
     });
     await this.prisma.emailVerification.delete({ where: { id: verification.id } });
 
-    return { message: 'Email verified' };
+    return { message: 'E-Mail bestätigt' };
   }
 
   async login(data: { email: string; password: string; totp?: string }, ip: string, ua: string) {
     const user = await this.prisma.user.findUnique({ where: { email: data.email } });
     if (!user || !(await argon2.verify(user.passwordHash, data.password))) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('E-Mail-Adresse oder Passwort ist falsch.');
     }
-    if (user.deletedAt) throw new UnauthorizedException('Account deleted');
-    if (!user.emailVerifiedAt) throw new UnauthorizedException('Email not verified');
+    if (user.deletedAt) throw new UnauthorizedException('Konto wurde gelöscht.');
+    if (!user.emailVerifiedAt) throw new UnauthorizedException('E-Mail-Adresse ist noch nicht bestätigt.');
 
     if (user.twoFactorEnabled && !verifyTotp(data.totp, user.twoFactorSecret)) {
-      throw new UnauthorizedException('Invalid two-factor code');
+      throw new UnauthorizedException('Ungültiger Zwei-Faktor-Code.');
     }
 
     return this.issueTokens(user, ip, ua);
   }
 
   async refresh(refreshToken: string, ip: string, ua: string) {
-    if (!refreshToken) throw new UnauthorizedException('No refresh token');
+    if (!refreshToken) throw new UnauthorizedException('Sitzung fehlt.');
     const tokenHash = createHash('sha256').update(refreshToken).digest('hex');
     const session = await this.prisma.session.findUnique({ where: { refreshHash: tokenHash } });
 
@@ -92,12 +92,12 @@ export class AuthService {
           data: { revokedAt: new Date() },
         });
       }
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('Sitzung ist abgelaufen oder ungültig.');
     }
 
     await this.prisma.session.update({ where: { id: session.id }, data: { revokedAt: new Date() } });
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: session.userId } });
-    if (user.deletedAt) throw new UnauthorizedException('Account deleted');
+    if (user.deletedAt) throw new UnauthorizedException('Konto wurde gelöscht.');
     return this.issueTokens(user, ip, ua);
   }
 
@@ -126,7 +126,7 @@ export class AuthService {
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
     const reset = await this.prisma.passwordReset.findUnique({ where: { token } });
-    if (!reset || reset.expiresAt < new Date()) throw new BadRequestException('Invalid or expired reset token');
+    if (!reset || reset.expiresAt < new Date()) throw new BadRequestException('Reset-Link ist ungültig oder abgelaufen.');
 
     const passwordHash = await argon2.hash(newPassword, ARGON2_OPTIONS);
     await this.prisma.user.update({ where: { id: reset.userId }, data: { passwordHash } });

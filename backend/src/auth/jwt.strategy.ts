@@ -19,12 +19,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: { sub: string; plan: string; ev: boolean; tfa: boolean }) {
-    if (!payload.ev) throw new UnauthorizedException('Email not verified');
+    if (!payload.ev) throw new UnauthorizedException('E-Mail-Adresse ist noch nicht bestätigt.');
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
       select: { deletedAt: true },
     });
-    if (!user || user.deletedAt) throw new UnauthorizedException('Account deleted');
+    if (!user || user.deletedAt) throw new UnauthorizedException('Konto wurde gelöscht.');
     return { sub: payload.sub, plan: payload.plan, tfa: payload.tfa };
   }
 }

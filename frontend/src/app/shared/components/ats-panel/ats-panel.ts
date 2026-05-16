@@ -40,10 +40,10 @@ export class AtsPanel {
   readonly diffEntries = computed(() => this.optimizationDiff() ?? []);
   readonly scoreLabel = computed(() => {
     const score = this.score();
-    if (score === null || score === undefined) return 'Nicht verfuegbar';
+    if (score === null || score === undefined) return 'Nicht verfügbar';
     if (score >= 80) return 'Sehr gut';
     if (score >= 60) return 'Gut';
-    return 'Verbesserungswuerdig';
+    return 'Verbesserungswürdig';
   });
   readonly scoreAriaLabel = computed(() => `ATS Score ${this.scoreValue()} Prozent - ${this.scoreLabel()}`);
 }

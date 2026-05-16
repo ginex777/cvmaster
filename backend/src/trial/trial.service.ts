@@ -42,15 +42,15 @@ export class TrialService {
 
   private preview(value: string): string {
     const trimmed = value.trim();
-    return trimmed.length > PREVIEW_LENGTH ? `${trimmed.slice(0, PREVIEW_LENGTH).trim()}...` : trimmed;
+    return trimmed.length > PREVIEW_LENGTH ? `${trimmed.slice(0, PREVIEW_LENGTH).trim()}…` : trimmed;
   }
 
   private suggestions(missingKeywords: string[]): string[] {
     if (!missingKeywords.length) {
-      return ['Ergaenze konkrete Ergebnisse und Zahlen, damit der starke Fit im CV noch belastbarer wirkt.'];
+      return ['Ergänze konkrete Ergebnisse und Zahlen, damit der starke Fit im CV noch belastbarer wirkt.'];
     }
     return [
-      `Ergaenze sichtbare Erfahrung zu: ${missingKeywords.slice(0, 5).join(', ')}.`,
+      `Ergänze sichtbare Erfahrung zu: ${missingKeywords.slice(0, 5).join(', ')}.`,
       'Spiegle die wichtigsten Begriffe aus der Anzeige in Zusammenfassung und Skills-Bereich.',
     ];
   }

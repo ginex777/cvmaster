@@ -135,7 +135,7 @@ describe('WizardComponent', () => {
       createdAt: '2026-05-13T00:00:00.000Z',
       updatedAt: '2026-05-13T00:00:00.000Z',
       parsedJson: {
-        summary: 'Entwurf fuer echte Erfahrungen.',
+        summary: 'Entwurf für echte Erfahrungen.',
         skills: ['Angular', 'TypeScript', 'Testing'],
       },
     });
@@ -159,7 +159,7 @@ describe('WizardComponent', () => {
       targetRole: 'Junior Frontend Developer',
     });
     expect(f.componentInstance.selectedCvId()).toBe('cv-quick');
-    expect(f.nativeElement.textContent).toContain('Entwurf fuer echte Erfahrungen.');
+    expect(f.nativeElement.textContent).toContain('Entwurf für echte Erfahrungen.');
   });
 
   it('validates quickstart skill count before calling API', async () => {

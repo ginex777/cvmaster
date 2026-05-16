@@ -17,7 +17,7 @@
     <article class="settings-panel" aria-labelledby="plan-heading">
       <h2 id="plan-heading">Aktiver Plan</h2>
       <p class="settings-panel__metric">{{ planLabel(auth.user()?.plan) }}</p>
-      <p>Planwechsel, Rechnungen und Kuendigung laufen ueber Paddle.</p>
+      <p>Planwechsel, Rechnungen und Kündigung laufen über Paddle.</p>
       <div class="settings-panel__actions">
         <a routerLink="/preise" class="btn btn--secondary btn--md">Plan wechseln</a>
         @if (customerPortalUrl) {
@@ -28,17 +28,17 @@
 
     <article class="settings-panel" aria-labelledby="export-heading">
       <h2 id="export-heading">Daten exportieren</h2>
-      <p>Erhalte Konto, Lebenslaeufe, Bewerbungen und Einwilligungen als JSON-Datei.</p>
+      <p>Erhalte Konto, Lebensläufe, Bewerbungen und Einwilligungen als JSON-Datei.</p>
       <button type="button" class="btn btn--primary btn--md" (click)="exportData()" [disabled]="loading()">
         Daten exportieren
       </button>
     </article>
 
     <article class="settings-panel settings-panel--danger" aria-labelledby="delete-heading">
-      <h2 id="delete-heading">Konto loeschen</h2>
-      <p>Loescht dein Konto dauerhaft inklusive zugehoeriger Lebenslaeufe und Bewerbungen.</p>
+      <h2 id="delete-heading">Konto löschen</h2>
+      <p>Löscht dein Konto dauerhaft inklusive zugehöriger Lebensläufe und Bewerbungen.</p>
       <button type="button" class="btn btn--ghost btn--md" (click)="deleteAccount()" [disabled]="loading()">
-        Konto loeschen
+        Konto löschen
       </button>
     </article>
   </section>

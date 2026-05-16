@@ -246,7 +246,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     const body = [
       this.letterControl().value,
       '',
-      'Hinweis: Bitte fuege die heruntergeladenen PDF-Dateien als Anhang hinzu.',
+      'Hinweis: Bitte füge die heruntergeladenen PDF-Dateien als Anhang hinzu.',
     ].join('\n');
 
     return `mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;

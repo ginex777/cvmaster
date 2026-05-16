@@ -123,7 +123,7 @@ export class LandingComponent {
     }
 
     if (params.get('verified') === '1') {
-      this.modalMessage.set('E-Mail bestaetigt. Du kannst dich jetzt anmelden.');
+      this.modalMessage.set('E-Mail bestätigt. Du kannst dich jetzt anmelden.');
     }
   }
 

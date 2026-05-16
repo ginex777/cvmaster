@@ -93,7 +93,7 @@ describe('AtsPanel', () => {
     fixture.componentRef.setInput('optimizationDiff', null);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Analyse nicht verfuegbar');
+    expect(fixture.nativeElement.textContent).toContain('Analyse für ältere Bewerbungen nicht verfügbar');
   });
 
   it('has an aria-label on the score status region', () => {

@@ -26,7 +26,7 @@ export class JobsController {
       return this.jobs.parse(data, req.user.sub);
     } catch (error: unknown) {
       if (error instanceof ZodError) {
-        throw new BadRequestException(error.errors[0]?.message ?? 'Invalid job input');
+        throw new BadRequestException('Bitte gib einen gültigen Stellentext oder eine gültige URL ein.');
       }
       throw error;
     }

@@ -15,7 +15,7 @@ describe('AuthController', () => {
 
   it('redirects verified accounts back to the landing login dialog', async () => {
     process.env.APP_URL = 'http://localhost';
-    jest.spyOn(auth, 'verifyEmail').mockResolvedValue({ message: 'Email verified' });
+    jest.spyOn(auth, 'verifyEmail').mockResolvedValue({ message: 'E-Mail bestätigt' });
     const controller = new AuthController(auth);
     const res = { redirect: jest.fn() };
 

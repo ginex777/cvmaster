@@ -200,7 +200,7 @@ export class AiService {
 
   private wrapUntrustedContent(label: string, content: string): string {
     if (content.length > MAX_AI_INPUT_CHARS) {
-      throw new BadRequestException('AI input is too large');
+      throw new BadRequestException('KI-Eingabe ist zu groß.');
     }
 
     return [

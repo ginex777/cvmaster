@@ -14,7 +14,7 @@ export class UsersService {
       where: { id },
       select: { id: true, email: true, name: true, locale: true, plan: true, emailVerifiedAt: true, twoFactorEnabled: true, createdAt: true },
     });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('Nutzer nicht gefunden.');
     return user;
   }
 
@@ -24,7 +24,7 @@ export class UsersService {
 
   async softDelete(id: string) {
     await this.prisma.user.update({ where: { id }, data: { deletedAt: new Date() } });
-    return { message: 'Account scheduled for deletion in 30 days' };
+    return { message: 'Konto wird in 30 Tagen gelöscht.' };
   }
 
   async getDashboard(userId: string) {
@@ -78,14 +78,14 @@ export class UsersService {
 
   async revokeSession(userId: string, sessionId: string): Promise<void> {
     const session = await this.prisma.session.findUnique({ where: { id: sessionId } });
-    if (!session || session.userId !== userId) throw new NotFoundException('Session not found');
+    if (!session || session.userId !== userId) throw new NotFoundException('Sitzung nicht gefunden.');
     await this.prisma.session.update({ where: { id: sessionId }, data: { revokedAt: new Date() } });
   }
 
   async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
     if (!(await argon2.verify(user.passwordHash, currentPassword))) {
-      throw new UnauthorizedException('Current password is incorrect');
+      throw new UnauthorizedException('Aktuelles Passwort ist falsch.');
     }
     const passwordHash = await argon2.hash(newPassword, ARGON2_OPTIONS);
     await this.prisma.user.update({ where: { id: userId }, data: { passwordHash } });
@@ -96,7 +96,7 @@ export class UsersService {
       where: { id: userId },
       select: { email: true, twoFactorEnabled: true },
     });
-    if (user.twoFactorEnabled) throw new BadRequestException('Two-factor authentication is already enabled');
+    if (user.twoFactorEnabled) throw new BadRequestException('Zwei-Faktor-Authentifizierung ist bereits aktiviert.');
 
     const secret = generateTotpSecret();
     await this.prisma.user.update({ where: { id: userId }, data: { twoFactorSecret: secret } });
@@ -110,16 +110,16 @@ export class UsersService {
       where: { id: userId },
       select: { twoFactorSecret: true, twoFactorEnabled: true },
     });
-    if (user.twoFactorEnabled) throw new BadRequestException('2FA is already enabled');
-    if (!verifyTotp(code, user.twoFactorSecret)) throw new BadRequestException('Invalid verification code');
+    if (user.twoFactorEnabled) throw new BadRequestException('Zwei-Faktor-Authentifizierung ist bereits aktiviert.');
+    if (!verifyTotp(code, user.twoFactorSecret)) throw new BadRequestException('Ungültiger Bestätigungscode.');
     await this.prisma.user.update({ where: { id: userId }, data: { twoFactorEnabled: true } });
   }
 
   async disableTotp(userId: string, password: string): Promise<void> {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
-    if (!user.twoFactorEnabled) throw new BadRequestException('2FA is not enabled');
+    if (!user.twoFactorEnabled) throw new BadRequestException('Zwei-Faktor-Authentifizierung ist nicht aktiviert.');
     if (!(await argon2.verify(user.passwordHash, password))) {
-      throw new UnauthorizedException('Incorrect password');
+      throw new UnauthorizedException('Passwort ist falsch.');
     }
     await this.prisma.user.update({ where: { id: userId }, data: { twoFactorEnabled: false, twoFactorSecret: null } });
   }

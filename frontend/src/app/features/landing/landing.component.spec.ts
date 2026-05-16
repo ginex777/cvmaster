@@ -137,6 +137,6 @@ describe('LandingComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('#login-dialog-title')).toBeTruthy();
-    expect(fixture.nativeElement.textContent).toContain('E-Mail bestaetigt');
+    expect(fixture.nativeElement.textContent).toContain('E-Mail bestätigt');
   });
 });

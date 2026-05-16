@@ -36,7 +36,7 @@ describe('BillingComponent', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Free');
     expect(fixture.nativeElement.textContent).toContain('Daten exportieren');
-    expect(fixture.nativeElement.textContent).toContain('Konto loeschen');
+    expect(fixture.nativeElement.textContent).toContain('Konto löschen');
   });
 
   it('renders Paddle customer portal link when configured', () => {

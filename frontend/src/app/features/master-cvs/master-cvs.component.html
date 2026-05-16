@@ -7,7 +7,7 @@
       aria-controls="text-cv-panel"
       [attr.aria-expanded]="textFormOpen()"
       (click)="toggleTextForm()">
-      @if (textFormOpen()) { Textformular schliessen } @else { Lebenslauf einfuegen }
+      @if (textFormOpen()) { Textformular schließen } @else { Lebenslauf einfügen }
     </button>
     <label
       class="btn btn--primary btn--md"
@@ -34,7 +34,7 @@
   @if (textFormOpen()) {
     <section id="text-cv-panel" class="text-cv-panel" aria-labelledby="text-cv-heading">
       <div class="text-cv-panel__intro">
-        <h2 id="text-cv-heading">Lebenslauf per Text einfuegen</h2>
+        <h2 id="text-cv-heading">Lebenslauf per Text einfügen</h2>
         <p>Kopiere den Inhalt deines CVs hier hinein. Wir speichern nur die strukturierte CV-Version, nicht den Originaltext als Datei.</p>
       </div>
       <form class="text-cv-form" [formGroup]="textCvForm" (ngSubmit)="createFromText()" novalidate aria-label="Lebenslauf per Text speichern">
@@ -70,16 +70,16 @@
             aria-required="true"
             aria-describedby="text-cv-text-note text-cv-text-error"
             [attr.aria-invalid]="textCvForm.controls.text.invalid && textCvForm.controls.text.touched"></textarea>
-          <span id="text-cv-text-note" class="field__note">Mindestens 40 Zeichen. PDF- oder DOCX-Dateien bitte weiter ueber den Upload hinzufuegen.</span>
+          <span id="text-cv-text-note" class="field__note">Mindestens 40 Zeichen. PDF- oder DOCX-Dateien bitte weiter über den Upload hinzufügen.</span>
           @if (textCvForm.controls.text.invalid && textCvForm.controls.text.touched) {
-            <span id="text-cv-text-error" class="field__error" role="alert">Bitte fuege mindestens 40 Zeichen Lebenslauf-Text ein.</span>
+            <span id="text-cv-text-error" class="field__error" role="alert">Bitte füge mindestens 40 Zeichen Lebenslauf-Text ein.</span>
           }
         </div>
 
         <div class="text-cv-form__actions">
           <button type="button" class="btn btn--ghost btn--md" [disabled]="savingTextCv()" (click)="closeTextForm()">Abbrechen</button>
           <button type="submit" class="btn btn--primary btn--md" [disabled]="savingTextCv()">
-            @if (savingTextCv()) { Wird gespeichert... } @else { Text-Lebenslauf speichern }
+            @if (savingTextCv()) { Wird gespeichert… } @else { Text-Lebenslauf speichern }
           </button>
         </div>
       </form>
@@ -93,8 +93,8 @@
     </ul>
   } @else if (cvs().length === 0) {
     <section class="empty-state" aria-label="Keine Lebensläufe">
-      <p>Noch kein Lebenslauf hinzugefuegt.</p>
-      <p>Lade eine PDF/DOCX-Datei hoch oder fuege deinen CV als Text ein.</p>
+      <p>Noch kein Lebenslauf hinzugefügt.</p>
+      <p>Lade eine PDF/DOCX-Datei hoch oder füge deinen CV als Text ein.</p>
     </section>
   } @else {
     <ul class="cv-list" role="list" aria-label="Lebenslauf-Liste">

@@ -110,7 +110,7 @@ export class ApplicationsService {
   async remove(id: string, userId: string): Promise<{ message: string }> {
     await this.findOne(id, userId);
     await this.prisma.application.delete({ where: { id } });
-    return { message: 'Bewerbung gelÃ¶scht' };
+    return { message: 'Bewerbung gelöscht' };
   }
 
   async streamProgress(id: string, res: Response) {
@@ -132,7 +132,7 @@ export class ApplicationsService {
       data: { generationProgress: 0, generationError: null },
     });
     await this.queue.enqueueRegenerateLetter(id);
-    return { message: 'Letter regeneration queued' };
+    return { message: 'Anschreiben wird neu generiert.' };
   }
 
   async retryGeneration(id: string, userId: string) {
@@ -142,7 +142,7 @@ export class ApplicationsService {
       data: { status: 'DRAFT', generationProgress: 0, generationError: null },
     });
     await this.queue.enqueueAiPipeline(id);
-    return { message: 'Generation queued' };
+    return { message: 'Generierung wurde gestartet.' };
   }
 
   async exportPdf(id: string, layout: string, res: Response) {
@@ -179,7 +179,7 @@ export class ApplicationsService {
       await this.recordEmailAudit(userId, id, 'failed');
       throw new BadGatewayException('E-Mail konnte nicht zugestellt werden. Bitte lade die PDFs herunter und versuche es erneut.');
     }
-    return { message: 'Email sent' };
+    return { message: 'E-Mail wurde gesendet.' };
   }
 
   async updateStatus(id: string, status: AppStatus) {

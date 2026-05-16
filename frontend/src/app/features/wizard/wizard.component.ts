@@ -129,21 +129,21 @@ export class WizardComponent implements OnInit {
 
     this.jobForm.markAllAsTouched();
     this.error.set(this.jobInputMode() === 'url'
-      ? 'Bitte gib eine gueltige URL zur Stellenanzeige ein.'
-      : 'Bitte fuege mindestens 50 Zeichen Stellentext ein.');
+      ? 'Bitte gib eine gültige URL zur Stellenanzeige ein.'
+      : 'Bitte füge mindestens 50 Zeichen Stellentext ein.');
   }
 
   async generate(): Promise<void> {
     if (!this.selectedCvId()) {
-      this.error.set('Bitte waehle oder erstelle zuerst einen Lebenslauf.');
+      this.error.set('Bitte wähle oder erstelle zuerst einen Lebenslauf.');
       this.step.set(1);
       return;
     }
 
     if (!this.currentJobInputValid()) {
       this.error.set(this.jobInputMode() === 'url'
-        ? 'Bitte gib eine gueltige URL zur Stellenanzeige ein.'
-        : 'Bitte fuege mindestens 50 Zeichen Stellentext ein.');
+        ? 'Bitte gib eine gültige URL zur Stellenanzeige ein.'
+        : 'Bitte füge mindestens 50 Zeichen Stellentext ein.');
       this.step.set(2);
       return;
     }

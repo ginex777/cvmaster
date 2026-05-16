@@ -27,7 +27,7 @@ export class PaymentsService {
 
   async handleWebhook(rawBody: Buffer, signature: string): Promise<void> {
     if (!this.isValidSignature(rawBody, signature)) {
-      throw new UnauthorizedException('UngÃ¼ltige Webhook-Signatur');
+      throw new UnauthorizedException('Ungültige Webhook-Signatur');
     }
 
     const event = JSON.parse(rawBody.toString()) as PaddleWebhookPayload;

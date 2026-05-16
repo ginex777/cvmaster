@@ -30,7 +30,7 @@ export class AuthController {
       const data = registerSchema.parse(body);
       return await this.auth.register(data, this.clientIp(req));
     } catch (e) {
-      if (e instanceof ZodError) throw new BadRequestException(e.errors[0]?.message ?? 'Invalid input');
+      if (e instanceof ZodError) throw new BadRequestException('Bitte prüfe E-Mail, Passwort, Namen und Einwilligung.');
       throw e;
     }
   }
@@ -42,7 +42,7 @@ export class AuthController {
     try {
       data = loginSchema.parse(body);
     } catch (e) {
-      if (e instanceof ZodError) throw new BadRequestException(e.errors[0]?.message ?? 'Invalid input');
+      if (e instanceof ZodError) throw new BadRequestException('Bitte prüfe E-Mail-Adresse, Passwort und Zwei-Faktor-Code.');
       throw e;
     }
     const result = await this.auth.login(data, this.clientIp(req), req.headers['user-agent'] || '');
@@ -58,7 +58,7 @@ export class AuthController {
 
   @Get('verify')
   async verify(@Query('token') token: string, @Res() res: Response) {
-    if (!token) throw new BadRequestException('Verification token is required');
+    if (!token) throw new BadRequestException('Bestätigungslink ist ungültig.');
     await this.auth.verifyEmail(token);
     const appUrl = process.env.APP_URL ?? 'http://localhost:4200';
     return res.redirect(`${appUrl}/?auth=login&verified=1`);

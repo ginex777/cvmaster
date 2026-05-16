@@ -2,7 +2,7 @@
   <header class="try__header">
     <p class="try__eyebrow">Demo ohne Account</p>
     <h1 id="try-title">Teste deinen CV gegen eine Stellenanzeige</h1>
-    <p>Die Demo verarbeitet nur den eingefuegten Text und zeigt eine gekuerzte Vorschau. Fuer das vollstaendige Ergebnis legst du danach einen Account an.</p>
+    <p>Die Demo verarbeitet nur den eingefügten Text und zeigt eine gekürzte Vorschau. Für das vollständige Ergebnis legst du danach einen Account an.</p>
   </header>
 
   <form class="try__form" [formGroup]="form" (ngSubmit)="runTrial()">
@@ -13,11 +13,11 @@
         formControlName="cvText"
         rows="12"
         aria-describedby="cv-help cv-error"
-        placeholder="Kurzprofil, Erfahrung, Skills und relevante Projekte..."
+        placeholder="Kurzprofil, Erfahrung, Skills und relevante Projekte…"
       ></textarea>
       <p id="cv-help">Mindestens 40 Zeichen. Dateien werden hier nicht hochgeladen.</p>
       @if (controls.cvText.touched && controls.cvText.invalid) {
-        <p id="cv-error" class="field__error">Bitte fuege mindestens 40 Zeichen Lebenslauf-Text ein.</p>
+        <p id="cv-error" class="field__error">Bitte füge mindestens 40 Zeichen Lebenslauf-Text ein.</p>
       }
     </section>
 
@@ -28,17 +28,17 @@
         formControlName="jobText"
         rows="12"
         aria-describedby="job-help job-error"
-        placeholder="Rolle, Aufgaben, Anforderungen, gewuenschte Keywords..."
+        placeholder="Rolle, Aufgaben, Anforderungen, gewünschte Keywords…"
       ></textarea>
       <p id="job-help">Kopiere die Anzeige oder die wichtigsten Anforderungen hinein.</p>
       @if (controls.jobText.touched && controls.jobText.invalid) {
-        <p id="job-error" class="field__error">Bitte fuege mindestens 40 Zeichen Stellenanzeige ein.</p>
+        <p id="job-error" class="field__error">Bitte füge mindestens 40 Zeichen Stellenanzeige ein.</p>
       }
     </section>
 
     <div class="try__actions">
       <button class="btn btn--primary btn--md" type="submit" [disabled]="isLoading">
-        {{ isLoading ? 'Demo wird erstellt...' : 'Demo-Ergebnis anzeigen' }}
+        {{ isLoading ? 'Demo wird erstellt…' : 'Demo-Ergebnis anzeigen' }}
       </button>
       <a routerLink="/register" class="btn btn--ghost btn--md">Direkt registrieren</a>
     </div>
@@ -55,7 +55,7 @@
         <strong>{{ trialAtsScore }}%</strong>
       </div>
       <div class="result-card__body">
-        <h2 id="result-heading">Gekuerzte Vorschau</h2>
+        <h2 id="result-heading">Gekürzte Vorschau</h2>
         <p>{{ trialSummary }}</p>
         <blockquote>{{ trialCoverLetterPreview }}</blockquote>
         <ul class="keyword-list" aria-label="Erkannte Keywords">
@@ -63,7 +63,7 @@
             <li>{{ keyword }}</li>
           }
         </ul>
-        <a routerLink="/register" class="btn btn--primary btn--md">Vollstaendiges Ergebnis - jetzt registrieren</a>
+        <a routerLink="/register" class="btn btn--primary btn--md">Vollständiges Ergebnis - jetzt registrieren</a>
       </div>
     </section>
   }

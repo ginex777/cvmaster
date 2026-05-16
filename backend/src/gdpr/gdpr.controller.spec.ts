@@ -16,7 +16,7 @@ describe('GdprController', () => {
     await expect(controller.deleteAccount(
       { user: { sub: 'u1' } } as AuthenticatedRequest,
       response as never,
-    )).resolves.toEqual({ message: 'Konto und alle Daten geloescht' });
+    )).resolves.toEqual({ message: 'Konto und alle Daten gelöscht' });
 
     expect(gdpr.deleteAccount).toHaveBeenCalledWith('u1');
     expect(response.clearCookie).toHaveBeenCalledWith('__Host-session', { path: '/' });

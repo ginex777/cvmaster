@@ -186,7 +186,7 @@ describe('ApplicationsService', () => {
       mockPrisma.application.update.mockResolvedValue({ id: 'a1', status: 'DRAFT' } as never);
       mockQueue.enqueueAiPipeline.mockResolvedValue(undefined);
 
-      await expect(service.retryGeneration('a1', 'u1')).resolves.toEqual({ message: 'Generation queued' });
+      await expect(service.retryGeneration('a1', 'u1')).resolves.toEqual({ message: 'Generierung wurde gestartet.' });
 
       expect(mockPrisma.application.update).toHaveBeenCalledWith({
         where: { id: 'a1' },
@@ -201,7 +201,7 @@ describe('ApplicationsService', () => {
       mockPrisma.application.update.mockResolvedValue({ id: 'a1', generationProgress: 0 } as never);
       mockQueue.enqueueRegenerateLetter.mockResolvedValue(undefined);
 
-      await expect(service.regenerateLetter('a1', 'u1')).resolves.toEqual({ message: 'Letter regeneration queued' });
+      await expect(service.regenerateLetter('a1', 'u1')).resolves.toEqual({ message: 'Anschreiben wird neu generiert.' });
 
       expect(mockPrisma.application.update).toHaveBeenCalledWith({
         where: { id: 'a1' },
@@ -266,7 +266,7 @@ describe('ApplicationsService', () => {
       mockPdf.generateLetterPdf.mockResolvedValue(letter);
       mockMail.sendApplicationToSelf.mockResolvedValue(undefined);
 
-      await expect(service.emailToSelf('a1', 'u1')).resolves.toEqual({ message: 'Email sent' });
+      await expect(service.emailToSelf('a1', 'u1')).resolves.toEqual({ message: 'E-Mail wurde gesendet.' });
 
       expect(mockPdf.generateCvPdf).toHaveBeenCalledWith(
         { name: 'Lebenslauf_Acme_Dev', sections: [{ heading: 'Profil', lines: ['Angular'] }] },

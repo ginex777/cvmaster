@@ -41,11 +41,11 @@ export class JobsService {
       case 'url':
         return this.fetchUrlText(data.value);
       case 'screenshot':
-        throw new BadRequestException('Screenshot parsing is disabled until the approved vision provider is configured.');
+        throw new BadRequestException('Screenshot-Analyse ist erst nach der Sicherheitsfreigabe verfügbar.');
       case 'pdf':
-        throw new BadRequestException('PDF job ad parsing is disabled until RAM-only extraction is enabled.');
+        throw new BadRequestException('PDF-Stellenanzeigen sind erst nach der RAM-only Sicherheitsfreigabe verfügbar.');
       default:
-        throw new BadRequestException('Unknown job input type');
+        throw new BadRequestException('Unbekannter Eingabetyp für die Stellenanzeige.');
     }
   }
 
@@ -72,7 +72,7 @@ export class JobsService {
 
       const contentLength = Number(response.headers.get('content-length') ?? 0);
       if (contentLength > MAX_URL_BYTES) {
-        throw new BadRequestException('Die Stellenanzeige ist zu gross. Bitte kopiere den Text direkt ein.');
+        throw new BadRequestException('Die Stellenanzeige ist zu groß. Bitte kopiere den Text direkt ein.');
       }
 
       const contentType = response.headers.get('content-type') ?? '';
@@ -97,7 +97,7 @@ export class JobsService {
     try {
       url = new URL(value);
     } catch {
-      throw new BadRequestException('Bitte gib eine gueltige URL zur Stellenanzeige ein.');
+      throw new BadRequestException('Bitte gib eine gültige URL zur Stellenanzeige ein.');
     }
 
     if (url.protocol !== 'https:' && url.protocol !== 'http:') {
@@ -113,12 +113,12 @@ export class JobsService {
 
   private async assertPublicHost(hostname: string): Promise<void> {
     if (this.isBlockedHostname(hostname)) {
-      throw new BadRequestException('Interne oder lokale URLs werden aus Sicherheitsgruenden nicht verarbeitet.');
+      throw new BadRequestException('Interne oder lokale URLs werden aus Sicherheitsgründen nicht verarbeitet.');
     }
 
     const entries = await lookup(hostname, { all: true, verbatim: true });
     if (entries.length === 0 || entries.some(entry => this.isPrivateAddress(entry.address))) {
-      throw new BadRequestException('Interne oder lokale URLs werden aus Sicherheitsgruenden nicht verarbeitet.');
+      throw new BadRequestException('Interne oder lokale URLs werden aus Sicherheitsgründen nicht verarbeitet.');
     }
   }
 
@@ -164,7 +164,7 @@ export class JobsService {
       if (done) break;
       bytes += value.byteLength;
       if (bytes > MAX_URL_BYTES) {
-        throw new BadRequestException('Die Stellenanzeige ist zu gross. Bitte kopiere den Text direkt ein.');
+        throw new BadRequestException('Die Stellenanzeige ist zu groß. Bitte kopiere den Text direkt ein.');
       }
       text += decoder.decode(value, { stream: true });
     }

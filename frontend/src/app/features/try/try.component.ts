@@ -73,7 +73,7 @@ export class TryComponent {
       this.error.set(
         e instanceof HttpErrorResponse
           ? e.error.message
-          : 'Die Demo konnte gerade nicht gestartet werden. Bitte pruefe die Texte und versuche es erneut.',
+          : 'Die Demo konnte gerade nicht gestartet werden. Bitte prüfe die Texte und versuche es erneut.',
       );
     } finally {
       this.loading.set(false);

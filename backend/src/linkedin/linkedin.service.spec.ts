@@ -36,7 +36,7 @@ describe('LinkedInService', () => {
   });
 
   it('propagates AI errors to caller', async () => {
-    (ai.optimizeLinkedIn as jest.MockedFunction<typeof ai.optimizeLinkedIn>).mockRejectedValue(new BadRequestException('AI input is too large'));
+    (ai.optimizeLinkedIn as jest.MockedFunction<typeof ai.optimizeLinkedIn>).mockRejectedValue(new BadRequestException('KI-Eingabe ist zu groß.'));
     await expect(service.optimize('x'.repeat(100), 'Dev', 'u1')).rejects.toThrow(BadRequestException);
   });
 });

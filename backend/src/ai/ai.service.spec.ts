@@ -146,7 +146,7 @@ describe('AiService audit trail', () => {
   it('rejects oversized AI inputs before provider calls', async () => {
     global.fetch = jest.fn<typeof fetch>();
 
-    await expect(service.parseJob('x'.repeat(80_001), { userId: 'u1' })).rejects.toThrow('AI input is too large');
+    await expect(service.parseJob('x'.repeat(80_001), { userId: 'u1' })).rejects.toThrow('KI-Eingabe ist zu groß.');
 
     expect(global.fetch).not.toHaveBeenCalled();
     expect(mockPrisma.aiJob.create).not.toHaveBeenCalled();
