@@ -70,7 +70,9 @@
       "Bash(git checkout *)",
       "Bash(git pull *)",
       "Bash(git stash *)",
-      "Bash(git merge *)"
+      "Bash(git merge *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\features\\\\\" -Recurse -File | Select-Object FullName | Sort-Object FullName)",
+      "Bash(grep -E \"\\(component\\\\.ts|\\\\.ts$\\)\")"
     ]
   }
 }
