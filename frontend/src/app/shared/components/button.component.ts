@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline' | 'accent';
+export type ButtonVariant = 'cta' | 'primary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize    = 'sm' | 'md' | 'lg';
 
 @Component({

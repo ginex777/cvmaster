@@ -6,17 +6,31 @@ describe('ButtonComponent', () => {
     await TestBed.configureTestingModule({ imports: [ButtonComponent] }).compileComponents();
   });
 
-  it('should create', () => {
+  it('creates', () => {
     const fixture = TestBed.createComponent(ButtonComponent);
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should apply disabled attribute when disabled input is true', () => {
+  it('applies disabled attribute when disabled input is true', () => {
     const fixture = TestBed.createComponent(ButtonComponent);
     fixture.componentRef.setInput('disabled', true);
     fixture.detectChanges();
     const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
     expect(button.disabled).toBe(true);
     expect(button.getAttribute('aria-disabled')).toBe('true');
+  });
+
+  it.each([
+    ['cta',     'btn--cta'],
+    ['primary', 'btn--primary'],
+    ['outline', 'btn--outline'],
+    ['ghost',   'btn--ghost'],
+    ['danger',  'btn--danger'],
+  ])('applies correct class for variant "%s"', (variant, expectedClass) => {
+    const fixture = TestBed.createComponent(ButtonComponent);
+    fixture.componentRef.setInput('variant', variant);
+    fixture.detectChanges();
+    const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+    expect(button.classList).toContain(expectedClass);
   });
 });
