@@ -196,6 +196,23 @@ describe('ApplicationsService', () => {
     });
   });
 
+  describe('regenerateLetter', () => {
+    it('resets generation progress and error before enqueueing letter regeneration', async () => {
+      mockPrisma.application.update.mockResolvedValue({ id: 'a1', generationProgress: 0 } as never);
+      mockQueue.enqueueRegenerateLetter.mockResolvedValue(undefined);
+
+      await expect(service.regenerateLetter('a1', 'u1')).resolves.toEqual({ message: 'Letter regeneration queued' });
+
+      expect(mockPrisma.application.update).toHaveBeenCalledWith({
+        where: { id: 'a1' },
+        data: { generationProgress: 0, generationError: null },
+      });
+      expect(mockQueue.enqueueRegenerateLetter).toHaveBeenCalledWith('a1');
+      expect(mockPrisma.application.update.mock.invocationCallOrder[0])
+        .toBeLessThan(mockQueue.enqueueRegenerateLetter.mock.invocationCallOrder[0]);
+    });
+  });
+
   describe('remove', () => {
     it('deletes an application after ownership check', async () => {
       mockPrisma.application.findUnique.mockResolvedValue({ id: 'a1', userId: 'u1' } as never);

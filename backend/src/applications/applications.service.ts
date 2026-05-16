@@ -127,6 +127,10 @@ export class ApplicationsService {
   }
 
   async regenerateLetter(id: string, _userId: string) {
+    await this.prisma.application.update({
+      where: { id },
+      data: { generationProgress: 0, generationError: null },
+    });
     await this.queue.enqueueRegenerateLetter(id);
     return { message: 'Letter regeneration queued' };
   }
