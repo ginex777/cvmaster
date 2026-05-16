@@ -1,0 +1,62 @@
+@if (open()) {
+  <div
+    class="modal-backdrop"
+    (click)="onBackdropClick()"
+    aria-hidden="true"
+  ></div>
+
+  <div
+    class="modal-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="einstellungen-title"
+    (click)="onDialogClick($event)"
+  >
+    <div class="modal-header">
+      <h2 id="einstellungen-title" class="modal-title">Einstellungen</h2>
+      <button
+        type="button"
+        class="modal-close btn btn--ghost btn--sm"
+        (click)="closeModal.emit()"
+        aria-label="Schließen"
+      >✕</button>
+    </div>
+
+    <div class="modal-tabs" role="tablist" aria-label="Einstellungen-Bereiche">
+      <button
+        type="button"
+        role="tab"
+        id="tab-abrechnung"
+        aria-controls="einstellungen-panel"
+        class="modal-tab"
+        [class.is-active]="activeTab() === 'abrechnung'"
+        [attr.aria-selected]="activeTab() === 'abrechnung'"
+        (click)="setTab('abrechnung')"
+      >Abrechnung</button>
+      <button
+        type="button"
+        role="tab"
+        id="tab-sicherheit"
+        aria-controls="einstellungen-panel"
+        class="modal-tab"
+        [class.is-active]="activeTab() === 'sicherheit'"
+        [attr.aria-selected]="activeTab() === 'sicherheit'"
+        (click)="setTab('sicherheit')"
+      >Sicherheit</button>
+    </div>
+
+    <div
+      class="modal-body"
+      role="tabpanel"
+      id="einstellungen-panel"
+      [attr.aria-labelledby]="activeTab() === 'abrechnung' ? 'tab-abrechnung' : 'tab-sicherheit'"
+    >
+      @if (activeTab() === 'abrechnung') {
+        <lba-billing />
+      }
+      @if (activeTab() === 'sicherheit') {
+        <lba-security />
+      }
+    </div>
+  </div>
+}
