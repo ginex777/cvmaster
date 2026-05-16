@@ -72,6 +72,17 @@ describe('PipelineBoard', () => {
     expect(statusChanges[0]).toEqual({ id: 'app-1', status: 'SENT' });
   });
 
+  it('emits applicationOpen when the card title is clicked', async () => {
+    await setup([makeApp({ status: 'OPEN' })]);
+    const opened: string[] = [];
+    component.applicationOpen.subscribe(id => opened.push(id));
+
+    const title = fixture.nativeElement.querySelector('.pipeline__card-title') as HTMLButtonElement;
+    title.click();
+
+    expect(opened).toEqual(['app-1']);
+  });
+
   it('does not emit statusChange if app is already in the target column', async () => {
     await setup([makeApp({ status: 'OPEN' })]);
     const statusChanges: unknown[] = [];

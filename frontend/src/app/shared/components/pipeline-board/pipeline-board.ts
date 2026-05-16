@@ -1,6 +1,5 @@
 import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { scoreClass } from '../../utils/score.utils';
 import { HighlightPipe } from '../../pipes/highlight.pipe';
 
@@ -41,7 +40,7 @@ export const PIPELINE_COLUMNS: PipelineColumn[] = [
 @Component({
   selector: 'lba-pipeline-board',
   standalone: true,
-  imports: [DatePipe, RouterLink, HighlightPipe],
+  imports: [DatePipe, HighlightPipe],
   templateUrl: './pipeline-board.html',
   styleUrl: './pipeline-board.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,6 +51,7 @@ export class PipelineBoard {
 
   readonly statusChange = output<StatusChangeEvent>();
   readonly reminderChange = output<ReminderChangeEvent>();
+  readonly applicationOpen = output<string>();
 
   readonly columns = PIPELINE_COLUMNS;
 

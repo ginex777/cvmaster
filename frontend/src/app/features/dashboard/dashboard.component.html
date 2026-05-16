@@ -118,6 +118,7 @@
             [highlightQuery]="pipelineFilter().query"
             (statusChange)="onStatusChange($event)"
             (reminderChange)="onReminderChange($event)"
+            (applicationOpen)="selectedAppId.set($event)"
           />
         } @else {
         <div class="app-table-wrap">

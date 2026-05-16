@@ -224,6 +224,20 @@ describe('DashboardComponent', () => {
 
       expect(api.patch).toHaveBeenCalledWith('/applications/app-1/reminder', { reminderAt: null });
     });
+
+    it('opens the editor modal from the pipeline board output', async () => {
+      api.get.mockResolvedValue(appData);
+      const fixture = TestBed.createComponent(DashboardComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      fixture.componentInstance.toggleView();
+      fixture.detectChanges();
+      const title = fixture.nativeElement.querySelector('.pipeline__card-title') as HTMLButtonElement;
+      title.click();
+
+      expect(fixture.componentInstance.selectedAppId()).toBe('app-1');
+    });
   });
 
   describe('pipeline filtering', () => {

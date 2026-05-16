@@ -59,11 +59,19 @@
 }
 
 .pipeline__card-title {
+  width: fit-content;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   font-size: 13px;
   font-weight: 600;
   color: var(--ink);
+  cursor: pointer;
+  font-family: inherit;
   text-decoration: none;
   line-height: 1.3;
+  text-align: left;
 
   &:hover {
     color: var(--accent);

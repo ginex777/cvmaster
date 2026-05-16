@@ -9,10 +9,13 @@
         <ul class="pipeline__cards" role="list">
           @for (app of appsForColumn(col); track app.id) {
             <li class="pipeline__card">
-              <a class="pipeline__card-title"
-                 [routerLink]="['/app/applications', app.id]"
-                 [innerHTML]="jobTitle(app) | highlight:highlightQuery()">
-              </a>
+              <button
+                type="button"
+                class="pipeline__card-title"
+                (click)="applicationOpen.emit(app.id)"
+                [attr.aria-label]="'Bewerbung öffnen: ' + jobTitle(app) + ' bei ' + company(app)"
+                [innerHTML]="jobTitle(app) | highlight:highlightQuery()">
+              </button>
               @if (company(app)) {
                 <span class="pipeline__card-company">{{ company(app) }}</span>
               }
