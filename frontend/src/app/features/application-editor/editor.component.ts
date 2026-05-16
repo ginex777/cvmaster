@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -61,7 +61,13 @@ export class EditorComponent implements OnInit, OnDestroy {
   private readonly analytics = inject(AnalyticsService);
   private pollTimer: ReturnType<typeof setTimeout> | null = null;
 
-  readonly id = this.route.snapshot.paramMap.get('id') ?? '';
+  readonly appId = input<string | null>(null);
+  readonly closeRequested = output<void>();
+
+  private get id(): string {
+    return this.appId() ?? this.route.snapshot.paramMap.get('id') ?? '';
+  }
+
   readonly loading = signal(false);
   readonly generating = signal(false);
   readonly saving = signal(false);
@@ -71,7 +77,6 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly message = signal<string | null>(null);
   readonly application = signal<ApplicationDto | null>(null);
   readonly selectedLetter = signal<LetterVariant>('formal');
-  readonly activeTab = signal<'bewerbung' | 'analyse'>('bewerbung');
   readonly regenConfirmOpen = signal(false);
   readonly letterVariants: LetterVariant[] = ['formal', 'warm', 'brief'];
   readonly followUpTemplates = signal<FollowUpTemplate[] | null>(null);
@@ -79,6 +84,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly followUpError = signal<string | null>(null);
   readonly copiedType = signal<string | null>(null);
   readonly structuredCv = signal<CvSection[]>([]);
+  readonly showAnalyse = signal(false);
 
   readonly editorForm = new FormGroup({
     formal: new FormControl('', { nonNullable: true }),
@@ -96,21 +102,13 @@ export class EditorComponent implements OnInit, OnDestroy {
   });
   readonly missingKeywords = computed(() => this.matchReport().missingKeywords ?? []);
   readonly optimizationDiff = computed(() => this.application()?.optimizationDiff ?? null);
-  readonly isLoading = computed(() => this.loading());
-  readonly isGenerating = computed(() => this.generating());
-  readonly isSaving = computed(() => this.saving());
-  readonly isDownloading = computed(() => this.downloading());
-  readonly isSending = computed(() => this.sending());
-  readonly errorMessage = computed(() => this.error());
-  readonly statusMessage = computed(() => this.message());
   readonly generationProgress = computed(() => this.application()?.generationProgress ?? 0);
   readonly generationError = computed(() => this.application()?.generationError ?? null);
   readonly generationFailed = computed(() => this.application()?.status === 'FAILED' || !!this.generationError());
-  readonly currentScore = computed(() => this.score());
-  readonly currentMatchReport = computed(() => this.matchReport());
-  readonly matchedKeywords = computed(() => this.keywords());
-  readonly currentMissingKeywords = computed(() => this.missingKeywords());
-  readonly selectedLetterValue = computed(() => this.selectedLetter());
+  readonly isModal = computed(() => this.appId() !== null);
+  readonly jobTitle = computed(() => this.application()?.jobPosting?.parsedJson?.title ?? '');
+  readonly jobCompany = computed(() => this.application()?.jobPosting?.parsedJson?.company ?? '');
+  readonly keywordSummary = computed(() => `${this.keywords().length} gefunden / ${this.missingKeywords().length} fehlen`);
 
   async ngOnInit(): Promise<void> {
     await this.load();
@@ -264,6 +262,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.regenConfirmOpen.set(false);
     this.generating.set(true);
     this.error.set(null);
+    this.application.update(app => app ? { ...app, generationProgress: 0, generationError: null } : app);
     try {
       await this.api.post(`/applications/${this.id}/regenerate-letter`, {});
       this.schedulePoll(0);
@@ -325,10 +324,6 @@ export class EditorComponent implements OnInit, OnDestroy {
     if (typeof window !== 'undefined') {
       window.location.href = href;
     }
-  }
-
-  private jobTitle(): string {
-    return this.application()?.jobPosting?.parsedJson?.title ?? '';
   }
 
   private async downloadFile(path: string, filename: string): Promise<void> {

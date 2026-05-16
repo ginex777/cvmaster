@@ -42,6 +42,15 @@ describe('EditorComponent', () => {
     expect(f.componentInstance.loading()).toBe(false);
   });
 
+  it('loads application by appId input when rendered inside a modal', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.componentRef.setInput('appId', 'modal-app');
+    f.detectChanges();
+    await f.whenStable();
+    expect(api.get).toHaveBeenCalledWith('/applications/modal-app');
+    expect(f.componentInstance.isModal()).toBe(true);
+  });
+
   it('error signal set when load fails', async () => {
     api.get.mockRejectedValue(new HttpErrorResponse({ error: { message: 'Not found' } }));
     const f = TestBed.createComponent(EditorComponent);
@@ -87,7 +96,7 @@ describe('EditorComponent', () => {
 
     await f.componentInstance.selectLetter('warm');
 
-    expect(f.componentInstance.selectedLetterValue()).toBe('warm');
+    expect(f.componentInstance.selectedLetter()).toBe('warm');
     expect(api.patch).toHaveBeenCalledWith('/applications/a1', { chosenVariant: 'warm' });
   });
 
@@ -118,6 +127,7 @@ describe('EditorComponent', () => {
     const f = TestBed.createComponent(EditorComponent);
     f.detectChanges();
     await f.whenStable();
+    f.componentInstance.application.update(app => app ? { ...app, generationProgress: 100, generationError: 'Alt' } : app);
 
     f.componentInstance.openRegenConfirm();
     expect(f.componentInstance.regenConfirmOpen()).toBe(true);
@@ -126,6 +136,8 @@ describe('EditorComponent', () => {
     expect(api.post).toHaveBeenCalledWith('/applications/a1/regenerate-letter', {});
     expect(f.componentInstance.regenConfirmOpen()).toBe(false);
     expect(f.componentInstance.generating()).toBe(true);
+    expect(f.componentInstance.generationProgress()).toBe(0);
+    expect(f.componentInstance.generationError()).toBeNull();
   });
 
   it('shows failed generation state and retries full generation', async () => {
@@ -202,8 +214,8 @@ describe('EditorComponent', () => {
     await f.componentInstance.sendToSelf();
 
     expect(api.post).toHaveBeenCalledWith('/applications/a1/email-to-self', {});
-    expect(f.componentInstance.statusMessage()).toContain('E-Mail-Adresse');
-    expect(f.componentInstance.isSending()).toBe(false);
+    expect(f.componentInstance.message()).toContain('E-Mail-Adresse');
+    expect(f.componentInstance.sending()).toBe(false);
   });
 
   it('shows a user-facing error when email-to-self fails', async () => {
@@ -214,8 +226,8 @@ describe('EditorComponent', () => {
 
     await f.componentInstance.sendToSelf();
 
-    expect(f.componentInstance.errorMessage()).toBe('Mail nicht erreichbar');
-    expect(f.componentInstance.statusMessage()).toBeNull();
+    expect(f.componentInstance.error()).toBe('Mail nicht erreichbar');
+    expect(f.componentInstance.message()).toBeNull();
   });
 
   it('builds mailto link from recipient, job title, and selected letter', async () => {
