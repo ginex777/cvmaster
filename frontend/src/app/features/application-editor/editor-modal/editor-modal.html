@@ -1,0 +1,16 @@
+@if (appId(); as currentAppId) {
+  <div
+    class="modal-backdrop"
+    aria-hidden="true"
+    (click)="close()">
+  </div>
+
+  <section
+    class="modal-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="editor-title"
+    tabindex="-1">
+    <lba-editor [appId]="currentAppId" (closeRequested)="close()" />
+  </section>
+}
