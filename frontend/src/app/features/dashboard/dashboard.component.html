@@ -169,7 +169,13 @@
                   <td><time [attr.datetime]="app.createdAt">{{ app.createdAt | date:'dd.MM.yyyy' }}</time></td>
                   <td>
                     <div class="app-table__actions">
-                      <a [routerLink]="['/app/applications', app.id]" class="btn btn--ghost btn--sm">Öffnen</a>
+                      <button
+                        type="button"
+                        class="btn btn--ghost btn--sm"
+                        [attr.aria-label]="'Bewerbung öffnen: ' + companyName(app) + ' ' + jobTitle(app)"
+                        (click)="selectedAppId.set(app.id)">
+                        Öffnen
+                      </button>
                       <button
                         type="button"
                         class="btn btn--ghost btn--sm"
@@ -202,4 +208,9 @@
   body="Diese Aktion kann nicht rückgängig gemacht werden."
   (confirmed)="confirmDelete()"
   (cancelled)="deletingId.set(null)"
+/>
+
+<lba-editor-modal
+  [appId]="selectedAppId()"
+  (closed)="selectedAppId.set(null)"
 />

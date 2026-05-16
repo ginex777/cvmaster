@@ -8,6 +8,7 @@ import { PipelineBoard } from '../../shared/components/pipeline-board/pipeline-b
 import type { StatusChangeEvent, ReminderChangeEvent } from '../../shared/components/pipeline-board/pipeline-board';
 import { PipelineToolbar, type PipelineFilter } from '../../shared/components/pipeline-toolbar/pipeline-toolbar';
 import { scoreClass } from '../../shared/utils/score.utils';
+import { EditorModalComponent } from '../application-editor/editor-modal/editor-modal';
 
 interface RecentApplication {
   id: string;
@@ -29,7 +30,7 @@ interface DashboardData {
 @Component({
   selector: 'lba-dashboard',
   standalone: true,
-  imports: [RouterLink, DatePipe, ConfirmDeleteModal, PipelineBoard, PipelineToolbar],
+  imports: [RouterLink, DatePipe, ConfirmDeleteModal, PipelineBoard, PipelineToolbar, EditorModalComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,6 +43,7 @@ export class DashboardComponent implements OnInit {
   readonly data = signal<DashboardData | null>(null);
   readonly deletingId = signal<string | null>(null);
   readonly dismissingOnboarding = signal(false);
+  readonly selectedAppId = signal<string | null>(null);
 
   readonly onboardingSteps = computed(() => {
     const d = this.data();

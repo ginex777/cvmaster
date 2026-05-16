@@ -149,6 +149,27 @@ describe('DashboardComponent', () => {
     expect(fixture.componentInstance.data()?.applicationCount).toBe(0);
   });
 
+  it('sets selectedAppId when the list open action is clicked', async () => {
+    api.get.mockResolvedValue({
+      onboardingDismissed: true,
+      cvCount: 1,
+      applicationCount: 1,
+      avgMatchScore: 80,
+      recentApplications: [
+        { id: 'app-1', status: 'OPEN', matchScore: 80, createdAt: '2026-05-10T00:00:00Z', jobPosting: { parsedJson: { title: 'Dev', company: 'Acme' } } },
+      ],
+    });
+    const fixture = TestBed.createComponent(DashboardComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const openButton = fixture.nativeElement.querySelector('.app-table__actions button') as HTMLButtonElement;
+    openButton.click();
+
+    expect(fixture.componentInstance.selectedAppId()).toBe('app-1');
+  });
+
   describe('pipeline view', () => {
     const appData = {
       onboardingDismissed: true,
