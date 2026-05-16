@@ -4,38 +4,41 @@
   [class.dashboard--onboarding-focus]="data() && !data()!.onboardingDismissed && data()!.recentApplications.length === 0"
   tabindex="-1"
   [attr.aria-busy]="loading()">
-  <header class="dashboard__header">
-    <div>
-      <p class="dashboard__eyebrow">Übersicht</p>
-      <h1>Dashboard</h1>
+
+  <div class="page-header">
+    <div class="page-header__text">
+      <h1 class="page-title">Bewerbungen</h1>
+      <p class="page-sub">Deine optimierten Bewerbungen im Überblick</p>
     </div>
-    <a routerLink="/app/wizard" class="btn btn--primary btn--md">Neue Bewerbung</a>
-  </header>
+    <div class="page-header__actions">
+      <a routerLink="/app/wizard" class="btn btn--cta btn--md">Neue Bewerbung</a>
+    </div>
+  </div>
 
   @if (error()) {
-    <div role="alert" aria-live="polite" class="form-error dashboard__error">
+    <div role="alert" aria-live="polite" class="dashboard__error form-error">
       <span>{{ error() }}</span>
       <button type="button" class="btn btn--ghost btn--sm" (click)="loadData()">Erneut versuchen</button>
     </div>
   }
 
   @if (loading()) {
-    <div class="stat-cards" aria-label="Statistiken werden geladen" aria-busy="true">
-      <div class="stat-card stat-card--skeleton" aria-hidden="true"></div>
-      <div class="stat-card stat-card--skeleton" aria-hidden="true"></div>
-      <div class="stat-card stat-card--skeleton" aria-hidden="true"></div>
+    <div class="stat-grid" aria-label="Statistiken werden geladen" aria-busy="true">
+      <div class="card-elevated stat-card stat-card--skeleton" aria-hidden="true"></div>
+      <div class="card-elevated stat-card stat-card--skeleton" aria-hidden="true"></div>
+      <div class="card-elevated stat-card stat-card--skeleton" aria-hidden="true"></div>
     </div>
   } @else if (data()) {
-    <div class="stat-cards" aria-label="Statistiken">
-      <article class="stat-card" aria-label="Lebensläufe">
+    <div class="stat-grid" aria-label="Statistiken">
+      <article class="card-elevated stat-card" aria-label="Lebensläufe">
         <span class="stat-card__value">{{ data()!.cvCount }}</span>
         <span class="stat-card__label">Lebensläufe</span>
       </article>
-      <article class="stat-card" aria-label="Bewerbungen">
+      <article class="card-elevated stat-card" aria-label="Bewerbungen">
         <span class="stat-card__value">{{ data()!.applicationCount }}</span>
         <span class="stat-card__label">Bewerbungen</span>
       </article>
-      <article class="stat-card" aria-label="Durchschnittlicher Match-Score">
+      <article class="card-elevated stat-card" aria-label="Durchschnittlicher Match-Score">
         <span class="stat-card__value">{{ data()!.avgMatchScore ?? '—' }}</span>
         <span class="stat-card__label">Ø Match-Score</span>
       </article>
@@ -63,7 +66,7 @@
               <strong>Lebenslauf hinzufügen</strong>
               <p>Lade deinen Lebenslauf als PDF/DOCX hoch, füge ihn als Text ein oder erstelle direkt im Assistenten ein Kurzprofil.</p>
               @if (!onboardingSteps()!.cvUploaded) {
-                <a routerLink="/app/cvs" class="btn btn--secondary btn--sm">Lebenslauf hinzufügen</a>
+                <a routerLink="/app/cvs" class="btn btn--outline btn--sm">Lebenslauf hinzufügen</a>
               }
             </div>
           </li>
@@ -75,7 +78,7 @@
               <strong>Erste Bewerbung erstellen</strong>
               <p>Füge eine Stellenanzeige ein und lass die KI deinen Lebenslauf optimieren und ein Anschreiben verfassen.</p>
               @if (!onboardingSteps()!.applicationCreated) {
-                <a routerLink="/app/wizard" class="btn btn--secondary btn--sm">Bewerbung erstellen</a>
+                <a routerLink="/app/wizard" class="btn btn--outline btn--sm">Bewerbung erstellen</a>
               }
             </div>
           </li>
@@ -108,6 +111,7 @@
             <a routerLink="/app/wizard" class="btn btn--ghost btn--sm">Weitere erstellen</a>
           </div>
         </div>
+
         @if (showPipeline()) {
           <lba-pipeline-toolbar
             [totalCount]="filteredApplications().length"
@@ -121,84 +125,47 @@
             (applicationOpen)="selectedAppId.set($event)"
           />
         } @else {
-        <div class="app-table-wrap">
-          <table class="app-table" role="grid">
-            <caption class="sr-only">Letzte 5 Bewerbungen</caption>
-            <thead>
-              <tr>
-                <th scope="col">Unternehmen</th>
-                <th scope="col">Stelle</th>
-                <th scope="col">Match-Score</th>
-                <th scope="col">Status</th>
-                <th scope="col">Erstellt</th>
-                <th scope="col">Aktionen</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (app of data()!.recentApplications; track app.id) {
-                <tr>
-                  <td>
-                    <strong>{{ companyName(app) }}</strong>
-                  </td>
-                  <td>{{ jobTitle(app) }}</td>
-                  <td>
-                    @if (app.matchScore !== null) {
-                      <span [class]="'score ' + scoreClass(app.matchScore)"
-                        [attr.aria-label]="app.matchScore + '% Match-Score'">
-                        {{ app.matchScore }}%
-                      </span>
-                    } @else {
-                      <span aria-label="Score wird berechnet">—</span>
-                    }
-                  </td>
-                  <td>
-                    @if (app.status === 'OPEN' || app.status === 'DONE') {
-                      <button
-                        type="button"
-                        class="status-toggle"
-                        [class.status-toggle--done]="app.status === 'DONE'"
-                        [attr.aria-pressed]="app.status === 'DONE'"
-                        [attr.aria-label]="'Status für ' + jobTitle(app) + ' ändern'"
-                        (click)="toggleStatus(app.id)">
-                        <span aria-hidden="true"></span>
-                        {{ statusLabel(app.status) }}
-                      </button>
-                    } @else {
-                      {{ statusLabel(app.status) }}
-                    }
-                  </td>
-                  <td><time [attr.datetime]="app.createdAt">{{ app.createdAt | date:'dd.MM.yyyy' }}</time></td>
-                  <td>
-                    <div class="app-table__actions">
-                      <button
-                        type="button"
-                        class="btn btn--ghost btn--sm"
-                        [attr.aria-label]="'Bewerbung öffnen: ' + companyName(app) + ' ' + jobTitle(app)"
-                        (click)="selectedAppId.set(app.id)">
-                        Öffnen
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn--ghost btn--sm"
-                        [attr.aria-label]="'Bewerbung löschen: ' + companyName(app) + ' ' + jobTitle(app)"
-                        (click)="requestDelete(app.id)">
-                        Löschen
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+          <div class="card-list">
+            @for (app of data()!.recentApplications; track app.id) {
+              <div class="card-elevated">
+                <div class="card-row">
+                  <div class="card-meta">
+                    <p class="card-title">{{ jobTitle(app) }} @ {{ companyName(app) }}</p>
+                    <p class="card-sub">
+                      {{ app.createdAt | date:'dd. MMM' }}
+                      @if (app.matchScore !== null) {
+                        · <strong>{{ app.matchScore }}%</strong>
+                      }
+                      · <span [class]="'status--' + statusKey(app.status)">{{ statusLabel(app.status) }}</span>
+                    </p>
+                  </div>
+                  <div class="card-actions">
+                    <button
+                      type="button"
+                      class="btn btn--outline btn--sm"
+                      [attr.aria-label]="'Öffnen: ' + jobTitle(app) + ' @ ' + companyName(app)"
+                      (click)="selectedAppId.set(app.id)">
+                      Öffnen
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn--ghost btn--sm app-delete-btn"
+                      [attr.aria-label]="'Löschen: ' + jobTitle(app) + ' @ ' + companyName(app)"
+                      (click)="requestDelete(app.id)">
+                      Löschen
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
         }
       </section>
     } @else {
-      <section class="empty-state" aria-label="Keine Bewerbungen">
-        <h2>Noch keine Bewerbungen</h2>
-        <p>Erstelle deine erste optimierte Bewerbung in weniger als 2 Minuten.</p>
-        <a routerLink="/app/wizard" class="btn btn--primary btn--md">Erste Bewerbung erstellen</a>
-      </section>
+      <div class="empty-state">
+        <p class="empty-state__text">Noch keine Bewerbungen vorhanden.</p>
+        <a routerLink="/app/wizard" class="btn btn--cta btn--md">Erste Bewerbung erstellen</a>
+      </div>
     }
   }
 </main>

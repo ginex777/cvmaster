@@ -89,6 +89,16 @@ export class DashboardComponent implements OnInit {
     return labels[status] ?? status;
   }
 
+  statusKey(status: string): string {
+    const map: Record<string, string> = {
+      OPEN: 'open',
+      DONE: 'done',
+      IN_PROGRESS: 'active',
+      REJECTED: 'rejected',
+    };
+    return map[status] ?? 'open';
+  }
+
   async toggleStatus(id: string): Promise<void> {
     const dashboard = this.data();
     const app = dashboard?.recentApplications.find(item => item.id === id);

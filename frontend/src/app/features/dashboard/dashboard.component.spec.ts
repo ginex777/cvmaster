@@ -83,6 +83,16 @@ describe('DashboardComponent', () => {
     expect(fixture.componentInstance.scoreClass(40)).toBe('score--low');
   });
 
+  it('statusKey maps backend statuses to CSS class suffixes', () => {
+    api.get.mockResolvedValue(emptyDashboard);
+    const fixture = TestBed.createComponent(DashboardComponent);
+    expect(fixture.componentInstance.statusKey('OPEN')).toBe('open');
+    expect(fixture.componentInstance.statusKey('DONE')).toBe('done');
+    expect(fixture.componentInstance.statusKey('IN_PROGRESS')).toBe('active');
+    expect(fixture.componentInstance.statusKey('REJECTED')).toBe('rejected');
+    expect(fixture.componentInstance.statusKey('UNKNOWN')).toBe('open');
+  });
+
   it('toggles application status optimistically and persists it', async () => {
     api.get.mockResolvedValue({
       onboardingDismissed: true,
@@ -164,7 +174,7 @@ describe('DashboardComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    const openButton = fixture.nativeElement.querySelector('.app-table__actions button') as HTMLButtonElement;
+    const openButton = fixture.nativeElement.querySelector('button[aria-label="Öffnen: Dev @ Acme"]') as HTMLButtonElement;
     openButton.click();
 
     expect(fixture.componentInstance.selectedAppId()).toBe('app-1');
