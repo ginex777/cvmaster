@@ -243,4 +243,26 @@ describe('MasterCvsComponent', () => {
     expect(fixture.componentInstance.cvs()[0].template).toBe('modern');
     expect(fixture.componentInstance.error()).toBe('Template konnte nicht gespeichert werden.');
   });
+
+  it('renders CV name in card-title after load', async () => {
+    const data = [{ id: 'cv1', name: 'Mein Lebenslauf', language: 'de', sourceFilename: 'cv.pdf', template: 'modern' as const, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }];
+    api.get.mockResolvedValue(data);
+    const fixture = TestBed.createComponent(MasterCvsComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const title = fixture.nativeElement.querySelector('.card-title') as HTMLElement;
+    expect(title?.textContent?.trim()).toBe('Mein Lebenslauf');
+  });
+
+  it('use-in-wizard button has correct aria-label', async () => {
+    const data = [{ id: 'cv1', name: 'Mein CV', language: 'de', sourceFilename: 'cv.pdf', template: 'modern' as const, createdAt: '2025-01-01T00:00:00.000Z', updatedAt: '2025-01-01T00:00:00.000Z' }];
+    api.get.mockResolvedValue(data);
+    const fixture = TestBed.createComponent(MasterCvsComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const btn = fixture.nativeElement.querySelector('button[aria-label="In Bewerbung verwenden: Mein CV"]') as HTMLButtonElement;
+    expect(btn).not.toBeNull();
+  });
 });

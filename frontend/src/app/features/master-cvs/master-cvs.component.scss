@@ -1,188 +1,67 @@
-.master-cvs__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  margin-bottom: var(--space-8);
-
-  h1 {
-    margin-right: auto;
-    font-size: 1.75rem;
-    font-weight: 800;
-  }
-}
-
-.empty-state {
-  color: var(--ink-2);
-  padding: var(--space-12) 0;
-  text-align: center;
+.master-cvs__error {
+  margin-bottom: var(--space-4);
 }
 
 .text-cv-panel {
-  width: min(100%, 900px);
-  margin: 0 0 var(--space-8);
-  padding: var(--space-6);
-  background: var(--bg-2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-6);
 }
 
 .text-cv-panel__intro {
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-4);
 
-  h2 {
-    margin: 0 0 var(--space-2);
-    color: var(--ink);
-    font-size: 1.15rem;
-    font-weight: 800;
-  }
-
-  p {
-    max-width: 64ch;
-    color: var(--ink-2);
-    font-size: 0.95rem;
-  }
+  h2 { font-size: 1rem; font-weight: 700; margin-bottom: var(--space-1); }
+  p  { font-size: 13px; color: var(--ink-2); }
 }
 
 .text-cv-form {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.35fr);
+  display: flex;
+  flex-direction: column;
   gap: var(--space-4);
 }
 
 .text-cv-form__actions {
-  grid-column: 1 / -1;
   display: flex;
+  gap: var(--space-3);
   justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: var(--space-2);
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-
-  &--wide {
-    grid-column: 1 / -1;
-  }
-
-  label {
-    color: var(--ink);
-    font-size: 0.9rem;
-    font-weight: 800;
-  }
-
-  input,
-  select,
-  textarea {
-    width: 100%;
-    min-height: 44px;
-    padding: var(--space-3);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-    background: var(--surface);
-    color: var(--ink);
-    font: inherit;
-  }
-
-  textarea {
-    min-height: 16rem;
-    resize: vertical;
-    line-height: 1.5;
-  }
+.cv-card-row {
+  align-items: flex-start;
 }
 
-.field__note {
-  color: var(--ink-2);
-  font-size: 0.82rem;
+.cv-rename-input {
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  width: 100%;
+  max-width: 280px;
+  outline: none;
+  color: var(--ink);
+  background: var(--surface);
 }
 
-.field__error {
+.cv-delete-btn {
   color: var(--danger);
-  font-size: 0.82rem;
-  font-weight: 700;
-}
 
-.cv-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.cv-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-5);
-  padding: var(--space-4) var(--space-6);
-  background: var(--bg-2);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--line);
-
-  &__info {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__name { font-weight: 700; }
-  &__meta { font-size: 0.85rem; color: var(--ink-2); }
-  &__date { font-size: 0.8rem; color: var(--ink-3); }
-
-  &__actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-  }
-
-  &__rename-input {
-    min-height: 44px;
-    width: min(100%, 22rem);
-    padding: var(--space-2) var(--space-3);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    color: var(--ink);
-    font: inherit;
-    font-weight: 700;
+  &:hover {
+    background: color-mix(in oklch, var(--danger) 10%, transparent);
   }
 }
 
-@media (max-width: 760px) {
-  .master-cvs__header {
-    align-items: stretch;
-    flex-direction: column;
-  }
+.cv-card--skeleton {
+  min-height: 100px;
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite;
+}
 
-  .master-cvs__header > .btn {
-    width: 100%;
-  }
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 
-  .text-cv-form {
-    grid-template-columns: 1fr;
-  }
-
-  .text-cv-form__actions {
-    justify-content: stretch;
-
-    .btn {
-      width: 100%;
-    }
-  }
-
-  .cv-card {
-    align-items: stretch;
-    flex-direction: column;
-
-    &__actions {
-      justify-content: flex-start;
-    }
-  }
+@media (prefers-reduced-motion: reduce) {
+  .cv-card--skeleton { animation: none; }
 }

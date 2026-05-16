@@ -1,38 +1,44 @@
 <main id="main" class="master-cvs" tabindex="-1" [attr.aria-busy]="loading() || uploading() || savingTextCv()">
-  <header class="master-cvs__header">
-    <h1>Meine Lebensläufe</h1>
-    <button
-      type="button"
-      class="btn btn--secondary btn--md"
-      aria-controls="text-cv-panel"
-      [attr.aria-expanded]="textFormOpen()"
-      (click)="toggleTextForm()">
-      @if (textFormOpen()) { Textformular schließen } @else { Lebenslauf einfügen }
-    </button>
-    <label
-      class="btn btn--primary btn--md"
-      for="cv-upload"
-      tabindex="0"
-      [class.btn--loading]="uploading()"
-      [attr.aria-disabled]="uploading()">
-      @if (uploading()) { Wird hochgeladen… } @else { Lebenslauf hochladen }
-      <input
-        id="cv-upload"
-        type="file"
-        accept=".pdf,.docx"
-        class="sr-only"
-        [disabled]="uploading()"
-        (change)="upload($event)"
-        aria-label="Lebenslauf-Datei auswählen (PDF oder DOCX)" />
-    </label>
-  </header>
+
+  <div class="page-header">
+    <div class="page-header__text">
+      <h1 class="page-title">Lebensläufe</h1>
+      <p class="page-sub">Deine gespeicherten Lebensläufe</p>
+    </div>
+    <div class="page-header__actions">
+      <label
+        class="btn btn--cta btn--md"
+        for="cv-upload"
+        tabindex="0"
+        [class.btn--loading]="uploading()"
+        [attr.aria-disabled]="uploading()">
+        @if (uploading()) { Wird hochgeladen… } @else { Lebenslauf hochladen }
+        <input
+          id="cv-upload"
+          type="file"
+          accept=".pdf,.docx"
+          class="sr-only"
+          [disabled]="uploading()"
+          (change)="upload($event)"
+          aria-label="Lebenslauf-Datei auswählen (PDF oder DOCX)" />
+      </label>
+      <button
+        type="button"
+        class="btn btn--outline btn--md"
+        aria-controls="text-cv-panel"
+        [attr.aria-expanded]="textFormOpen()"
+        (click)="toggleTextForm()">
+        @if (textFormOpen()) { Schließen } @else { Lebenslauf einfügen }
+      </button>
+    </div>
+  </div>
 
   @if (error()) {
-    <div role="alert" aria-live="polite" class="form-error">{{ error() }}</div>
+    <div role="alert" aria-live="polite" class="form-error master-cvs__error">{{ error() }}</div>
   }
 
   @if (textFormOpen()) {
-    <section id="text-cv-panel" class="text-cv-panel" aria-labelledby="text-cv-heading">
+    <section id="text-cv-panel" class="card-elevated text-cv-panel" aria-labelledby="text-cv-heading">
       <div class="text-cv-panel__intro">
         <h2 id="text-cv-heading">Lebenslauf per Text einfügen</h2>
         <p>Kopiere den Inhalt deines CVs hier hinein. Wir speichern nur die strukturierte CV-Version, nicht den Originaltext als Datei.</p>
@@ -52,7 +58,6 @@
             <span id="text-cv-name-error" class="field__error" role="alert">Bitte gib mindestens 2 Zeichen ein.</span>
           }
         </div>
-
         <div class="field">
           <label for="text-cv-language">Sprache</label>
           <select id="text-cv-language" formControlName="language" aria-required="true">
@@ -60,7 +65,6 @@
             <option value="en">English</option>
           </select>
         </div>
-
         <div class="field field--wide">
           <label for="text-cv-text">Lebenslauftext</label>
           <textarea
@@ -70,15 +74,14 @@
             aria-required="true"
             aria-describedby="text-cv-text-note text-cv-text-error"
             [attr.aria-invalid]="textCvForm.controls.text.invalid && textCvForm.controls.text.touched"></textarea>
-          <span id="text-cv-text-note" class="field__note">Mindestens 40 Zeichen. PDF- oder DOCX-Dateien bitte weiter über den Upload hinzufügen.</span>
+          <span id="text-cv-text-note" class="field__note">Mindestens 40 Zeichen.</span>
           @if (textCvForm.controls.text.invalid && textCvForm.controls.text.touched) {
             <span id="text-cv-text-error" class="field__error" role="alert">Bitte füge mindestens 40 Zeichen Lebenslauf-Text ein.</span>
           }
         </div>
-
         <div class="text-cv-form__actions">
           <button type="button" class="btn btn--ghost btn--md" [disabled]="savingTextCv()" (click)="closeTextForm()">Abbrechen</button>
-          <button type="submit" class="btn btn--primary btn--md" [disabled]="savingTextCv()">
+          <button type="submit" class="btn btn--outline btn--md" [disabled]="savingTextCv()">
             @if (savingTextCv()) { Wird gespeichert… } @else { Text-Lebenslauf speichern }
           </button>
         </div>
@@ -87,70 +90,78 @@
   }
 
   @if (loading()) {
-    <ul class="cv-list" aria-label="Lebensläufe werden geladen" aria-busy="true">
-      <li class="cv-card cv-card--skeleton" aria-hidden="true"></li>
-      <li class="cv-card cv-card--skeleton" aria-hidden="true"></li>
-    </ul>
+    <div class="card-list" aria-label="Lebensläufe werden geladen" aria-busy="true">
+      <div class="card-elevated cv-card--skeleton" aria-hidden="true"></div>
+      <div class="card-elevated cv-card--skeleton" aria-hidden="true"></div>
+    </div>
   } @else if (cvs().length === 0) {
-    <section class="empty-state" aria-label="Keine Lebensläufe">
-      <p>Noch kein Lebenslauf hinzugefügt.</p>
-      <p>Lade eine PDF/DOCX-Datei hoch oder füge deinen CV als Text ein.</p>
-    </section>
+    <div class="empty-state">
+      <p class="empty-state__text">Noch kein Lebenslauf hinzugefügt.</p>
+      <label class="btn btn--cta btn--md" for="cv-upload-empty" tabindex="0">
+        Lebenslauf hochladen
+        <input
+          id="cv-upload-empty"
+          type="file"
+          accept=".pdf,.docx"
+          class="sr-only"
+          (change)="upload($event)"
+          aria-label="Lebenslauf-Datei auswählen" />
+      </label>
+    </div>
   } @else {
-    <ul class="cv-list" role="list" aria-label="Lebenslauf-Liste">
+    <div class="card-list" role="list" aria-label="Lebenslauf-Liste">
       @for (cv of cvs(); track cv.id) {
-        <li class="cv-card">
-          <div class="cv-card__info">
-            @if (renamingId() === cv.id) {
-              <input
-                #renameInput
-                class="cv-card__rename-input"
-                type="text"
-                [value]="renameValue()"
-                (input)="renameValue.set(renameInput.value)"
-                (blur)="saveRename(cv)"
-                (keydown.enter)="saveRename(cv)"
-                (keydown.escape)="renamingId.set(null)"
-                [attr.aria-label]="'Neuer Name für ' + cv.name"
-                autofocus />
-            } @else {
-              <strong class="cv-card__name">{{ cv.name }}</strong>
-            }
-            <span class="cv-card__meta">{{ sourceLabel(cv) }} · {{ cv.language.toUpperCase() }}</span>
-            <time class="cv-card__date" [attr.datetime]="cv.updatedAt">
-              Aktualisiert {{ cv.updatedAt | date:'dd.MM.yyyy' }}
-            </time>
-            <lba-cv-template-picker
-              [template]="cv.template"
-              (templateChange)="updateTemplate(cv.id, $event)"
-            />
+        <div class="card-elevated" role="listitem">
+          <div class="card-row cv-card-row">
+            <div class="card-meta">
+              @if (renamingId() === cv.id) {
+                <input
+                  #renameInput
+                  class="cv-rename-input"
+                  type="text"
+                  [value]="renameValue()"
+                  (input)="renameValue.set(renameInput.value)"
+                  (blur)="saveRename(cv)"
+                  (keydown.enter)="saveRename(cv)"
+                  (keydown.escape)="renamingId.set(null)"
+                  [attr.aria-label]="'Neuer Name für ' + cv.name"
+                  autofocus />
+              } @else {
+                <p class="card-title">{{ cv.name }}</p>
+              }
+              <p class="card-sub">{{ sourceLabel(cv) }} · {{ cv.language.toUpperCase() }} · Aktualisiert {{ cv.updatedAt | date:'dd.MM.yyyy' }}</p>
+              <lba-cv-template-picker
+                [template]="cv.template"
+                (templateChange)="updateTemplate(cv.id, $event)"
+              />
+            </div>
+            <div class="card-actions">
+              <button
+                type="button"
+                class="btn btn--outline btn--sm"
+                [attr.aria-label]="'In Bewerbung verwenden: ' + cv.name"
+                (click)="useInWizard(cv.id)">
+                In Bewerbung verwenden
+              </button>
+              <button
+                type="button"
+                class="btn btn--ghost btn--sm"
+                [attr.aria-label]="'Umbenennen: ' + cv.name"
+                (click)="startRename(cv)">
+                Umbenennen
+              </button>
+              <button
+                type="button"
+                class="btn btn--ghost btn--sm cv-delete-btn"
+                [attr.aria-label]="'Löschen: ' + cv.name"
+                (click)="requestDelete(cv.id)">
+                Löschen
+              </button>
+            </div>
           </div>
-          <div class="cv-card__actions">
-            <button
-              type="button"
-              class="btn btn--primary btn--sm"
-              [attr.aria-label]="'Lebenslauf ' + cv.name + ' in Bewerbung verwenden'"
-              (click)="useInWizard(cv.id)">
-              In Bewerbung verwenden
-            </button>
-            <button
-              type="button"
-              class="btn btn--ghost btn--sm"
-              [attr.aria-label]="'Lebenslauf ' + cv.name + ' umbenennen'"
-              (click)="startRename(cv)">
-              Umbenennen
-            </button>
-            <button
-              type="button"
-              class="btn btn--ghost btn--sm"
-              [attr.aria-label]="'Lebenslauf ' + cv.name + ' löschen'"
-              (click)="requestDelete(cv.id)">
-              Löschen
-            </button>
-          </div>
-        </li>
+        </div>
       }
-    </ul>
+    </div>
   }
 </main>
 
