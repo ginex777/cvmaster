@@ -104,7 +104,11 @@
       "PowerShell(Remove-Item -Recurse -Force \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\features\\\\security\" -Confirm:$false)",
       "PowerShell(Remove-Item -Recurse -Force \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\features\\\\billing\" -Confirm:$false)",
       "PowerShell(cd \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\" ; npx ng build --configuration=development 2>&1 | Where-Object { $_ -notmatch \"\\\\.spec\\\\.ts\" } | Select-Object -Last 20)",
-      "PowerShell(cd \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\" ; npx ng build --configuration=development 2>&1 | Where-Object { $_ -match \"ERROR\" } | Select-Object -First 20)"
+      "PowerShell(cd \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\" ; npx ng build --configuration=development 2>&1 | Where-Object { $_ -match \"ERROR\" } | Select-Object -First 20)",
+      "Bash(Remove-Item -Recurse -Force \"C:\\\\Users\\\\Schuh\\\\Desktop\\\\repo-skeleton\\\\frontend\\\\src\\\\app\\\\features\\\\try\" -ErrorAction SilentlyContinue)",
+      "Bash(Write-Host \"Deleted features/try/\")",
+      "Bash(grep -v \"import\\\\|spec\\\\|//\")",
+      "Bash(grep -v \"^$\\\\|Linting\\\\|lba-frontend\\\\|> ng lint\\\\|> lba-frontend\")"
     ]
   }
 }
