@@ -1,5 +1,6 @@
 import type { OnInit } from '@angular/core';
-import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
@@ -70,6 +71,24 @@ export class WizardComponent implements OnInit {
   readonly jobForm = new FormGroup({
     jobRaw: new FormControl('', [Validators.required, Validators.minLength(50)]),
     jobUrl: new FormControl('', [Validators.maxLength(2048)]),
+  });
+
+  private readonly jobRawValue = toSignal(this.jobForm.controls.jobRaw.valueChanges, { initialValue: '' });
+
+  readonly jobKeywords = computed(() => {
+    const text = this.jobRawValue() ?? '';
+    if (text.length < 50) return [];
+    return this.extractKeywords(text);
+  });
+
+  readonly keywordHint = computed(() => {
+    const kw = this.jobKeywords();
+    if (kw.length === 0) return null;
+    return {
+      count: kw.length,
+      preview: kw.slice(0, 3).join(', '),
+      extra: Math.max(0, kw.length - 3),
+    };
   });
 
   async ngOnInit(): Promise<void> {
@@ -222,6 +241,18 @@ export class WizardComponent implements OnInit {
     return this.jobInputMode() === 'url'
       ? (this.jobForm.controls.jobUrl.value ?? '').trim()
       : (this.jobForm.controls.jobRaw.value ?? '').trim();
+  }
+
+  extractKeywords(text: string): string[] {
+    const words = text.match(/\b[A-Z][a-zA-Z0-9+#.\-]{2,}\b/g) ?? [];
+    const freq = new Map<string, number>();
+    for (const w of words) {
+      freq.set(w, (freq.get(w) ?? 0) + 1);
+    }
+    return [...freq.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 14)
+      .map(([word]) => word);
   }
 
   private async persistTonePreference(applicationId: string): Promise<void> {

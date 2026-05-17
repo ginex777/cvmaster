@@ -258,9 +258,17 @@
                     <span id="job-raw-error" role="alert">Bitte mindestens 50 Zeichen eingeben.</span>
                   </div>
                 } @else {
-                  <div class="job-input-card__footer" id="job-raw-note">
+                  <div class="job-input-card__footer" id="job-raw-note" aria-live="polite">
                     <lucide-icon name="sparkles" [size]="12" aria-hidden="true"></lucide-icon>
-                    <span>Zuverlässigste Variante — Keywords werden automatisch erkannt.</span>
+                    @if (keywordHint()) {
+                      <span>
+                        <strong>{{ keywordHint()!.count }} Keywords</strong> erkannt ·
+                        {{ keywordHint()!.preview }}
+                        @if (keywordHint()!.extra > 0) {<span>, +{{ keywordHint()!.extra }}</span>}
+                      </span>
+                    } @else {
+                      <span>Zuverlässigste Variante — Keywords werden automatisch erkannt.</span>
+                    }
                   </div>
                 }
               </div>
