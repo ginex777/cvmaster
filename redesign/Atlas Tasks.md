@@ -884,7 +884,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
 **Drei** Mikro-Tasks.
 
-## ☐ PR-01 · Pricing: Free-Anker-Karte hinzufügen
+## ✅ PR-01 · Pricing: Free-Anker-Karte hinzufügen
 
 - **📐 JSX-Quelle:** kein direkter Mockup. Karten-Styling-Pattern: siehe `Panel` aus `redesign/shared.jsx`.
 - **Dateien:** `pricing.component.html` + `.scss`
@@ -901,7 +901,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   - **Kein Badge** (nicht „Empfohlen").
 - **Verifikation:** `/preise` zeigt 3 Karten, links Free, mittig Pay-per-App, rechts Pro (Empfohlen).
 
-## ☐ PR-02 · Pricing: Plan-Toggle als Segmented
+## ✅ PR-02 · Pricing: Plan-Toggle als Segmented
 
 - **Dateien:** `pricing.component.html` + `.scss`
 - **Aufgabe:** Plan-Toggle (Monatlich/Jährlich) auf Pro neu stylen:
@@ -911,7 +911,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   - Beide: `padding: 4px 10px; border: none; cursor: pointer; font-family: inherit; border-radius: 5px`
 - **Verifikation:** Toggle hat klar segmented Look.
 
-## ☐ PR-03 · Pricing: Empfohlen-Badge & Featured-Card
+## ✅ PR-03 · Pricing: Empfohlen-Badge & Featured-Card
 
 - **Dateien:** `pricing.component.html` + `.scss`
 - **Aufgabe:**
@@ -1821,9 +1821,9 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | HE-03 | Hero: H1 Italic-Akzent | E | ✅ |
 | HE-04 | Hero: Editor-Peek | E | ✅ |
 | HE-05 | Hero: Buttons & Proof-Strip | E | ✅ |
-| PR-01 | Pricing: Free-Anker-Karte | F | ☐ |
-| PR-02 | Pricing: Plan-Toggle | F | ☐ |
-| PR-03 | Pricing: Featured-Badge | F | ☐ |
+| PR-01 | Pricing: Free-Anker-Karte | F | ✅ |
+| PR-02 | Pricing: Plan-Toggle | F | ✅ |
+| PR-03 | Pricing: Featured-Badge | F | ✅ |
 | DB-01 | Dashboard: Echte Daten | G | ☐ |
 | DB-02 | Dashboard: Activity-More-Menü | G | ☐ |
 | DB-03 | Dashboard: Period-Selector | G | ☐ |
