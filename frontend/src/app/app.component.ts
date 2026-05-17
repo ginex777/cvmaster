@@ -5,11 +5,12 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { CommandPaletteComponent } from './shared/components/command-palette/command-palette';
 import { ConsentBanner } from './shared/components/consent-banner/consent-banner/consent-banner';
+import { ToastHostComponent } from './shared/components/toast-host/toast-host';
 
 @Component({
   selector: 'lba-root',
   standalone: true,
-  imports: [RouterOutlet, ConsentBanner, CommandPaletteComponent],
+  imports: [RouterOutlet, ConsentBanner, CommandPaletteComponent, ToastHostComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

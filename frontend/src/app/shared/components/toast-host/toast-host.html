@@ -1,0 +1,28 @@
+<div
+  class="toast-host"
+  aria-live="polite"
+  aria-atomic="false"
+  role="region"
+  aria-label="Benachrichtigungen"
+>
+  @for (toast of toasts(); track toast.id) {
+    <div
+      class="toast"
+      [class.toast--success]="toast.type === 'success'"
+      [class.toast--error]="toast.type === 'error'"
+      [class.toast--info]="toast.type === 'info'"
+      role="alert"
+    >
+      <lucide-icon class="toast__icon" [name]="iconName(toast.type)" [size]="16" aria-hidden="true" />
+      <span class="toast__message">{{ toast.message }}</span>
+      <button
+        class="toast__close"
+        type="button"
+        [attr.aria-label]="'Benachrichtigung schließen: ' + toast.message"
+        (click)="dismiss(toast.id)"
+      >
+        <lucide-icon name="x" [size]="14" aria-hidden="true" />
+      </button>
+    </div>
+  }
+</div>
