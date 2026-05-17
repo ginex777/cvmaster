@@ -1396,7 +1396,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   4. Erreichbar im AppShell via Help-Menü oder Settings-Hilfe-Sektion.
 - **Verifikation:** Erste Anmeldung zeigt Modal, Refresh zeigt's nicht mehr.
 
-## ☐ OT-11 · /try Route entfernen
+## ✅ OT-11 · /try Route entfernen
 
 - **Dateien:**
   - `app.routes.ts` (Route-Eintrag löschen)
@@ -1425,7 +1425,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
 # PHASE L — Routing & Integration
 
-## ☐ R-01 · app.routes.ts vollständig
+## ✅ R-01 · app.routes.ts vollständig
 
 - **Dateien:** `frontend/src/app/app.routes.ts`
 - **Aufgabe:** Verify alle Routen aus Spec §3 vorhanden:
@@ -1869,10 +1869,10 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | OT-08 | Not-Found | K | ✅ |
 | OT-09 | Legal-Type-Scale | K | ✅ |
 | OT-10 | Onboarding-Modal | K | ✅ |
-| OT-11 | /try löschen | K | ☐ |
+| OT-11 | /try löschen | K | ✅ |
 | OT-12 | Pro-Lock Pattern | K | ☐ |
 | OT-13 | legal.component.scss tot | K | ☐ |
-| R-01 | app.routes vollständig | L | ☐ |
+| R-01 | app.routes vollständig | L | ✅ |
 | R-02 | CommandPalette wiring | L | ☐ |
 | R-03 | Status-Mapper | L | ☐ |
 | BE-01 | Status-Migration | M | ☐ |
