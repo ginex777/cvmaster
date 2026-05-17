@@ -1,10 +1,32 @@
 <div class="shell">
   <aside class="shell__sidebar" aria-label="Hauptnavigation">
-    <a routerLink="/app" class="shell__logo" aria-label="Hireflow AI – Startseite">
-      Hireflow AI
-    </a>
 
+    <!-- Brand -->
+    <div class="shell__brand">
+      <div class="shell__logo-mark" aria-hidden="true">H</div>
+      <span class="shell__logo-text">Hireflow</span>
+      <span class="shell__brand-tag" aria-hidden="true">BETA</span>
+    </div>
+
+    <!-- Workspace switcher -->
+    <button
+      class="shell__workspace"
+      type="button"
+      (click)="openWorkspaceSwitcher()"
+      [attr.aria-label]="'Workspace: ' + auth.user()?.name"
+    >
+      <div class="shell__workspace-avatar" aria-hidden="true">{{ initials() }}</div>
+      <div class="shell__workspace-text">
+        <span class="shell__username">{{ auth.user()?.name }}</span>
+        <span class="shell__workspace-meta">{{ planLabel() }} · DE</span>
+      </div>
+      <lucide-icon name="chevron-down" [size]="14" aria-hidden="true"></lucide-icon>
+    </button>
+
+    <!-- Nav -->
     <nav class="shell__nav" aria-label="App-Navigation">
+      <p class="shell__group">Workspace</p>
+
       <a
         routerLink="/app"
         routerLinkActive="is-active"
@@ -13,8 +35,32 @@
         aria-label="Dashboard"
       >
         <lucide-icon name="home" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
-        Dashboard
+        <span>Dashboard</span>
       </a>
+
+      <a
+        routerLink="/app/applications"
+        routerLinkActive="is-active"
+        class="shell__link"
+        aria-label="Bewerbungen"
+      >
+        <lucide-icon name="briefcase" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
+        <span>Bewerbungen</span>
+        @if (counts().applications > 0) {
+          <span class="shell__count num" aria-hidden="true">{{ counts().applications }}</span>
+        }
+      </a>
+
+      <a
+        routerLink="/app/pipeline"
+        routerLinkActive="is-active"
+        class="shell__link"
+        aria-label="Pipeline"
+      >
+        <lucide-icon name="kanban" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
+        <span>Pipeline</span>
+      </a>
+
       <a
         routerLink="/app/cvs"
         routerLinkActive="is-active"
@@ -22,8 +68,12 @@
         aria-label="Lebensläufe"
       >
         <lucide-icon name="file-text" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
-        Lebensläufe
+        <span>Lebensläufe</span>
+        @if (counts().cvs > 0) {
+          <span class="shell__count num" aria-hidden="true">{{ counts().cvs }}</span>
+        }
       </a>
+
       <button
         type="button"
         class="shell__link shell__link--linkedin"
@@ -31,30 +81,41 @@
         [attr.aria-label]="isPro() ? 'LinkedIn-Optimierung' : 'LinkedIn – nur für Pro-Nutzer'"
       >
         <lucide-icon name="linkedin" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
-        LinkedIn
+        <span>LinkedIn</span>
         @if (!isPro()) {
           <span class="plan-lock" aria-hidden="true">Pro</span>
         }
       </button>
     </nav>
 
+    <!-- Bottom: usage bar + settings + logout -->
     <div class="shell__bottom">
-      <div class="shell__user-row">
-        <span
-          class="shell__plan shell__plan--{{ planClass() }}"
-          [attr.aria-label]="'Aktueller Plan: ' + planLabel()"
-        >{{ planLabel() }}</span>
-        <span class="shell__username">{{ auth.user()?.name }}</span>
-      </div>
-      <button
-        type="button"
+      @if (!isPro()) {
+        <div class="shell__usage" aria-label="Plan-Nutzung">
+          <div class="shell__usage-head">
+            <span class="shell__plan shell__plan--{{ planClass() }}">{{ planLabel() }}</span>
+            <span class="shell__usage-count num">{{ counts().used }} / {{ counts().limit }}</span>
+          </div>
+          <div class="shell__usage-bar" role="progressbar" [attr.aria-valuenow]="counts().percent" aria-valuemin="0" aria-valuemax="100">
+            <span class="shell__usage-fill" [style.width.%]="counts().percent"></span>
+          </div>
+          <div class="shell__usage-foot">
+            <span class="shell__plan shell__plan--{{ planClass() }}">{{ planLabel() }}</span>
+            <a routerLink="/preise" class="shell__usage-cta">Upgrade →</a>
+          </div>
+        </div>
+      }
+
+      <a
+        routerLink="/app/settings"
+        routerLinkActive="is-active"
         class="shell__link"
-        (click)="openEinstellungen()"
-        aria-label="Einstellungen öffnen"
+        aria-label="Einstellungen"
       >
         <lucide-icon name="settings" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
-        Einstellungen
-      </button>
+        <span>Einstellungen</span>
+      </a>
+
       <button
         type="button"
         class="shell__link shell__link--logout"
@@ -62,9 +123,10 @@
         aria-label="Abmelden"
       >
         <lucide-icon name="log-out" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
-        Abmelden
+        <span>Abmelden</span>
       </button>
     </div>
+
   </aside>
 
   <main class="shell__content">

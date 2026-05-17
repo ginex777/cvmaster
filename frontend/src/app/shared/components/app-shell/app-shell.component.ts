@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { EinstellungenModalComponent } from '../einstellungen-modal/einstellungen-modal.component';
@@ -19,6 +19,13 @@ export class AppShellComponent {
   private readonly upgradeService = inject(UpgradeService);
 
   protected readonly einstellungenOpen = signal(false);
+
+  readonly initials = computed(() => {
+    const name = this.auth.user()?.name ?? '';
+    return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase() || 'HF';
+  });
+
+  readonly counts = signal({ applications: 0, cvs: 0, used: 0, limit: 5, percent: 0 });
 
   constructor() {
     effect(() => {
@@ -48,8 +55,8 @@ export class AppShellComponent {
     return 'free';
   }
 
-  protected openEinstellungen(): void {
-    this.einstellungenOpen.set(true);
+  protected openWorkspaceSwitcher(): void {
+    // workspace switcher — stub for Phase 3, full implementation in Phase 6
   }
 
   protected linkedInClick(): void {

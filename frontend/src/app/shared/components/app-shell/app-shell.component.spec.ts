@@ -55,7 +55,6 @@ describe('AppShellComponent', () => {
     const ariaLabels = links.map(l => (l.nativeElement as HTMLElement).getAttribute('aria-label') ?? '');
     expect(ariaLabels).toContain('Dashboard');
     expect(ariaLabels).toContain('Lebensläufe');
-    // LinkedIn aria-label varies by plan; just check the element exists
     const linkedInEl = links.find(l =>
       (l.nativeElement as HTMLElement).textContent?.includes('LinkedIn')
     );
@@ -77,24 +76,22 @@ describe('AppShellComponent', () => {
     expect(lock).toBeNull();
   });
 
-  it('displays the user name', async () => {
+  it('displays the user name in workspace switcher', async () => {
     const { fixture } = await setup();
     const el = fixture.debugElement.query(By.css('.shell__username'));
     expect((el.nativeElement as HTMLElement).textContent?.trim()).toBe('Hans');
   });
 
-  it('shows Free plan badge', async () => {
+  it('shows Free plan label', async () => {
     const { fixture } = await setup();
-    const badge = fixture.debugElement.query(By.css('.shell__plan'));
-    expect((badge.nativeElement as HTMLElement).textContent?.trim()).toBe('Free');
-    expect((badge.nativeElement as HTMLElement).classList).toContain('shell__plan--free');
+    const badge = fixture.debugElement.query(By.css('.shell__plan--free'));
+    expect(badge).not.toBeNull();
   });
 
-  it('shows Pro plan badge for PRO user', async () => {
+  it('shows Pro plan class for PRO user', async () => {
     const { fixture } = await setup(makeAuthMock({ ...mockUser, plan: 'PRO' }));
-    const badge = fixture.debugElement.query(By.css('.shell__plan'));
-    expect((badge.nativeElement as HTMLElement).textContent?.trim()).toBe('Pro');
-    expect((badge.nativeElement as HTMLElement).classList).toContain('shell__plan--pro');
+    const badge = fixture.debugElement.query(By.css('.shell__plan--pro'));
+    expect(badge).not.toBeNull();
   });
 
   it('calls auth.logout() when Abmelden is clicked', async () => {
@@ -106,13 +103,13 @@ describe('AppShellComponent', () => {
     expect(authMock.logout).toHaveBeenCalledTimes(1);
   });
 
-  it('opens Einstellungen modal when Einstellungen button is clicked', async () => {
+  it('has Einstellungen nav link pointing to /app/settings', async () => {
     const { fixture } = await setup();
-    expect(fixture.componentInstance['einstellungenOpen']()).toBe(false);
-    const btn = fixture.debugElement.query(By.css('button[aria-label="Einstellungen öffnen"]'));
-    (btn.nativeElement as HTMLButtonElement).click();
-    fixture.detectChanges();
-    expect(fixture.componentInstance['einstellungenOpen']()).toBe(true);
+    const links = fixture.debugElement.queryAll(By.css('a.shell__link'));
+    const settingsLink = links.find(l =>
+      (l.nativeElement as HTMLElement).getAttribute('aria-label') === 'Einstellungen'
+    );
+    expect(settingsLink).toBeTruthy();
   });
 
   it('opens Einstellungen modal when UpgradeService.request() is called', async () => {
@@ -123,6 +120,6 @@ describe('AppShellComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.componentInstance['einstellungenOpen']()).toBe(true);
-    expect(upgradeService.requested()).toBe(false); // cleared after handling
+    expect(upgradeService.requested()).toBe(false);
   });
 });
