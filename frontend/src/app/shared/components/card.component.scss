@@ -6,7 +6,14 @@
   box-shadow: var(--shadow-md);
   overflow: hidden;
 
-  &__body {
-    padding: var(--space-6);
+  &__header {
+    border-bottom: 1px solid var(--line);
+  }
+
+  &__title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
   }
 }

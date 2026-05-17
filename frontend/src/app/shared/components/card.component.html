@@ -1,6 +1,11 @@
 <article class="card">
+  @if (title()) {
+    <header class="card__header" [style.padding]="paddingPx()">
+      <h3 class="card__title">{{ title() }}</h3>
+    </header>
+  }
   <ng-content select="[slot=header]" />
-  <div class="card__body">
+  <div class="card__body" [style.padding]="paddingPx()">
     <ng-content />
   </div>
   <ng-content select="[slot=footer]" />

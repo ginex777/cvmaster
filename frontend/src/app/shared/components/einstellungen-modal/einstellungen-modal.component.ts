@@ -1,13 +1,12 @@
-import { ChangeDetectionStrategy, Component, HostListener, input, output, signal } from '@angular/core';
-import { BillingComponent } from '../../../features/billing/billing.component';
-import { SecurityComponent } from '../../../features/security/security.component';
-
-type Tab = 'abrechnung' | 'sicherheit';
+import { ChangeDetectionStrategy, Component, HostListener, inject, input, output } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/auth/auth.service';
+import { IconsModule } from '../../icons/icons.module';
 
 @Component({
   selector: 'lba-einstellungen-modal',
   standalone: true,
-  imports: [BillingComponent, SecurityComponent],
+  imports: [RouterLink, IconsModule],
   templateUrl: './einstellungen-modal.component.html',
   styleUrl: './einstellungen-modal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,18 +15,11 @@ export class EinstellungenModalComponent {
   readonly open = input(false);
   readonly closeModal = output<void>();
 
-  protected readonly activeTab = signal<Tab>('abrechnung');
+  protected readonly auth = inject(AuthService);
 
-  protected setTab(tab: Tab): void {
-    this.activeTab.set(tab);
-  }
-
-  protected onBackdropClick(): void {
+  protected async onLogout(): Promise<void> {
+    await this.auth.logout();
     this.closeModal.emit();
-  }
-
-  protected onDialogClick(event: MouseEvent): void {
-    event.stopPropagation();
   }
 
   @HostListener('document:keydown.escape')

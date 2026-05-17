@@ -1,7 +1,12 @@
 <button
   [class]="'btn btn--' + variant() + ' btn--' + size()"
-  [disabled]="disabled()"
-  [attr.aria-disabled]="disabled() ? 'true' : null"
+  [disabled]="disabled() || loading()"
+  [attr.aria-disabled]="(disabled() || loading()) ? 'true' : null"
+  [attr.aria-busy]="loading() ? 'true' : null"
   [type]="type()">
-  <ng-content />
+  @if (loading()) {
+    <lucide-icon name="loader-2" [size]="16" class="btn__spinner" aria-hidden="true"></lucide-icon>
+  } @else {
+    <ng-content />
+  }
 </button>

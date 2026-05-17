@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, input, output, signal } from '@angular/core';
+import { IconsModule } from '../../icons/icons.module';
 import { CvMiniPreviewClassic } from '../cv-mini-preview/cv-mini-preview-classic/cv-mini-preview-classic';
 import { CvMiniPreviewEditorial } from '../cv-mini-preview/cv-mini-preview-editorial/cv-mini-preview-editorial';
 import { CvMiniPreviewExecutive } from '../cv-mini-preview/cv-mini-preview-executive/cv-mini-preview-executive';
@@ -11,6 +12,7 @@ export type CvTemplate = 'classic' | 'modern' | 'editorial' | 'minimal' | 'execu
   selector: 'lba-cv-template-picker',
   standalone: true,
   imports: [
+    IconsModule,
     CvMiniPreviewClassic,
     CvMiniPreviewModern,
     CvMiniPreviewEditorial,
@@ -25,11 +27,31 @@ export class CvTemplatePicker {
   readonly template = input.required<CvTemplate>();
   readonly templateChange = output<CvTemplate>();
 
-  readonly options: Array<{ value: CvTemplate; label: string; description: string }> = [
-    { value: 'classic', label: 'Klassisch', description: 'Einspaltig und seriös' },
-    { value: 'modern', label: 'Modern', description: 'Sidebar mit klarer Struktur' },
-    { value: 'editorial', label: 'Editorial', description: 'Präsent und gestalterisch' },
-    { value: 'minimal', label: 'Minimal', description: 'Ruhig mit viel Weißraum' },
-    { value: 'executive', label: 'Executive', description: 'Senior Look mit Kopfbereich' },
+  readonly dropdownOpen = signal(false);
+
+  readonly options: Array<{ value: CvTemplate; label: string }> = [
+    { value: 'classic',   label: 'Klassisch' },
+    { value: 'modern',    label: 'Modern' },
+    { value: 'editorial', label: 'Editorial' },
+    { value: 'minimal',   label: 'Minimal' },
+    { value: 'executive', label: 'Executive' },
   ];
+
+  get currentLabel(): string {
+    return this.options.find(o => o.value === this.template())?.label ?? '';
+  }
+
+  toggleDropdown(): void {
+    this.dropdownOpen.update(v => !v);
+  }
+
+  select(value: CvTemplate): void {
+    this.templateChange.emit(value);
+    this.dropdownOpen.set(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.dropdownOpen.set(false);
+  }
 }

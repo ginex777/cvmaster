@@ -11,6 +11,9 @@
     aria-modal="true"
     aria-labelledby="editor-title"
     tabindex="-1">
+    <button type="button" class="modal-close" (click)="close()" aria-label="Editor schließen">
+      <lucide-icon name="x" [size]="16" aria-hidden="true"></lucide-icon>
+    </button>
     <lba-editor [appId]="currentAppId" (closeRequested)="close()" />
   </section>
 }

@@ -7,29 +7,41 @@
       aria-labelledby="upgrade-title"
       aria-describedby="upgrade-body"
       (click)="$event.stopPropagation()">
-      <p class="modal__eyebrow">Free-Limit</p>
-      <h2 id="upgrade-title">Dein Free-Limit ist erreicht</h2>
-      <p id="upgrade-body">
-        Du hast deine kostenlose Bewerbung bereits erstellt. Wahle einen Plan, um weitere Bewerbungen zu optimieren.
-      </p>
 
-      <div class="plan-grid" aria-label="Upgrade-Optionen">
-        <article>
-          <strong>Pay-per-App</strong>
-          <span>2,49 EUR pro Bewerbung</span>
-        </article>
-        <article class="plan-grid__popular">
-          <strong>Pro</strong>
-          <span>9,99 EUR pro Monat</span>
-        </article>
+      <div class="modal__glow" aria-hidden="true"></div>
+
+      <div class="modal__sparkles" aria-hidden="true">
+        <lucide-icon name="sparkles" [size]="28"></lucide-icon>
       </div>
 
-      <div class="modal__actions">
-        <button type="button" class="btn btn--ghost btn--md" (click)="dismissed.emit()">Vielleicht spater</button>
-        <button type="button" class="btn btn--cta btn--md" (click)="upgradeRequested.emit()">
-          Plan wahlen und upgraden
-        </button>
-      </div>
+      <p class="modal__eyebrow">Pro</p>
+      <h2 id="upgrade-title">Hol das Beste aus deinen Bewerbungen</h2>
+      <p id="upgrade-body">Upgrade auf Pro und bewirb dich öfter, schneller und erfolgreicher.</p>
+
+      <ul class="modal__features" aria-label="Pro-Features">
+        <li>
+          <lucide-icon name="check" [size]="15" aria-hidden="true"></lucide-icon>
+          Unbegrenzte Bewerbungen optimieren
+        </li>
+        <li>
+          <lucide-icon name="check" [size]="15" aria-hidden="true"></lucide-icon>
+          KI-Anschreiben für jede Stelle
+        </li>
+        <li>
+          <lucide-icon name="check" [size]="15" aria-hidden="true"></lucide-icon>
+          ATS-Score & Keyword-Analyse
+        </li>
+        <li>
+          <lucide-icon name="check" [size]="15" aria-hidden="true"></lucide-icon>
+          Erinnerungen & Pipeline-Tracker
+        </li>
+      </ul>
+
+      <button type="button" class="btn btn--cta btn--lg modal__cta" (click)="upgradeRequested.emit()">
+        Pro starten — 9,99 EUR / Monat
+      </button>
+
+      <button type="button" class="modal__dismiss" (click)="dismissed.emit()">Vielleicht später</button>
     </section>
   </div>
 }

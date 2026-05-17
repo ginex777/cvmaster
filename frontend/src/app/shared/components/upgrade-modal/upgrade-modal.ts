@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, HostListener, input, output } from '@angular/core';
+import { IconsModule } from '../../icons/icons.module';
 
 @Component({
   selector: 'lba-upgrade-modal',
+  imports: [IconsModule],
   templateUrl: './upgrade-modal.html',
   styleUrl: './upgrade-modal.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

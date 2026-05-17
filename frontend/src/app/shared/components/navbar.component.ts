@@ -16,7 +16,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   protected readonly scrolled = signal(false);
 
-  private readonly listener = () => this.scrolled.set(window.scrollY > 10);
+  private readonly listener = () => this.scrolled.set(window.scrollY > 50);
 
   ngOnInit(): void {
     if (typeof window === 'undefined') {

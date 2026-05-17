@@ -1,62 +1,50 @@
 @if (open()) {
-  <div
-    class="modal-backdrop"
-    (click)="onBackdropClick()"
-    aria-hidden="true"
-  ></div>
+  <div class="modal-backdrop" (click)="closeModal.emit()" aria-hidden="true"></div>
 
   <div
     class="modal-panel"
     role="dialog"
     aria-modal="true"
     aria-labelledby="einstellungen-title"
-    (click)="onDialogClick($event)"
-  >
+    (click)="$event.stopPropagation()">
+
     <div class="modal-header">
-      <h2 id="einstellungen-title" class="modal-title">Einstellungen</h2>
+      <h2 id="einstellungen-title" class="modal-title">Konto</h2>
       <button
         type="button"
         class="modal-close btn btn--ghost btn--sm"
         (click)="closeModal.emit()"
-        aria-label="Schließen"
-      >✕</button>
+        aria-label="Schließen">
+        <lucide-icon name="x" [size]="16" aria-hidden="true"></lucide-icon>
+      </button>
     </div>
 
-    <div class="modal-tabs" role="tablist" aria-label="Einstellungen-Bereiche">
-      <button
-        type="button"
-        role="tab"
-        id="tab-abrechnung"
-        aria-controls="einstellungen-panel"
-        class="modal-tab"
-        [class.is-active]="activeTab() === 'abrechnung'"
-        [attr.aria-selected]="activeTab() === 'abrechnung'"
-        (click)="setTab('abrechnung')"
-      >Abrechnung</button>
-      <button
-        type="button"
-        role="tab"
-        id="tab-sicherheit"
-        aria-controls="einstellungen-panel"
-        class="modal-tab"
-        [class.is-active]="activeTab() === 'sicherheit'"
-        [attr.aria-selected]="activeTab() === 'sicherheit'"
-        (click)="setTab('sicherheit')"
-      >Sicherheit</button>
+    <div class="modal-body">
+      <section class="profile-section" aria-label="Profil">
+        <div class="profile-avatar" aria-hidden="true">
+          {{ (auth.user()?.name ?? 'U').charAt(0).toUpperCase() }}
+        </div>
+        <div class="profile-info">
+          <p class="profile-name">{{ auth.user()?.name ?? '—' }}</p>
+          <p class="profile-email">{{ auth.user()?.email ?? '—' }}</p>
+        </div>
+      </section>
+
+      <a
+        routerLink="/app/settings"
+        class="settings-link"
+        (click)="closeModal.emit()">
+        <lucide-icon name="settings" [size]="15" aria-hidden="true"></lucide-icon>
+        Alle Einstellungen öffnen
+        <lucide-icon name="chevron-right" [size]="14" aria-hidden="true" class="settings-link__chevron"></lucide-icon>
+      </a>
     </div>
 
-    <div
-      class="modal-body"
-      role="tabpanel"
-      id="einstellungen-panel"
-      [attr.aria-labelledby]="activeTab() === 'abrechnung' ? 'tab-abrechnung' : 'tab-sicherheit'"
-    >
-      @if (activeTab() === 'abrechnung') {
-        <lba-billing />
-      }
-      @if (activeTab() === 'sicherheit') {
-        <lba-security />
-      }
+    <div class="modal-footer">
+      <button type="button" class="btn btn--danger btn--md" (click)="onLogout()">
+        <lucide-icon name="log-out" [size]="15" aria-hidden="true"></lucide-icon>
+        Abmelden
+      </button>
     </div>
   </div>
 }

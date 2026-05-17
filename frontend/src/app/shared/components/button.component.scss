@@ -1,3 +1,16 @@
 :host {
   display: contents;
 }
+
+.btn__spinner {
+  animation: btn-spin 1s linear infinite;
+}
+
+@keyframes btn-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn__spinner { animation: none; }
+}

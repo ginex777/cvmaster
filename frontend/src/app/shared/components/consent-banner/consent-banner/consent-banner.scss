@@ -12,23 +12,29 @@
   box-shadow: var(--shadow-md);
   font: inherit;
   font-size: 0.875rem;
-  font-weight: 800;
+  font-weight: 600;
   cursor: pointer;
+
+  &:hover { border-color: var(--accent); color: var(--accent); }
+  &:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 }
 
 .consent-panel {
   position: fixed;
-  right: var(--space-4);
-  bottom: calc(var(--space-4) + 56px);
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 61;
-  display: grid;
-  width: min(520px, calc(100vw - var(--space-8)));
-  gap: var(--space-5);
-  padding: var(--space-6);
+  max-width: 720px;
+  width: calc(100% - 40px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 16px 20px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
   color: var(--ink);
 
   h2,
@@ -37,29 +43,41 @@
   }
 
   h2 {
-    font-size: 1.25rem;
-    font-weight: 850;
+    font-size: 0.9375rem;
+    font-weight: 700;
     line-height: 1.2;
+    margin-bottom: var(--space-1);
   }
 
-  p:not(.consent-panel__eyebrow) {
+  p {
     color: var(--ink-2);
-    line-height: 1.6;
+    font-size: 0.8125rem;
+    line-height: 1.5;
   }
 }
 
-.consent-panel__eyebrow {
-  margin-bottom: var(--space-2);
+.consent-panel__icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: color-mix(in oklch, var(--accent), transparent 88%);
+  border: 1px solid color-mix(in oklch, var(--accent), transparent 65%);
   color: var(--accent);
-  font-size: 0.75rem;
-  font-weight: 850;
-  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.consent-panel__content {
+  flex: 1;
+  min-width: 0;
 }
 
 .consent-panel__actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  flex-shrink: 0;
 }
 
 @media (max-width: 640px) {
@@ -69,13 +87,13 @@
   }
 
   .consent-panel {
-    right: var(--space-3);
-    bottom: calc(var(--space-3) + 56px);
-    width: calc(100vw - var(--space-6));
-    padding: var(--space-4);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
   }
 
   .consent-panel__actions {
+    width: 100%;
     flex-direction: column;
   }
 }

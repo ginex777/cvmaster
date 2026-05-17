@@ -1002,7 +1002,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 - **Aufgabe:** Dot auf 5×5 px, Pill-Padding `2px 7px` für sm, `3px 9px` für md, `border-radius: 5px`, `font-weight: 500`, `font-size: 11px` (sm) / `12px` (md).
 - **Verifikation:** Pill-Größe und Dot passen zum Mockup.
 
-## ☐ SH-02 · Score-Ring: Stroke-Cap & Schwellen
+## ✅ SH-02 · Score-Ring: Stroke-Cap & Schwellen
 
 - **📐 JSX-Quelle:** `redesign/shared.jsx` → `ScoreRing`-Komponente (strokeLinecap round, Track in `var(--line)`, Center-Text mit tabular-nums).
 - **Dateien:** `score-ring.component.{ts,html,scss}`
@@ -1017,7 +1017,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   5. Center-Text: `font-weight: 600`, `font-variant-numeric: tabular-nums`. Size-Anpassung: 14 px für ≥50, 12 px für <50.
 - **Verifikation:** ScoreRing 88 → grüner Ring + 88. ScoreRing 55 → warmer Ring + 55.
 
-## ☐ SH-03 · AppShell: Plan-Usage-Bar zwei Stellen entdoppeln
+## ✅ SH-03 · AppShell: Plan-Usage-Bar zwei Stellen entdoppeln
 
 - **📐 JSX-Quelle:** `redesign/shared.jsx` → `Sidebar` → Plan-Usage-Karte (Plan-Label nur 1× oben, unten nur „Free" + Upgrade-Link).
 - **Dateien:** `app-shell.component.html`
@@ -1025,7 +1025,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 - **Aufgabe:** Plan-Label nur einmal (oben). Unten nur „Free" + Upgrade-Link bzw. wegfallen wenn nicht Free.
 - **Verifikation:** Sidebar-Bottom zeigt Plan-Label nur einmal.
 
-## ☐ SH-04 · AppShell: Workspace-Switcher Avatar-Farbe
+## ✅ SH-04 · AppShell: Workspace-Switcher Avatar-Farbe
 
 - **📐 JSX-Quelle:** `redesign/shared.jsx` → `Sidebar` → Workspace-Switcher-Avatar (im Mockup hartkodiert Accent, in Echtform deterministischer Hash). Palette: gleich wie `CompanyLogo` in `shared.jsx`.
 - **Dateien:** `app-shell.component.scss`
@@ -1042,7 +1042,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Vorherige Crumbs: `color: var(--ink-3); font-weight: 400`.
 - **Verifikation:** Auf `/app/applications` zeigt TopBar „Workspace › Bewerbungen" mit Chevron + letztem Crumb in voller Schwärze.
 
-## ☐ SH-06 · Command-Palette: Dynamische App+CV-Suche
+## ✅ SH-06 · Command-Palette: Dynamische App+CV-Suche
 
 - **📐 JSX-Quelle:** kein expliziter Mockup. Pattern: `<dialog>` mit Fuzzy-Suche, Items in zwei Sektionen.
 - **Dateien:** `command-palette.{ts,html}`
@@ -1054,7 +1054,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   4. Klick auf Bewerbung → öffnet Editor-Modal mit App-ID. Klick auf CV → navigiert `/app/cvs?highlight={id}`.
 - **Verifikation:** ⌘K → „str" → zeigt Stripe-Bewerbung in „Bewerbungen"-Sektion.
 
-## ☐ SH-07 · Pipeline-Toolbar: Filter-Chips
+## ✅ SH-07 · Pipeline-Toolbar: Filter-Chips
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `PipelineScreen` → Filter-Strip oben (Filter-Btn + Chips „Alle Stati", „Score ≥ 80", „Mit Erinnerung" + Count rechts).
 - **Dateien:** `pipeline-toolbar.{html,ts,scss}`
@@ -1069,7 +1069,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   5. Count-Anzeige ganz rechts: „{n} Bewerbungen".
 - **Verifikation:** Chip-Klick filtert Board sichtbar.
 
-## ☐ SH-08 · Cover-Letter-Tone-Picker
+## ✅ SH-08 · Cover-Letter-Tone-Picker
 
 - **📐 JSX-Quelle:** `redesign/screen-editor.jsx` → `EditorScreen` → Letter-Variant-Tabs (3 Cards: Formal/Warm/Kurz, Selected mit Accent-Border + Dot oben rechts).
 - **Dateien:** `cover-letter-tone-picker.{html,scss,ts}`
@@ -1079,7 +1079,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   - Klick wechselt Tone
 - **Verifikation:** 3 visuell unterschiedliche Cards (Formal/Warm/Kurz), Auswahl markiert eine.
 
-## ☐ SH-09 · CV-Mini-Preview-Components
+## ✅ SH-09 · CV-Mini-Preview-Components
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `CvsScreen` → Preview-Block (Mockup zeigt Modern-Style; Classic/Editorial/Executive/Minimal sind Varianten davon).
 - **Dateien:** je `cv-mini-preview-{modern,classic,editorial,executive,minimal}.{html,scss,ts}`
@@ -1094,7 +1094,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Container: `background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-radius: 3px; padding: 12px 14px; font-size: 6.5px; line-height: 1.5`.
 - **Verifikation:** Master-CVs-Seite zeigt 5 visuell deutlich unterscheidbare Templates.
 
-## ☐ SH-10 · ATS-Panel Tab-Inhalt
+## ✅ SH-10 · ATS-Panel Tab-Inhalt
 
 - **📐 JSX-Quelle:** `redesign/screens-marketing.jsx` → `LandingScreen` → Editor-Peek Right-Pane (Score-Ring 42 + Treffer-Tags grün + Lücken-Tags rot + Vorschlag-Card). Vollformat-Version für Editor: gleiche Bausteine in größer.
 - **Dateien:** `ats-panel.{html,scss,ts}`
@@ -1106,7 +1106,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   5. Diff-View (vorhanden) bekommt klare Vorher/Nachher-Spalten in `--ink-3` / `--good`.
 - **Verifikation:** Editor → Analyse-Tab zeigt vollständigen Match-Report.
 
-## ☐ SH-11 · KeywordBar Lucide-Check
+## ✅ SH-11 · KeywordBar Lucide-Check
 
 - **📐 JSX-Quelle:** `redesign/screen-editor.jsx` → `EditorScreen` → Skills-Section mit Match-Pills (Check-Icon + Label) + Miss-Pills + Plus-Add-Btn mit dashed Border.
 - **Dateien:** `keyword-bar.component.{html,scss}`
@@ -1124,14 +1124,14 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   4. Initialen: max 2 Letters, uppercase.
 - **Verifikation:** Stripe → blau/violett, Figma → orange-ish, Notion → magenta-pink etc. Konsistent zwischen Refreshs.
 
-## ☐ SH-13 · Confirm-Delete-Modal Icon
+## ✅ SH-13 · Confirm-Delete-Modal Icon
 
 - **📐 JSX-Quelle:** kein Mockup, einfaches Modal-Pattern.
 - **Dateien:** `confirm-delete-modal.{html,scss}`
 - **Aufgabe:** Vor dem Title ein `<lucide-icon name="alert-circle" [size]="24">` in `--bad`-Color. Confirm-Btn als `btn--danger`.
 - **Verifikation:** Löschen-Modal zeigt Warn-Icon + roten Confirm-Btn.
 
-## ☐ SH-14 · Upgrade-Modal Polish
+## ✅ SH-14 · Upgrade-Modal Polish
 
 - **📐 JSX-Quelle:** kein Mockup. Pattern: Sparkles-Capsule + Check-Bullets + Accent-Glow oben + CTA `btn--cta btn--lg`.
 - **Dateien:** `upgrade-modal.{html,scss}`
@@ -1142,7 +1142,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   4. CTA `btn--cta btn--lg` full-width „Pro starten".
 - **Verifikation:** Modal sieht aus wie eine kleine Pricing-Card.
 
-## ☐ SH-15 · Einstellungen-Modal Slim
+## ✅ SH-15 · Einstellungen-Modal Slim
 
 - **📐 JSX-Quelle:** kein Mockup.
 - **Dateien:** `einstellungen-modal.component.{html,scss,ts}`
@@ -1152,7 +1152,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   - „Abmelden" Button (Danger)
 - **Verifikation:** Sidebar-Profil-Klick öffnet schlankes Modal.
 
-## ☐ SH-16 · CV-Template-Picker Visual
+## ✅ SH-16 · CV-Template-Picker Visual
 
 - **📐 JSX-Quelle:** `redesign/screen-editor.jsx` → `EditorScreen` → Outline-Rail-Bottom Template-Section (20×26 Mini-Thumbnail + Name + Sub + ChevronDown).
 - **Dateien:** `cv-template-picker.{html,scss,ts}`
@@ -1164,7 +1164,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
      - Selected: 2px Accent-Border + Check-Dot oben rechts
 - **Verifikation:** Click auf Picker zeigt visuelle Auswahl mit Thumbnails.
 
-## ☐ SH-17 · Editor-Modal Größe
+## ✅ SH-17 · Editor-Modal Größe
 
 - **📐 JSX-Quelle:** kein Mockup, Standard-Modal-Pattern.
 - **Dateien:** `editor-modal.{html,scss}`
@@ -1175,7 +1175,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   - Backdrop: `background: rgba(15, 18, 32, 0.5); backdrop-filter: blur(8px)`.
 - **Verifikation:** Modal nimmt fast Viewport, Backdrop blurt Dashboard.
 
-## ☐ SH-18 · Consent-Banner Refresh
+## ✅ SH-18 · Consent-Banner Refresh
 
 - **📐 JSX-Quelle:** kein Mockup. Pattern: schwebende Card unten zentriert.
 - **Dateien:** `consent-banner/consent-banner/consent-banner.{html,scss}`
@@ -1186,7 +1186,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   4. Lucide `cookie` oder `shield-check` Icon links als Capsule.
 - **Verifikation:** Banner schwebt unten, schließt nach Akzept.
 
-## ☐ SH-19 · Navbar Scroll-State
+## ✅ SH-19 · Navbar Scroll-State
 
 - **📐 JSX-Quelle:** `redesign/screens-marketing.jsx` → `LandingScreen` → Header-Bereich oben (Brand + Links + Login/Register-Buttons).
 - **Dateien:** `navbar.component.{html,scss,ts}`
@@ -1203,14 +1203,14 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 - **Aufgabe:** Alle hex-Werte ersetzen durch CSS-Variablen. Sektionen-Headlines in `--ink-3` Mono. Links in `--ink-2` hover `--ink`.
 - **Verifikation:** Footer auf Landing/Pricing/FAQ konsistent.
 
-## ☐ SH-21 · Card-Component Token-Padding
+## ✅ SH-21 · Card-Component Token-Padding
 
 - **📐 JSX-Quelle:** `redesign/shared.jsx` → `Panel`-Komponente (Header + padding-Variable).
 - **Dateien:** `card.component.{html,scss,ts}`
 - **Aufgabe:** Inputs: `padding?: 'sm'|'md'|'lg'` (= 14 / 20 / 28 px). Default `md`. `title?` rendert Header mit Border-Bottom.
 - **Verifikation:** Card mit Title rendert Header + Padding-Steuerung.
 
-## ☐ SH-22 · Button-Component Loading-State
+## ✅ SH-22 · Button-Component Loading-State
 
 - **📐 JSX-Quelle:** `redesign/shared.jsx` → `Btn`-Komponente (alle Varianten + Größen). Loading-State ist kein direkter Mockup, Standard-Spinner-Pattern.
 - **Dateien:** `button.component.{html,scss,ts}`
@@ -1220,7 +1220,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Button auto-disabled.
 - **Verifikation:** `[loading]="true"` zeigt Spinner statt Text.
 
-## ☐ SH-23 · Pill-Component Variant-Erweiterung
+## ✅ SH-23 · Pill-Component Variant-Erweiterung
 
 - **📐 JSX-Quelle:** `redesign/shared.jsx` → `StatusPill` + `ScorePill` als Referenz für Pill-Pattern.
 - **Dateien:** `pill.component.{html,scss,ts}`

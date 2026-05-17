@@ -1,11 +1,12 @@
 import { DOCUMENT } from '@angular/common';
 import type { OnDestroy } from '@angular/core';
 import { ChangeDetectionStrategy, Component, ElementRef, effect, inject, input, output } from '@angular/core';
+import { IconsModule } from '../../../shared/icons/icons.module';
 import { EditorComponent } from '../editor.component';
 
 @Component({
   selector: 'lba-editor-modal',
-  imports: [EditorComponent],
+  imports: [EditorComponent, IconsModule],
   templateUrl: './editor-modal.html',
   styleUrl: './editor-modal.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,3 +1,6 @@
 <span [class]="'pill pill--' + color()" role="status">
+  @if (color() === 'pro' && showLock()) {
+    <lucide-icon name="lock" [size]="10" aria-hidden="true" class="pill__icon"></lucide-icon>
+  }
   <ng-content />
 </span>

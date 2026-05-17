@@ -4,23 +4,23 @@
 
 @if (consent.needsBanner()) {
   <section class="consent-panel" role="dialog" aria-modal="false" aria-labelledby="consent-title">
-    <div>
-      <p class="consent-panel__eyebrow">Datenschutz</p>
-      <h2 id="consent-title">Support-Cookies verwalten</h2>
+    <div class="consent-panel__icon" aria-hidden="true">
+      <lucide-icon name="shield-check" [size]="22"></lucide-icon>
+    </div>
+
+    <div class="consent-panel__content">
+      <h2 id="consent-title">Datenschutz &amp; Cookies</h2>
       <p>
         Notwendige Cookies sichern Login und CSRF-Schutz. Support-Chat laden wir nur, wenn du ihn erlaubst.
       </p>
     </div>
 
     <div class="consent-panel__actions" aria-label="Cookie-Auswahl">
-      <button type="button" class="btn btn--primary btn--md" (click)="consent.acceptAll()">
-        Alle akzeptieren
-      </button>
       <button type="button" class="btn btn--outline btn--md" (click)="consent.acceptNecessary()">
         Nur notwendige
       </button>
-      <button type="button" class="btn btn--ghost btn--md" (click)="consent.revoke()">
-        Widerrufen
+      <button type="button" class="btn btn--primary btn--md" (click)="consent.acceptAll()">
+        Alle akzeptieren
       </button>
     </div>
   </section>

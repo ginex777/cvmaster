@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { IconsModule } from '../icons/icons.module';
 
 export type ButtonVariant = 'cta' | 'primary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize    = 'sm' | 'md' | 'lg';
@@ -6,7 +7,7 @@ export type ButtonSize    = 'sm' | 'md' | 'lg';
 @Component({
   selector: 'lba-button',
   standalone: true,
-  imports: [],
+  imports: [IconsModule],
   templateUrl: './button.component.html',
   styleUrl: './button.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,5 +16,6 @@ export class ButtonComponent {
   variant  = input<ButtonVariant>('primary');
   size     = input<ButtonSize>('md');
   disabled = input(false);
+  loading  = input(false);
   type     = input<'button' | 'submit' | 'reset'>('button');
 }
