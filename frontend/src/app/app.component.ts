@@ -25,6 +25,13 @@ export class AppComponent {
       return;
     }
 
+    // Restore SPA route after 404.html redirect
+    const redirectPath = sessionStorage.getItem('spaRedirect');
+    if (redirectPath && redirectPath !== '/') {
+      sessionStorage.removeItem('spaRedirect');
+      void this.router.navigateByUrl(redirectPath, { replaceUrl: true });
+    }
+
     this.router.events
       .pipe(
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),

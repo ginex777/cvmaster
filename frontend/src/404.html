@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <title>Hireflow AI — KI-Bewerbungsagent</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Redirect all unknown paths back to the SPA root so Angular's router can handle them -->
+  <script>
+    // Preserve the path and query so the Angular router can match the route after bootstrap
+    var path = window.location.pathname + window.location.search + window.location.hash;
+    sessionStorage.setItem('spaRedirect', path);
+    window.location.replace('/');
+  </script>
+</head>
+<body></body>
+</html>
