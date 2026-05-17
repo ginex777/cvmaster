@@ -1,0 +1,38 @@
+@if (mode() === 'overlay') {
+  <ng-content />
+  <div
+    class="pro-lock__overlay"
+    role="button"
+    tabindex="0"
+    [attr.aria-label]="tooltip()"
+    (click)="unlock()"
+    (keydown.enter)="unlock()"
+    (keydown.space)="unlock()"
+  >
+    <div class="pro-lock__card" role="dialog" aria-modal="false">
+      <div class="pro-lock__icon-wrap" aria-hidden="true">
+        <lucide-icon name="lock" [size]="20"></lucide-icon>
+      </div>
+      <p class="pro-lock__heading">Pro-Funktion</p>
+      <p class="pro-lock__desc">{{ tooltip() }}</p>
+      <button
+        type="button"
+        class="pro-lock__cta"
+        (click)="$event.stopPropagation(); unlock()"
+      >
+        Auf Pro upgraden
+      </button>
+    </div>
+  </div>
+} @else {
+  <button
+    type="button"
+    class="pro-lock__pill"
+    [attr.aria-label]="tooltip()"
+    [attr.title]="tooltip()"
+    (click)="unlock()"
+  >
+    <lucide-icon name="lock" [size]="11" aria-hidden="true"></lucide-icon>
+    <span>PRO</span>
+  </button>
+}
