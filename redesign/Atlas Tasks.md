@@ -1404,7 +1404,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 - **Aufgabe:** Komplett-Entfernung. Try-Flow lebt nur im Landing-Modal.
 - **Verifikation:** `/try` → 404. Try-Modal von Landing funktioniert.
 
-## ☐ OT-12 · Pro-Lock Einheitliches Pattern
+## ✅ OT-12 · Pro-Lock Einheitliches Pattern
 
 - **Dateien:** `shared/components/pro-lock/pro-lock.{ts,html,scss}` (NEU)
 - **Aufgabe:**
@@ -1415,7 +1415,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   5. Click triggert `<lba-upgrade-modal>` via `UpgradeService`.
 - **Verifikation:** Sidebar-LinkedIn + Editor-Letter-Varianten + LinkedIn-Page nutzen dasselbe Pattern.
 
-## ☐ OT-13 · Legal-Component.scss tot
+## ✅ OT-13 · Legal-Component.scss tot
 
 - **Dateien:** `features/legal/legal.component.scss`
 - **Aufgabe:** Datei hat kein TS-Pendant — entweder löschen oder Inhalt in privacy/terms/imprint integrieren.
@@ -1870,8 +1870,8 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | OT-09 | Legal-Type-Scale | K | ✅ |
 | OT-10 | Onboarding-Modal | K | ✅ |
 | OT-11 | /try löschen | K | ✅ |
-| OT-12 | Pro-Lock Pattern | K | ☐ |
-| OT-13 | legal.component.scss tot | K | ☐ |
+| OT-12 | Pro-Lock Pattern | K | ✅ |
+| OT-13 | legal.component.scss tot | K | ✅ |
 | R-01 | app.routes vollständig | L | ✅ |
 | R-02 | CommandPalette wiring | L | ✅ |
 | R-03 | Status-Mapper | L | ✅ |
