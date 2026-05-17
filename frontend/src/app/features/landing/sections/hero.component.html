@@ -41,102 +41,65 @@
       <span>4.7 / 5</span>
     </div>
 
-    <div class="app-preview" [lbaReveal]="300" aria-label="Produktvorschau Wizard und Editor">
-      <div class="preview-sidebar">
-        <div class="preview-sidebar__brand">Bewerbungs-Wizard</div>
-        <div class="preview-item preview-item--active">
-          <span aria-hidden="true">1</span>
-          Lebenslauf
+    <div class="editor-peek" [lbaReveal]="300" aria-label="Produktvorschau Editor">
+      <div class="editor-peek__tab-bar" aria-hidden="true">
+        <div class="editor-peek__dots">
+          <span class="editor-peek__dot editor-peek__dot--red"></span>
+          <span class="editor-peek__dot editor-peek__dot--yellow"></span>
+          <span class="editor-peek__dot editor-peek__dot--green"></span>
         </div>
-        <div class="preview-item">
-          <span aria-hidden="true">2</span>
-          Stelle
-        </div>
-        <div class="preview-item">
-          <span aria-hidden="true">3</span>
-          KI-Entwurf
-        </div>
-        <div class="preview-item preview-item--current">
-          <span aria-hidden="true">4</span>
-          Editor
-        </div>
+        <span class="editor-peek__tab-title">Stripe — Frontend Developer</span>
+        <span class="editor-peek__ats-pill">ATS-optimiert</span>
       </div>
 
-      <div class="preview-doc">
-        <div class="doc-toolbar" aria-hidden="true">
-          <span>Template Modern</span>
-          <span>CV PDF</span>
-          <span>Anschreiben PDF</span>
-        </div>
-
-        <div class="doc-title">
-          <span>Optimierter Lebenslauf</span>
-          <strong>Frontend Developer</strong>
-        </div>
-
-        <div class="editor-block">
-          <h2>Profil</h2>
-          <p>
-            Angular-Entwicklerin mit Fokus auf barrierefreie SaaS-Oberflächen,
-            sichere API-Integrationen und messbare Conversion-Verbesserungen.
+      <div class="editor-peek__body">
+        <div class="editor-peek__content">
+          <p class="editor-peek__section-label">PROFIL</p>
+          <p class="editor-peek__text">
+            Angular-Entwicklerin mit Fokus auf
+            <mark class="editor-peek__mark">React</mark>,
+            <mark class="editor-peek__mark">TypeScript</mark> und
+            <mark class="editor-peek__mark">Accessibility</mark> —
+            maßgeschneiderte Lösungen für modernes Frontend.
           </p>
+          <p class="editor-peek__section-label">ERFAHRUNG</p>
+          <p class="editor-peek__company">Mediahaus GmbH · Frontend Developer</p>
+          <p class="editor-peek__text">Checkout-Flow mit Angular, NestJS und Webhooks produktionsreif ausgeliefert.</p>
         </div>
 
-        <div class="editor-block editor-block--highlight">
-          <h2>Erfahrung</h2>
-          <p>Mediahaus GmbH · Frontend Developer</p>
-          <ul>
-            <li>Checkout-Flow mit Angular, NestJS und Webhooks produktionsreif ausgeliefert.</li>
-            <li>Design-System Komponenten auf WCAG 2.2 AAA Kontrast geprüft.</li>
-          </ul>
-        </div>
-
-        <div class="letter-variants" aria-label="Anschreiben Varianten">
-          <article>
-            <strong>Formal</strong>
-            <span>Ausgewählt</span>
-          </article>
-          <article>
-            <strong>Warm</strong>
-            <span>Alternative</span>
-          </article>
-          <article>
-            <strong>Kurz</strong>
-            <span>Alternative</span>
-          </article>
-        </div>
-      </div>
-
-      <div class="preview-panel">
-        <div class="match-score">
-          <span>Match Report</span>
-          <strong>88%</strong>
-        </div>
-
-        <h2>Keyword Treffer</h2>
-        <div class="keyword-list" aria-hidden="true">
-          <span>Angular</span>
-          <span>TypeScript</span>
-          <span>Accessibility</span>
-          <span>NestJS</span>
-        </div>
-
-        <h2>Noch offen</h2>
-        <div class="keyword-list keyword-list--missing" aria-hidden="true">
-          <span>RxJS</span>
-          <span>Testing Library</span>
-        </div>
-
-        <div class="suggestion">
-          <strong>Vorschlag</strong>
-          <p>Füge RxJS und automatisierte Tests in der Erfahrung ein. Die Stelle nennt beides als Muss-Kriterium.</p>
-          <div>
-            <button class="mini-button mini-button--primary" type="button" (click)="optimizeRequested.emit()">
-              Übernehmen
-            </button>
-            <button class="mini-button" type="button" (click)="optimizeRequested.emit()">Verwerfen</button>
+        <div class="editor-peek__score-side">
+          <div class="editor-peek__score-ring" aria-label="Match-Score 88 Prozent">
+            <span>88%</span>
+          </div>
+          <p class="editor-peek__section-label">TREFFER</p>
+          <div class="editor-peek__tags">
+            <span class="editor-peek__tag editor-peek__tag--ok">React</span>
+            <span class="editor-peek__tag editor-peek__tag--ok">TypeScript</span>
+            <span class="editor-peek__tag editor-peek__tag--ok">A11y</span>
+          </div>
+          <p class="editor-peek__section-label">LÜCKEN</p>
+          <div class="editor-peek__tags">
+            <span class="editor-peek__tag editor-peek__tag--warn">RxJS</span>
+            <span class="editor-peek__tag editor-peek__tag--warn">Testing</span>
+          </div>
+          <div class="editor-peek__suggestion">
+            <strong>Vorschlag</strong>
+            <p>RxJS und Testing Library ergänzen.</p>
           </div>
         </div>
+      </div>
+
+      <div class="editor-peek__letter-card" aria-hidden="true">
+        <div class="editor-peek__letter-header">
+          <lucide-icon name="mail" [size]="13"></lucide-icon>
+          <span>Anschreiben · Formal</span>
+        </div>
+        <div class="editor-peek__letter-variants">
+          <span class="editor-peek__letter-variant editor-peek__letter-variant--active">Formal</span>
+          <span class="editor-peek__letter-variant">Warm</span>
+          <span class="editor-peek__letter-variant">Kurz</span>
+        </div>
+        <p class="editor-peek__letter-text">Sehr geehrte Damen und Herren, mit großem Interesse bewerbe ich mich auf die ausgeschriebene Stelle als Frontend Developer bei Stripe.</p>
       </div>
     </div>
   </div>
