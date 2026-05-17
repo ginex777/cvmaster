@@ -1434,7 +1434,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   - `/try`, `/app/billing`, `/app/security` **fehlen**
 - **Verifikation:** Alle obigen Routen erreichbar, alte 404 / nicht definiert.
 
-## ☐ R-02 · CommandPalette in app.component
+## ✅ R-02 · CommandPalette in app.component
 
 - **Dateien:** `app.component.{html,ts}`
 - **Aufgabe:** `<lba-command-palette>` außerhalb `<router-outlet>` mounten. Global ⌘K / Ctrl+K Listener im AppComponent.
@@ -1873,7 +1873,7 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | OT-12 | Pro-Lock Pattern | K | ☐ |
 | OT-13 | legal.component.scss tot | K | ☐ |
 | R-01 | app.routes vollständig | L | ✅ |
-| R-02 | CommandPalette wiring | L | ☐ |
+| R-02 | CommandPalette wiring | L | ✅ |
 | R-03 | Status-Mapper | L | ☐ |
 | BE-01 | Status-Migration | M | ☐ |
 | BE-02 | API-Validierung | M | ☐ |
