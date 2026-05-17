@@ -2,7 +2,23 @@ import { expect, test } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-const routes = ['/app', '/app/cvs', '/app/wizard', '/app/applications/a1', '/app/billing'];
+const publicRoutes = ['/', '/preise', '/login', '/register', '/faq'];
+
+const appRoutes = [
+  '/app',
+  '/app/applications',
+  '/app/pipeline',
+  '/app/cvs',
+  '/app/wizard',
+  '/app/applications/a1',
+  '/app/settings',
+  '/app/settings/billing',
+  '/app/settings/security',
+  '/app/settings/data',
+  '/app/linkedin',
+];
+
+const allRoutes = [...publicRoutes, ...appRoutes];
 
 interface AxeResult {
   violations: unknown[];
@@ -17,6 +33,7 @@ declare global {
 }
 
 test.beforeEach(async ({ page }) => {
+  // Auth
   await page.route('**/api/auth/refresh', route => route.fulfill({
     json: {
       accessToken: 'test-access-token',
@@ -26,11 +43,13 @@ test.beforeEach(async ({ page }) => {
         name: 'Lina',
         plan: 'PRO',
         emailVerified: true,
-        twoFactorEnabled: true,
+        twoFactorEnabled: false,
+        onboardingShown: true,
       },
     },
   }));
 
+  // Dashboard + Applications list
   await page.route('**/api/users/me/dashboard', route => route.fulfill({
     json: {
       cvCount: 1,
@@ -39,7 +58,7 @@ test.beforeEach(async ({ page }) => {
       recentApplications: [
         {
           id: 'a1',
-          status: 'OPEN',
+          status: 'APPLIED',
           matchScore: 88,
           createdAt: '2026-05-13T10:00:00.000Z',
           jobPosting: { parsedJson: { title: 'Frontend Developer', company: 'Acme' } },
@@ -48,6 +67,37 @@ test.beforeEach(async ({ page }) => {
     },
   }));
 
+  // Applications list
+  await page.route('**/api/applications', route => route.fulfill({
+    json: [
+      {
+        id: 'a1',
+        status: 'APPLIED',
+        matchScore: 88,
+        generationProgress: 100,
+        createdAt: '2026-05-13T10:00:00.000Z',
+        jobPosting: { parsedJson: { title: 'Frontend Developer', company: 'Acme' } },
+      },
+    ],
+  }));
+
+  // Single application
+  await page.route('**/api/applications/a1', route => route.fulfill({
+    json: {
+      id: 'a1',
+      status: 'APPLIED',
+      matchScore: 88,
+      generationProgress: 100,
+      optimizedCv: { sections: [{ heading: 'Profil', lines: ['Angular, NestJS, Accessibility'] }] },
+      coverLetter: { formal: 'Sehr geehrte Damen und Herren', warm: 'Hallo Acme Team', brief: 'Kurz und passend' },
+      chosenVariant: 'formal',
+      matchReport: { summary: 'Sehr passend', keywords: ['Angular'], missingKeywords: ['RxJS'] },
+      masterCv: { template: 'modern' },
+      jobPosting: { parsedJson: { title: 'Frontend Developer', company: 'Acme', keywords: ['Angular'] } },
+    },
+  }));
+
+  // CVs
   await page.route('**/api/cvs', route => route.fulfill({
     json: [
       {
@@ -62,23 +112,15 @@ test.beforeEach(async ({ page }) => {
     ],
   }));
 
-  await page.route('**/api/applications/a1', route => route.fulfill({
-    json: {
-      id: 'a1',
-      status: 'OPEN',
-      matchScore: 88,
-      optimizedCv: { sections: [{ heading: 'Profil', lines: ['Angular, NestJS, Accessibility'] }] },
-      coverLetter: { formal: 'Sehr geehrte Damen und Herren', warm: 'Hallo Acme Team', brief: 'Kurz und passend' },
-      chosenVariant: 'formal',
-      matchReport: { summary: 'Sehr passend', keywords: ['Angular'], missingKeywords: ['RxJS'] },
-      masterCv: { template: 'modern' },
-      jobPosting: { parsedJson: { title: 'Frontend Developer', company: 'Acme', keywords: ['Angular'] } },
-    },
-  }));
+  // Settings: security sessions
+  await page.route('**/api/users/me/sessions', route => route.fulfill({ json: [] }));
+
+  // Settings: data consents
+  await page.route('**/api/users/me/consents', route => route.fulfill({ json: [] }));
 });
 
-for (const route of routes) {
-  test(`authenticated route has no axe violations: ${route}`, async ({ page }, testInfo) => {
+for (const route of allRoutes) {
+  test(`route has no axe violations: ${route}`, async ({ page }, testInfo) => {
     await page.goto(route);
     await expect(page.locator('body')).toBeVisible();
 

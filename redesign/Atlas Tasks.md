@@ -1482,7 +1482,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
 # PHASE N — Test & QA
 
-## ☐ QA-01 · Axe-Smoke erweitern
+## ✅ QA-01 · Axe-Smoke erweitern
 
 - **Dateien:** `frontend/e2e/authenticated-a11y.spec.ts`
 - **Aufgabe:** Routen-Liste erweitern auf:
@@ -1878,7 +1878,7 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | BE-01 | Status-Migration | M | ✅ |
 | BE-02 | API-Validierung | M | ✅ |
 | BE-03 | Reminder-API | M | ✅ |
-| QA-01 | Axe-Smoke | N | ☐ |
+| QA-01 | Axe-Smoke | N | ✅ |
 | QA-02 | Playwright | N | ☐ |
 | QA-03 | Jest | N | ☐ |
 | QA-04 | Visual-Regression | N | ☐ |
