@@ -153,6 +153,11 @@
   margin-bottom: 4px;
 }
 
+.cv-card__more-menu {
+  position: relative;
+  flex-shrink: 0;
+}
+
 .cv-card__more-btn {
   background: transparent;
   border: none;
@@ -162,10 +167,48 @@
   display: flex;
   align-items: center;
   border-radius: 4px;
-  flex-shrink: 0;
 
   &:hover { background: var(--surface-2); color: var(--ink-2); }
   &:focus-visible { outline: 3px solid var(--accent); }
+}
+
+.cv-card__more-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 20;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 4px;
+  min-width: 168px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.cv-card__more-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--ink-2);
+  cursor: pointer;
+  text-align: left;
+
+  &:hover { background: var(--surface-2); color: var(--ink); }
+  &:focus-visible { outline: 3px solid var(--accent); }
+
+  &--danger {
+    color: var(--danger);
+    &:hover { background: oklch(97% 0.015 25); }
+  }
 }
 
 .cv-card__actions {

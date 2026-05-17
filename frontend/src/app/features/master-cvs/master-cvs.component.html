@@ -99,7 +99,7 @@
         </article>
       }
 
-      @for (cv of cvs(); track cv.id) {
+      @for (cv of sortedCvs(); track cv.id) {
         <article
           class="cv-card"
           role="listitem"
@@ -146,13 +146,34 @@
               } @else {
                 <span class="cv-card__title">{{ cv.name }}</span>
               }
-              <button
-                type="button"
-                class="cv-card__more-btn"
-                [attr.aria-label]="'Löschen: ' + cv.name"
-                (click)="requestDelete(cv.id)">
-                <lucide-icon name="more-horizontal" [size]="15" aria-hidden="true"></lucide-icon>
-              </button>
+              <div class="cv-card__more-menu">
+                <button
+                  type="button"
+                  class="cv-card__more-btn"
+                  [attr.aria-label]="'Weitere Optionen für ' + cv.name"
+                  [attr.aria-expanded]="moreMenuId() === cv.id"
+                  (click)="toggleMoreMenu(cv.id)">
+                  <lucide-icon name="more-horizontal" [size]="15" aria-hidden="true"></lucide-icon>
+                </button>
+                @if (moreMenuId() === cv.id) {
+                  <div class="cv-card__more-dropdown" role="menu" [attr.aria-label]="'Optionen für ' + cv.name">
+                    @if (!cv.isPrimary) {
+                      <button type="button" class="cv-card__more-item" role="menuitem" (click)="setPrimary(cv)">
+                        <lucide-icon name="star" [size]="13" aria-hidden="true"></lucide-icon>
+                        Als Primär festlegen
+                      </button>
+                    }
+                    <button type="button" class="cv-card__more-item" role="menuitem" (click)="startRename(cv)">
+                      <lucide-icon name="pencil" [size]="13" aria-hidden="true"></lucide-icon>
+                      Umbenennen
+                    </button>
+                    <button type="button" class="cv-card__more-item cv-card__more-item--danger" role="menuitem" (click)="requestDelete(cv.id)">
+                      <lucide-icon name="trash-2" [size]="13" aria-hidden="true"></lucide-icon>
+                      Löschen
+                    </button>
+                  </div>
+                }
+              </div>
             </div>
             <div class="cv-card__meta">{{ sourceLabel(cv) }} · {{ cv.language.toUpperCase() }} · Aktualisiert {{ cv.updatedAt | date:'dd.MM.yyyy' }}</div>
             <lba-cv-template-picker
