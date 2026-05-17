@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, input, output, signal } from '@angular/core';
+import { IconsModule } from '../../icons/icons.module';
 
 export interface PipelineFilter {
   query: string;
@@ -10,7 +11,7 @@ export interface PipelineFilter {
 @Component({
   selector: 'lba-pipeline-toolbar',
   standalone: true,
-  imports: [],
+  imports: [IconsModule],
   templateUrl: './pipeline-toolbar.html',
   styleUrl: './pipeline-toolbar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,7 +25,7 @@ export class PipelineToolbar {
   readonly hasReminderActive = signal(false);
   readonly dateRange = signal<'week' | 'month' | null>(null);
 
-  protected readonly MIN_SCORE_THRESHOLD = 70;
+  protected readonly MIN_SCORE_THRESHOLD = 80;
 
   onQueryInput(event: Event): void {
     this.query.set((event.target as HTMLInputElement).value);

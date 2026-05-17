@@ -1,48 +1,54 @@
 <div class="toolbar" role="search" aria-label="Bewerbungen filtern">
-  <div class="toolbar__search-wrap">
-    <span class="toolbar__search-icon" aria-hidden="true">⌕</span>
-    <input
-      type="search"
-      class="toolbar__search"
-      placeholder="Bewerbungen durchsuchen…"
-      (input)="onQueryInput($event)"
-      aria-label="Bewerbungen durchsuchen"
-    />
+  <div class="toolbar__left">
+    <button type="button" class="toolbar__filter-btn" aria-label="Filter öffnen">
+      <lucide-icon name="filter" [size]="14" aria-hidden="true"></lucide-icon>
+      Filter
+    </button>
+
+    <div class="toolbar__chips" role="group" aria-label="Schnellfilter">
+      <button
+        type="button"
+        class="toolbar__chip"
+        [class.toolbar__chip--active]="minScoreActive()"
+        (click)="toggleMinScore()"
+        [attr.aria-pressed]="minScoreActive()"
+        aria-label="Nur Bewerbungen mit Score 80 oder höher">
+        Score ≥ 80
+      </button>
+
+      <button
+        type="button"
+        class="toolbar__chip"
+        [class.toolbar__chip--active]="hasReminderActive()"
+        (click)="toggleReminder()"
+        [attr.aria-pressed]="hasReminderActive()"
+        aria-label="Nur Bewerbungen mit gesetzter Erinnerung">
+        Mit Erinnerung
+      </button>
+
+      <button
+        type="button"
+        class="toolbar__chip"
+        [class.toolbar__chip--active]="dateRange() === 'week'"
+        (click)="setDateRange(dateRange() === 'week' ? null : 'week')"
+        [attr.aria-pressed]="dateRange() === 'week'"
+        aria-label="Nur Bewerbungen aus den letzten 7 Tagen">
+        Letzte 7 Tage
+      </button>
+    </div>
   </div>
 
-  <div class="toolbar__filters" role="group" aria-label="Filter">
-    <span class="toolbar__filter-label">Filter:</span>
-
-    <button
-      type="button"
-      class="toolbar__chip"
-      [class.toolbar__active-chip]="minScoreActive()"
-      data-filter="minScore"
-      (click)="toggleMinScore()"
-      [attr.aria-pressed]="minScoreActive()"
-      aria-label="Nur Bewerbungen mit Score 70 oder höher anzeigen">
-      @if (minScoreActive()) { Score ≥ 70 ✕ } @else { + Score ≥ 70 }
-    </button>
-
-    <button
-      type="button"
-      class="toolbar__chip"
-      [class.toolbar__active-chip]="hasReminderActive()"
-      (click)="toggleReminder()"
-      [attr.aria-pressed]="hasReminderActive()"
-      aria-label="Nur Bewerbungen mit gesetzter Erinnerung anzeigen">
-      @if (hasReminderActive()) { Erinnerung ✕ } @else { + Erinnerung }
-    </button>
-
-    <button
-      type="button"
-      class="toolbar__chip"
-      [class.toolbar__active-chip]="dateRange() === 'week'"
-      (click)="setDateRange(dateRange() === 'week' ? null : 'week')"
-      [attr.aria-pressed]="dateRange() === 'week'"
-      aria-label="Nur Bewerbungen aus dieser Woche anzeigen">
-      @if (dateRange() === 'week') { Diese Woche ✕ } @else { + Diese Woche }
-    </button>
+  <div class="toolbar__right">
+    <div class="toolbar__search-wrap">
+      <lucide-icon name="search" [size]="13" class="toolbar__search-icon" aria-hidden="true"></lucide-icon>
+      <input
+        type="search"
+        class="toolbar__search"
+        placeholder="Durchsuchen…"
+        (input)="onQueryInput($event)"
+        aria-label="Bewerbungen durchsuchen"
+      />
+    </div>
 
     <span class="toolbar__count" aria-live="polite" aria-atomic="true">
       {{ totalCount() }} Bewerbungen

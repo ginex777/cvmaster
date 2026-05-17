@@ -75,6 +75,16 @@
     overflow-y: auto;
   }
 
+  &__section-label {
+    padding: 8px 12px 4px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+
   &__empty {
     padding: 16px;
     text-align: center;

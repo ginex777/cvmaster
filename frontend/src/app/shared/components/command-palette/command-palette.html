@@ -24,29 +24,73 @@
       <kbd class="palette__kbd" aria-hidden="true">Esc</kbd>
     </div>
 
-    <ul id="palette-list" class="palette__list" role="listbox" aria-label="Ergebnisse">
-      @if (filteredItems().length === 0) {
-        <li class="palette__empty" role="option" aria-selected="false">Keine Ergebnisse</li>
+    <div id="palette-list" class="palette__list" role="listbox" aria-label="Ergebnisse">
+      @if (!hasResults()) {
+        <div class="palette__empty" role="option" aria-selected="false">Keine Ergebnisse</div>
       }
-      @for (item of filteredItems(); track item.label) {
-        <li
-          class="palette__item"
-          role="option"
-          aria-selected="false"
-          (click)="select(item)"
-          (keydown.enter)="select(item)"
-          (keydown.space)="select(item)"
-          tabindex="0"
-        >
-          <span class="palette__item-icon">
-            <lucide-icon [name]="item.icon" [size]="16" aria-hidden="true"></lucide-icon>
-          </span>
-          <span class="palette__item-label">{{ item.label }}</span>
-          @if (item.description) {
-            <span class="palette__item-desc">{{ item.description }}</span>
-          }
-        </li>
+
+      @if (filteredApplications().length > 0) {
+        <div class="palette__section-label">Bewerbungen</div>
+        @for (app of filteredApplications(); track app.id) {
+          <div
+            class="palette__item"
+            role="option"
+            aria-selected="false"
+            (click)="openApplication(app.id)"
+            (keydown.enter)="openApplication(app.id)"
+            (keydown.space)="openApplication(app.id)"
+            tabindex="0"
+          >
+            <span class="palette__item-icon">
+              <lucide-icon name="briefcase" [size]="16" aria-hidden="true"></lucide-icon>
+            </span>
+            <span class="palette__item-label">{{ app.company }} — {{ app.role }}</span>
+          </div>
+        }
       }
-    </ul>
+
+      @if (filteredCvs().length > 0) {
+        <div class="palette__section-label">Lebensläufe</div>
+        @for (cv of filteredCvs(); track cv.id) {
+          <div
+            class="palette__item"
+            role="option"
+            aria-selected="false"
+            (click)="openCv(cv.id)"
+            (keydown.enter)="openCv(cv.id)"
+            (keydown.space)="openCv(cv.id)"
+            tabindex="0"
+          >
+            <span class="palette__item-icon">
+              <lucide-icon name="file-text" [size]="16" aria-hidden="true"></lucide-icon>
+            </span>
+            <span class="palette__item-label">{{ cv.name }}</span>
+          </div>
+        }
+      }
+
+      @if (filteredStatic().length > 0) {
+        <div class="palette__section-label">Aktionen</div>
+        @for (item of filteredStatic(); track item.label) {
+          <div
+            class="palette__item"
+            role="option"
+            aria-selected="false"
+            (click)="select(item)"
+            (keydown.enter)="select(item)"
+            (keydown.space)="select(item)"
+            tabindex="0"
+          >
+            <span class="palette__item-icon">
+              <lucide-icon [name]="item.icon" [size]="16" aria-hidden="true"></lucide-icon>
+            </span>
+            <span class="palette__item-label">{{ item.label }}</span>
+            @if (item.description) {
+              <span class="palette__item-desc">{{ item.description }}</span>
+            }
+          </div>
+        }
+      }
+    </div>
   </div>
 </dialog>
