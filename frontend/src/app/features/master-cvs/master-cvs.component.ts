@@ -94,7 +94,7 @@ export class MasterCvsComponent implements OnInit {
       this.setCvs(await this.api.get<MasterCv[]>('/cvs'));
     } catch (e: unknown) {
       this.error.set(
-        e instanceof HttpErrorResponse ? e.error.message : 'LebenslÃ¤ufe konnten nicht geladen werden.',
+        e instanceof HttpErrorResponse ? e.error.message : 'Lebensläufe konnten nicht geladen werden.',
       );
     } finally {
       this.loading.set(false);
@@ -187,7 +187,7 @@ export class MasterCvsComponent implements OnInit {
       this.setCvs(this.cvs().filter((cv) => cv.id !== id));
     } catch (e: unknown) {
       this.error.set(
-        e instanceof HttpErrorResponse ? e.error.message : 'LÃ¶schen fehlgeschlagen.',
+        e instanceof HttpErrorResponse ? e.error.message : 'Löschen fehlgeschlagen.',
       );
     } finally {
       this.deletingId.set(null);
@@ -322,7 +322,7 @@ export class MasterCvsComponent implements OnInit {
         bullets: [
           {
             id: `${cv.id}-source`,
-            text: `Quelle: ${this.sourceLabel(cv)} Â· Template: ${cv.template}`,
+            text: `Quelle: ${this.sourceLabel(cv)} · Template: ${cv.template}`,
           },
         ],
       },

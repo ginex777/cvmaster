@@ -379,7 +379,7 @@ export class EditorComponent implements OnInit, OnDestroy {
       this.application.update(current => ({ ...(current ?? { id: this.id }), ...updated }));
     } catch (e: unknown) {
       this.application.set(previous);
-      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Status konnte nicht geÃ¤ndert werden.');
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Status konnte nicht geändert werden.');
     }
   }
 

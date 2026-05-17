@@ -39,7 +39,7 @@ describe('FaqComponent', () => {
     const scripts = Array.from(document.head.querySelectorAll('script[type="application/ld+json"]')) as HTMLScriptElement[];
     const faqScript = scripts.find(s => s.textContent?.includes('FAQPage'));
     expect(faqScript).toBeTruthy();
-    const data = JSON.parse(faqScript!.textContent ?? '{}') as { '@type': string };
+    const data = JSON.parse(faqScript?.textContent ?? '{}') as { '@type': string };
     expect(data['@type']).toBe('FAQPage');
   });
 

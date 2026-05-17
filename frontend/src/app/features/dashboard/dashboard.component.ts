@@ -114,10 +114,10 @@ export class DashboardComponent implements OnInit {
     const apps = this.data()?.recentApplications ?? [];
     const upcoming = apps
       .filter(a => !!a.reminderAt)
-      .sort((a, b) => new Date(a.reminderAt!).getTime() - new Date(b.reminderAt!).getTime());
+      .sort((a, b) => new Date(a.reminderAt ?? '').getTime() - new Date(b.reminderAt ?? '').getTime());
     if (upcoming.length === 0) return null;
     const first = upcoming[0];
-    const d = new Date(first.reminderAt!);
+    const d = new Date(first.reminderAt ?? '');
     const label = `${d.toLocaleDateString('de-DE', { weekday: 'short' })}, ${d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
     return { label, sub: `${this.companyName(first)} nachfassen` };
   });
