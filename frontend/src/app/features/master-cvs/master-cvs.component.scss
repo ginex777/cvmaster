@@ -2,27 +2,51 @@
   margin-bottom: var(--space-4);
 }
 
-.text-cv-panel {
-  margin-bottom: var(--space-6);
-}
-
-.text-cv-panel__intro {
-  margin-bottom: var(--space-4);
-
-  h2 { font-size: 1rem; font-weight: 700; margin-bottom: var(--space-1); }
-  p  { font-size: 13px; color: var(--ink-2); }
-}
-
 .text-cv-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  flex: 1;
 }
 
 .text-cv-form__actions {
   display: flex;
-  gap: var(--space-3);
   justify-content: flex-end;
+  margin-top: auto;
+  padding-top: var(--space-2);
+}
+
+/* Text-form card variant */
+.cv-card--text-form {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 320px;
+}
+
+.cv-card__form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+
+  h2 { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+}
+
+.cv-card__close-btn {
+  background: transparent;
+  border: none;
+  color: var(--ink-3);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+
+  &:hover { background: var(--surface-2); color: var(--ink); }
+  &:focus-visible { outline: 3px solid var(--accent); }
 }
 
 /* CV Grid */

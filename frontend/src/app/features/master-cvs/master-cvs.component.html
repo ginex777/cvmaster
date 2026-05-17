@@ -37,58 +37,6 @@
     <div role="alert" aria-live="polite" class="form-error master-cvs__error">{{ error() }}</div>
   }
 
-  @if (textFormOpen()) {
-    <section id="text-cv-panel" class="card-elevated text-cv-panel" aria-labelledby="text-cv-heading">
-      <div class="text-cv-panel__intro">
-        <h2 id="text-cv-heading">Lebenslauf per Text einfügen</h2>
-        <p>Kopiere den Inhalt deines CVs hier hinein. Wir speichern nur die strukturierte CV-Version, nicht den Originaltext als Datei.</p>
-      </div>
-      <form class="text-cv-form" [formGroup]="textCvForm" (ngSubmit)="createFromText()" novalidate aria-label="Lebenslauf per Text speichern">
-        <div class="field">
-          <label for="text-cv-name">Name</label>
-          <input
-            id="text-cv-name"
-            type="text"
-            formControlName="name"
-            autocomplete="name"
-            aria-required="true"
-            [attr.aria-invalid]="textCvForm.controls.name.invalid && textCvForm.controls.name.touched"
-            [attr.aria-describedby]="textCvForm.controls.name.invalid && textCvForm.controls.name.touched ? 'text-cv-name-error' : null" />
-          @if (textCvForm.controls.name.invalid && textCvForm.controls.name.touched) {
-            <span id="text-cv-name-error" class="field__error" role="alert">Bitte gib mindestens 2 Zeichen ein.</span>
-          }
-        </div>
-        <div class="field">
-          <label for="text-cv-language">Sprache</label>
-          <select id="text-cv-language" formControlName="language" aria-required="true">
-            <option value="de">Deutsch</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-        <div class="field field--wide">
-          <label for="text-cv-text">Lebenslauftext</label>
-          <textarea
-            id="text-cv-text"
-            rows="12"
-            formControlName="text"
-            aria-required="true"
-            aria-describedby="text-cv-text-note text-cv-text-error"
-            [attr.aria-invalid]="textCvForm.controls.text.invalid && textCvForm.controls.text.touched"></textarea>
-          <span id="text-cv-text-note" class="field__note">Mindestens 40 Zeichen.</span>
-          @if (textCvForm.controls.text.invalid && textCvForm.controls.text.touched) {
-            <span id="text-cv-text-error" class="field__error" role="alert">Bitte füge mindestens 40 Zeichen Lebenslauf-Text ein.</span>
-          }
-        </div>
-        <div class="text-cv-form__actions">
-          <button type="button" class="btn btn--ghost btn--md" [disabled]="savingTextCv()" (click)="closeTextForm()">Abbrechen</button>
-          <button type="submit" class="btn btn--outline btn--md" [disabled]="savingTextCv()">
-            @if (savingTextCv()) { Wird gespeichert… } @else { Text-Lebenslauf speichern }
-          </button>
-        </div>
-      </form>
-    </section>
-  }
-
   @if (loading()) {
     <div class="cv-grid" aria-label="Lebensläufe werden geladen" aria-busy="true">
       <div class="cv-card cv-card--skeleton" aria-hidden="true"></div>
@@ -97,6 +45,60 @@
     </div>
   } @else {
     <div class="cv-grid" role="list" aria-label="Lebenslauf-Liste">
+
+      @if (textFormOpen()) {
+        <article class="cv-card cv-card--text-form" role="listitem" id="text-cv-panel" aria-labelledby="text-cv-heading">
+          <div class="cv-card__form-header">
+            <h2 id="text-cv-heading">Text einfügen</h2>
+            <button type="button" class="cv-card__close-btn" aria-label="Formular schließen" (click)="closeTextForm()">
+              <lucide-icon name="x" [size]="16" aria-hidden="true"></lucide-icon>
+            </button>
+          </div>
+          <form class="text-cv-form" [formGroup]="textCvForm" (ngSubmit)="createFromText()" novalidate aria-labelledby="text-cv-heading">
+            <div class="field">
+              <label for="text-cv-name">Name</label>
+              <input
+                id="text-cv-name"
+                type="text"
+                formControlName="name"
+                autocomplete="name"
+                aria-required="true"
+                [attr.aria-invalid]="textCvForm.controls.name.invalid && textCvForm.controls.name.touched"
+                [attr.aria-describedby]="textCvForm.controls.name.invalid && textCvForm.controls.name.touched ? 'text-cv-name-error' : null" />
+              @if (textCvForm.controls.name.invalid && textCvForm.controls.name.touched) {
+                <span id="text-cv-name-error" class="field__error" role="alert">Bitte gib mindestens 2 Zeichen ein.</span>
+              }
+            </div>
+            <div class="field">
+              <label for="text-cv-language">Sprache</label>
+              <select id="text-cv-language" formControlName="language" aria-required="true">
+                <option value="de">Deutsch</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="text-cv-text">Lebenslauftext</label>
+              <textarea
+                id="text-cv-text"
+                rows="8"
+                formControlName="text"
+                aria-required="true"
+                aria-describedby="text-cv-text-note text-cv-text-error"
+                [attr.aria-invalid]="textCvForm.controls.text.invalid && textCvForm.controls.text.touched"></textarea>
+              <span id="text-cv-text-note" class="field__note">Mindestens 40 Zeichen.</span>
+              @if (textCvForm.controls.text.invalid && textCvForm.controls.text.touched) {
+                <span id="text-cv-text-error" class="field__error" role="alert">Bitte füge mindestens 40 Zeichen ein.</span>
+              }
+            </div>
+            <div class="text-cv-form__actions">
+              <button type="submit" class="btn btn--primary btn--sm" [disabled]="savingTextCv()">
+                @if (savingTextCv()) { Wird gespeichert… } @else { Speichern }
+              </button>
+            </div>
+          </form>
+        </article>
+      }
+
       @for (cv of cvs(); track cv.id; let i = $index) {
         <article
           class="cv-card"
