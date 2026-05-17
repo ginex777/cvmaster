@@ -48,10 +48,19 @@ export class AppShellComponent {
     { initialValue: [{ label: 'Workspace' }, { label: 'Dashboard' }] as BreadcrumbItem[] },
   );
 
+  private readonly AVATAR_PALETTE = ['#5B6CFF', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EC4899'];
+
   readonly initials = computed(() => {
     const name = this.auth.user()?.name ?? '';
     return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase() || 'HF';
   });
+
+  readonly avatarColor = computed(() => {
+    const name = this.auth.user()?.name ?? '';
+    return this.AVATAR_PALETTE[name.length % this.AVATAR_PALETTE.length];
+  });
+
+  readonly avatarBgColor = computed(() => `${this.avatarColor()}22`);
 
   readonly counts = signal({ applications: 0, cvs: 0, used: 0, limit: 5, percent: 0 });
 

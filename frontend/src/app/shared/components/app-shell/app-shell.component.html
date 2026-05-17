@@ -15,7 +15,10 @@
       (click)="openWorkspaceSwitcher()"
       [attr.aria-label]="'Workspace: ' + auth.user()?.name"
     >
-      <div class="shell__workspace-avatar" aria-hidden="true">{{ initials() }}</div>
+      <div class="shell__workspace-avatar"
+        aria-hidden="true"
+        [style.background]="avatarBgColor()"
+        [style.color]="avatarColor()">{{ initials() }}</div>
       <div class="shell__workspace-text">
         <span class="shell__username">{{ auth.user()?.name }}</span>
         <span class="shell__workspace-meta">{{ planLabel() }} · DE</span>
@@ -100,7 +103,6 @@
             <span class="shell__usage-fill" [style.width.%]="counts().percent"></span>
           </div>
           <div class="shell__usage-foot">
-            <span class="shell__plan shell__plan--{{ planClass() }}">{{ planLabel() }}</span>
             <a routerLink="/preise" class="shell__usage-cta">Upgrade →</a>
           </div>
         </div>

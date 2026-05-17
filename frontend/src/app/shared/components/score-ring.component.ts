@@ -17,9 +17,11 @@ export class ScoreRingComponent {
     const fill = (this.value() / 100) * 100;
     return `${fill} ${100 - fill}`;
   });
+  strokeWidth = computed(() => this.size() >= 50 ? 4 : 3);
+  fontSize    = computed(() => this.size() >= 50 ? 14 : 12);
   strokeColor = computed(() => {
-    if (this.value() >= 80) return 'var(--success)';
-    if (this.value() >= 60) return 'var(--warning)';
-    return 'var(--danger)';
+    if (this.value() >= 80) return 'var(--status-offer)';
+    if (this.value() >= 60) return 'var(--status-applied)';
+    return 'var(--warn)';
   });
 }
