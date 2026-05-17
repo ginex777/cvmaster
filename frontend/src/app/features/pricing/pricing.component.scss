@@ -60,20 +60,21 @@
   background: var(--bg-2);
 
   &--featured {
-    border-color: var(--accent);
-    box-shadow: var(--shadow-glow);
+    border: 2px solid var(--accent);
+    box-shadow: var(--shadow-md);
   }
 }
 
 .plan__badge {
-  align-self: flex-start;
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-full);
-  background: var(--ink);
-  color: var(--surface);
-  font-size: 0.75rem;
-  font-weight: 800;
-  text-transform: uppercase;
+  position: absolute;
+  top: -12px;
+  right: 24px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .plan__topline {
