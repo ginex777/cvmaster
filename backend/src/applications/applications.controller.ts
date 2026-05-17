@@ -1,5 +1,5 @@
 import { Controller, Post, Get, Patch, Param, Body, Req, Res, UseGuards, Delete } from '@nestjs/common';
-import { AppStatus, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { Throttle } from '@nestjs/throttler';
 import { Response } from 'express';
 import { z } from 'zod';
@@ -26,7 +26,7 @@ const toneSchema = z.object({
 
 const statusSchema = z.preprocess(
   value => typeof value === 'string' ? value.toUpperCase() : value,
-  z.nativeEnum(AppStatus),
+  z.enum(['DRAFT', 'APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED']),
 );
 
 const updateSchema = z.object({
@@ -175,7 +175,7 @@ export class ApplicationsController {
   @Patch(':id/status')
   @UseGuards(OwnsApplicationGuard)
   updateStatus(@Param('id') id: string, @Body('status') status: unknown) {
-    const parsedStatus = statusSchema.parse(status);
+    const parsedStatus = statusSchema.parse(status) as import('@prisma/client').AppStatus;
     return this.apps.updateStatus(id, parsedStatus);
   }
 

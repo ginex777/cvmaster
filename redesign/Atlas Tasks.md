@@ -1466,7 +1466,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. API-Endpoints akzeptieren neue 5 Status-Werte.
 - **Verifikation:** Staging-Migration läuft fehlerfrei, alle Records haben gültigen neuen Status.
 
-## ☐ BE-02 · API-Validierung
+## ✅ BE-02 · API-Validierung
 
 - **Dateien:** Backend-DTO + Validation
 - **Aufgabe:** `PATCH /applications/:id` akzeptiert `status: 'DRAFT'|'APPLIED'|'INTERVIEW'|'OFFER'|'REJECTED'`. Andere Werte → 400 Bad Request.
@@ -1876,7 +1876,7 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | R-02 | CommandPalette wiring | L | ✅ |
 | R-03 | Status-Mapper | L | ✅ |
 | BE-01 | Status-Migration | M | ✅ |
-| BE-02 | API-Validierung | M | ☐ |
+| BE-02 | API-Validierung | M | ✅ |
 | BE-03 | Reminder-API | M | ☐ |
 | QA-01 | Axe-Smoke | N | ☐ |
 | QA-02 | Playwright | N | ☐ |

@@ -30,13 +30,15 @@ describe('ApplicationsController', () => {
     expect(update).toHaveBeenCalledWith('a1', 'u1', { chosenVariant: 'warm' });
   });
 
-  it('validates dedicated status updates against the application status enum', async () => {
+  it('validates dedicated status updates against the 5 canonical statuses', async () => {
     const controller = new ApplicationsController(apps, pdf);
-    const updateStatus = jest.spyOn(apps, 'updateStatus').mockReturnValue({ id: 'a1', status: 'DONE' } as never);
+    const updateStatus = jest.spyOn(apps, 'updateStatus').mockReturnValue({ id: 'a1', status: 'APPLIED' } as never);
 
-    await controller.updateStatus('a1', 'done');
-    expect(updateStatus).toHaveBeenCalledWith('a1', 'DONE');
+    await controller.updateStatus('a1', 'applied');
+    expect(updateStatus).toHaveBeenCalledWith('a1', 'APPLIED');
 
+    expect(() => controller.updateStatus('a1', 'DONE')).toThrow(ZodError);
+    expect(() => controller.updateStatus('a1', 'OPEN')).toThrow(ZodError);
     expect(() => controller.updateStatus('a1', 'SCORE_100')).toThrow(ZodError);
   });
 
