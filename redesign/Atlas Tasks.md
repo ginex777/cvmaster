@@ -1527,7 +1527,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
 Häufig übersehene Dateien, die zum Redesign mit angepasst werden müssen.
 
-## ☐ Y-01 · `tailwind.config.ts` aktualisieren
+## ✅ Y-01 · `tailwind.config.ts` aktualisieren
 
 - **📐 JSX-Quelle:** `redesign/shared.jsx` → `TOKENS`-Konstante.
 - **Datei:** `frontend/tailwind.config.ts`
@@ -1572,7 +1572,7 @@ Häufig übersehene Dateien, die zum Redesign mit angepasst werden müssen.
   ```
 - **Verifikation:** `tailwind` Klassen wie `bg-accent` oder `border-line` rendern korrekt mit neuen OKLCH-Werten.
 
-## ☐ Y-02 · `index.html` Meta-Tags + Favicon
+## ✅ Y-02 · `index.html` Meta-Tags + Favicon
 
 - **Datei:** `frontend/src/index.html`
 - **Aktueller Zustand:** Title, OG-Tags vorhanden — alle auf altem Branding („Lebenslauf-Agent" / Hireflow-Mix).
@@ -1587,7 +1587,7 @@ Häufig übersehene Dateien, die zum Redesign mit angepasst werden müssen.
   - DevTools Network → `og-image.png` lädt 200.
   - Twitter/LinkedIn Card-Preview-Tool zeigt korrekt.
 
-## ☐ Y-03 · `sitemap.xml` ergänzen
+## ✅ Y-03 · `sitemap.xml` ergänzen
 
 - **Datei:** `frontend/public/sitemap.xml`
 - **Aktueller Zustand:** Listet nur `/`, `/preise`, `/faq`, Legal.
@@ -1598,7 +1598,7 @@ Häufig übersehene Dateien, die zum Redesign mit angepasst werden müssen.
   4. `<lastmod>{ISO-Date}</lastmod>` pro URL ergänzen.
 - **Verifikation:** Sitemap-Validator (z.B. xml-sitemaps.com) returnst grün.
 
-## ☐ Y-04 · `score.utils.ts` mit Token-Farben
+## ✅ Y-04 · `score.utils.ts` mit Token-Farben
 
 - **Datei:** `frontend/src/app/shared/utils/score.utils.ts`
 - **Aktueller Zustand:** `scoreClass()` returnst `'score--high|mid|low'`-Strings.
@@ -1610,7 +1610,7 @@ Häufig übersehene Dateien, die zum Redesign mit angepasst werden müssen.
   5. Helper im Editor-Score-Widget und Pipeline-Karten verwenden.
 - **Verifikation:** Spec-Test `score.utils.spec.ts` deckt 4 Funktionen ab.
 
-## ☐ Y-05 · Mobile-Responsive Breakpoints prüfen
+## ✅ Y-05 · Mobile-Responsive Breakpoints prüfen
 
 - **📐 JSX-Quelle:** Mockups sind Desktop-first (1280–1440). Mobile-Breakpoint pro Seite explizit nachziehen.
 - **Dateien:**
@@ -1624,7 +1624,7 @@ Häufig übersehene Dateien, die zum Redesign mit angepasst werden müssen.
 - **Aufgabe:** Pro Datei oben dokumentieren bei welcher Breakpoint-Schwelle das Layout umbricht, Media-Queries für die Schwellen ergänzen.
 - **Verifikation:** Chrome DevTools Responsive-Modus durchklicken bei iPhone 13 (390 px) und iPad (768 px) → kein horizontal Scroll, alle CTAs erreichbar.
 
-## ☐ Y-06 · Toast-Notification-Service (optional)
+## ✅ Y-06 · Toast-Notification-Service (optional)
 
 - **📐 JSX-Quelle:** kein Mockup — aktuell nutzt App nur Inline-`role="alert"`-Banner.
 - **Dateien (NEU):**
@@ -1638,7 +1638,7 @@ Häufig übersehene Dateien, die zum Redesign mit angepasst werden müssen.
   5. Verwendung: nach Save (Editor), nach Status-Wechsel (Pipeline), nach Export (CV-PDF).
 - **Verifikation:** Action im Editor löst Toast aus, dieser verschwindet nach 4 s.
 
-## ☐ Y-07 · Print-Stylesheet für CV-PDF-Export
+## ✅ Y-07 · Print-Stylesheet für CV-PDF-Export
 
 - **📐 JSX-Quelle:** kein Mockup — Print-CSS für PDF-Export.
 - **Datei (NEU):** `frontend/src/app/features/application-editor/print.scss` (oder als `@media print` Block)
@@ -1650,13 +1650,13 @@ Häufig übersehene Dateien, die zum Redesign mit angepasst werden müssen.
   5. Page-Break-Avoid für Section-Karten.
 - **Verifikation:** Browser-Print-Preview zeigt sauberes 1- oder 2-Seiten-CV ohne UI-Chrome.
 
-## ☐ Y-08 · `app.component` Reveal-Init
+## ✅ Y-08 · `app.component` Reveal-Init
 
 - **Datei:** `frontend/src/app/app.component.ts`
 - **Aufgabe:** Sicherstellen dass `RevealDirective` weiterhin auf neuen Landing-Sections funktioniert. Bei Mocks mit explizitem `style="opacity:1"` (z.B. im neuen Hero-Editor-Peek) keine Reveal-Animation überlagern lassen.
 - **Verifikation:** Scroll auf Landing zeigt sanfte Reveal-Animationen für Hero/Features/Workflow.
 
-## ☐ Y-09 · `404.html` für SSR-Fallback
+## ✅ Y-09 · `404.html` für SSR-Fallback
 
 - **Datei (NEU):** `frontend/src/404.html` oder Nginx-Config
 - **Aufgabe:** Bei direktem Aufruf von z.B. `/app/applications` (SPA-Route) muss SSR oder Server-Konfiguration auf `index.html` zurückfallen — sonst sieht der Benutzer eine generische 404 statt der App.
