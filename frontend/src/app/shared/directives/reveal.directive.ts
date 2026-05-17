@@ -15,7 +15,9 @@ export class RevealDirective implements OnInit, OnDestroy {
   ngOnInit() {
     const prefersReduced =
       typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced || typeof IntersectionObserver === 'undefined') {
+    // Skip elements that already have an explicit inline opacity — e.g. mocks with style="opacity:1"
+    const hasInlineOpacity = this.el.nativeElement.style.opacity !== '';
+    if (prefersReduced || typeof IntersectionObserver === 'undefined' || hasInlineOpacity) {
       this.el.nativeElement.classList.add('reveal--visible');
       return;
     }
