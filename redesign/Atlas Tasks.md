@@ -928,7 +928,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
 **Drei** Mikro-Tasks. (Dashboard-Layout existiert schon — nur Feinschliff.)
 
-## ☐ DB-01 · Dashboard: Echte Daten in Stats-Karten
+## ✅ DB-01 · Dashboard: Echte Daten in Stats-Karten
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `DashboardScreen` → Stats-Row mit 4 Karten (k/v/d-Schlüssel + tone-Farben).
 - **Dateien:** `dashboard.component.ts` + `.html`
@@ -939,7 +939,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Karte „Nächste Erinnerung" Logik: nimmt frühesten Reminder aus `recentApplications`. Wenn vorhanden: Wochentag + Uhrzeit + Sub „{Firma} nachfassen". Wenn keiner: „—" + „Keine ausstehend".
 - **Verifikation:** Karten zeigen sinnvolle Werte aus echten Daten.
 
-## ☐ DB-02 · Dashboard: Activity-Item More-Menü
+## ✅ DB-02 · Dashboard: Activity-Item More-Menü
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `DashboardScreen` → `Letzte Aktivität`-Panel, More-Button am Ende jeder Zeile (Mockup zeigt nur den Btn, kein Popover — bauen wir aus dem Sidebar-Pattern).
 - **Dateien:** `dashboard.component.html`
@@ -952,7 +952,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   - „Löschen" (in Danger-Rot)
 - **Verifikation:** More-Click zeigt Popover statt direktem Editor.
 
-## ☐ DB-03 · Dashboard: Greeting-Period-Selector
+## ✅ DB-03 · Dashboard: Greeting-Period-Selector
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `DashboardScreen` → „Letzte 30 Tage"-Dropdown-Button rechts neben Greeting.
 - **Dateien:** `dashboard.component.html` + `.ts`
@@ -1824,9 +1824,9 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | PR-01 | Pricing: Free-Anker-Karte | F | ✅ |
 | PR-02 | Pricing: Plan-Toggle | F | ✅ |
 | PR-03 | Pricing: Featured-Badge | F | ✅ |
-| DB-01 | Dashboard: Echte Daten | G | ☐ |
-| DB-02 | Dashboard: Activity-More-Menü | G | ☐ |
-| DB-03 | Dashboard: Period-Selector | G | ☐ |
+| DB-01 | Dashboard: Echte Daten | G | ✅ |
+| DB-02 | Dashboard: Activity-More-Menü | G | ✅ |
+| DB-03 | Dashboard: Period-Selector | G | ✅ |
 | WZ-01 | Wizard: CV-Mini-Preview | H | ☐ |
 | WZ-02 | Wizard: Keyword-Hint | H | ☐ |
 | SH-01 | StatusPill Polish | I | ☐ |
