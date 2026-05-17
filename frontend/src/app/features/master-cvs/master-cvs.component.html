@@ -99,13 +99,13 @@
         </article>
       }
 
-      @for (cv of cvs(); track cv.id; let i = $index) {
+      @for (cv of cvs(); track cv.id) {
         <article
           class="cv-card"
           role="listitem"
           [attr.aria-label]="cv.name"
-          [style.--cv-accent]="cvAccentColor(i)"
-          [style.--cv-accent-bg]="cvAccentBg(i)"
+          [style.--cv-accent]="cvAccentColor(cv)"
+          [style.--cv-accent-bg]="cvAccentBg(cv)"
         >
           <div class="cv-card__top-bar" aria-hidden="true"></div>
 
@@ -120,7 +120,7 @@
                 @default { <lba-cv-mini-preview-modern /> }
               }
             </div>
-            @if (i === 0) {
+            @if (cv.isPrimary) {
               <div class="cv-card__primary-badge">
                 <lucide-icon name="star" [size]="10" aria-hidden="true"></lucide-icon>
                 Primär
