@@ -972,7 +972,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
 **Zwei** kleine Mikro-Tasks. (Wizard ist visuell schon fast da.)
 
-## ☐ WZ-01 · Wizard: CV-Auswahl-Cards Mini-Preview
+## ✅ WZ-01 · Wizard: CV-Auswahl-Cards Mini-Preview
 
 - **📐 JSX-Quelle:** kein expliziter Mockup für Step 1 — Pattern siehe `CvsScreen`-Mini-Preview, runter-skaliert auf 80×100.
 - **Dateien:** `wizard.component.html` + `.scss`
@@ -980,7 +980,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 - **Aufgabe:** Pro CV-Karte links eine kleine 80×100-Mini-Preview (z.B. `<lba-cv-mini-preview-modern>` skaliert). Layout: flex row, Preview links, Text rechts.
 - **Verifikation:** Step 1 zeigt Cards mit visuellem Mini-Preview pro CV.
 
-## ☐ WZ-02 · Wizard: Step 2 Keyword-Erkannt-Hinweis
+## ✅ WZ-02 · Wizard: Step 2 Keyword-Erkannt-Hinweis
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `WizardScreen` → Job-Input-Card-Footer mit `Sparkles`-Icon + „**14 Keywords** erkannt · React, TypeScript, Accessibility, +11".
 - **Dateien:** `wizard.component.html` + `.ts`
@@ -1827,8 +1827,8 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | DB-01 | Dashboard: Echte Daten | G | ✅ |
 | DB-02 | Dashboard: Activity-More-Menü | G | ✅ |
 | DB-03 | Dashboard: Period-Selector | G | ✅ |
-| WZ-01 | Wizard: CV-Mini-Preview | H | ☐ |
-| WZ-02 | Wizard: Keyword-Hint | H | ☐ |
+| WZ-01 | Wizard: CV-Mini-Preview | H | ✅ |
+| WZ-02 | Wizard: Keyword-Hint | H | ✅ |
 | SH-01 | StatusPill Polish | I | ☐ |
 | SH-02 | ScoreRing Schwellen | I | ☐ |
 | SH-03 | AppShell Usage-Bar | I | ☐ |
