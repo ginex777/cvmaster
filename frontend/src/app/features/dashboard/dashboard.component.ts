@@ -48,6 +48,11 @@ export class DashboardComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly data = signal<DashboardData | null>(null);
   readonly selectedAppId = signal<string | null>(null);
+  readonly openMenuAppId = signal<string | null>(null);
+  readonly statusSubmenuOpen = signal(false);
+
+  protected readonly STATUS_OPTIONS: ApplicationStatus[] = ['DRAFT', 'APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED'];
+  protected readonly statusMeta = STATUS_META;
 
   readonly greeting = computed(() => {
     const h = new Date().getHours();
@@ -127,6 +132,22 @@ export class DashboardComponent implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  toggleMenu(appId: string, event: Event): void {
+    event.stopPropagation();
+    if (this.openMenuAppId() === appId) {
+      this.openMenuAppId.set(null);
+      this.statusSubmenuOpen.set(false);
+    } else {
+      this.openMenuAppId.set(appId);
+      this.statusSubmenuOpen.set(false);
+    }
+  }
+
+  closeMenu(): void {
+    this.openMenuAppId.set(null);
+    this.statusSubmenuOpen.set(false);
   }
 
   toApplicationStatus(status: string): ApplicationStatus {

@@ -183,14 +183,52 @@
                     <span class="activity-item__score--na">—</span>
                   }
                 </div>
-                <button
-                  type="button"
-                  class="activity-item__more"
-                  [attr.aria-label]="'Optionen für ' + jobTitle(app)"
-                  (click)="selectedAppId.set(app.id)"
-                >
-                  <lucide-icon name="more-horizontal" [size]="16" aria-hidden="true"></lucide-icon>
-                </button>
+                <div class="activity-item__more-wrap">
+                  <button
+                    type="button"
+                    class="activity-item__more"
+                    [attr.aria-label]="'Optionen für ' + jobTitle(app)"
+                    [attr.aria-expanded]="openMenuAppId() === app.id"
+                    (click)="toggleMenu(app.id, $event)"
+                  >
+                    <lucide-icon name="more-horizontal" [size]="16" aria-hidden="true"></lucide-icon>
+                  </button>
+                  @if (openMenuAppId() === app.id) {
+                    <div class="more-menu" role="menu" [attr.aria-label]="'Optionen für ' + jobTitle(app)">
+                      <button type="button" class="more-menu__item" role="menuitem"
+                        (click)="selectedAppId.set(app.id); closeMenu()">
+                        Öffnen
+                      </button>
+                      <div class="more-menu__item more-menu__item--sub">
+                        <button type="button" class="more-menu__sub-trigger" role="menuitem"
+                          [attr.aria-expanded]="statusSubmenuOpen()"
+                          (click)="statusSubmenuOpen.set(!statusSubmenuOpen()); $event.stopPropagation()">
+                          Status ändern
+                          <lucide-icon name="chevron-right" [size]="12" aria-hidden="true"></lucide-icon>
+                        </button>
+                        @if (statusSubmenuOpen()) {
+                          <div class="more-menu__submenu" role="menu" aria-label="Status wählen">
+                            @for (s of STATUS_OPTIONS; track s) {
+                              <button type="button" class="more-menu__item" role="menuitem"
+                                (click)="closeMenu()">
+                                {{ statusMeta[s].label }}
+                              </button>
+                            }
+                          </div>
+                        }
+                      </div>
+                      <button type="button" class="more-menu__item" role="menuitem"
+                        (click)="closeMenu()">
+                        Erinnerung setzen…
+                      </button>
+                      <div class="more-menu__separator" role="separator" aria-hidden="true"></div>
+                      <button type="button" class="more-menu__item more-menu__item--danger" role="menuitem"
+                        (click)="closeMenu()">
+                        Löschen
+                      </button>
+                    </div>
+                  }
+                </div>
               </div>
             }
           </div>
@@ -207,6 +245,10 @@
       </div>
     </div>
 
+  }
+
+  @if (openMenuAppId()) {
+    <div class="more-menu__backdrop" aria-hidden="true" (click)="closeMenu()"></div>
   }
 </main>
 
