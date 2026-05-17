@@ -1440,7 +1440,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 - **Aufgabe:** `<lba-command-palette>` außerhalb `<router-outlet>` mounten. Global ⌘K / Ctrl+K Listener im AppComponent.
 - **Verifikation:** ⌘K öffnet Palette von jeder Seite (auch Landing).
 
-## ☐ R-03 · Status-Mapper-Layer
+## ✅ R-03 · Status-Mapper-Layer
 
 - **Dateien:** `shared/utils/status.utils.ts`
 - **Aufgabe:** Helper `legacyToStatus(s: 'OPEN'|'DONE'|ApplicationStatus): ApplicationStatus`:
@@ -1874,7 +1874,7 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | OT-13 | legal.component.scss tot | K | ☐ |
 | R-01 | app.routes vollständig | L | ✅ |
 | R-02 | CommandPalette wiring | L | ✅ |
-| R-03 | Status-Mapper | L | ☐ |
+| R-03 | Status-Mapper | L | ✅ |
 | BE-01 | Status-Migration | M | ☐ |
 | BE-02 | API-Validierung | M | ☐ |
 | BE-03 | Reminder-API | M | ☐ |

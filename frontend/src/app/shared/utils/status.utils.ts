@@ -21,18 +21,19 @@ export const STATUS_META: Record<ApplicationStatus, {
 
 export const STATUS_ORDER: ApplicationStatus[] = ['DRAFT', 'APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED'];
 
-export function legacyToStatus(status: string | ApplicationStatus): ApplicationStatus {
+export function legacyToStatus(status: string | ApplicationStatus, exported = false): ApplicationStatus {
+  if (status === 'OPEN') return exported ? 'APPLIED' : 'DRAFT';
+  if (status === 'DONE') return 'APPLIED';
   const map: Record<string, ApplicationStatus> = {
-    DRAFT: 'DRAFT',
-    OPEN: 'APPLIED',
-    DONE: 'APPLIED',
-    EXPORTED: 'APPLIED',
-    SENT: 'APPLIED',
-    REPLIED: 'INTERVIEW',
+    DRAFT:     'DRAFT',
+    APPLIED:   'APPLIED',
+    EXPORTED:  'APPLIED',
+    SENT:      'APPLIED',
+    REPLIED:   'INTERVIEW',
     INTERVIEW: 'INTERVIEW',
-    OFFER: 'OFFER',
-    REJECTED: 'REJECTED',
-    FAILED: 'REJECTED',
+    OFFER:     'OFFER',
+    REJECTED:  'REJECTED',
+    FAILED:    'REJECTED',
   };
   return map[status] ?? 'DRAFT';
 }
