@@ -144,7 +144,13 @@
                   [attr.aria-label]="'Neuer Name für ' + cv.name"
                   autofocus />
               } @else {
-                <span class="cv-card__title">{{ cv.name }}</span>
+                <span
+                  class="cv-card__title"
+                  role="button"
+                  tabindex="0"
+                  [attr.aria-label]="'Umbenennen: ' + cv.name"
+                  (dblclick)="startRename(cv)"
+                  (keydown.enter)="startRename(cv)">{{ cv.name }}</span>
               }
               <div class="cv-card__more-menu">
                 <button
@@ -185,7 +191,7 @@
                 type="button"
                 class="btn btn--outline btn--sm cv-card__action-btn"
                 [attr.aria-label]="'Bearbeiten: ' + cv.name"
-                (click)="startRename(cv)">
+                (click)="editCv(cv)">
                 Bearbeiten
               </button>
               <button
@@ -223,6 +229,23 @@
   }
 
 </main>
+
+@if (editingCv()) {
+  <div class="cv-editor-overlay" role="dialog" aria-modal="true" [attr.aria-label]="'Lebenslauf bearbeiten: ' + editingCv()!.name" (click)="closeEditor()">
+    <div class="cv-editor-panel" (click)="$event.stopPropagation()">
+      <div class="cv-editor-panel__header">
+        <h2 class="cv-editor-panel__title">{{ editingCv()!.name }}</h2>
+        <button type="button" class="cv-card__close-btn" aria-label="Editor schließen" (click)="closeEditor()">
+          <lucide-icon name="x" [size]="18" aria-hidden="true"></lucide-icon>
+        </button>
+      </div>
+      <lba-cv-section-editor
+        [sections]="editingSections()"
+        (sectionsChange)="onEditingSectionsChange($event)"
+      />
+    </div>
+  </div>
+}
 
 <lba-confirm-delete-modal
   [open]="deletingId() !== null"
