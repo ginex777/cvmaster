@@ -18,4 +18,15 @@ describe('ScoreRingComponent', () => {
     fixture.detectChanges();
     expect(fixture.componentInstance.strokeColor()).toBe('var(--success)');
   });
+
+  it('supports a custom rendered size', () => {
+    const fixture = TestBed.createComponent(ScoreRingComponent);
+    fixture.componentRef.setInput('value', 88);
+    fixture.componentRef.setInput('size', 42);
+    fixture.detectChanges();
+
+    const ring = fixture.nativeElement.querySelector('.score-ring') as HTMLElement;
+    expect(ring.style.width).toBe('42px');
+    expect(ring.style.height).toBe('42px');
+  });
 });

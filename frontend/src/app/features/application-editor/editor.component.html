@@ -36,11 +36,43 @@
         <lucide-icon name="eye" [size]="14" aria-hidden="true"></lucide-icon>
         Vorschau
       </button>
-      <button class="btn btn--primary btn--sm" type="button" (click)="downloadBundle()" [disabled]="downloading()">
-        <lucide-icon name="download" [size]="14" aria-hidden="true"></lucide-icon>
-        Exportieren
-        <lucide-icon name="chevron-down" [size]="12" aria-hidden="true"></lucide-icon>
-      </button>
+      <div class="editor__export-select" (keydown.escape)="closeExportMenu()">
+        <button
+          class="btn btn--primary btn--sm editor__export-btn"
+          type="button"
+          [disabled]="downloading()"
+          aria-haspopup="menu"
+          aria-controls="editor-export-menu"
+          [attr.aria-expanded]="exportMenuOpen()"
+          (click)="toggleExportMenu()">
+          <lucide-icon name="download" [size]="14" aria-hidden="true"></lucide-icon>
+          Exportieren
+          <lucide-icon name="chevron-down" [size]="12" aria-hidden="true"></lucide-icon>
+        </button>
+
+        @if (exportMenuOpen()) {
+          <div id="editor-export-menu" class="editor__export-menu" role="menu" aria-label="Exportoptionen">
+            <button type="button" class="editor__export-menu-item" role="menuitem" (click)="downloadBundleFromMenu()">
+              <lucide-icon name="download" [size]="14" aria-hidden="true"></lucide-icon>
+              <span>Beide herunterladen (ZIP)</span>
+            </button>
+            <div class="editor__export-menu-separator" role="separator"></div>
+            <button type="button" class="editor__export-menu-item" role="menuitem" (click)="downloadCvPdfFromMenu()">
+              <lucide-icon name="file-text" [size]="14" aria-hidden="true"></lucide-icon>
+              <span>Lebenslauf als PDF</span>
+            </button>
+            <button type="button" class="editor__export-menu-item" role="menuitem" (click)="downloadLetterPdfFromMenu()">
+              <lucide-icon name="file-text" [size]="14" aria-hidden="true"></lucide-icon>
+              <span>Anschreiben als PDF</span>
+            </button>
+            <div class="editor__export-menu-separator" role="separator"></div>
+            <button type="button" class="editor__export-menu-item" role="menuitem" (click)="focusRecipientInputFromExportMenu()">
+              <lucide-icon name="mail" [size]="14" aria-hidden="true"></lucide-icon>
+              <span>Per E-Mail senden...</span>
+            </button>
+          </div>
+        }
+      </div>
     </div>
   </div>
 
@@ -70,25 +102,89 @@
         </div>
       </div>
 
-      <!-- Status toggle -->
-      <div class="editor__status-btn" role="group" aria-label="Status">
-        <lba-status-pill [status]="displayStatus()"></lba-status-pill>
+      <!-- Status select -->
+      <div class="editor__status-select" (keydown.escape)="closeStatusOverlays()">
         <button
           type="button"
-          class="editor__status-cycle"
+          class="editor__status-btn"
           aria-label="Status ändern"
-          (click)="setStatus(application()?.status === 'OPEN' ? 'DONE' : 'OPEN')">
+          aria-haspopup="menu"
+          aria-controls="editor-status-menu"
+          [attr.aria-expanded]="statusMenuOpen()"
+          (click)="toggleStatusMenu()">
+          <lba-status-pill [status]="displayStatus()" size="md"></lba-status-pill>
           <lucide-icon name="chevron-down" [size]="14" aria-hidden="true"></lucide-icon>
         </button>
+
+        @if (statusMenuOpen()) {
+          <div id="editor-status-menu" class="editor__status-menu" role="menu" aria-label="Bewerbungsstatus">
+            @for (status of statusOptions; track status) {
+              <button
+                type="button"
+                class="editor__status-menu-item"
+                role="menuitemradio"
+                [attr.aria-checked]="displayStatus() === status"
+                (click)="chooseStatus(status)">
+                <span
+                  class="editor__status-menu-dot"
+                  [style.background]="statusMeta(status).color"
+                  aria-hidden="true"></span>
+                <span>{{ statusMeta(status).label }}</span>
+                @if (displayStatus() === status) {
+                  <lucide-icon class="editor__status-menu-check" name="check" [size]="14" aria-hidden="true"></lucide-icon>
+                }
+              </button>
+            }
+
+            <div class="editor__status-menu-separator" role="separator"></div>
+            <button
+              type="button"
+              class="editor__status-menu-item editor__status-menu-item--reminder"
+              role="menuitem"
+              (click)="openReminderPickerFromStatusMenu()">
+              <lucide-icon name="calendar" [size]="14" aria-hidden="true"></lucide-icon>
+              <span>Erinnerung setzen...</span>
+            </button>
+          </div>
+        }
+
+        @if (reminderPopoverOpen()) {
+          <section class="editor__reminder-popover" aria-label="Erinnerung setzen">
+            @if (reminderAt()) {
+              <div class="editor__reminder-current">
+                <span>Aktuell: {{ reminderLabel() }}</span>
+                <button type="button" class="editor__reminder-clear" aria-label="Erinnerung löschen" (click)="clearReminder()">
+                  <lucide-icon name="x" [size]="13" aria-hidden="true"></lucide-icon>
+                </button>
+              </div>
+            }
+
+            <div class="editor__reminder-fields">
+              <label class="editor__reminder-field">
+                <span>Datum</span>
+                <input type="date" [value]="reminderDate()" (input)="onReminderDateInput($event)" />
+              </label>
+              <label class="editor__reminder-field">
+                <span>Zeit</span>
+                <input type="time" [value]="reminderTime()" (input)="onReminderTimeInput($event)" />
+              </label>
+            </div>
+
+            <div class="editor__reminder-actions">
+              <button type="button" class="btn btn--ghost btn--sm" (click)="closeReminderPopover()">Abbrechen</button>
+              <button type="button" class="btn btn--primary btn--sm" (click)="applyReminder()">Übernehmen</button>
+            </div>
+          </section>
+        }
       </div>
 
       <!-- ATS score widget -->
       @if (score() !== null) {
         <div class="editor__score-widget" aria-label="ATS-Match {{ score() }}%">
-          <lba-score-ring [value]="score()!"></lba-score-ring>
+          <lba-score-ring [value]="score()!" [size]="42"></lba-score-ring>
           <div>
-            <div class="editor__score-label">ATS-Match</div>
-            <div class="editor__score-sub">{{ keywordSummary() }}</div>
+            <div class="editor__score-label">ATS-MATCH</div>
+            <div class="editor__score-sub" [attr.data-tone]="matchQualityTone()">{{ matchQualityText() }}</div>
           </div>
         </div>
       }
@@ -287,6 +383,7 @@
                   <lucide-icon name="mail" [size]="13" aria-hidden="true"></lucide-icon>
                   <label for="recipient-email" class="sr-only">Empfänger-E-Mail</label>
                   <input
+                    #recipientEmailInput
                     id="recipient-email"
                     type="email"
                     class="send-row__input"
@@ -301,6 +398,7 @@
               </div>
               <div class="send-row__meta">
                 <lucide-icon name="pin" [size]="11" aria-hidden="true"></lucide-icon>
+                <span class="send-row__variant-tag">{{ variantLabel(selectedLetter()) }}-Variante</span>
                 PDF-Anhang wird automatisch beigefügt
                 <button type="button" class="send-row__regen" (click)="openRegenConfirm()">
                   <lucide-icon name="refresh-cw" [size]="11" aria-hidden="true"></lucide-icon>

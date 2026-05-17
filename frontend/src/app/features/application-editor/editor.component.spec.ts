@@ -117,10 +117,88 @@ describe('EditorComponent', () => {
     f.detectChanges();
     await f.whenStable();
 
-    await f.componentInstance.setStatus('DONE');
+    await f.componentInstance.setStatus('INTERVIEW');
 
-    expect(f.componentInstance.application()?.status).toBe('DONE');
-    expect(api.patch).toHaveBeenCalledWith('/applications/a1/status', { status: 'DONE' });
+    expect(f.componentInstance.application()?.status).toBe('INTERVIEW');
+    expect(api.patch).toHaveBeenCalledWith('/applications/a1/status', { status: 'INTERVIEW' });
+  });
+
+  it('opens the five-stage status menu from the header strip', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+    f.detectChanges();
+
+    const button = f.nativeElement.querySelector('.editor__status-btn') as HTMLButtonElement | null;
+    button?.click();
+    f.detectChanges();
+
+    const statusItems = Array.from(
+      f.nativeElement.querySelectorAll('.editor__status-menu-item[role="menuitemradio"]'),
+    ) as HTMLElement[];
+    const reminderItem = f.nativeElement.querySelector('.editor__status-menu-item--reminder') as HTMLElement | null;
+
+    expect(statusItems).toHaveLength(5);
+    expect(statusItems.map(item => item.textContent?.trim())).toEqual(
+      expect.arrayContaining(['Entwurf', 'Beworben', 'Interview', 'Angebot', 'Abgesagt']),
+    );
+    expect(reminderItem?.textContent).toContain('Erinnerung setzen');
+  });
+
+  it('maps APPLIED to the current backend status while keeping the five-stage display', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+
+    await f.componentInstance.setStatus('APPLIED');
+
+    expect(f.componentInstance.application()?.status).toBe('SENT');
+    expect(f.componentInstance.displayStatus()).toBe('APPLIED');
+    expect(api.patch).toHaveBeenCalledWith('/applications/a1/status', { status: 'SENT' });
+  });
+
+  it('opens a reminder picker from the status menu and shows the current reminder', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+    f.componentInstance.application.update(app => app ? { ...app, reminderAt: '2026-05-20T08:30:00.000Z' } : app);
+
+    f.componentInstance.openReminderPickerFromStatusMenu();
+    f.detectChanges();
+
+    const popover = f.nativeElement.querySelector('.editor__reminder-popover') as HTMLElement | null;
+    const current = f.nativeElement.querySelector('.editor__reminder-current') as HTMLElement | null;
+    expect(popover).not.toBeNull();
+    expect(current?.textContent).toContain('Aktuell');
+    expect(f.componentInstance.reminderDate()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('sets and clears reminders through the reminder endpoint', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+
+    await f.componentInstance.setReminder('2026-05-20T08:30:00.000Z');
+    expect(api.patch).toHaveBeenCalledWith('/applications/a1/reminder', { reminderAt: '2026-05-20T08:30:00.000Z' });
+    expect(f.componentInstance.application()?.reminderAt).toBe('2026-05-20T08:30:00.000Z');
+
+    await f.componentInstance.clearReminder();
+    expect(api.patch).toHaveBeenCalledWith('/applications/a1/reminder', { reminderAt: null });
+    expect(f.componentInstance.application()?.reminderAt).toBeNull();
+  });
+
+  it('renders ATS score quality text in the header widget', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+    f.detectChanges();
+
+    const scoreRing = f.nativeElement.querySelector('lba-score-ring .score-ring') as HTMLElement | null;
+    const scoreSub = f.nativeElement.querySelector('.editor__score-sub') as HTMLElement | null;
+
+    expect(scoreRing?.style.width).toBe('42px');
+    expect(scoreSub?.textContent?.trim()).toBe('Stark · 1/1 Keywords');
+    expect(scoreSub?.getAttribute('data-tone')).toBe('good');
   });
 
   it('opens and confirms letter regeneration', async () => {
@@ -204,6 +282,55 @@ describe('EditorComponent', () => {
     expect(anchor.download).toBe('Bewerbung.zip');
 
     createElement.mockRestore();
+  });
+
+  it('opens the export dropdown with all export actions', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+    f.detectChanges();
+
+    const button = f.nativeElement.querySelector('.editor__export-btn') as HTMLButtonElement | null;
+    button?.click();
+    f.detectChanges();
+
+    const items = Array.from(f.nativeElement.querySelectorAll('.editor__export-menu-item')) as HTMLElement[];
+    expect(items).toHaveLength(4);
+    expect(items.map(item => item.textContent?.trim())).toEqual(
+      expect.arrayContaining([
+        'Beide herunterladen (ZIP)',
+        'Lebenslauf als PDF',
+        'Anschreiben als PDF',
+        'Per E-Mail senden...',
+      ]),
+    );
+  });
+
+  it('focuses the send footer recipient input from the export menu', async () => {
+    jest.useFakeTimers();
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+    f.componentInstance.rightTab.set('analyse');
+    f.detectChanges();
+
+    f.componentInstance.focusRecipientInputFromExportMenu();
+    f.detectChanges();
+    jest.runOnlyPendingTimers();
+
+    expect(document.activeElement?.id).toBe('recipient-email');
+    jest.useRealTimers();
+  });
+
+  it('shows the selected letter variant in the send footer', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+    await f.componentInstance.selectLetter('warm');
+    f.detectChanges();
+
+    const tag = f.nativeElement.querySelector('.send-row__variant-tag') as HTMLElement | null;
+    expect(tag?.textContent?.trim()).toBe('Freundlich-Variante');
   });
 
   it('sends generated documents to the user email address', async () => {

@@ -10,6 +10,7 @@ import { Component, ChangeDetectionStrategy, input, computed } from '@angular/co
 })
 export class ScoreRingComponent {
   value = input.required<number>();
+  size = input(64);
 
   ariaLabel  = computed(() => `Match-Score: ${this.value()}%`);
   dashArray  = computed(() => {

@@ -37,6 +37,31 @@ describe('CvSectionEditorComponent', () => {
     expect(headings).toEqual(['Erfahrung', 'Ausbildung']);
   });
 
+  it('applies Atlas section colors and drag handles', async () => {
+    const f = await setup([
+      { id: 'p', heading: 'Profil', bullets: [] },
+      { id: 'sk', heading: 'Skills', bullets: [] },
+    ]);
+    const sections = f.debugElement.queryAll(By.css('.cv-section'));
+    const handles = f.debugElement.queryAll(By.css('.cv-section__drag-handle'));
+
+    expect((sections[0].nativeElement as HTMLElement).style.getPropertyValue('--section-color')).toBe('var(--accent)');
+    expect((sections[0].nativeElement as HTMLElement).style.getPropertyValue('--section-bg')).toBe('oklch(98.5% 0.014 268)');
+    expect((sections[1].nativeElement as HTMLElement).style.getPropertyValue('--section-color')).toBe('var(--status-offer)');
+    expect(handles).toHaveLength(2);
+  });
+
+  it('shows the KI-optimiert badge only on the profile section', async () => {
+    const f = await setup([
+      { id: 'p', heading: 'Profil', bullets: [] },
+      { id: 'e', heading: 'Erfahrung', bullets: [] },
+    ]);
+
+    const badges = f.debugElement.queryAll(By.css('.cv-section__ai-badge'));
+    expect(badges).toHaveLength(1);
+    expect((badges[0].nativeElement as HTMLElement).textContent).toContain('KI-optimiert');
+  });
+
   it('renders bullet texts in textareas', async () => {
     const f = await setup();
     const textareas = f.debugElement.queryAll(By.css('.cv-bullet__text'));

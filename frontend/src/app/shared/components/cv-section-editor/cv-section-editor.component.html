@@ -1,18 +1,33 @@
 <div class="cv-editor" [attr.aria-busy]="saving()" aria-label="Lebenslauf-Abschnitte bearbeiten">
 
   @for (section of local(); track section.id; let si = $index) {
-    <div class="cv-section">
+    <div
+      class="cv-section"
+      [style.--section-color]="sectionStyle(section.heading).color"
+      [style.--section-bg]="sectionStyle(section.heading).bg"
+      [style.--section-stripe]="sectionStyle(section.heading).stripe">
       <div class="cv-section__header">
-        <label [for]="'sh-' + section.id" class="sr-only">Abschnittsüberschrift</label>
-        <input
-          [id]="'sh-' + section.id"
-          type="text"
-          class="cv-section__heading-input"
-          [value]="section.heading"
-          (input)="onHeadingInput(si, $any($event.target).value)"
-          (blur)="emitSave()"
-          [attr.aria-label]="'Überschrift: ' + section.heading"
-        />
+        <span class="cv-section__drag-handle" aria-hidden="true">
+          <lucide-icon name="grip-vertical" [size]="14"></lucide-icon>
+        </span>
+        <h3 class="cv-section__title">
+          <label [for]="'sh-' + section.id" class="sr-only">Abschnittsüberschrift</label>
+          <input
+            [id]="'sh-' + section.id"
+            type="text"
+            class="cv-section__heading-input"
+            [value]="section.heading"
+            (input)="onHeadingInput(si, $any($event.target).value)"
+            (blur)="emitSave()"
+            [attr.aria-label]="'Überschrift: ' + section.heading"
+          />
+        </h3>
+        @if (isProfileSection(section.heading)) {
+          <span class="cv-section__ai-badge">
+            <lucide-icon name="sparkles" [size]="10" aria-hidden="true"></lucide-icon>
+            KI-optimiert
+          </span>
+        }
         <button
           type="button"
           class="btn btn--ghost btn--sm cv-section__remove"

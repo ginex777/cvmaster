@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core';
+import { IconsModule } from '../../icons/icons.module';
 
 export interface CvBullet {
   id: string;
@@ -13,10 +14,31 @@ export interface CvSection {
   bullets: CvBullet[];
 }
 
+interface SectionStyle {
+  color: string;
+  bg: string;
+  stripe: string;
+}
+
+const DEFAULT_SECTION_STYLE: SectionStyle = {
+  color: 'var(--ink-2)',
+  bg: 'var(--surface-2)',
+  stripe: 'var(--line)',
+};
+
+const SECTION_STYLE_MAP: Record<string, SectionStyle> = {
+  profil: { color: 'var(--accent)', bg: 'oklch(98.5% 0.014 268)', stripe: 'var(--accent)' },
+  erfahrung: { color: 'var(--status-applied)', bg: 'oklch(98.5% 0.012 240)', stripe: 'var(--status-applied)' },
+  projekte: { color: 'var(--status-applied)', bg: 'oklch(98.5% 0.012 240)', stripe: 'var(--status-applied)' },
+  skills: { color: 'var(--status-offer)', bg: 'oklch(98.5% 0.012 155)', stripe: 'var(--status-offer)' },
+  ausbildung: { color: 'var(--status-interview)', bg: 'oklch(98.5% 0.012 295)', stripe: 'var(--status-interview)' },
+  sprachen: { color: 'var(--warn)', bg: 'oklch(98.5% 0.012 60)', stripe: 'var(--warn)' },
+};
+
 @Component({
   selector: 'lba-cv-section-editor',
   standalone: true,
-  imports: [],
+  imports: [IconsModule],
   templateUrl: './cv-section-editor.component.html',
   styleUrl: './cv-section-editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,6 +108,14 @@ export class CvSectionEditorComponent {
   removeSection(si: number): void {
     this.local.update(ss => ss.filter((_, i) => i !== si));
     this.emitSave();
+  }
+
+  sectionStyle(heading: string): SectionStyle {
+    return SECTION_STYLE_MAP[heading.trim().toLowerCase()] ?? DEFAULT_SECTION_STYLE;
+  }
+
+  isProfileSection(heading: string): boolean {
+    return heading.trim().toLowerCase() === 'profil';
   }
 
   emitSave(): void {

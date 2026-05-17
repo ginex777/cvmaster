@@ -1,5 +1,5 @@
 import type { OnDestroy, OnInit } from '@angular/core';
-import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, HostListener, inject, input, output, signal, viewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -13,7 +13,7 @@ import { AnalyticsService } from '../../core/analytics/analytics.service';
 import { IconsModule } from '../../shared/icons/icons.module';
 import { ScoreRingComponent } from '../../shared/components/score-ring.component';
 import { StatusPillComponent } from '../../shared/components/status-pill/status-pill';
-import type { ApplicationStatus } from '../../shared/utils/status.utils';
+import { STATUS_META, STATUS_ORDER, type ApplicationStatus } from '../../shared/utils/status.utils';
 
 type LetterVariant = 'formal' | 'warm' | 'brief';
 
@@ -45,6 +45,7 @@ interface ApplicationDto {
   chosenVariant?: string | null;
   generationProgress?: number;
   generationError?: string | null;
+  reminderAt?: string | null;
   jobPosting?: { parsedJson?: { title?: string; company?: string; keywords?: string[] } };
 }
 
@@ -63,6 +64,8 @@ export class EditorComponent implements OnInit, OnDestroy {
   private readonly api = inject(ApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly analytics = inject(AnalyticsService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly recipientEmailInput = viewChild<ElementRef<HTMLInputElement>>('recipientEmailInput');
   private pollTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly appId = input<string | null>(null);
@@ -91,6 +94,12 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly showAnalyse = signal(false);
   readonly rightTab = signal<'letter' | 'analyse' | 'followup'>('letter');
   readonly activeOutlineSectionId = signal<string | null>(null);
+  readonly statusMenuOpen = signal(false);
+  readonly exportMenuOpen = signal(false);
+  readonly reminderPopoverOpen = signal(false);
+  readonly reminderDate = signal('');
+  readonly reminderTime = signal('09:00');
+  readonly statusOptions = STATUS_ORDER;
 
   readonly editorForm = new FormGroup({
     formal: new FormControl('', { nonNullable: true }),
@@ -112,9 +121,29 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly generationError = computed(() => this.application()?.generationError ?? null);
   readonly generationFailed = computed(() => this.application()?.status === 'FAILED' || !!this.generationError());
   readonly isModal = computed(() => this.appId() !== null);
+  readonly reminderAt = computed(() => this.application()?.reminderAt ?? null);
+  readonly reminderLabel = computed(() => {
+    const reminderAt = this.reminderAt();
+    if (!reminderAt) return 'Keine Erinnerung gesetzt';
+    const date = new Date(reminderAt);
+    if (Number.isNaN(date.getTime())) return 'Erinnerung gesetzt';
+    return new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+  });
   readonly jobTitle = computed(() => this.application()?.jobPosting?.parsedJson?.title ?? '');
   readonly jobCompany = computed(() => this.application()?.jobPosting?.parsedJson?.company ?? '');
-  readonly keywordSummary = computed(() => `${this.keywords().length} gefunden / ${this.missingKeywords().length} fehlen`);
+  readonly matchQualityText = computed(() => {
+    const score = this.score() ?? 0;
+    const quality = score >= 80 ? 'Stark' : score >= 60 ? 'Solide' : 'Ausbaufähig';
+    const matched = this.keywords().length;
+    const total = matched + this.missingKeywords().length;
+    return `${quality} · ${matched}/${total || matched} Keywords`;
+  });
+  readonly matchQualityTone = computed<'good' | 'neutral' | 'warn'>(() => {
+    const score = this.score() ?? 0;
+    if (score >= 80) return 'good';
+    if (score >= 60) return 'neutral';
+    return 'warn';
+  });
 
   readonly companyInitials = computed(() =>
     this.jobCompany().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase() || 'HF',
@@ -135,6 +164,21 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.clearPoll();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+
+    const statusSelect = this.host.nativeElement.querySelector('.editor__status-select');
+    if ((this.statusMenuOpen() || this.reminderPopoverOpen()) && !statusSelect?.contains(target)) {
+      this.closeStatusOverlays();
+    }
+
+    if (this.exportMenuOpen() && !this.host.nativeElement.querySelector('.editor__export-select')?.contains(target)) {
+      this.exportMenuOpen.set(false);
+    }
   }
 
   async load(): Promise<void> {
@@ -209,15 +253,132 @@ export class EditorComponent implements OnInit, OnDestroy {
     });
   }
 
-  async setStatus(status: 'OPEN' | 'DONE'): Promise<void> {
+  toggleStatusMenu(): void {
+    this.statusMenuOpen.update(open => !open);
+  }
+
+  closeStatusMenu(): void {
+    this.statusMenuOpen.set(false);
+  }
+
+  closeStatusOverlays(): void {
+    this.statusMenuOpen.set(false);
+    this.reminderPopoverOpen.set(false);
+  }
+
+  toggleExportMenu(): void {
+    this.exportMenuOpen.update(open => !open);
+  }
+
+  closeExportMenu(): void {
+    this.exportMenuOpen.set(false);
+  }
+
+  statusMeta(status: ApplicationStatus): typeof STATUS_META[ApplicationStatus] {
+    return STATUS_META[status];
+  }
+
+  async chooseStatus(status: ApplicationStatus): Promise<void> {
+    if (this.displayStatus() !== status) {
+      await this.setStatus(status);
+    }
+    this.closeStatusMenu();
+  }
+
+  openReminderPickerFromStatusMenu(): void {
+    this.closeStatusMenu();
+    this.populateReminderInputs();
+    this.reminderPopoverOpen.set(true);
+  }
+
+  closeReminderPopover(): void {
+    this.reminderPopoverOpen.set(false);
+  }
+
+  onReminderDateInput(event: Event): void {
+    this.reminderDate.set((event.target as HTMLInputElement).value);
+  }
+
+  onReminderTimeInput(event: Event): void {
+    this.reminderTime.set((event.target as HTMLInputElement).value);
+  }
+
+  async applyReminder(): Promise<void> {
+    const date = this.reminderDate();
+    const time = this.reminderTime() || '09:00';
+    if (!date) {
+      this.error.set('Bitte wähle ein Datum für die Erinnerung.');
+      return;
+    }
+
+    const reminder = new Date(`${date}T${time}`);
+    if (Number.isNaN(reminder.getTime())) {
+      this.error.set('Erinnerung konnte nicht gelesen werden.');
+      return;
+    }
+
+    await this.setReminder(reminder.toISOString());
+    this.closeReminderPopover();
+  }
+
+  async clearReminder(): Promise<void> {
+    await this.setReminder(null);
+    this.reminderDate.set('');
+    this.reminderTime.set('09:00');
+    this.closeReminderPopover();
+  }
+
+  async downloadBundleFromMenu(): Promise<void> {
+    this.closeExportMenu();
+    await this.downloadBundle();
+  }
+
+  async downloadCvPdfFromMenu(): Promise<void> {
+    this.closeExportMenu();
+    await this.downloadCvPdf();
+  }
+
+  async downloadLetterPdfFromMenu(): Promise<void> {
+    this.closeExportMenu();
+    await this.downloadLetterPdf();
+  }
+
+  focusRecipientInputFromExportMenu(): void {
+    this.closeExportMenu();
+    this.rightTab.set('letter');
+    setTimeout(() => this.recipientEmailInput()?.nativeElement.focus(), 0);
+  }
+
+  async setStatus(status: ApplicationStatus): Promise<void> {
+    if (!this.id) return;
     const previous = this.application();
-    this.application.update(app => app ? { ...app, status } : app);
+    const apiStatus = this.statusToApiStatus(status);
+    this.application.update(app => app ? { ...app, status: apiStatus } : app);
 
     try {
-      const updated = await this.api.patch<ApplicationDto>(`/applications/${this.id}/status`, { status });
+      const updated = await this.api.patch<ApplicationDto>(`/applications/${this.id}/status`, { status: apiStatus });
       this.application.update(current => ({ ...(current ?? { id: this.id }), ...updated }));
-    } catch {
+    } catch (e: unknown) {
       this.application.set(previous);
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Status konnte nicht geÃ¤ndert werden.');
+    }
+  }
+
+  async setReminder(reminderAt: string | null): Promise<void> {
+    if (!this.id) return;
+    const previous = this.application();
+    this.application.update(app => app ? { ...app, reminderAt } : app);
+    this.saving.set(true);
+    this.error.set(null);
+
+    try {
+      const updated = await this.api.patch<ApplicationDto>(`/applications/${this.id}/reminder`, { reminderAt });
+      this.application.update(current => ({ ...(current ?? { id: this.id }), ...updated }));
+    } catch (e: unknown) {
+      this.application.set(previous);
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Erinnerung konnte nicht gespeichert werden.');
+    } finally {
+      this.saving.set(false);
     }
   }
 
@@ -397,6 +558,37 @@ export class EditorComponent implements OnInit, OnDestroy {
       clearTimeout(this.pollTimer);
       this.pollTimer = null;
     }
+  }
+
+  private statusToApiStatus(status: ApplicationStatus): string {
+    return status === 'APPLIED' ? 'SENT' : status;
+  }
+
+  private populateReminderInputs(): void {
+    const reminderAt = this.reminderAt();
+    if (!reminderAt) {
+      this.reminderDate.set('');
+      this.reminderTime.set('09:00');
+      return;
+    }
+
+    const date = new Date(reminderAt);
+    if (Number.isNaN(date.getTime())) return;
+    this.reminderDate.set(this.toDateInputValue(date));
+    this.reminderTime.set(this.toTimeInputValue(date));
+  }
+
+  private toDateInputValue(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private toTimeInputValue(date: Date): string {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
   }
 
   private populateForm(app: ApplicationDto): void {

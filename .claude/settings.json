@@ -8,7 +8,8 @@
       "Bash(cd frontend && npm test -- --watchAll=false)",
       "Bash(cd frontend && npm run build)",
       "Bash(ng generate *)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(node -e \"const l = require\\('./node_modules/lucide-angular'\\); const names = ['Home','Briefcase','Columns','FileText','Linkedin','Settings','LogOut','Plus','Search','Download','Sparkles','Bell','Mail','Link','Calendar','Building','User','Lock','Target','AlertCircle','Copy','RefreshCw','Filter','LayoutGrid','Command','ChevronDown','ChevronRight','ChevronLeft','Check','X','MoreHorizontal','TrendingUp','Upload','FileEdit','Layers','Eye','Send','Star','Sun','ArrowRight','GripVertical','Globe','Pin']; const missing = names.filter\\(n => !l[n]\\); console.log\\('Missing:', missing.join\\(', '\\) || 'none'\\);\")"
     ]
   }
 }
