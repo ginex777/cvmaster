@@ -816,7 +816,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
 **Fünf** Mikro-Tasks.
 
-## ☐ HE-01 · Hero: Background-Glow
+## ✅ HE-01 · Hero: Background-Glow
 
 - **📐 JSX-Quelle:** `redesign/screens-marketing.jsx` → `LandingScreen` → erster `<div>` mit `radial-gradient` (Subtle radial accent-Kommentar).
 - **Dateien:** `landing/sections/hero.component.html` + `.scss`
@@ -827,7 +827,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   Style: `position: absolute; top: -120px; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; border-radius: 50%; background: radial-gradient(circle, var(--accent-soft) 0%, transparent 60%); pointer-events: none; opacity: 0.7; z-index: 0`. Hero-Inner braucht `position: relative; z-index: 1`.
 - **Verifikation:** Hero hat dezenten violett-blauen Glow oben mittig.
 
-## ☐ HE-02 · Hero: Eyebrow-Pill
+## ✅ HE-02 · Hero: Eyebrow-Pill
 
 - **📐 JSX-Quelle:** `redesign/screens-marketing.jsx` → `LandingScreen` → Eyebrow-Div mit Sparkles-Capsule (18×18) und Text „KI-Bewerbungsagent · Beta".
 - **Dateien:** `hero.component.html` + `.scss`
@@ -842,7 +842,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 - **Styles:** `display: inline-flex; gap: 8px; padding: 5px 12px 5px 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; font-size: 12.5px; color: var(--ink-2); box-shadow: 0 1px 2px rgba(0,0,0,0.03)`. Icon-Wrap: 18×18 rounded, `background: var(--accent-soft); color: var(--accent)`.
 - **Verifikation:** Eyebrow ist eine Pill mit Sparkles-Icon-Capsule.
 
-## ☐ HE-03 · Hero: H1 Italic-Akzent
+## ✅ HE-03 · Hero: H1 Italic-Akzent
 
 - **📐 JSX-Quelle:** `redesign/screens-marketing.jsx` → `LandingScreen` → H1 mit fontSize 60, letterSpacing -1.6, fontWeight 600. `<span>` im H1 mit `color: TOKENS.accent`, `fontStyle: italic`, `fontWeight: 500`. Zeilenumbruch mit `<br>`.
 - **Dateien:** `hero.component.html` + `.scss`
@@ -853,7 +853,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   - Text in zwei Zeilen umbrechen (mit `<br>` zwischen „Bewerbungen," und „die zur"): „Bewerbungen,<br>die zur _Stelle_ passen."
 - **Verifikation:** H1 zeigt italic blau-violetten Akzent auf „Stelle".
 
-## ☐ HE-04 · Hero: Editor-Peek (Komplett-Ersatz Right-Side)
+## ✅ HE-04 · Hero: Editor-Peek (Komplett-Ersatz Right-Side)
 
 - **📐 JSX-Quelle:** `redesign/screens-marketing.jsx` → `LandingScreen` → kompletter rechter Bereich (`Right: stylized product peek`-Kommentar). Enthält: Editor-Card mit Tab-Bar (macOS-Dots), Body-Grid mit Profil + Score-Side-Panel, Floating Anschreiben-Card unten links.
 - **Dateien:** `hero.component.html` + `.scss`
@@ -867,7 +867,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   4. **Floating Anschreiben-Card** unten links: `position: absolute; bottom: -40px; left: -60px; width: 280px; transform: rotate(-2deg)`. Inhalt: Mail-Icon + „Anschreiben · Formal" + 3 Varianten-Hint + erster Letter-Absatz.
 - **Verifikation:** Hero-Right sieht aus wie `preview.html?s=landing` Right-Bereich, mit Floating-Card darunter links.
 
-## ☐ HE-05 · Hero: Buttons & Proof-Strip
+## ✅ HE-05 · Hero: Buttons & Proof-Strip
 
 - **📐 JSX-Quelle:** `redesign/screens-marketing.jsx` → `LandingScreen` → CTA-Pair (`Btn variant="cta"` + `Btn variant="default"`) und Proof-Strip mit Avatar-Stack (5 Avatars, margin-left -8) + zweizeiliger Text.
 - **Dateien:** `hero.component.html` + `.scss`
@@ -1816,11 +1816,11 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | AU-03 | Login: Form-Modernisieren + 2FA conditional | D | ☐ |
 | AU-04 | Login: Google-OAuth visuell | D | ☐ |
 | AU-05 | Register/Forgot/Reset | D | ☐ |
-| HE-01 | Hero: Background-Glow | E | ☐ |
-| HE-02 | Hero: Eyebrow-Pill | E | ☐ |
-| HE-03 | Hero: H1 Italic-Akzent | E | ☐ |
-| HE-04 | Hero: Editor-Peek | E | ☐ |
-| HE-05 | Hero: Buttons & Proof-Strip | E | ☐ |
+| HE-01 | Hero: Background-Glow | E | ✅ |
+| HE-02 | Hero: Eyebrow-Pill | E | ✅ |
+| HE-03 | Hero: H1 Italic-Akzent | E | ✅ |
+| HE-04 | Hero: Editor-Peek | E | ✅ |
+| HE-05 | Hero: Buttons & Proof-Strip | E | ✅ |
 | PR-01 | Pricing: Free-Anker-Karte | F | ☐ |
 | PR-02 | Pricing: Plan-Toggle | F | ☐ |
 | PR-03 | Pricing: Featured-Badge | F | ☐ |
