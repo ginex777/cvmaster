@@ -1,13 +1,14 @@
 <section class="cta-band" aria-labelledby="cta-heading" [lbaReveal]="0">
-  <h2 id="cta-heading" class="cta-band__title">Deine nächste Bewerbung - in 90 Sekunden.</h2>
+  <div class="cta-band__grain" aria-hidden="true"></div>
+  <h2 id="cta-heading" class="cta-band__title">Deine nächste Bewerbung — in 90 Sekunden.</h2>
   <p class="cta-band__sub">
-    Probier es mit einer echten Stelle aus deiner Liste. Wenn der Match-Score unter 80% bleibt, bezahlst du nichts.
+    Probier es mit einer echten Stelle aus deiner Liste. Wenn der Match-Score unter 80 % bleibt, bezahlst du nichts.
   </p>
   <div class="cta-band__actions">
-    <button type="button" class="btn btn--outline btn--lg" (click)="optimizeRequested.emit()">
-      Bewerbung jetzt optimieren →
+    <button type="button" class="btn btn--cta-invert btn--lg" (click)="optimizeRequested.emit()">
+      Jetzt kostenlos starten →
     </button>
-    <button type="button" class="btn btn--ghost btn--lg" (click)="demoRequested.emit()">Demo ansehen</button>
+    <button type="button" class="btn btn--cta-outline btn--lg" (click)="demoRequested.emit()">Demo ansehen</button>
   </div>
   <div class="cta-band__trust">
     <span>• Keine Kreditkarte</span>
@@ -15,4 +16,3 @@
     <span>• Daten nach 30 Tagen gelöscht</span>
   </div>
 </section>
-

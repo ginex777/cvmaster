@@ -49,9 +49,21 @@ h2 {
   gap: 20px;
 }
 
+.cv-eyebrow {
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+
+  &--before { color: var(--ink-3); }
+  &--after  { color: var(--accent); }
+}
+
 .cv-card {
   padding: 30px;
   border: 1px solid var(--line-2);
+  border-left: 3px solid var(--ink-3);
   border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: var(--shadow-sm);
@@ -93,6 +105,7 @@ h2 {
 
 .cv-card--after {
   border-color: color-mix(in oklch, var(--accent) 70%, var(--line-2));
+  border-left-color: var(--accent);
   background: color-mix(in oklch, var(--accent) 4%, var(--surface));
 
   header span {

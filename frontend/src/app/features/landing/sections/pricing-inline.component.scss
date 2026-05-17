@@ -41,16 +41,14 @@ h2 {
 }
 
 .pricing-grid {
-  max-width: 900px;
-  margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .price-card {
   position: relative;
-  padding: 30px;
+  padding: 22px;
   border: 1px solid var(--line-2);
   border-radius: var(--radius-lg);
   background: var(--surface);
@@ -118,12 +116,14 @@ h2 {
   }
 }
 
+@media (max-width: 900px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 760px) {
   h2 {
     font-size: 2.5rem;
-  }
-
-  .pricing-grid {
-    grid-template-columns: 1fr;
   }
 }

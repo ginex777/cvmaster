@@ -54,17 +54,16 @@ h2 {
   box-shadow: var(--shadow-sm);
 }
 
+.testimonial-card__quote-icon {
+  color: var(--accent);
+  margin-bottom: var(--space-3);
+}
+
 .testimonial-quote {
-  color: var(--ink);
+  color: var(--ink-2);
   font-size: 15px;
   line-height: 1.6;
-
-  &::before {
-    content: '"';
-    color: var(--accent);
-    font-size: 24px;
-    line-height: 0;
-  }
+  flex: 1;
 }
 
 footer {
@@ -75,14 +74,16 @@ footer {
 }
 
 .avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
 }
-
-.avatar--orange { background: oklch(64% 0.14 60); }
-.avatar--green { background: oklch(64% 0.14 155); }
-.avatar--blue { background: oklch(58% 0.20 255); }
 
 strong,
 small {

@@ -5,18 +5,24 @@
   </div>
 
   <div class="testimonials">
-    <article class="testimonial-card" [lbaReveal]="0">
-      <p class="testimonial-quote">Drei Wochen, sieben Bewerbungen, vier Interviews. Vorher: ein Jahr, null.</p>
-      <footer><span class="avatar avatar--orange"></span><div><strong>Marek S.</strong><small>Junior Backend · Heidelberg</small></div></footer>
-    </article>
-    <article class="testimonial-card" [lbaReveal]="100">
-      <p class="testimonial-quote">Endlich bekomme ich Anschreiben hin, die nicht klingen wie aus einem Vorlagen-Generator.</p>
-      <footer><span class="avatar avatar--green"></span><div><strong>Anita K.</strong><small>Werkstudentin UX · München</small></div></footer>
-    </article>
-    <article class="testimonial-card" [lbaReveal]="200">
-      <p class="testimonial-quote">Der Match-Score hat mir gezeigt, dass ich mich auf die falschen Stellen bewerbe. Game changer.</p>
-      <footer><span class="avatar avatar--blue"></span><div><strong>Tobias R.</strong><small>Berufseinsteiger · Köln</small></div></footer>
-    </article>
+    @for (t of testimonials; track t.name; let i = $index) {
+      <article class="testimonial-card" [lbaReveal]="i * 100">
+        <div class="testimonial-card__quote-icon" aria-hidden="true">
+          <lucide-icon name="quote" [size]="20"></lucide-icon>
+        </div>
+        <p class="testimonial-quote">{{ t.quote }}</p>
+        <footer>
+          <span
+            class="avatar"
+            [style.background]="avatarBg(t.name)"
+            [style.color]="avatarColor(t.name)"
+            aria-hidden="true">{{ initials(t.name) }}</span>
+          <div>
+            <strong>{{ t.name }}</strong>
+            <small>{{ t.role }}</small>
+          </div>
+        </footer>
+      </article>
+    }
   </div>
 </section>
-

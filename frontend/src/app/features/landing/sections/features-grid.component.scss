@@ -42,11 +42,14 @@ h2 {
 
 .feature-card {
   min-height: 380px;
-  padding: 28px;
+  padding: 24px;
   border: 1px solid var(--line-2);
   border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s;
+
+  &:hover { box-shadow: var(--shadow-md); }
 
   h3 {
     margin: 0 0 10px;
@@ -63,14 +66,18 @@ h2 {
 }
 
 .feature-icon {
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   margin-bottom: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
+  border-radius: 12px;
   font-size: 22px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature-card { transition: none; }
 }
 
 .feature-icon--blue { background: color-mix(in oklch, var(--accent) 12%, white); color: var(--accent); }

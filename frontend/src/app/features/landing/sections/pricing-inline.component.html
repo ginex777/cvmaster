@@ -7,34 +7,45 @@
 
   <div class="pricing-grid">
     <article class="price-card" [lbaReveal]="0">
-      <h3>Einzelbewerbung</h3>
-      <p class="price"><strong>4,90 €</strong><span>/ Bewerbung</span></p>
-      <p>Für die eine wichtige Stelle. Ohne Account, ohne Abo.</p>
+      <h3>Free</h3>
+      <p class="price"><strong>0 €</strong><span>/ Monat</span></p>
+      <p>Zum Ausprobieren. Ohne Kreditkarte.</p>
+      <ul>
+        <li>1 Bewerbung optimieren</li>
+        <li>CV-Analyse & ATS-Score</li>
+        <li>PDF-Export</li>
+      </ul>
+      <button type="button" class="btn btn--outline btn--md" (click)="singleRequested.emit()">
+        Kostenlos starten
+      </button>
+    </article>
+
+    <article class="price-card" [lbaReveal]="80">
+      <h3>Pay-per-App</h3>
+      <p class="price"><strong>2,49 €</strong><span>/ Bewerbung</span></p>
+      <p>Für die eine wichtige Stelle. Ohne Abo.</p>
       <ul>
         <li>1 maßgeschneiderter Lebenslauf</li>
         <li>1 Anschreiben in deinem Tonfall</li>
         <li>ATS-Match-Report inkl. Keywords</li>
-        <li>PDF-Export, druckfertig</li>
       </ul>
       <button type="button" class="btn btn--outline btn--md" (click)="singleRequested.emit()">
-        Eine Bewerbung optimieren
+        Einzelbewerbung starten
       </button>
     </article>
 
-    <article class="price-card price-card--featured" [lbaReveal]="120">
+    <article class="price-card price-card--featured" [lbaReveal]="160">
       <span class="badge">EMPFOHLEN</span>
       <h3>Pro</h3>
-      <p class="price"><strong>14 €</strong><span>/ Monat</span></p>
+      <p class="price"><strong>9,99 €</strong><span>/ Monat</span></p>
       <p>Für aktive Bewerbungsphasen. Monatlich kündbar.</p>
       <ul>
-        <li>Unbegrenzt Bewerbungen pro Monat</li>
+        <li>Unbegrenzt Bewerbungen</li>
         <li>Anschreiben in 3 Tonfall-Varianten</li>
-        <li>Mehrere Master-CVs und Sprachversionen</li>
         <li>LinkedIn-Profil-Optimierung</li>
-        <li>Versand-Tracking und Follow-up-Vorlagen</li>
+        <li>Versand-Tracking & Follow-ups</li>
       </ul>
       <button type="button" class="btn btn--cta btn--md" (click)="proRequested.emit()">7 Tage gratis testen →</button>
     </article>
   </div>
 </section>
-

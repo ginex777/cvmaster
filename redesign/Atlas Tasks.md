@@ -1233,13 +1233,13 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
 **📐 Verbindliche Quelle:** `redesign/screens-marketing.jsx`, `LandingScreen` (für Hero-Bereich) + Pattern aus übrigen Sections aus dem Bestand. Sections unter Hero haben **keine** direkten JSX-Mockups — wir nutzen die `Btn`/`Panel`/Token-Werte aus `redesign/shared.jsx` als Styling-Basis.
 
-## ☐ LS-01 · Logo-Bar Token-Update
+## ✅ LS-01 · Logo-Bar Token-Update
 
 - **Dateien:** `landing/sections/logo-bar.component.{html,scss}`
 - **Aufgabe:** Logos in `--ink-3`. Hover bringt sie auf `--ink`. Container `padding: 32px 0`, `border-top: 1px solid var(--line-2)`, `border-bottom: 1px solid var(--line-2)`.
 - **Verifikation:** Logo-Bar erscheint dezent grau, Hover zeigt Logos in Voll-Schwärze.
 
-## ☐ LS-02 · Features-Grid Icon-Container
+## ✅ LS-02 · Features-Grid Icon-Container
 
 - **Dateien:** `landing/sections/features-grid.component.{html,scss}`
 - **Aktueller Zustand:** Icons mit `feature-icon--{blue,yellow,green,purple}` Klassen — vermutlich CSS basiert.
@@ -1249,7 +1249,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Hover-State: leichter `--shadow-md`.
 - **Verifikation:** 4 farbig variierte Cards, Icons in Capsule-Containern.
 
-## ☐ LS-03 · Workflow-Steps Card-Style
+## ✅ LS-03 · Workflow-Steps Card-Style
 
 - **Dateien:** `landing/sections/workflow-steps.component.{html,scss}`
 - **Aufgabe:**
@@ -1258,7 +1258,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Mock-Dropzone / Code-Preview / File-List bleiben aber mit Token-Padding/Borders.
 - **Verifikation:** 3 Step-Cards, jede mit großer Accent-Number oben.
 
-## ☐ LS-04 · Before/After-Vergleich
+## ✅ LS-04 · Before/After-Vergleich
 
 - **Dateien:** `landing/sections/before-after.component.{html,scss}`
 - **Aufgabe:**
@@ -1268,7 +1268,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   4. Sub-Labels Mono Eyebrows in „VORHER" / „NACHHER".
 - **Verifikation:** Klarer Kontrast zwischen den Spalten.
 
-## ☐ LS-05 · Testimonials Cards
+## ✅ LS-05 · Testimonials Cards
 
 - **Dateien:** `landing/sections/testimonials.component.{html,scss}`
 - **Aufgabe:**
@@ -1278,13 +1278,13 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   4. Footer: 36×36-Avatar mit deterministischer Farbe + Name (`--ink`) + Rolle (`--ink-3`).
 - **Verifikation:** Testimonials sehen wie 3 elegante Karten aus.
 
-## ☐ LS-06 · Pricing-Inline Strip
+## ✅ LS-06 · Pricing-Inline Strip
 
 - **Dateien:** `landing/sections/pricing-inline.component.{html,scss}`
 - **Aufgabe:** 3-Spalten kompakter Pricing-Block. Selber Code wie `/preise` aber kompakter (padding kleiner, kein Header).
 - **Verifikation:** Inline-Pricing zeigt 3 Pläne.
 
-## ☐ LS-07 · CTA-Band Final
+## ✅ LS-07 · CTA-Band Final
 
 - **Dateien:** `landing/sections/cta-band.component.{html,scss}`
 - **Aufgabe:**

@@ -21,11 +21,18 @@
     align-items: center;
     gap: 8px;
     font-weight: 500;
+    transition: color 0.15s;
+
+    &:hover { color: var(--ink); }
   }
 
   i {
     color: var(--ink-2);
     font-style: normal;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    span:not(.logo-bar__label) { transition: none; }
   }
 }
 
