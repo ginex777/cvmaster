@@ -251,7 +251,7 @@ describe('MasterCvsComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
-    const title = fixture.nativeElement.querySelector('.card-title') as HTMLElement;
+    const title = fixture.nativeElement.querySelector('.cv-card__title') as HTMLElement;
     expect(title?.textContent?.trim()).toBe('Mein Lebenslauf');
   });
 
@@ -262,7 +262,7 @@ describe('MasterCvsComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
-    const btn = fixture.nativeElement.querySelector('button[aria-label="In Bewerbung verwenden: Mein CV"]') as HTMLButtonElement;
+    const btn = fixture.nativeElement.querySelector('button[aria-label="In Bewerbung anwenden: Mein CV"]') as HTMLButtonElement;
     expect(btn).not.toBeNull();
   });
 });

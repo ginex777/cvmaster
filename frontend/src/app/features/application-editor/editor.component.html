@@ -5,245 +5,375 @@
   tabindex="-1"
   aria-labelledby="editor-title"
   [attr.aria-busy]="loading() || generating()">
-  <header class="editor__topbar">
-    <div class="editor__title-block">
-      <p class="editor__eyebrow">Bewerbungseditor</p>
-      <h1 id="editor-title">{{ jobTitle() || 'Bewerbung bearbeiten' }}</h1>
-      @if (jobCompany()) {
-        <p class="editor__company">{{ jobCompany() }}</p>
+
+  <!-- Controls row: back/close + save status + downloads -->
+  <div class="editor__controls">
+    <div class="editor__controls-left">
+      @if (isModal()) {
+        <button type="button" class="editor__back-btn" (click)="closeRequested.emit()">
+          <lucide-icon name="chevron-left" [size]="14" aria-hidden="true"></lucide-icon>
+          Schließen
+        </button>
+      } @else {
+        <a routerLink="/app/applications" class="editor__back-btn">
+          <lucide-icon name="chevron-left" [size]="14" aria-hidden="true"></lucide-icon>
+          Bewerbungen
+        </a>
       }
     </div>
 
-    <div class="editor__metric-row" aria-label="Auswertung">
-      <div class="editor__score" role="status" [attr.aria-label]="'ATS Score ' + (score() ?? 0) + ' Prozent'">
-        <strong>{{ score() ?? 0 }}</strong>
-        <span>ATS</span>
-      </div>
-      <p>{{ keywordSummary() }}</p>
-    </div>
-
-    <div class="editor__topbar-group" role="group" aria-label="Bewerbungsstatus">
-      <button
-        type="button"
-        class="btn btn--sm"
-        [class.btn--primary]="application()?.status === 'OPEN'"
-        [class.btn--ghost]="application()?.status !== 'OPEN'"
-        [attr.aria-pressed]="application()?.status === 'OPEN'"
-        (click)="setStatus('OPEN')">
-        Offen
-      </button>
-      <button
-        type="button"
-        class="btn btn--sm"
-        [class.btn--primary]="application()?.status === 'DONE'"
-        [class.btn--ghost]="application()?.status !== 'DONE'"
-        [attr.aria-pressed]="application()?.status === 'DONE'"
-        (click)="setStatus('DONE')">
-        Erledigt
-      </button>
-    </div>
-
-    <div class="editor__topbar-group" role="group" aria-label="Downloads">
-      <button class="btn btn--outline btn--sm" type="button" (click)="downloadCvPdf()" [disabled]="downloading()">
-        CV
-      </button>
-      <button class="btn btn--outline btn--sm" type="button" (click)="downloadLetterPdf()" [disabled]="downloading()">
-        Anschreiben
+    <div class="editor__controls-right" role="group" aria-label="Aktionen">
+      <span class="editor__save-status" role="status" aria-live="polite">
+        @if (saving()) {
+          <span class="editor__save-dot editor__save-dot--saving" aria-hidden="true"></span>
+          Speichert…
+        } @else {
+          <span class="editor__save-dot editor__save-dot--saved" aria-hidden="true"></span>
+          Gespeichert
+        }
+      </span>
+      <button class="btn btn--outline btn--sm" type="button" (click)="downloadCvPdf()" [disabled]="downloading()" aria-label="Lebenslauf als PDF herunterladen">
+        <lucide-icon name="eye" [size]="14" aria-hidden="true"></lucide-icon>
+        Vorschau
       </button>
       <button class="btn btn--primary btn--sm" type="button" (click)="downloadBundle()" [disabled]="downloading()">
-        Beide herunterladen
+        <lucide-icon name="download" [size]="14" aria-hidden="true"></lucide-icon>
+        Exportieren
+        <lucide-icon name="chevron-down" [size]="12" aria-hidden="true"></lucide-icon>
       </button>
     </div>
+  </div>
 
-    @if (isModal()) {
-      <button type="button" class="btn btn--ghost btn--sm editor__close" (click)="closeRequested.emit()">
-        Schließen
-      </button>
-    } @else {
-      <a routerLink="/app" class="btn btn--ghost btn--sm editor__close">Zurück</a>
-    }
-  </header>
+  <!-- Header strip: company + title + meta + status + ATS score -->
+  @if (application()) {
+    <header class="editor__strip">
+      <div class="editor__company-logo" aria-hidden="true">
+        {{ companyInitials() }}
+      </div>
+      <div class="editor__strip-info">
+        <h1 id="editor-title" class="editor__strip-title">{{ jobTitle() || 'Bewerbung bearbeiten' }}</h1>
+        <div class="editor__strip-meta">
+          @if (jobCompany()) {
+            <span>
+              <lucide-icon name="building" [size]="11" aria-hidden="true"></lucide-icon>
+              {{ jobCompany() }}
+            </span>
+          }
+          <span>
+            <lucide-icon name="globe" [size]="11" aria-hidden="true"></lucide-icon>
+            Remote · EU
+          </span>
+          <span>
+            <lucide-icon name="calendar" [size]="11" aria-hidden="true"></lucide-icon>
+            Geöffnet
+          </span>
+        </div>
+      </div>
+
+      <!-- Status toggle -->
+      <div class="editor__status-btn" role="group" aria-label="Status">
+        <lba-status-pill [status]="displayStatus()"></lba-status-pill>
+        <button
+          type="button"
+          class="editor__status-cycle"
+          aria-label="Status ändern"
+          (click)="setStatus(application()?.status === 'OPEN' ? 'DONE' : 'OPEN')">
+          <lucide-icon name="chevron-down" [size]="14" aria-hidden="true"></lucide-icon>
+        </button>
+      </div>
+
+      <!-- ATS score widget -->
+      @if (score() !== null) {
+        <div class="editor__score-widget" aria-label="ATS-Match {{ score() }}%">
+          <lba-score-ring [value]="score()!"></lba-score-ring>
+          <div>
+            <div class="editor__score-label">ATS-Match</div>
+            <div class="editor__score-sub">{{ keywordSummary() }}</div>
+          </div>
+        </div>
+      }
+    </header>
+  } @else {
+    <div id="editor-title" class="sr-only">Bewerbung bearbeiten</div>
+  }
 
   @if (error()) {
-    <p class="editor__alert" aria-live="polite">{{ error() }}</p>
+    <p class="editor__alert" aria-live="polite" role="alert">{{ error() }}</p>
   }
 
   @if (message()) {
-    <p class="editor__status" aria-live="polite">{{ message() }}</p>
+    <p class="editor__status-msg" aria-live="polite">{{ message() }}</p>
   }
 
+  <!-- Loading state -->
   @if (loading()) {
-    <section class="editor__body editor__body--state" aria-label="Editor wird geladen" aria-busy="true">
-      <div class="skeleton skeleton--panel" aria-hidden="true"></div>
-      <div class="skeleton skeleton--panel" aria-hidden="true"></div>
-    </section>
-  } @else if (generating()) {
-    <section class="editor__body editor__body--state" aria-live="polite" aria-busy="true" aria-label="KI generiert Bewerbungsunterlagen">
-      <div class="generation-status">
-        <p class="editor__generating-label">KI optimiert deine Bewerbung.</p>
-        <progress
-          class="generation-status__bar"
-          [value]="generationProgress()"
-          max="100"
-          [attr.aria-label]="'Generierung zu ' + generationProgress() + ' Prozent abgeschlossen'">
-          {{ generationProgress() }}%
-        </progress>
-        <p>{{ generationProgress() }}% abgeschlossen</p>
+    <div class="editor__body editor__body--state" aria-label="Editor wird geladen" aria-busy="true">
+      <aside class="editor__outline editor__outline--skeleton" aria-hidden="true"></aside>
+      <div class="editor__center">
+        <div class="skeleton skeleton--panel" aria-hidden="true"></div>
+        <div class="skeleton skeleton--panel" aria-hidden="true"></div>
       </div>
-      <div class="skeleton skeleton--panel" aria-hidden="true"></div>
-      <div class="skeleton skeleton--panel" aria-hidden="true"></div>
-    </section>
+      <aside class="editor__right editor__right--skeleton" aria-hidden="true"></aside>
+    </div>
+
+  <!-- Generating state -->
+  } @else if (generating()) {
+    <div class="editor__body editor__body--state" aria-live="polite" aria-busy="true" aria-label="KI generiert Bewerbungsunterlagen">
+      <aside class="editor__outline editor__outline--skeleton" aria-hidden="true"></aside>
+      <div class="editor__center">
+        <div class="generation-status">
+          <lucide-icon name="sparkles" [size]="24" aria-hidden="true"></lucide-icon>
+          <p class="generation-status__label">KI optimiert deine Bewerbung…</p>
+          <progress
+            class="generation-status__bar"
+            [value]="generationProgress()"
+            max="100"
+            [attr.aria-label]="'Generierung zu ' + generationProgress() + ' Prozent abgeschlossen'">
+            {{ generationProgress() }}%
+          </progress>
+          <p class="generation-status__pct num">{{ generationProgress() }}%</p>
+        </div>
+        <div class="skeleton skeleton--panel" aria-hidden="true"></div>
+      </div>
+      <aside class="editor__right editor__right--skeleton" aria-hidden="true"></aside>
+    </div>
+
+  <!-- Generation failed -->
   } @else if (generationFailed()) {
-    <section class="generation-status generation-status--failed" aria-live="assertive" aria-label="KI-Generierung fehlgeschlagen">
-      <p class="editor__generating-label">Die KI-Generierung ist fehlgeschlagen.</p>
-      <p>{{ generationError() ?? 'Bitte starte die Generierung erneut.' }}</p>
-      <button type="button" class="btn btn--primary btn--md" (click)="retryGeneration()">
-        Erneut versuchen
-      </button>
-    </section>
+    <div class="editor__body editor__body--state" aria-live="assertive" aria-label="KI-Generierung fehlgeschlagen">
+      <div class="editor__center">
+        <section class="generation-status generation-status--failed">
+          <p class="generation-status__label">Die KI-Generierung ist fehlgeschlagen.</p>
+          <p>{{ generationError() ?? 'Bitte starte die Generierung erneut.' }}</p>
+          <button type="button" class="btn btn--primary btn--md" (click)="retryGeneration()">
+            Erneut versuchen
+          </button>
+        </section>
+      </div>
+    </div>
+
+  <!-- Ready — 3-pane layout -->
   } @else {
     <form class="editor__body" [formGroup]="editorForm" aria-label="Bewerbung">
-      <section class="editor__col editor__col--left" aria-labelledby="cv-title">
-        <div class="editor__col-header">
-          <div>
-            <p class="editor__section-kicker">Lebenslauf</p>
-            <h2 id="cv-title">
-              @if (showAnalyse()) { Analyse } @else { Optimierter Lebenslauf }
-            </h2>
+
+      <!-- Outline rail -->
+      <aside class="editor__outline" aria-label="Lebenslauf-Abschnitte">
+        <div class="editor__outline-section-label">Lebenslauf</div>
+        <nav class="editor__outline-nav" aria-label="Abschnitte">
+          @for (section of structuredCv(); track section.id) {
+            <button
+              type="button"
+              class="editor__outline-item"
+              [class.editor__outline-item--active]="activeOutlineSectionId() === section.id"
+              (click)="activeOutlineSectionId.set(section.id)"
+              [attr.aria-current]="activeOutlineSectionId() === section.id ? 'true' : null">
+              <span class="editor__outline-item-label">{{ section.heading }}</span>
+              <span class="editor__outline-item-count num">{{ section.bullets.length }}</span>
+            </button>
+          }
+          @if (structuredCv().length === 0) {
+            <span class="editor__outline-empty">Keine Abschnitte</span>
+          }
+          <button type="button" class="editor__outline-add" aria-label="Neuen Abschnitt hinzufügen">
+            <lucide-icon name="plus" [size]="12" aria-hidden="true"></lucide-icon>
+            Sektion
+          </button>
+        </nav>
+
+        <div class="editor__outline-template">
+          <div class="editor__outline-section-label">Template</div>
+          <div class="editor__template-chip">
+            <div class="editor__template-thumb" aria-hidden="true">
+              <div class="editor__template-thumb-line editor__template-thumb-line--title"></div>
+              <div class="editor__template-thumb-line"></div>
+              <div class="editor__template-thumb-line"></div>
+            </div>
+            <div class="editor__template-meta">
+              <div class="editor__template-name">Modern</div>
+              <div class="editor__template-sub">1 Spalte · Geist</div>
+            </div>
+            <lucide-icon name="chevron-down" [size]="12" aria-hidden="true"></lucide-icon>
           </div>
-          <span aria-live="polite" role="status">{{ saving() ? 'Speichert…' : 'Gespeichert' }}</span>
+        </div>
+      </aside>
+
+      <!-- Center: CV section editor -->
+      <main class="editor__center" aria-labelledby="cv-section-heading">
+        <h2 id="cv-section-heading" class="sr-only">Lebenslauf bearbeiten</h2>
+        <lba-cv-section-editor
+          [sections]="structuredCv()"
+          [saving]="saving()"
+          (sectionsChange)="onSectionsChange($event)"
+        />
+      </main>
+
+      <!-- Right pane: tabs -->
+      <aside class="editor__right" aria-label="Anschreiben und Analyse">
+        <!-- Tab bar -->
+        <div class="editor__right-tabs" role="tablist" aria-label="Rechte Seitenleiste">
+          <button
+            type="button"
+            role="tab"
+            class="editor__right-tab"
+            [class.editor__right-tab--active]="rightTab() === 'letter'"
+            [attr.aria-selected]="rightTab() === 'letter'"
+            aria-controls="right-panel-letter"
+            (click)="rightTab.set('letter')">
+            <lucide-icon name="mail" [size]="14" aria-hidden="true"></lucide-icon>
+            Anschreiben
+          </button>
+          <button
+            type="button"
+            role="tab"
+            class="editor__right-tab"
+            [class.editor__right-tab--active]="rightTab() === 'analyse'"
+            [attr.aria-selected]="rightTab() === 'analyse'"
+            aria-controls="right-panel-analyse"
+            (click)="rightTab.set('analyse')">
+            <lucide-icon name="target" [size]="14" aria-hidden="true"></lucide-icon>
+            Analyse
+          </button>
+          <button
+            type="button"
+            role="tab"
+            class="editor__right-tab"
+            [class.editor__right-tab--active]="rightTab() === 'followup'"
+            [attr.aria-selected]="rightTab() === 'followup'"
+            aria-controls="right-panel-followup"
+            (click)="rightTab.set('followup')">
+            <lucide-icon name="send" [size]="14" aria-hidden="true"></lucide-icon>
+            Nachfassen
+          </button>
         </div>
 
-        <div class="editor__scroll-area">
-          @if (showAnalyse()) {
+        <!-- Letter tab -->
+        @if (rightTab() === 'letter') {
+          <div id="right-panel-letter" class="editor__right-content" role="tabpanel" aria-labelledby="right-tab-letter">
+
+            <!-- Letter variant tabs -->
+            <div class="letter-variant-tabs" aria-label="Anschreiben-Variante">
+              @for (variant of letterVariants; track variant) {
+                <button
+                  type="button"
+                  class="letter-variant-tabs__btn"
+                  [class.letter-variant-tabs__btn--selected]="selectedLetter() === variant"
+                  [attr.aria-pressed]="selectedLetter() === variant"
+                  (click)="selectLetter(variant)">
+                  @if (selectedLetter() === variant) {
+                    <span class="letter-variant-tabs__dot" aria-hidden="true"></span>
+                  }
+                  {{ variantLabel(variant) }}
+                </button>
+              }
+            </div>
+
+            <!-- Letter textarea -->
+            <div class="letter-editor" [id]="'letter-panel-' + selectedLetter()" role="region">
+              <label [for]="'letter-' + selectedLetter()" class="sr-only">{{ variantLabel(selectedLetter()) }} Anschreiben</label>
+              <textarea
+                [id]="'letter-' + selectedLetter()"
+                [formControl]="letterControl()"
+                class="letter-editor__textarea"
+                (blur)="saveCoverLetter()"
+                aria-describedby="chosen-letter-hint">
+              </textarea>
+              <p id="chosen-letter-hint" class="sr-only">Diese Variante wird beim PDF-Export verwendet.</p>
+            </div>
+
+            <!-- Send row -->
+            <footer class="send-row">
+              <div class="send-row__top">
+                <div class="send-row__email-wrap">
+                  <lucide-icon name="mail" [size]="13" aria-hidden="true"></lucide-icon>
+                  <label for="recipient-email" class="sr-only">Empfänger-E-Mail</label>
+                  <input
+                    id="recipient-email"
+                    type="email"
+                    class="send-row__input"
+                    formControlName="recipientEmail"
+                    placeholder="recruiting@example.de"
+                    autocomplete="email" />
+                </div>
+                <button type="button" class="btn btn--primary btn--sm" (click)="sendToSelf()" [disabled]="sending()">
+                  <lucide-icon name="send" [size]="13" aria-hidden="true"></lucide-icon>
+                  @if (sending()) { Sendet… } @else { Senden }
+                </button>
+              </div>
+              <div class="send-row__meta">
+                <lucide-icon name="pin" [size]="11" aria-hidden="true"></lucide-icon>
+                PDF-Anhang wird automatisch beigefügt
+                <button type="button" class="send-row__regen" (click)="openRegenConfirm()">
+                  <lucide-icon name="refresh-cw" [size]="11" aria-hidden="true"></lucide-icon>
+                  Neu generieren
+                </button>
+              </div>
+            </footer>
+          </div>
+        }
+
+        <!-- Analyse tab -->
+        @if (rightTab() === 'analyse') {
+          <div id="right-panel-analyse" class="editor__right-content" role="tabpanel" aria-labelledby="right-tab-analyse">
             <lba-ats-panel
               [score]="score()"
               [matchReport]="matchReport()"
               [optimizationDiff]="optimizationDiff()"
             />
-          } @else {
-            <lba-cv-section-editor
-              [sections]="structuredCv()"
-              [saving]="saving()"
-              (sectionsChange)="onSectionsChange($event)"
-            />
-          }
-        </div>
+          </div>
+        }
 
-        <footer class="editor__bottom-strip">
-          <div class="editor__bottom-actions">
-            <button type="button" class="btn btn--outline btn--sm" (click)="showAnalyse.update(value => !value)">
-              @if (showAnalyse()) { Lebenslauf anzeigen } @else { Analyse anzeigen }
-            </button>
+        <!-- Nachfassen tab -->
+        @if (rightTab() === 'followup') {
+          <div id="right-panel-followup" class="editor__right-content" role="tabpanel" aria-labelledby="right-tab-followup">
+            @if (followUpError()) {
+              <div role="alert" aria-live="polite" class="follow-up-error">{{ followUpError() }}</div>
+            }
+
             @if (followUpTemplates(); as templates) {
-              <span class="editor__follow-up-count" aria-live="polite">{{ templates.length }} Vorlagen</span>
+              <ul class="follow-up-list" role="list" aria-label="Nachfass-Vorlagen">
+                @for (tpl of templates; track tpl.type) {
+                  <li class="follow-up-card">
+                    <strong class="follow-up-card__label">{{ tpl.label }}</strong>
+                    <p class="follow-up-card__subject">Betreff: {{ tpl.subject }}</p>
+                    <p class="follow-up-card__preview">{{ tpl.body.slice(0, 120) }}…</p>
+                    <div class="follow-up-card__actions">
+                      <button
+                        type="button"
+                        class="btn btn--ghost btn--sm"
+                        (click)="copyFollowUp(tpl.body, tpl.type)"
+                        [attr.aria-label]="'Text kopieren: ' + tpl.label">
+                        @if (copiedType() === tpl.type) { Kopiert } @else { Kopieren }
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn--ghost btn--sm"
+                        (click)="openFollowUpMailto(tpl.subject, tpl.body)"
+                        [attr.aria-label]="'Per E-Mail senden: ' + tpl.label">
+                        E-Mail öffnen
+                      </button>
+                    </div>
+                  </li>
+                }
+              </ul>
             } @else {
-              <button
-                type="button"
-                class="btn btn--ghost btn--sm"
-                (click)="loadFollowUpTemplates()"
-                [disabled]="followUpLoading()">
-                @if (followUpLoading()) { Lädt… } @else { Nachfassen }
-              </button>
+              <div class="editor__right-empty">
+                @if (followUpLoading()) {
+                  <p>Vorlagen werden geladen…</p>
+                } @else {
+                  <p>Nachfass-E-Mail-Vorlagen</p>
+                  <button type="button" class="btn btn--outline btn--sm" (click)="loadFollowUpTemplates()">
+                    Vorlagen laden
+                  </button>
+                }
+              </div>
             }
           </div>
+        }
+      </aside>
 
-          @if (followUpError()) {
-            <div role="alert" aria-live="polite" class="follow-up-error">{{ followUpError() }}</div>
-          }
-
-          @if (followUpTemplates(); as templates) {
-            <ul class="follow-up-list" role="list" aria-label="Nachfass-Vorlagen">
-              @for (tpl of templates; track tpl.type) {
-                <li class="follow-up-card">
-                  <strong class="follow-up-card__label">{{ tpl.label }}</strong>
-                  <p class="follow-up-card__subject">Betreff: {{ tpl.subject }}</p>
-                  <p class="follow-up-card__preview">{{ tpl.body.slice(0, 120) }}…</p>
-                  <div class="follow-up-card__actions">
-                    <button
-                      type="button"
-                      class="btn btn--ghost btn--sm"
-                      (click)="copyFollowUp(tpl.body, tpl.type)"
-                      [attr.aria-label]="'Text kopieren: ' + tpl.label">
-                      @if (copiedType() === tpl.type) { Kopiert } @else { Kopieren }
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn--ghost btn--sm"
-                      (click)="openFollowUpMailto(tpl.subject, tpl.body)"
-                      [attr.aria-label]="'Per E-Mail senden: ' + tpl.label">
-                      E-Mail öffnen
-                    </button>
-                  </div>
-                </li>
-              }
-            </ul>
-          }
-        </footer>
-      </section>
-
-      <section class="editor__col editor__col--right" aria-labelledby="letters-title">
-        <div class="editor__col-header">
-          <div>
-            <p class="editor__section-kicker">Anschreiben</p>
-            <h2 id="letters-title">{{ variantLabel(selectedLetter()) }}</h2>
-          </div>
-          <button type="button" class="btn btn--ghost btn--sm" (click)="openRegenConfirm()">
-            Neu generieren
-          </button>
-        </div>
-
-        <div class="letter-tabs" role="tablist" aria-label="Anschreiben-Variante wählen">
-          @for (variant of letterVariants; track variant) {
-            <button
-              type="button"
-              role="tab"
-              class="letter-tabs__button"
-              [class.letter-tabs__button--active]="selectedLetter() === variant"
-              [attr.aria-selected]="selectedLetter() === variant"
-              [attr.aria-controls]="'letter-panel-' + variant"
-              (click)="selectLetter(variant)">
-              {{ variantLabel(variant) }}
-            </button>
-          }
-        </div>
-
-        <div class="letter-editor" [id]="'letter-panel-' + selectedLetter()" role="tabpanel">
-          <label [for]="'letter-' + selectedLetter()" class="sr-only">{{ variantLabel(selectedLetter()) }} Anschreiben</label>
-          <textarea
-            [id]="'letter-' + selectedLetter()"
-            [formControl]="letterControl()"
-            rows="18"
-            class="letter-editor__textarea"
-            (blur)="saveCoverLetter()"
-            aria-describedby="chosen-letter-hint"
-          ></textarea>
-          <p id="chosen-letter-hint" class="sr-only">Diese Variante wird beim PDF-Export verwendet.</p>
-        </div>
-
-        <footer class="send-row">
-          <label for="recipient-email" class="send-row__label">Empfänger</label>
-          <input
-            id="recipient-email"
-            type="email"
-            class="send-row__input"
-            formControlName="recipientEmail"
-            placeholder="recruiting@example.de"
-            autocomplete="email"
-          />
-          <div class="send-row__actions">
-            <button type="button" class="btn btn--outline btn--sm" (click)="sendToSelf()" [disabled]="sending()">
-              @if (sending()) { Sendet… } @else { An mich senden }
-            </button>
-            <button type="button" class="btn btn--ghost btn--sm" (click)="openMailto()">
-              In E-Mail-Programm öffnen
-            </button>
-          </div>
-          <p class="send-row__hint">Bitte füge heruntergeladene PDFs manuell als Anhang hinzu.</p>
-        </footer>
-      </section>
     </form>
   }
+
 </main>
 
 <lba-confirm-delete-modal

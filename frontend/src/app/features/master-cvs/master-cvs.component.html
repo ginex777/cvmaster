@@ -3,9 +3,17 @@
   <div class="page-header">
     <div class="page-header__text">
       <h1 class="page-title">Lebensläufe</h1>
-      <p class="page-sub">Deine gespeicherten Lebensläufe</p>
+      <p class="page-sub">Verwende denselben CV für mehrere Bewerbungen — die KI passt ihn pro Stelle an.</p>
     </div>
     <div class="page-header__actions">
+      <button
+        type="button"
+        class="btn btn--outline btn--md"
+        aria-controls="text-cv-panel"
+        [attr.aria-expanded]="textFormOpen()"
+        (click)="toggleTextForm()">
+        @if (textFormOpen()) { Schließen } @else { Text einfügen }
+      </button>
       <label
         class="btn btn--cta btn--md"
         for="cv-upload"
@@ -22,14 +30,6 @@
           (change)="upload($event)"
           aria-label="Lebenslauf-Datei auswählen (PDF oder DOCX)" />
       </label>
-      <button
-        type="button"
-        class="btn btn--outline btn--md"
-        aria-controls="text-cv-panel"
-        [attr.aria-expanded]="textFormOpen()"
-        (click)="toggleTextForm()">
-        @if (textFormOpen()) { Schließen } @else { Lebenslauf einfügen }
-      </button>
     </div>
   </div>
 
@@ -90,30 +90,47 @@
   }
 
   @if (loading()) {
-    <div class="card-list" aria-label="Lebensläufe werden geladen" aria-busy="true">
-      <div class="card-elevated cv-card--skeleton" aria-hidden="true"></div>
-      <div class="card-elevated cv-card--skeleton" aria-hidden="true"></div>
-    </div>
-  } @else if (cvs().length === 0) {
-    <div class="empty-state">
-      <p class="empty-state__text">Noch kein Lebenslauf hinzugefügt.</p>
-      <label class="btn btn--cta btn--md" for="cv-upload-empty" tabindex="0">
-        Lebenslauf hochladen
-        <input
-          id="cv-upload-empty"
-          type="file"
-          accept=".pdf,.docx"
-          class="sr-only"
-          (change)="upload($event)"
-          aria-label="Lebenslauf-Datei auswählen" />
-      </label>
+    <div class="cv-grid" aria-label="Lebensläufe werden geladen" aria-busy="true">
+      <div class="cv-card cv-card--skeleton" aria-hidden="true"></div>
+      <div class="cv-card cv-card--skeleton" aria-hidden="true"></div>
+      <div class="cv-card cv-card--skeleton" aria-hidden="true"></div>
     </div>
   } @else {
-    <div class="card-list" role="list" aria-label="Lebenslauf-Liste">
-      @for (cv of cvs(); track cv.id) {
-        <div class="card-elevated" role="listitem">
-          <div class="card-row cv-card-row">
-            <div class="card-meta">
+    <div class="cv-grid" role="list" aria-label="Lebenslauf-Liste">
+      @for (cv of cvs(); track cv.id; let i = $index) {
+        <article
+          class="cv-card"
+          role="listitem"
+          [attr.aria-label]="cv.name"
+          [style.--cv-accent]="cvAccentColor(i)"
+          [style.--cv-accent-bg]="cvAccentBg(i)"
+        >
+          <div class="cv-card__top-bar" aria-hidden="true"></div>
+
+          <!-- Mini preview area -->
+          <div class="cv-card__preview-area" aria-hidden="true">
+            <div class="cv-card__preview">
+              <div class="cv-card__preview-name">{{ cv.name }}</div>
+              <div class="cv-card__preview-role">Frontend Developer · Berlin</div>
+              <div class="cv-card__preview-divider"></div>
+              <div class="cv-card__preview-section-label">Erfahrung</div>
+              <div class="cv-card__preview-line cv-card__preview-line--job"></div>
+              <div class="cv-card__preview-line cv-card__preview-line--sub"></div>
+              <div class="cv-card__preview-line cv-card__preview-line--full"></div>
+              <div class="cv-card__preview-line cv-card__preview-line--wide"></div>
+              <div class="cv-card__preview-line cv-card__preview-line--half"></div>
+            </div>
+            @if (i === 0) {
+              <div class="cv-card__primary-badge">
+                <lucide-icon name="star" [size]="10" aria-hidden="true"></lucide-icon>
+                Primär
+              </div>
+            }
+          </div>
+
+          <!-- Card body -->
+          <div class="cv-card__body">
+            <div class="cv-card__title-row">
               @if (renamingId() === cv.id) {
                 <input
                   #renameInput
@@ -127,42 +144,63 @@
                   [attr.aria-label]="'Neuer Name für ' + cv.name"
                   autofocus />
               } @else {
-                <p class="card-title">{{ cv.name }}</p>
+                <span class="cv-card__title">{{ cv.name }}</span>
               }
-              <p class="card-sub">{{ sourceLabel(cv) }} · {{ cv.language.toUpperCase() }} · Aktualisiert {{ cv.updatedAt | date:'dd.MM.yyyy' }}</p>
-              <lba-cv-template-picker
-                [template]="cv.template"
-                (templateChange)="updateTemplate(cv.id, $event)"
-              />
-            </div>
-            <div class="card-actions">
               <button
                 type="button"
-                class="btn btn--outline btn--sm"
-                [attr.aria-label]="'In Bewerbung verwenden: ' + cv.name"
-                (click)="useInWizard(cv.id)">
-                In Bewerbung verwenden
-              </button>
-              <button
-                type="button"
-                class="btn btn--ghost btn--sm"
-                [attr.aria-label]="'Umbenennen: ' + cv.name"
-                (click)="startRename(cv)">
-                Umbenennen
-              </button>
-              <button
-                type="button"
-                class="btn btn--ghost btn--sm cv-delete-btn"
+                class="cv-card__more-btn"
                 [attr.aria-label]="'Löschen: ' + cv.name"
                 (click)="requestDelete(cv.id)">
-                Löschen
+                <lucide-icon name="more-horizontal" [size]="15" aria-hidden="true"></lucide-icon>
+              </button>
+            </div>
+            <div class="cv-card__meta">{{ sourceLabel(cv) }} · {{ cv.language.toUpperCase() }} · Aktualisiert {{ cv.updatedAt | date:'dd.MM.yyyy' }}</div>
+            <lba-cv-template-picker
+              [template]="cv.template"
+              (templateChange)="updateTemplate(cv.id, $event)"
+            />
+            <div class="cv-card__actions">
+              <button
+                type="button"
+                class="btn btn--outline btn--sm cv-card__action-btn"
+                [attr.aria-label]="'Bearbeiten: ' + cv.name"
+                (click)="startRename(cv)">
+                Bearbeiten
+              </button>
+              <button
+                type="button"
+                class="btn btn--primary btn--sm cv-card__action-btn"
+                [attr.aria-label]="'In Bewerbung anwenden: ' + cv.name"
+                (click)="useInWizard(cv.id)">
+                <lucide-icon name="sparkles" [size]="12" aria-hidden="true"></lucide-icon>
+                Anwenden
               </button>
             </div>
           </div>
-        </div>
+        </article>
       }
+
+      <!-- New CV tile -->
+      <article class="cv-card cv-card--new" role="listitem">
+        <label class="cv-card__new-inner" for="cv-upload-grid" tabindex="0" aria-label="Neuen Lebenslauf hinzufügen">
+          <div class="cv-card__new-icon" aria-hidden="true">
+            <lucide-icon name="plus" [size]="20"></lucide-icon>
+          </div>
+          <div class="cv-card__new-title">Neuen Lebenslauf hinzufügen</div>
+          <div class="cv-card__new-sub">PDF · DOCX · Text · Quickstart</div>
+          <input
+            id="cv-upload-grid"
+            type="file"
+            accept=".pdf,.docx"
+            class="sr-only"
+            [disabled]="uploading()"
+            (change)="upload($event)"
+            aria-label="Lebenslauf-Datei auswählen" />
+        </label>
+      </article>
     </div>
   }
+
 </main>
 
 <lba-confirm-delete-modal

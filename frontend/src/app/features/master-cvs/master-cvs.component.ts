@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../core/api/api.service';
 import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
 import { CvTemplatePicker, type CvTemplate } from '../../shared/components/cv-template-picker/cv-template-picker';
+import { IconsModule } from '../../shared/icons/icons.module';
 
 type CvLanguage = 'de' | 'en';
 
@@ -23,7 +24,7 @@ export interface MasterCv {
 @Component({
   selector: 'lba-master-cvs',
   standalone: true,
-  imports: [DatePipe, ReactiveFormsModule, ConfirmDeleteModal, CvTemplatePicker],
+  imports: [DatePipe, ReactiveFormsModule, ConfirmDeleteModal, CvTemplatePicker, IconsModule],
   templateUrl: './master-cvs.component.html',
   styleUrl: './master-cvs.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -158,6 +159,26 @@ export class MasterCvsComponent implements OnInit {
   sourceLabel(cv: MasterCv): string {
     if (cv.sourceFilename === 'text-input') return 'Text-Eingabe';
     return cv.sourceFilename;
+  }
+
+  private static readonly ACCENT_COLORS = [
+    'var(--accent)',
+    'var(--status-offer)',
+    'var(--status-interview)',
+  ];
+
+  private static readonly ACCENT_BGS = [
+    'oklch(96% 0.025 268)',
+    'oklch(96% 0.030 155)',
+    'oklch(96% 0.025 295)',
+  ];
+
+  cvAccentColor(index: number): string {
+    return MasterCvsComponent.ACCENT_COLORS[index % MasterCvsComponent.ACCENT_COLORS.length];
+  }
+
+  cvAccentBg(index: number): string {
+    return MasterCvsComponent.ACCENT_BGS[index % MasterCvsComponent.ACCENT_BGS.length];
   }
 
   useInWizard(id: string): void {

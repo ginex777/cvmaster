@@ -8,6 +8,7 @@ import { ApiService } from '../../core/api/api.service';
 import { CoverLetterTonePicker } from '../../shared/components/cover-letter-tone-picker/cover-letter-tone-picker';
 import type { CoverLetterTone } from '../../shared/components/cover-letter-tone-picker/cover-letter-tone-picker';
 import { UpgradeModal } from '../../shared/components/upgrade-modal/upgrade-modal';
+import { IconsModule } from '../../shared/icons/icons.module';
 
 type JobInputMode = 'text' | 'url' | 'pdf' | 'screenshot';
 
@@ -28,7 +29,7 @@ export interface MasterCv {
 @Component({
   selector: 'lba-wizard',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, UpgradeModal, CoverLetterTonePicker],
+  imports: [ReactiveFormsModule, RouterLink, UpgradeModal, CoverLetterTonePicker, IconsModule],
   templateUrl: './wizard.component.html',
   styleUrl: './wizard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

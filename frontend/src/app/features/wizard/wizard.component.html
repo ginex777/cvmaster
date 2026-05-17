@@ -1,244 +1,324 @@
 <main id="main" class="wizard-page" tabindex="-1" [attr.aria-busy]="loading()">
-  <header class="wizard-page__header">
-    <h1>Neue Bewerbung erstellen</h1>
-    <nav class="wizard-steps" aria-label="Wizard-Fortschritt">
-      <ol class="wizard-steps__list">
-        <li class="wizard-steps__item" [class.wizard-steps__item--active]="step() === 1" [class.wizard-steps__item--done]="step() > 1" aria-label="Schritt 1: Lebenslauf auswählen">
-          <span class="wizard-steps__num" aria-hidden="true">1</span>
-          <span class="wizard-steps__label">Lebenslauf</span>
+  <div class="wizard-layout">
+
+    <!-- Sidebar rail with vertical steps -->
+    <aside class="wizard-rail" aria-label="Wizard-Fortschritt">
+      <a
+        routerLink="/app"
+        class="wizard-rail__back"
+        aria-label="Zurück zum Dashboard">
+        <lucide-icon name="chevron-left" [size]="14" aria-hidden="true"></lucide-icon>
+        Zurück zum Dashboard
+      </a>
+
+      <div class="wizard-rail__header">
+        <div class="wizard-rail__kicker">Neue Bewerbung</div>
+        <h1 class="wizard-rail__title">In 3 Schritten optimieren</h1>
+      </div>
+
+      <ol class="wizard-steps" aria-label="Schritte">
+        <li
+          class="wizard-steps__item"
+          [class.wizard-steps__item--done]="step() > 1"
+          [class.wizard-steps__item--active]="step() === 1"
+          aria-label="Schritt 1: Lebenslauf"
+        >
+          <div class="wizard-steps__connector" aria-hidden="true"></div>
+          <div class="wizard-steps__circle" aria-hidden="true">
+            @if (step() > 1) {
+              <lucide-icon name="check" [size]="14"></lucide-icon>
+            } @else {
+              1
+            }
+          </div>
+          <div class="wizard-steps__text">
+            <div class="wizard-steps__label">Lebenslauf</div>
+            <div class="wizard-steps__desc">Datei oder Vorlage</div>
+          </div>
         </li>
-        <li class="wizard-steps__item" [class.wizard-steps__item--active]="step() === 2" [class.wizard-steps__item--done]="step() > 2" aria-label="Schritt 2: Stellenanzeige einfügen">
-          <span class="wizard-steps__num" aria-hidden="true">2</span>
-          <span class="wizard-steps__label">Stellenanzeige</span>
+
+        <li
+          class="wizard-steps__item"
+          [class.wizard-steps__item--done]="step() > 2"
+          [class.wizard-steps__item--active]="step() === 2"
+          aria-label="Schritt 2: Stellenanzeige"
+        >
+          <div class="wizard-steps__connector" aria-hidden="true"></div>
+          <div class="wizard-steps__circle" aria-hidden="true">
+            @if (step() > 2) {
+              <lucide-icon name="check" [size]="14"></lucide-icon>
+            } @else {
+              2
+            }
+          </div>
+          <div class="wizard-steps__text">
+            <div class="wizard-steps__label">Stellenanzeige</div>
+            <div class="wizard-steps__desc">Text oder Link</div>
+          </div>
         </li>
-        <li class="wizard-steps__item" [class.wizard-steps__item--active]="step() === 3" aria-label="Schritt 3: Bewerbung generieren">
-          <span class="wizard-steps__num" aria-hidden="true">3</span>
-          <span class="wizard-steps__label">Generieren</span>
+
+        <li
+          class="wizard-steps__item"
+          [class.wizard-steps__item--active]="step() === 3"
+          aria-label="Schritt 3: Generieren"
+        >
+          <div class="wizard-steps__circle" aria-hidden="true">3</div>
+          <div class="wizard-steps__text">
+            <div class="wizard-steps__label">Generieren</div>
+            <div class="wizard-steps__desc">Ton & Optionen</div>
+          </div>
         </li>
       </ol>
-    </nav>
-  </header>
 
-  @if (error()) {
-    <div role="alert" aria-live="polite" class="form-error">{{ error() }}</div>
-  }
-
-  @if (step() === 1) {
-    <section class="wizard-step" aria-labelledby="step1-heading">
-      <h2 id="step1-heading" class="wizard-step__title">Welchen Lebenslauf möchtest du optimieren?</h2>
-      @if (cvs().length === 0) {
-        <div class="wizard-step__empty">
-          <p>Noch kein Lebenslauf vorhanden.</p>
-          <a routerLink="/app/cvs" class="btn btn--primary btn--md">Lebenslauf hochladen</a>
+      <div class="wizard-rail__tip" aria-hidden="true">
+        <div class="wizard-rail__tip-title">
+          <lucide-icon name="sparkles" [size]="14"></lucide-icon>
+          <strong>Dauert ~60 Sek.</strong>
         </div>
-      } @else {
-        <ul class="cv-select-list" role="list" aria-label="Verfügbare Lebensläufe">
-          @for (cv of cvs(); track cv.id) {
-            <li class="cv-select-card">
-              <button
-                type="button"
-                class="cv-select-card__btn"
-                [class.cv-select-card__btn--selected]="selectedCvId() === cv.id"
-                [attr.aria-pressed]="selectedCvId() === cv.id"
-                [attr.aria-label]="'Lebenslauf ' + cv.name + ' auswählen'"
-                (click)="selectCv(cv.id)">
-                <strong class="cv-select-card__name">{{ cv.name }}</strong>
-                <span class="cv-select-card__meta">{{ cv.sourceFilename }} · {{ cv.language.toUpperCase() }}</span>
-              </button>
-            </li>
-          }
-        </ul>
+        Wir analysieren beide Texte, optimieren Keywords und erstellen 3 Anschreiben-Varianten.
+      </div>
+    </aside>
+
+    <!-- Main content area -->
+    <div class="wizard-main">
+      @if (error()) {
+        <div role="alert" aria-live="polite" class="wizard-alert">{{ error() }}</div>
       }
 
-      <section class="quickstart" aria-labelledby="quickstart-heading">
-        <div class="quickstart__header">
-          <h3 id="quickstart-heading">Ohne vorhandenen Lebenslauf starten</h3>
-          <p>Erstelle ein vorsichtiges CV-Gerüst, das du im Editor mit echten Erfahrungen ergänzt.</p>
-        </div>
+      @if (step() === 1) {
+        <section class="wizard-step" aria-labelledby="step1-heading">
+          <h2 id="step1-heading" class="wizard-step__title">Welchen Lebenslauf möchtest du optimieren?</h2>
+          <p class="wizard-step__subtitle">Wähle einen vorhandenen Lebenslauf aus oder starte mit einem Gerüst.</p>
 
-        <form class="quickstart-form" [formGroup]="quickstartForm" (ngSubmit)="createQuickstartCv()" novalidate aria-label="Quickstart Lebenslauf">
-          <div class="field">
-            <label for="quickstart-name">Name</label>
-            <input id="quickstart-name" type="text" formControlName="name" autocomplete="name" aria-required="true" />
-          </div>
-
-          <div class="field">
-            <label for="quickstart-role">Aktuelle Rolle oder Studium</label>
-            <input id="quickstart-role" type="text" formControlName="currentRoleOrStudy" aria-required="true" />
-          </div>
-
-          <div class="field">
-            <label for="quickstart-skills">Top-Skills</label>
-            <input
-              id="quickstart-skills"
-              type="text"
-              formControlName="topSkills"
-              aria-required="true"
-              aria-describedby="quickstart-skills-note"
-              placeholder="Angular, TypeScript, Testing" />
-            <span id="quickstart-skills-note" class="field__note">3 bis 5 Skills, durch Komma getrennt.</span>
-          </div>
-
-          <div class="field">
-            <label for="quickstart-language">Sprache</label>
-            <select id="quickstart-language" formControlName="language" aria-required="true">
-              <option value="de">Deutsch</option>
-              <option value="en">English</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="quickstart-target">Zielrolle</label>
-            <input id="quickstart-target" type="text" formControlName="targetRole" aria-required="true" />
-          </div>
-
-          <button type="submit" class="btn btn--outline btn--md" [disabled]="loading()">
-            @if (loading()) { CV-Gerüst wird erstellt… } @else { CV-Gerüst erstellen }
-          </button>
-        </form>
-
-        @if (quickstartPreview()) {
-          <article class="quickstart-preview" aria-live="polite" aria-labelledby="quickstart-preview-heading">
-            <h3 id="quickstart-preview-heading">{{ quickstartPreview()?.name }}</h3>
-            <p>{{ quickstartPreview()?.parsedJson?.summary ?? 'CV-Gerüst wurde erstellt und kann im Editor erweitert werden.' }}</p>
-            @if (quickstartPreview()?.parsedJson?.skills?.length) {
-              <ul class="quickstart-preview__skills" role="list" aria-label="Übernommene Skills">
-                @for (skill of quickstartPreview()?.parsedJson?.skills ?? []; track skill) {
-                  <li>{{ skill }}</li>
-                }
-              </ul>
-            }
-            <div class="wizard-step__actions">
-              <button type="button" class="btn btn--primary btn--md" (click)="step.set(2)">Mit diesem CV weiter</button>
+          @if (cvs().length === 0) {
+            <div class="wizard-empty">
+              <p>Noch kein Lebenslauf vorhanden.</p>
+              <a routerLink="/app/cvs" class="btn btn--primary btn--md">Lebenslauf hochladen</a>
             </div>
-          </article>
-        }
-      </section>
-    </section>
-  }
-
-  @if (step() === 2) {
-    <section class="wizard-step" aria-labelledby="step2-heading">
-      <h2 id="step2-heading" class="wizard-step__title">Stellenanzeige einfügen</h2>
-      <form [formGroup]="jobForm" (ngSubmit)="nextStep()" novalidate aria-label="Stellenanzeige-Formular">
-        <div class="job-input-tabs" role="tablist" aria-label="Eingabeart für Stellenanzeige">
-          <button
-            id="job-mode-text"
-            type="button"
-            role="tab"
-            class="job-input-tabs__tab"
-            [class.job-input-tabs__tab--active]="jobInputMode() === 'text'"
-            [attr.aria-selected]="jobInputMode() === 'text'"
-            aria-controls="job-panel-text"
-            (click)="selectJobInputMode('text')">
-            Text
-          </button>
-          <button
-            id="job-mode-url"
-            type="button"
-            role="tab"
-            class="job-input-tabs__tab"
-            [class.job-input-tabs__tab--active]="jobInputMode() === 'url'"
-            [attr.aria-selected]="jobInputMode() === 'url'"
-            aria-controls="job-panel-url"
-            (click)="selectJobInputMode('url')">
-            URL
-          </button>
-          <button type="button" role="tab" class="job-input-tabs__tab" aria-selected="false" aria-disabled="true" (click)="selectJobInputMode('pdf')">
-            PDF
-          </button>
-          <button type="button" role="tab" class="job-input-tabs__tab" aria-selected="false" aria-disabled="true" (click)="selectJobInputMode('screenshot')">
-            Screenshot
-          </button>
-        </div>
-
-        @if (jobInputMode() === 'text') {
-          <div id="job-panel-text" class="field" role="tabpanel" aria-labelledby="job-mode-text">
-            <label for="job-raw">Stellentext</label>
-            <textarea
-              id="job-raw"
-              formControlName="jobRaw"
-              class="field__textarea"
-              rows="12"
-              placeholder="Füge hier den vollständigen Text der Stellenanzeige ein (mindestens 50 Zeichen)…"
-              aria-required="true"
-              [attr.aria-describedby]="jobForm.get('jobRaw')?.invalid && jobForm.get('jobRaw')?.touched ? 'job-raw-error' : 'job-raw-note'">
-            </textarea>
-            <span id="job-raw-note" class="field__note">Zuverlässigste Variante, wenn Job-Portale Crawling blockieren.</span>
-            @if (jobForm.get('jobRaw')?.invalid && jobForm.get('jobRaw')?.touched) {
-              <span id="job-raw-error" role="alert" class="field__error">
-                Bitte mindestens 50 Zeichen eingeben.
-              </span>
-            }
-          </div>
-        }
-
-        @if (jobInputMode() === 'url') {
-          <div id="job-panel-url" class="field" role="tabpanel" aria-labelledby="job-mode-url">
-            <label for="job-url">Link zur Stellenanzeige</label>
-            <input
-              id="job-url"
-              type="url"
-              formControlName="jobUrl"
-              autocomplete="url"
-              placeholder="https://unternehmen.de/jobs/frontend"
-              aria-required="true"
-              [attr.aria-describedby]="!currentJobInputValid() && jobForm.get('jobUrl')?.touched ? 'job-url-error' : 'job-url-note'" />
-            <span id="job-url-note" class="field__note">Wir laden nur öffentliche HTTP/HTTPS-Seiten und speichern keine Originalseite.</span>
-            @if (!currentJobInputValid() && jobForm.get('jobUrl')?.touched) {
-              <span id="job-url-error" role="alert" class="field__error">
-                Bitte eine gültige HTTP- oder HTTPS-URL eingeben.
-              </span>
-            }
-          </div>
-        }
-
-        <aside class="job-input-status" aria-live="polite">
-          <strong>Aktiv:</strong>
-          @if (jobInputMode() === 'url') {
-            URL-Import mit Sicherheitsprüfung und Text-Extraktion.
           } @else {
-            Direkter Text-Import ohne Crawling-Risiko.
+            <ul class="cv-select-list" role="list" aria-label="Verfügbare Lebensläufe">
+              @for (cv of cvs(); track cv.id) {
+                <li class="cv-select-card">
+                  <button
+                    type="button"
+                    class="cv-select-card__btn"
+                    [class.cv-select-card__btn--selected]="selectedCvId() === cv.id"
+                    [attr.aria-pressed]="selectedCvId() === cv.id"
+                    [attr.aria-label]="'Lebenslauf ' + cv.name + ' auswählen'"
+                    (click)="selectCv(cv.id)">
+                    <strong class="cv-select-card__name">{{ cv.name }}</strong>
+                    <span class="cv-select-card__meta">{{ cv.sourceFilename }} · {{ cv.language.toUpperCase() }}</span>
+                  </button>
+                </li>
+              }
+            </ul>
           }
-        </aside>
-        <div class="wizard-step__actions">
-          <button type="button" class="btn btn--ghost btn--md" (click)="step.set(1)">Zurück</button>
-          <button type="submit" class="btn btn--primary btn--md">Weiter</button>
-        </div>
-      </form>
-    </section>
-  }
 
-  @if (step() === 3) {
-    <section class="wizard-step" aria-labelledby="step3-heading">
-      <h2 id="step3-heading" class="wizard-step__title">Bewerbung generieren</h2>
-      <p class="wizard-step__desc">
-        Die KI optimiert deinen Lebenslauf auf die Stelle und erstellt ein passendes Anschreiben.
-        Dieser Vorgang dauert etwa 30–60 Sekunden.
-      </p>
-      <section class="wizard-section" aria-labelledby="tone-heading">
-        <div class="wizard-section__header">
-          <h3 id="tone-heading">Anschreiben-Ton</h3>
-          <p>Wähle, welche der drei Varianten für Export und Versand vorausgewählt wird.</p>
-        </div>
-        <lba-cover-letter-tone-picker
-          [tone]="selectedTone()"
-          (toneChange)="onToneChange($event)"
-        />
-      </section>
-      <div class="wizard-step__actions">
-        <button type="button" class="btn btn--ghost btn--md" [disabled]="loading()" (click)="step.set(2)">Zurück</button>
-        <button
-          type="button"
-          class="btn btn--primary btn--md"
-          [class.btn--loading]="loading()"
-          [disabled]="loading()"
-          (click)="generate()">
-          @if (loading()) { Wird erstellt… } @else { Bewerbung generieren }
-        </button>
-      </div>
-    </section>
-  }
+          <section class="quickstart" aria-labelledby="quickstart-heading">
+            <div class="quickstart__header">
+              <h3 id="quickstart-heading">Ohne vorhandenen Lebenslauf starten</h3>
+              <p>Erstelle ein CV-Gerüst, das du im Editor mit echten Erfahrungen ergänzt.</p>
+            </div>
+            <form class="quickstart-form" [formGroup]="quickstartForm" (ngSubmit)="createQuickstartCv()" novalidate aria-label="Quickstart Lebenslauf">
+              <div class="field">
+                <label for="quickstart-name">Name</label>
+                <input id="quickstart-name" type="text" formControlName="name" autocomplete="name" aria-required="true" />
+              </div>
+              <div class="field">
+                <label for="quickstart-role">Aktuelle Rolle oder Studium</label>
+                <input id="quickstart-role" type="text" formControlName="currentRoleOrStudy" aria-required="true" />
+              </div>
+              <div class="field">
+                <label for="quickstart-skills">Top-Skills</label>
+                <input id="quickstart-skills" type="text" formControlName="topSkills" aria-required="true"
+                  aria-describedby="quickstart-skills-note" placeholder="Angular, TypeScript, Testing" />
+                <span id="quickstart-skills-note" class="field__note">3 bis 5 Skills, durch Komma getrennt.</span>
+              </div>
+              <div class="field">
+                <label for="quickstart-language">Sprache</label>
+                <select id="quickstart-language" formControlName="language" aria-required="true">
+                  <option value="de">Deutsch</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="quickstart-target">Zielrolle</label>
+                <input id="quickstart-target" type="text" formControlName="targetRole" aria-required="true" />
+              </div>
+              <button type="submit" class="btn btn--outline btn--md" [disabled]="loading()">
+                @if (loading()) { CV-Gerüst wird erstellt… } @else { CV-Gerüst erstellen }
+              </button>
+            </form>
+
+            @if (quickstartPreview()) {
+              <article class="quickstart-preview" aria-live="polite" aria-labelledby="quickstart-preview-heading">
+                <h3 id="quickstart-preview-heading">{{ quickstartPreview()?.name }}</h3>
+                <p>{{ quickstartPreview()?.parsedJson?.summary ?? 'CV-Gerüst wurde erstellt und kann im Editor erweitert werden.' }}</p>
+                @if (quickstartPreview()?.parsedJson?.skills?.length) {
+                  <ul class="quickstart-preview__skills" role="list" aria-label="Übernommene Skills">
+                    @for (skill of quickstartPreview()?.parsedJson?.skills ?? []; track skill) {
+                      <li>{{ skill }}</li>
+                    }
+                  </ul>
+                }
+                <div class="wizard-step__actions">
+                  <button type="button" class="btn btn--primary btn--md" (click)="step.set(2)">Mit diesem CV weiter</button>
+                </div>
+              </article>
+            }
+          </section>
+        </section>
+      }
+
+      @if (step() === 2) {
+        <section class="wizard-step" aria-labelledby="step2-heading">
+          <h2 id="step2-heading" class="wizard-step__title">Welche Stelle möchtest du anschreiben?</h2>
+          <p class="wizard-step__subtitle">Wir extrahieren Anforderungen, Pflicht-Keywords und Tonfall — und nutzen sie als Briefing für die KI.</p>
+
+          <form [formGroup]="jobForm" (ngSubmit)="nextStep()" novalidate aria-label="Stellenanzeige-Formular">
+            <!-- Input mode tab strip -->
+            <div class="job-input-tabs" role="tablist" aria-label="Eingabeart für Stellenanzeige">
+              <button
+                id="job-mode-text"
+                type="button"
+                role="tab"
+                class="job-input-tabs__tab"
+                [class.job-input-tabs__tab--active]="jobInputMode() === 'text'"
+                [attr.aria-selected]="jobInputMode() === 'text'"
+                aria-controls="job-panel-text"
+                (click)="selectJobInputMode('text')">
+                <lucide-icon name="file-text" [size]="14" aria-hidden="true"></lucide-icon>
+                Text einfügen
+              </button>
+              <button
+                id="job-mode-url"
+                type="button"
+                role="tab"
+                class="job-input-tabs__tab"
+                [class.job-input-tabs__tab--active]="jobInputMode() === 'url'"
+                [attr.aria-selected]="jobInputMode() === 'url'"
+                aria-controls="job-panel-url"
+                (click)="selectJobInputMode('url')">
+                <lucide-icon name="link" [size]="14" aria-hidden="true"></lucide-icon>
+                Link
+              </button>
+              <button
+                type="button"
+                role="tab"
+                class="job-input-tabs__tab job-input-tabs__tab--soon"
+                aria-selected="false"
+                aria-disabled="true"
+                (click)="selectJobInputMode('pdf')">
+                <lucide-icon name="upload" [size]="14" aria-hidden="true"></lucide-icon>
+                PDF
+                <span class="job-input-tabs__soon-badge">BALD</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                class="job-input-tabs__tab job-input-tabs__tab--soon"
+                aria-selected="false"
+                aria-disabled="true"
+                (click)="selectJobInputMode('screenshot')">
+                <lucide-icon name="eye" [size]="14" aria-hidden="true"></lucide-icon>
+                Screenshot
+                <span class="job-input-tabs__soon-badge">BALD</span>
+              </button>
+            </div>
+
+            @if (jobInputMode() === 'text') {
+              <div id="job-panel-text" class="job-input-card" role="tabpanel" aria-labelledby="job-mode-text">
+                <div class="job-input-card__header">
+                  <lucide-icon name="file-text" [size]="14" aria-hidden="true"></lucide-icon>
+                  <span>Stellenanzeige</span>
+                  <span class="job-input-card__count num">{{ jobForm.controls.jobRaw.value?.length ?? 0 }} Zeichen</span>
+                </div>
+                <textarea
+                  id="job-raw"
+                  formControlName="jobRaw"
+                  class="job-input-card__textarea"
+                  rows="10"
+                  placeholder="Füge hier den vollständigen Text der Stellenanzeige ein (mindestens 50 Zeichen)…"
+                  aria-required="true"
+                  [attr.aria-describedby]="jobForm.get('jobRaw')?.invalid && jobForm.get('jobRaw')?.touched ? 'job-raw-error' : 'job-raw-note'">
+                </textarea>
+                @if (jobForm.get('jobRaw')?.invalid && jobForm.get('jobRaw')?.touched) {
+                  <div class="job-input-card__footer job-input-card__footer--error">
+                    <span id="job-raw-error" role="alert">Bitte mindestens 50 Zeichen eingeben.</span>
+                  </div>
+                } @else {
+                  <div class="job-input-card__footer" id="job-raw-note">
+                    <lucide-icon name="sparkles" [size]="12" aria-hidden="true"></lucide-icon>
+                    <span>Zuverlässigste Variante — Keywords werden automatisch erkannt.</span>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (jobInputMode() === 'url') {
+              <div id="job-panel-url" class="field" role="tabpanel" aria-labelledby="job-mode-url">
+                <label for="job-url">Link zur Stellenanzeige</label>
+                <input
+                  id="job-url"
+                  type="url"
+                  formControlName="jobUrl"
+                  autocomplete="url"
+                  placeholder="https://unternehmen.de/jobs/frontend"
+                  aria-required="true"
+                  [attr.aria-describedby]="!currentJobInputValid() && jobForm.get('jobUrl')?.touched ? 'job-url-error' : 'job-url-note'" />
+                <span id="job-url-note" class="field__note">Wir laden nur öffentliche HTTP/HTTPS-Seiten.</span>
+                @if (!currentJobInputValid() && jobForm.get('jobUrl')?.touched) {
+                  <span id="job-url-error" role="alert" class="field__error">
+                    Bitte eine gültige HTTP- oder HTTPS-URL eingeben.
+                  </span>
+                }
+              </div>
+            }
+
+            <div class="wizard-step__actions">
+              <button type="button" class="btn btn--ghost btn--md" (click)="step.set(1)">Zurück</button>
+              <button type="submit" class="btn btn--cta btn--md">
+                Weiter zu Optionen
+                <lucide-icon name="arrow-right" [size]="14" aria-hidden="true"></lucide-icon>
+              </button>
+            </div>
+          </form>
+        </section>
+      }
+
+      @if (step() === 3) {
+        <section class="wizard-step" aria-labelledby="step3-heading">
+          <h2 id="step3-heading" class="wizard-step__title">Bewerbung generieren</h2>
+          <p class="wizard-step__subtitle">
+            Die KI optimiert deinen Lebenslauf auf die Stelle und erstellt ein passendes Anschreiben.
+            Dieser Vorgang dauert etwa 30–60 Sekunden.
+          </p>
+          <section class="wizard-section" aria-labelledby="tone-heading">
+            <div class="wizard-section__header">
+              <h3 id="tone-heading">Anschreiben-Ton</h3>
+              <p>Wähle, welche der drei Varianten für Export und Versand vorausgewählt wird.</p>
+            </div>
+            <lba-cover-letter-tone-picker
+              [tone]="selectedTone()"
+              (toneChange)="onToneChange($event)"
+            />
+          </section>
+          <div class="wizard-step__actions">
+            <button type="button" class="btn btn--ghost btn--md" [disabled]="loading()" (click)="step.set(2)">Zurück</button>
+            <button
+              type="button"
+              class="btn btn--cta btn--md"
+              [class.btn--loading]="loading()"
+              [disabled]="loading()"
+              (click)="generate()">
+              @if (loading()) { Wird erstellt… } @else { Bewerbung generieren }
+            </button>
+          </div>
+        </section>
+      }
+    </div>
+
+  </div>
 </main>
 
 <lba-upgrade-modal

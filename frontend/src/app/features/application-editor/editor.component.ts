@@ -10,6 +10,10 @@ import type { CvSection } from '../../shared/components/cv-section-editor/cv-sec
 import { AtsPanel } from '../../shared/components/ats-panel/ats-panel';
 import type { OptimizationDiffEntry } from '../../shared/components/ats-panel/ats-panel';
 import { AnalyticsService } from '../../core/analytics/analytics.service';
+import { IconsModule } from '../../shared/icons/icons.module';
+import { ScoreRingComponent } from '../../shared/components/score-ring.component';
+import { StatusPillComponent } from '../../shared/components/status-pill/status-pill';
+import type { ApplicationStatus } from '../../shared/utils/status.utils';
 
 type LetterVariant = 'formal' | 'warm' | 'brief';
 
@@ -50,7 +54,7 @@ const POLL_MAX_ATTEMPTS = 40;
 @Component({
   selector: 'lba-editor',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, ConfirmDeleteModal, CvSectionEditorComponent, AtsPanel],
+  imports: [ReactiveFormsModule, RouterLink, ConfirmDeleteModal, CvSectionEditorComponent, AtsPanel, IconsModule, ScoreRingComponent, StatusPillComponent],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -85,6 +89,8 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly copiedType = signal<string | null>(null);
   readonly structuredCv = signal<CvSection[]>([]);
   readonly showAnalyse = signal(false);
+  readonly rightTab = signal<'letter' | 'analyse' | 'followup'>('letter');
+  readonly activeOutlineSectionId = signal<string | null>(null);
 
   readonly editorForm = new FormGroup({
     formal: new FormControl('', { nonNullable: true }),
@@ -109,6 +115,19 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly jobTitle = computed(() => this.application()?.jobPosting?.parsedJson?.title ?? '');
   readonly jobCompany = computed(() => this.application()?.jobPosting?.parsedJson?.company ?? '');
   readonly keywordSummary = computed(() => `${this.keywords().length} gefunden / ${this.missingKeywords().length} fehlen`);
+
+  readonly companyInitials = computed(() =>
+    this.jobCompany().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase() || 'HF',
+  );
+
+  readonly displayStatus = computed((): ApplicationStatus => {
+    const s = this.application()?.status;
+    if (s === 'REPLIED' || s === 'INTERVIEW') return 'INTERVIEW';
+    if (s === 'OFFER') return 'OFFER';
+    if (s === 'REJECTED') return 'REJECTED';
+    if (s === 'SENT' || s === 'DONE' || s === 'EXPORTED') return 'APPLIED';
+    return 'DRAFT';
+  });
 
   async ngOnInit(): Promise<void> {
     await this.load();
