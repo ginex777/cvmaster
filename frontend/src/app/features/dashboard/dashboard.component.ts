@@ -61,6 +61,39 @@ export class DashboardComponent implements OnInit {
     return name;
   });
 
+  readonly appliedCount = computed(() => {
+    const apps = this.data()?.recentApplications ?? [];
+    return apps.filter(a => this.toApplicationStatus(a.status) !== 'DRAFT').length;
+  });
+
+  readonly interviewedCount = computed(() => {
+    const apps = this.data()?.recentApplications ?? [];
+    return apps.filter(a => {
+      const s = this.toApplicationStatus(a.status);
+      return s === 'INTERVIEW' || s === 'OFFER' || s === 'REJECTED';
+    }).length;
+  });
+
+  readonly responseRate = computed(() => {
+    const total = this.appliedCount();
+    return total > 0 ? Math.round((this.interviewedCount() / total) * 100) : 0;
+  });
+
+  readonly nextReminder = computed((): { label: string; sub: string } | null => {
+    const apps = this.data()?.recentApplications ?? [];
+    const upcoming = apps
+      .filter(a => !!a.reminderAt)
+      .sort((a, b) => new Date(a.reminderAt!).getTime() - new Date(b.reminderAt!).getTime());
+    if (upcoming.length === 0) return null;
+    const first = upcoming[0];
+    const d = new Date(first.reminderAt!);
+    const label =
+      d.toLocaleDateString('de-DE', { weekday: 'short' }) +
+      ', ' +
+      d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    return { label, sub: this.companyName(first) + ' nachfassen' };
+  });
+
   readonly pipelineColumns = computed((): PipelineColumn[] => {
     const apps = this.data()?.recentApplications ?? [];
     const statuses: ApplicationStatus[] = ['DRAFT', 'APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED'];

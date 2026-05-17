@@ -156,6 +156,11 @@
   letter-spacing: -0.6px;
   color: var(--ink);
   line-height: 1;
+
+  &--date {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+  }
 }
 
 .stat-card__unit {

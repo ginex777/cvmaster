@@ -68,10 +68,10 @@
           <span class="stat-card__label">Antwortquote</span>
         </div>
         <div class="stat-card__value-row">
-          <span class="stat-card__value num">{{ data()!.cvCount }}</span>
-          <span class="stat-card__unit">CVs</span>
+          <span class="stat-card__value num">{{ responseRate() }}</span>
+          <span class="stat-card__unit">%</span>
         </div>
-        <div class="stat-card__trend">Lebensläufe gespeichert</div>
+        <div class="stat-card__trend">{{ interviewedCount() }} von {{ appliedCount() }} Bewerbungen</div>
       </article>
 
       <article class="stat-card" aria-label="Durchschnittlicher Match-Score" style="--stat-tone: var(--status-offer); --stat-icon-bg: oklch(97% 0.030 155)">
@@ -103,9 +103,9 @@
           <span class="stat-card__label">Nächste Erinnerung</span>
         </div>
         <div class="stat-card__value-row">
-          <span class="stat-card__value">—</span>
+          <span class="stat-card__value stat-card__value--date">{{ nextReminder()?.label ?? '—' }}</span>
         </div>
-        <div class="stat-card__trend">Keine ausstehend</div>
+        <div class="stat-card__trend">{{ nextReminder()?.sub ?? 'Keine ausstehend' }}</div>
       </article>
     </div>
 
