@@ -739,6 +739,34 @@
   background: var(--accent);
 }
 
+.letter-variant-tabs__btn--locked {
+  opacity: 0.6;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+
+  &:hover { background: var(--surface-2); color: var(--ink-2); opacity: 0.8; }
+}
+
+.letter-variant-tabs__lock {
+  color: var(--ink-3);
+  flex-shrink: 0;
+}
+
+.letter-variant-tabs__pro-pill {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 1px 5px;
+  border-radius: var(--radius-full);
+  background: var(--accent-soft);
+  color: var(--accent);
+  line-height: 1.4;
+}
+
 /* Letter editor */
 .letter-editor {
   flex: 1;

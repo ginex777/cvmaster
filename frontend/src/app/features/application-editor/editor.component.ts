@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../../core/api/api.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
 import { CvSectionEditorComponent } from '../../shared/components/cv-section-editor/cv-section-editor.component';
 import type { CvSection } from '../../shared/components/cv-section-editor/cv-section-editor.component';
@@ -13,6 +14,7 @@ import { AnalyticsService } from '../../core/analytics/analytics.service';
 import { IconsModule } from '../../shared/icons/icons.module';
 import { ScoreRingComponent } from '../../shared/components/score-ring.component';
 import { StatusPillComponent } from '../../shared/components/status-pill/status-pill';
+import { UpgradeModal } from '../../shared/components/upgrade-modal/upgrade-modal';
 import { STATUS_META, STATUS_ORDER, type ApplicationStatus } from '../../shared/utils/status.utils';
 
 type LetterVariant = 'formal' | 'warm' | 'brief';
@@ -55,13 +57,14 @@ const POLL_MAX_ATTEMPTS = 40;
 @Component({
   selector: 'lba-editor',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, ConfirmDeleteModal, CvSectionEditorComponent, AtsPanel, IconsModule, ScoreRingComponent, StatusPillComponent],
+  imports: [ReactiveFormsModule, RouterLink, ConfirmDeleteModal, CvSectionEditorComponent, AtsPanel, IconsModule, ScoreRingComponent, StatusPillComponent, UpgradeModal],
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss', './print.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditorComponent implements OnInit, OnDestroy {
   private readonly api = inject(ApiService);
+  private readonly auth = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly analytics = inject(AnalyticsService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -96,6 +99,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly activeOutlineSectionId = signal<string | null>(null);
   readonly statusMenuOpen = signal(false);
   readonly exportMenuOpen = signal(false);
+  readonly upgradeModalOpen = signal(false);
   readonly reminderPopoverOpen = signal(false);
   readonly reminderDate = signal('');
   readonly reminderTime = signal('09:00');
@@ -148,6 +152,21 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly companyInitials = computed(() =>
     this.jobCompany().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase() || 'HF',
   );
+
+  readonly isPro = computed(() => {
+    const plan = this.auth.user()?.plan;
+    return plan === 'PRO' || plan === 'pro' || plan === 'PAY_PER_APP' || plan === 'pay';
+  });
+
+  readonly wizardVariant = computed((): LetterVariant => {
+    const v = this.application()?.chosenVariant;
+    if (v === 'formal' || v === 'warm' || v === 'brief') return v;
+    return 'formal';
+  });
+
+  isVariantLocked(variant: LetterVariant): boolean {
+    return !this.isPro() && variant !== this.wizardVariant();
+  }
 
   readonly displayStatus = computed((): ApplicationStatus => {
     const s = this.application()?.status;

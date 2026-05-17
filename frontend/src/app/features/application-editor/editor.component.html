@@ -349,17 +349,29 @@
             <!-- Letter variant tabs -->
             <div class="letter-variant-tabs" aria-label="Anschreiben-Variante">
               @for (variant of letterVariants; track variant) {
-                <button
-                  type="button"
-                  class="letter-variant-tabs__btn"
-                  [class.letter-variant-tabs__btn--selected]="selectedLetter() === variant"
-                  [attr.aria-pressed]="selectedLetter() === variant"
-                  (click)="selectLetter(variant)">
-                  @if (selectedLetter() === variant) {
-                    <span class="letter-variant-tabs__dot" aria-hidden="true"></span>
-                  }
-                  {{ variantLabel(variant) }}
-                </button>
+                @if (isVariantLocked(variant)) {
+                  <button
+                    type="button"
+                    class="letter-variant-tabs__btn letter-variant-tabs__btn--locked"
+                    [attr.aria-label]="variantLabel(variant) + ' — Pro-Feature'"
+                    (click)="upgradeModalOpen.set(true)">
+                    <lucide-icon name="lock" [size]="11" class="letter-variant-tabs__lock" aria-hidden="true"></lucide-icon>
+                    {{ variantLabel(variant) }}
+                    <span class="letter-variant-tabs__pro-pill" aria-hidden="true">Pro</span>
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    class="letter-variant-tabs__btn"
+                    [class.letter-variant-tabs__btn--selected]="selectedLetter() === variant"
+                    [attr.aria-pressed]="selectedLetter() === variant"
+                    (click)="selectLetter(variant)">
+                    @if (selectedLetter() === variant) {
+                      <span class="letter-variant-tabs__dot" aria-hidden="true"></span>
+                    }
+                    {{ variantLabel(variant) }}
+                  </button>
+                }
               }
             </div>
 
@@ -481,4 +493,10 @@
   confirmLabel="Ja, neu generieren"
   (confirmed)="confirmRegen()"
   (cancelled)="regenConfirmOpen.set(false)"
+/>
+
+<lba-upgrade-modal
+  [open]="upgradeModalOpen()"
+  (upgradeRequested)="upgradeModalOpen.set(false)"
+  (dismissed)="upgradeModalOpen.set(false)"
 />

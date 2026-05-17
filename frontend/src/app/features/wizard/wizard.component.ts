@@ -244,7 +244,7 @@ export class WizardComponent implements OnInit {
   }
 
   extractKeywords(text: string): string[] {
-    const words = text.match(/\b[A-Z][a-zA-Z0-9+#.\-]{2,}\b/g) ?? [];
+    const words = text.match(/\b[A-Z][a-zA-Z0-9+#.\\-]{2,}\b/g) ?? [];
     const freq = new Map<string, number>();
     for (const w of words) {
       freq.set(w, (freq.get(w) ?? 0) + 1);

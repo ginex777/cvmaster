@@ -453,7 +453,7 @@ Die wichtigste Seite. In **acht** Mikro-Tasks zerlegt.
   - Style: `background: var(--accent); color: #fff; font-weight: 500; font-size: 11px; padding: 2px 8px; border-radius: 4px; display: inline-flex; gap: 4px`
 - **Verifikation:** Profil-Section zeigt Badge in Accent-Fill.
 
-## ☐ E-06 · Editor: Letter-Variant-Pro-Lock
+## ✅ E-06 · Editor: Letter-Variant-Pro-Lock
 
 - **📐 JSX-Quelle:** kein direkter Mockup — Pro-Lock-Pattern siehe `redesign/shared.jsx` Sidebar (`shell__lock`-Span).
 - **Dateien:** `editor.component.html` + `.ts`
@@ -1796,7 +1796,7 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | E-03 | Editor: Exportieren-Dropdown | A | ✅ |
 | E-04 | Editor: CV-Section Farbcodierung | A | ✅ |
 | E-05 | Editor: KI-optimiert-Badge | A | ✅ |
-| E-06 | Editor: Letter-Variant Pro-Lock | A | ☐ |
+| E-06 | Editor: Letter-Variant Pro-Lock | A | ✅ |
 | E-07 | Editor: Send-Footer Variant-Tag | A | ✅ |
 | E-08 | Editor: Reminder-Picker | A | ✅ |
 | PB-01 | Pipeline-Board: 5-Spalten-Config | B | ✅ |
