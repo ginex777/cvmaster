@@ -1492,7 +1492,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   - `/app/linkedin`
 - **Verifikation:** `npm run a11y` grün auf allen.
 
-## ☐ QA-02 · Playwright-Selektoren
+## ✅ QA-02 · Playwright-Selektoren
 
 - **Dateien:** alle `frontend/e2e/*.spec.ts`
 - **Aufgabe:**
@@ -1879,7 +1879,7 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | BE-02 | API-Validierung | M | ✅ |
 | BE-03 | Reminder-API | M | ✅ |
 | QA-01 | Axe-Smoke | N | ✅ |
-| QA-02 | Playwright | N | ☐ |
+| QA-02 | Playwright | N | ✅ |
 | QA-03 | Jest | N | ☐ |
 | QA-04 | Visual-Regression | N | ☐ |
 | Z-01 | Grep-Check | Z | ☐ |

@@ -4,6 +4,7 @@
   [style.color]="meta().color"
   [style.background]="meta().bg"
   [attr.aria-label]="'Status: ' + meta().label"
+  [attr.data-status]="status()"
   role="status"
 >
   <span class="pill__dot" [style.background]="meta().color" aria-hidden="true"></span>
