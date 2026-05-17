@@ -492,7 +492,7 @@ Die wichtigste Seite. In **acht** Mikro-Tasks zerlegt.
 
 Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
-## ☐ PB-01 · Pipeline-Board: 5-Spalten-Config
+## ✅ PB-01 · Pipeline-Board: 5-Spalten-Config
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `PipelineScreen` → `data`-Objekt am Anfang (5 Status-Keys mit Beispiel-Bewerbungen).
 - **Dateien:** `frontend/src/app/shared/components/pipeline-board/pipeline-board.ts`
@@ -503,7 +503,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. `appsForColumn(col)` filtert `applications` nach `legacyToStatus(app.status) === col.key`.
 - **Verifikation:** Board rendert 5 leere Spalten.
 
-## ☐ PB-02 · Pipeline-Board: Spalten-Container-Style
+## ✅ PB-02 · Pipeline-Board: Spalten-Container-Style
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `PipelineScreen` → der äußere `<div>` pro Spalte mit `background: s.bg`, `border: 1px solid {s.color}22`, `borderRadius: 12`, `padding: 0 8px 8px`, Top-Band als 3-px-Pseudo-Element.
 - **Dateien:** `pipeline-board.html` + `.scss`
@@ -526,7 +526,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. `--col-bg` und `--col-color` aus dem `appsForColumn`-Loop als inline style.
 - **Verifikation:** 5 Spalten haben jeweils unterschiedliche getintete Hintergründe + bunte Top-Bars.
 
-## ☐ PB-03 · Pipeline-Board: Spalten-Header
+## ✅ PB-03 · Pipeline-Board: Spalten-Header
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `PipelineScreen` → Header pro Spalte (Dot + Label + Count + Plus-Btn, alles in Status-Farbe).
 - **Dateien:** `pipeline-board.html` + `.scss`
@@ -543,7 +543,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
      - Plus-Button (`lucide-icon plus`, size 14) ganz rechts mit `margin-left: auto; opacity: 0.7`
 - **Verifikation:** Header pro Spalte zeigt farbigen Dot + farbiges Label + Count + Plus-Btn.
 
-## ☐ PB-04 · Pipeline-Board: Karten-Layout
+## ✅ PB-04 · Pipeline-Board: Karten-Layout
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `PipelineScreen` → innerer Karten-`<div>` mit `borderLeft: 3px solid {s.color}`, CompanyLogo, Co-Name, When, Role, Score-Pill, Reminder-Pill.
 - **Dateien:** `pipeline-board.html` + `.scss`
@@ -588,7 +588,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   - Reminder-Pill: `color: var(--warn); background: oklch(95% 0.025 60)`
 - **Verifikation:** Karten haben Logo, Co-Name, Datum mono, Rolle, Score-Chip in Schwellenfarbe.
 
-## ☐ PB-05 · Pipeline-Board: Drag & Drop (CDK)
+## ✅ PB-05 · Pipeline-Board: Drag & Drop (CDK)
 
 - **📐 JSX-Quelle:** Mockup-Karten haben `cursor: 'grab'` — Verhalten muss in Angular via CDK gebaut werden. Mockup zeigt keine Drag-Animation, aber Spalten müssen Drop-Targets sein.
 - **Dateien:** `pipeline-board.ts` + `.html` + Modul-Imports
@@ -601,7 +601,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   6. Drop-Placeholder: dashed border in Status-Farbe.
 - **Verifikation:** Karte kann zwischen allen 5 Spalten gezogen werden, Status persistiert.
 
-## ☐ PB-06 · Pipeline-Board: Empty-State pro Spalte
+## ✅ PB-06 · Pipeline-Board: Empty-State pro Spalte
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `PipelineScreen` → leere `rejected`-Spalte mit Text „Leer" in opacity 50% Status-Farbe.
 - **Dateien:** `pipeline-board.html` + `.scss`
@@ -1799,12 +1799,12 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | E-06 | Editor: Letter-Variant Pro-Lock | A | ☐ |
 | E-07 | Editor: Send-Footer Variant-Tag | A | ✅ |
 | E-08 | Editor: Reminder-Picker | A | ✅ |
-| PB-01 | Pipeline-Board: 5-Spalten-Config | B | ☐ |
-| PB-02 | Pipeline-Board: Spalten-Container-Style | B | ☐ |
-| PB-03 | Pipeline-Board: Spalten-Header | B | ☐ |
-| PB-04 | Pipeline-Board: Karten-Layout | B | ☐ |
-| PB-05 | Pipeline-Board: Drag&Drop (CDK) | B | ☐ |
-| PB-06 | Pipeline-Board: Empty-State | B | ☐ |
+| PB-01 | Pipeline-Board: 5-Spalten-Config | B | ✅ |
+| PB-02 | Pipeline-Board: Spalten-Container-Style | B | ✅ |
+| PB-03 | Pipeline-Board: Spalten-Header | B | ✅ |
+| PB-04 | Pipeline-Board: Karten-Layout | B | ✅ |
+| PB-05 | Pipeline-Board: Drag&Drop (CDK) | B | ✅ |
+| PB-06 | Pipeline-Board: Empty-State | B | ✅ |
 | MC-01 | CVs: Text-Form Inline | C | ☐ |
 | MC-02 | CVs: Template-Mini-Preview Wiring | C | ☐ |
 | MC-03 | CVs: Template-Akzentfarben | C | ☐ |

@@ -1,7 +1,11 @@
 import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { type CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { scoreClass } from '../../utils/score.utils';
 import { HighlightPipe } from '../../pipes/highlight.pipe';
+import { legacyToStatus, STATUS_META, STATUS_ORDER, type ApplicationStatus } from '../../utils/status.utils';
+import { IconsModule } from '../../icons/icons.module';
+import { CompanyLogoComponent } from '../company-logo/company-logo';
 
 export interface PipelineApplication {
   id: string;
@@ -23,24 +27,17 @@ export interface ReminderChangeEvent {
 }
 
 interface PipelineColumn {
-  key: string;
+  key: ApplicationStatus;
   label: string;
-  statuses: string[];
+  color: string;
+  bg: string;
+  accent: string;
 }
-
-export const PIPELINE_COLUMNS: PipelineColumn[] = [
-  { key: 'open',      label: 'Offen',     statuses: ['OPEN', 'DONE', 'DRAFT', 'EXPORTED'] },
-  { key: 'sent',      label: 'Gesendet',  statuses: ['SENT'] },
-  { key: 'replied',   label: 'Antwort',   statuses: ['REPLIED'] },
-  { key: 'interview', label: 'Interview', statuses: ['INTERVIEW'] },
-  { key: 'offer',     label: 'Angebot',   statuses: ['OFFER'] },
-  { key: 'rejected',  label: 'Absage',    statuses: ['REJECTED', 'FAILED'] },
-];
 
 @Component({
   selector: 'lba-pipeline-board',
   standalone: true,
-  imports: [DatePipe, HighlightPipe],
+  imports: [DatePipe, HighlightPipe, IconsModule, CompanyLogoComponent, DragDropModule],
   templateUrl: './pipeline-board.html',
   styleUrl: './pipeline-board.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,26 +50,49 @@ export class PipelineBoard {
   readonly reminderChange = output<ReminderChangeEvent>();
   readonly applicationOpen = output<string>();
 
-  readonly columns = PIPELINE_COLUMNS;
+  readonly columns = computed<PipelineColumn[]>(() =>
+    STATUS_ORDER.map(key => {
+      const meta = STATUS_META[key];
+      return {
+        key,
+        label: meta.label,
+        color: meta.color,
+        bg: meta.bg,
+        accent: meta.color,
+      };
+    }),
+  );
+  readonly connectedDropListIds = computed(() => this.columns().map(col => this.dropListId(col.key)));
 
   readonly dimmedColumnKeys = computed(() => {
     const apps = this.applications();
     return new Set(
-      this.columns
-        .filter(col => apps.filter(a => col.statuses.includes(a.status)).length === 0)
+      this.columns()
+        .filter(col => apps.filter(a => legacyToStatus(a.status) === col.key).length === 0)
         .map(col => col.key)
     );
   });
 
   appsForColumn(column: PipelineColumn): PipelineApplication[] {
-    return this.applications().filter(app => column.statuses.includes(app.status));
+    return this.applications().filter(app => legacyToStatus(app.status) === column.key);
   }
 
   moveToColumn(app: PipelineApplication, column: PipelineColumn): void {
-    const targetStatus = column.statuses[0];
-    if (app.status !== targetStatus) {
+    const targetStatus = column.key;
+    if (legacyToStatus(app.status) !== targetStatus) {
       this.statusChange.emit({ id: app.id, status: targetStatus });
     }
+  }
+
+  onCardDropped(
+    event: CdkDragDrop<PipelineApplication[], PipelineApplication[], PipelineApplication>,
+    column: PipelineColumn,
+  ): void {
+    this.moveToColumn(event.item.data, column);
+  }
+
+  dropListId(status: ApplicationStatus): string {
+    return `pipeline-${status.toLowerCase()}`;
   }
 
   onReminderInput(app: PipelineApplication, event: Event): void {

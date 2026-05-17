@@ -1,67 +1,64 @@
 <div class="pipeline" role="region" aria-label="Bewerbungs-Pipeline">
   <div class="pipeline__columns">
-    @for (col of columns; track col.key) {
-      <div class="pipeline__col" [attr.aria-label]="col.label" [class.pipeline__col--dimmed]="dimmedColumnKeys().has(col.key)">
+    @for (col of columns(); track col.key) {
+      <div
+        class="pipeline__col"
+        [style.--col-bg]="col.bg"
+        [style.--col-color]="col.color"
+        [attr.aria-label]="col.label"
+        [class.pipeline__col--dimmed]="dimmedColumnKeys().has(col.key)">
         <h3 class="pipeline__col-heading">
-          {{ col.label }}
+          <span class="pipeline__col-dot" aria-hidden="true"></span>
+          <span class="pipeline__col-label">{{ col.label }}</span>
           <span class="pipeline__col-count" aria-hidden="true">{{ appsForColumn(col).length }}</span>
+          <button type="button" class="pipeline__col-add" [attr.aria-label]="'Bewerbung in ' + col.label + ' hinzufügen'">
+            <lucide-icon name="plus" [size]="14" aria-hidden="true"></lucide-icon>
+          </button>
         </h3>
-        <ul class="pipeline__cards" role="list">
+        <ul
+          class="pipeline__cards"
+          role="list"
+          cdkDropList
+          [id]="dropListId(col.key)"
+          [cdkDropListData]="appsForColumn(col)"
+          [cdkDropListConnectedTo]="connectedDropListIds()"
+          (cdkDropListDropped)="onCardDropped($event, col)">
           @for (app of appsForColumn(col); track app.id) {
-            <li class="pipeline__card">
-              <button
-                type="button"
-                class="pipeline__card-title"
-                (click)="applicationOpen.emit(app.id)"
-                [attr.aria-label]="'Bewerbung öffnen: ' + jobTitle(app) + ' bei ' + company(app)"
-                [innerHTML]="jobTitle(app) | highlight:highlightQuery()">
-              </button>
-              @if (company(app)) {
-                <span class="pipeline__card-company">{{ company(app) }}</span>
-              }
-              @if (app.matchScore !== null) {
-                <span [class]="'pipeline__card-score ' + scoreClass(app.matchScore!)" [attr.aria-label]="'Match-Score ' + app.matchScore + ' Prozent'">
-                  {{ app.matchScore }}%
-                </span>
-              }
-              <div class="pipeline__card-actions" role="group" [attr.aria-label]="'Status für ' + jobTitle(app) + ' ändern'">
-                @for (target of columns; track target.key) {
-                  @if (target.key !== col.key) {
-                    <button
-                      type="button"
-                      class="pipeline__move-btn"
-                      (click)="moveToColumn(app, target)"
-                      [attr.aria-label]="'Nach ' + target.label + ' verschieben'"
-                    >
-                      → {{ target.label }}
-                    </button>
-                  }
-                }
+            <li
+              class="pipeline__card"
+              cdkDrag
+              [cdkDragData]="app"
+              tabindex="0"
+              [style.--card-color]="col.color"
+              [attr.aria-label]="'Bewerbung öffnen: ' + jobTitle(app) + ' bei ' + company(app)"
+              (click)="applicationOpen.emit(app.id)"
+              (keydown.enter)="applicationOpen.emit(app.id)"
+              (keydown.space)="$event.preventDefault(); applicationOpen.emit(app.id)">
+              <div class="pipeline__card-head">
+                <lba-company-logo [name]="company(app)" [size]="28" />
+                <div class="pipeline__card-head-text">
+                  <div class="pipeline__card-co">{{ company(app) }}</div>
+                  <div class="pipeline__card-when">{{ app.createdAt | date:'dd. MMM' }}</div>
+                </div>
               </div>
-              <div class="pipeline__reminder">
-                <label class="pipeline__reminder-label" [attr.for]="'reminder-' + app.id">
-                  Erinnerung
-                  @if (hasReminder(app)) {
-                    <span class="pipeline__reminder-dot" aria-hidden="true">●</span>
-                  }
-                </label>
-                <input
-                  type="date"
-                  class="pipeline__reminder-input"
-                  [id]="'reminder-' + app.id"
-                  [value]="reminderDateValue(app)"
-                  (change)="onReminderInput(app, $event)"
-                />
+              <div class="pipeline__card-role" [innerHTML]="jobTitle(app) | highlight:highlightQuery()"></div>
+              <div class="pipeline__card-meta">
+                @if (app.matchScore !== null) {
+                  <span [class]="'pipeline__card-score ' + scoreClass(app.matchScore!)" [attr.aria-label]="'Match-Score ' + app.matchScore + ' Prozent'">
+                    <lucide-icon name="target" [size]="10" aria-hidden="true"></lucide-icon>
+                    {{ app.matchScore }}%
+                  </span>
+                }
                 @if (hasReminder(app)) {
-                  <span class="pipeline__reminder-hint" aria-live="polite">
-                    {{ app.reminderAt | date:'dd.MM.yyyy' }}
+                  <span class="pipeline__card-reminder" aria-live="polite">
+                    <lucide-icon name="bell" [size]="10" aria-hidden="true"></lucide-icon>
+                    {{ app.reminderAt | date:'dd.MM.' }}
                   </span>
                 }
               </div>
             </li>
-          }
-          @empty {
-            <li class="pipeline__empty">–</li>
+          } @empty {
+            <li class="pipeline__empty">Leer</li>
           }
         </ul>
       </div>
