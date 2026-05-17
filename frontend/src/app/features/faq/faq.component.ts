@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, type OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, type OnDestroy } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { FooterComponent } from '../../shared/components/footer.component';
 import { NavbarComponent } from '../../shared/components/navbar.component';
 import { SeoService } from '../../core/seo/seo.service';
+import { IconsModule } from '../../shared/icons/icons.module';
 
 const FAQ_LD_JSON = JSON.stringify({
   '@context': 'https://schema.org',
@@ -29,7 +30,7 @@ const FAQ_LD_JSON = JSON.stringify({
 @Component({
   selector: 'lba-faq',
   standalone: true,
-  imports: [NavbarComponent, FooterComponent],
+  imports: [NavbarComponent, FooterComponent, IconsModule],
   templateUrl: './faq.component.html',
   styleUrl: './faq.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,6 +38,8 @@ const FAQ_LD_JSON = JSON.stringify({
 export class FaqComponent implements OnDestroy {
   private readonly document = inject(DOCUMENT);
   private readonly ldScript: HTMLScriptElement;
+
+  readonly openItem = signal<string | null>(null);
 
   constructor() {
     inject(SeoService).setPage(
@@ -49,6 +52,14 @@ export class FaqComponent implements OnDestroy {
     this.ldScript.type = 'application/ld+json';
     this.ldScript.textContent = FAQ_LD_JSON;
     this.document.head.appendChild(this.ldScript);
+  }
+
+  toggle(id: string): void {
+    this.openItem.update(current => current === id ? null : id);
+  }
+
+  isOpen(id: string): boolean {
+    return this.openItem() === id;
   }
 
   ngOnDestroy(): void {

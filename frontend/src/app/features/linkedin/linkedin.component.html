@@ -3,25 +3,34 @@
   <div class="page-header">
     <div class="page-header__text">
       <h1 class="page-title">LinkedIn-Optimierung</h1>
-      <p class="page-sub">Optimiere dein Profil mit KI</p>
+      <p class="page-sub">Optimiere dein Profil mit KI für mehr Sichtbarkeit</p>
     </div>
   </div>
 
   @if (!isPro()) {
-    <div class="empty-state">
-      <p class="empty-state__text">LinkedIn-Optimierung ist ein Pro-Feature.</p>
-      <button
-        type="button"
-        class="btn btn--cta btn--md"
-        (click)="openUpgrade()"
-        aria-label="Jetzt upgraden">
-        Jetzt upgraden
-      </button>
+    <div class="pro-gate">
+      <div class="pro-gate__preview" aria-hidden="true">
+        <div class="pro-gate__form-mock">
+          <div class="pro-gate__field-mock"></div>
+          <div class="pro-gate__field-mock pro-gate__field-mock--tall"></div>
+          <div class="pro-gate__btn-mock"></div>
+        </div>
+      </div>
+      <div class="pro-gate__lock-card">
+        <div class="pro-gate__lock-icon" aria-hidden="true">
+          <lucide-icon name="lock" [size]="24"></lucide-icon>
+        </div>
+        <h2 class="pro-gate__title">Pro-Feature</h2>
+        <p class="pro-gate__desc">LinkedIn-Profil-Optimierung ist exklusiv für Pro-Nutzer verfügbar. Upgrade jetzt und profitiere von KI-gestützten Verbesserungen für Headline, About und Berufserfahrung.</p>
+        <button type="button" class="btn btn--cta btn--md" (click)="openUpgrade()" aria-label="Auf Pro upgraden">
+          Auf Pro upgraden
+        </button>
+      </div>
     </div>
   } @else {
 
     @if (error()) {
-      <div role="alert" aria-live="polite" class="form-error linkedin-error">{{ error() }}</div>
+      <div role="alert" aria-live="polite" class="linkedin-error">{{ error() }}</div>
     }
 
     <form
@@ -66,35 +75,39 @@
     </form>
 
     @if (result()) {
-      <section class="card-list linkedin-results" aria-label="Optimierungsergebnisse" aria-live="polite">
+      <section class="linkedin-results" aria-label="Optimierungsergebnisse" aria-live="polite">
 
-        <div class="card-elevated">
-          <div class="card-row" style="align-items: flex-start;">
-            <p class="card-title">Headline</p>
+        <div class="result-card">
+          <div class="result-card__header">
+            <span class="result-card__label">Headline</span>
             <button type="button" class="btn btn--ghost btn--sm"
               (click)="copyField(result()!.headline, 'headline')"
               aria-label="Headline kopieren">
+              <lucide-icon [name]="copiedField() === 'headline' ? 'check' : 'copy'" [size]="14" aria-hidden="true"></lucide-icon>
               @if (copiedField() === 'headline') { Kopiert! } @else { Kopieren }
             </button>
           </div>
-          <p class="linkedin-result-text">{{ result()!.headline }}</p>
+          <p class="result-card__text">{{ result()!.headline }}</p>
         </div>
 
-        <div class="card-elevated">
-          <div class="card-row" style="align-items: flex-start;">
-            <p class="card-title">About</p>
+        <div class="result-card">
+          <div class="result-card__header">
+            <span class="result-card__label">About</span>
             <button type="button" class="btn btn--ghost btn--sm"
               (click)="copyField(result()!.about, 'about')"
               aria-label="About kopieren">
+              <lucide-icon [name]="copiedField() === 'about' ? 'check' : 'copy'" [size]="14" aria-hidden="true"></lucide-icon>
               @if (copiedField() === 'about') { Kopiert! } @else { Kopieren }
             </button>
           </div>
-          <p class="linkedin-result-text">{{ result()!.about }}</p>
+          <p class="result-card__text">{{ result()!.about }}</p>
         </div>
 
         @if (result()!.experience.length > 0) {
-          <div class="card-elevated">
-            <p class="card-title" style="margin-bottom: var(--space-4);">Berufserfahrung</p>
+          <div class="result-card">
+            <div class="result-card__header">
+              <span class="result-card__label">Berufserfahrung</span>
+            </div>
             <ul class="linkedin-experience" role="list">
               @for (exp of result()!.experience; track exp.company + exp.role) {
                 <li class="linkedin-exp-item">
@@ -103,6 +116,7 @@
                     <button type="button" class="btn btn--ghost btn--sm"
                       (click)="copyField(exp.improvedBullets.join('\n'), exp.company + exp.role)"
                       [attr.aria-label]="'Bullets für ' + exp.role + ' kopieren'">
+                      <lucide-icon [name]="copiedField() === exp.company + exp.role ? 'check' : 'copy'" [size]="14" aria-hidden="true"></lucide-icon>
                       @if (copiedField() === exp.company + exp.role) { Kopiert! } @else { Kopieren }
                     </button>
                   </div>

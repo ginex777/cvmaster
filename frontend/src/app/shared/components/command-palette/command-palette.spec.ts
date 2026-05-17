@@ -22,23 +22,23 @@ describe('CommandPaletteComponent', () => {
     expect(component.isOpen()).toBe(false);
   });
 
-  it('shows all items when query is empty', () => {
+  it('shows static items when query is empty', () => {
     component.query.set('');
     fixture.detectChanges();
-    expect(component.filteredItems().length).toBeGreaterThan(0);
+    expect(component.filteredStatic().length).toBeGreaterThan(0);
   });
 
-  it('filters items by query', () => {
+  it('filters static items by query', () => {
     component.query.set('Pipeline');
     fixture.detectChanges();
-    const items = component.filteredItems();
-    expect(items.every(i => i.label.toLowerCase().includes('pipeline'))).toBe(true);
+    const items = component.filteredStatic();
+    expect(items.every((i: { label: string }) => i.label.toLowerCase().includes('pipeline'))).toBe(true);
   });
 
   it('returns empty list for unknown query', () => {
     component.query.set('xyzxyzxyz');
     fixture.detectChanges();
-    expect(component.filteredItems().length).toBe(0);
+    expect(component.hasResults()).toBe(false);
   });
 
   it('renders the dialog element with aria-label', () => {

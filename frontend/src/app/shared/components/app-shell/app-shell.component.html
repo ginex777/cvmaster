@@ -143,3 +143,7 @@
   [open]="einstellungenOpen()"
   (closeModal)="einstellungenOpen.set(false)"
 />
+
+@if (onboardingOpen()) {
+  <lba-onboarding-modal (dismissed)="dismissOnboarding()" />
+}

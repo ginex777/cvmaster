@@ -9,7 +9,7 @@ describe('PricingComponent', () => {
 
   beforeEach(async () => {
     auth = {
-      user: signal({ id: 'u1', email: 'a@b.de', name: 'Lina', plan: 'free', emailVerified: true, twoFactorEnabled: false }),
+      user: signal({ id: 'u1', email: 'a@b.de', name: 'Lina', plan: 'free', emailVerified: true, twoFactorEnabled: false, onboardingShown: true }),
     };
 
     await TestBed.configureTestingModule({

@@ -5,6 +5,7 @@ import { ApiService } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { SeoService } from '../../core/seo/seo.service';
 import { UpgradeService } from '../../shared/services/upgrade.service';
+import { IconsModule } from '../../shared/icons/icons.module';
 
 interface ExperienceOptimization {
   role: string;
@@ -21,7 +22,7 @@ interface LinkedInOptimization {
 @Component({
   selector: 'lba-linkedin',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, IconsModule],
   templateUrl: './linkedin.component.html',
   styleUrl: './linkedin.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

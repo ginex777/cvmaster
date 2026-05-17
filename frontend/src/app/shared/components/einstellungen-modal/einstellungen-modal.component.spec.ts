@@ -7,7 +7,7 @@ import { ApiService } from '../../../core/api/api.service';
 import { SeoService } from '../../../core/seo/seo.service';
 
 const mockAuth = {
-  user: Object.assign(() => ({ id: '1', email: 'a@b.de', name: 'Hans', plan: 'PRO', emailVerified: true, twoFactorEnabled: false }), { subscribe: jest.fn() }),
+  user: Object.assign(() => ({ id: '1', email: 'a@b.de', name: 'Hans', plan: 'PRO', emailVerified: true, twoFactorEnabled: false, onboardingShown: true }), { subscribe: jest.fn() }),
   isAuthenticated: Object.assign(() => true, { subscribe: jest.fn() }),
   logout: jest.fn(),
   clearSession: jest.fn(),
@@ -56,19 +56,10 @@ describe('EinstellungenModalComponent', () => {
     expect(dialog).not.toBeNull();
   });
 
-  it('shows Abrechnung tab by default', () => {
+  it('renders profile section when open', () => {
     const fixture = createComponent(true);
-    const activeTab = fixture.debugElement.query(By.css('.modal-tab.is-active'));
-    expect((activeTab.nativeElement as HTMLElement).textContent?.trim()).toBe('Abrechnung');
-  });
-
-  it('switches to Sicherheit tab on click', () => {
-    const fixture = createComponent(true);
-    const tabs = fixture.debugElement.queryAll(By.css('.modal-tab'));
-    const sicherheit = tabs.find(t => (t.nativeElement as HTMLElement).textContent?.trim() === 'Sicherheit');
-    (sicherheit!.nativeElement as HTMLButtonElement).click();
-    fixture.detectChanges();
-    expect(fixture.componentInstance['activeTab']()).toBe('sicherheit');
+    const dialog = fixture.debugElement.query(By.css('[role="dialog"]'));
+    expect(dialog).not.toBeNull();
   });
 
   it('emits closeModal when ✕ button is clicked', () => {

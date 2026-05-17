@@ -21,20 +21,29 @@
   }
 
   h1 {
-    font-size: 2rem;
-    font-weight: 850;
+    font-size: 1.5rem;
+    font-weight: 700;
   }
 }
 
 .not-found__code {
-  color: var(--ink-3);
-  font-size: 5rem;
-  font-weight: 900;
+  color: var(--accent);
+  font-size: 6rem;
+  font-weight: 600;
   line-height: 1;
+  letter-spacing: -0.04em;
 }
 
 .not-found__message {
-  max-width: 460px;
+  max-width: 420px;
   color: var(--ink-2);
-  line-height: 1.7;
+  line-height: 1.65;
+}
+
+.not-found__actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: var(--space-2);
 }

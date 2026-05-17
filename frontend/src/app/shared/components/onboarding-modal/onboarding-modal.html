@@ -1,0 +1,41 @@
+<div class="onboarding-backdrop" role="dialog" aria-modal="true" aria-labelledby="onboarding-title" (click)="close()">
+  <div class="onboarding-panel" (click)="$event.stopPropagation()">
+
+    <button type="button" class="onboarding-panel__close" (click)="close()" aria-label="Schließen">
+      <lucide-icon name="x" [size]="16" aria-hidden="true"></lucide-icon>
+    </button>
+
+    <div class="onboarding-panel__header">
+      <div class="onboarding-panel__icon" aria-hidden="true">
+        <lucide-icon name="sparkles" [size]="22"></lucide-icon>
+      </div>
+      <h2 id="onboarding-title" class="onboarding-panel__title">Willkommen bei Hireflow</h2>
+      <p class="onboarding-panel__sub">In 3 Schritten zu deiner ersten KI-Bewerbung</p>
+    </div>
+
+    <ol class="onboarding-steps" aria-label="Erste Schritte">
+      @for (step of steps; track step.id; let i = $index) {
+        <li class="onboarding-step">
+          <div class="onboarding-step__num" aria-hidden="true">
+            <lucide-icon [name]="step.icon" [size]="18"></lucide-icon>
+          </div>
+          <div class="onboarding-step__body">
+            <span class="onboarding-step__counter" aria-hidden="true">{{ i + 1 }}</span>
+            <strong class="onboarding-step__title">{{ step.title }}</strong>
+            <p class="onboarding-step__desc">{{ step.desc }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+
+    <div class="onboarding-panel__actions">
+      <button type="button" class="btn btn--cta btn--md" (click)="close()" aria-label="Loslegen">
+        Loslegen
+      </button>
+      <button type="button" class="btn btn--ghost btn--sm" [disabled]="loading()" (click)="dismiss()">
+        @if (loading()) { Wird gespeichert… } @else { Nicht mehr anzeigen }
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -11,6 +11,7 @@ interface User {
   plan: UserPlan;
   emailVerified: boolean;
   twoFactorEnabled: boolean;
+  onboardingShown: boolean;
 }
 
 @Injectable({ providedIn: 'root' })

@@ -10,56 +10,50 @@
     <h2 id="faq-general" class="faq-section__heading">Allgemein</h2>
 
     <dl class="faq-list">
-      <div class="faq-item">
+      <div class="faq-item" [class.faq-item--open]="isOpen('faq-1')">
         <dt>
-          <button
-            type="button"
-            class="faq-item__question"
-            aria-expanded="false"
+          <button type="button" class="faq-item__question"
+            [attr.aria-expanded]="isOpen('faq-1')"
             aria-controls="faq-1"
-            onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); document.getElementById('faq-1').hidden = !document.getElementById('faq-1').hidden">
+            (click)="toggle('faq-1')">
             Was ist Hireflow AI?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <lucide-icon name="chevron-down" [size]="18" class="faq-item__chevron" aria-hidden="true"></lucide-icon>
           </button>
         </dt>
-        <dd id="faq-1" class="faq-item__answer" hidden>
+        <dd id="faq-1" class="faq-item__answer" [hidden]="!isOpen('faq-1')">
           Hireflow AI ist ein KI-gestütztes Tool, das deinen Lebenslauf automatisch auf jede Stellenanzeige
-          optimiert und ein passendes Anschreiben generiert. Du kannst eine Stelle per Text, URL eingeben und
-          erhältst in Sekunden bewerbungsfertige Unterlagen.
+          optimiert und ein passendes Anschreiben generiert. Du kannst eine Stelle per Text oder URL eingeben
+          und erhältst in Sekunden bewerbungsfertige Unterlagen.
         </dd>
       </div>
 
-      <div class="faq-item">
+      <div class="faq-item" [class.faq-item--open]="isOpen('faq-2')">
         <dt>
-          <button
-            type="button"
-            class="faq-item__question"
-            aria-expanded="false"
+          <button type="button" class="faq-item__question"
+            [attr.aria-expanded]="isOpen('faq-2')"
             aria-controls="faq-2"
-            onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); document.getElementById('faq-2').hidden = !document.getElementById('faq-2').hidden">
+            (click)="toggle('faq-2')">
             Wie lange dauert die Optimierung?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <lucide-icon name="chevron-down" [size]="18" class="faq-item__chevron" aria-hidden="true"></lucide-icon>
           </button>
         </dt>
-        <dd id="faq-2" class="faq-item__answer" hidden>
+        <dd id="faq-2" class="faq-item__answer" [hidden]="!isOpen('faq-2')">
           Die KI-Optimierung dauert in der Regel 30–60 Sekunden. Während der Generierung kannst du den Fortschritt
           live verfolgen. Die Ergebnisse werden sofort gespeichert und stehen danach dauerhaft zur Verfügung.
         </dd>
       </div>
 
-      <div class="faq-item">
+      <div class="faq-item" [class.faq-item--open]="isOpen('faq-3')">
         <dt>
-          <button
-            type="button"
-            class="faq-item__question"
-            aria-expanded="false"
+          <button type="button" class="faq-item__question"
+            [attr.aria-expanded]="isOpen('faq-3')"
             aria-controls="faq-3"
-            onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); document.getElementById('faq-3').hidden = !document.getElementById('faq-3').hidden">
+            (click)="toggle('faq-3')">
             Welche Dateiformate kann ich hochladen?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <lucide-icon name="chevron-down" [size]="18" class="faq-item__chevron" aria-hidden="true"></lucide-icon>
           </button>
         </dt>
-        <dd id="faq-3" class="faq-item__answer" hidden>
+        <dd id="faq-3" class="faq-item__answer" [hidden]="!isOpen('faq-3')">
           Wir akzeptieren <strong>PDF</strong> und <strong>DOCX</strong>. Die Datei wird ausschließlich im
           Arbeitsspeicher verarbeitet und nie dauerhaft gespeichert. Die maximale Dateigröße beträgt 10 MB.
         </dd>
@@ -71,19 +65,17 @@
     <h2 id="faq-privacy" class="faq-section__heading">Datenschutz & Sicherheit</h2>
 
     <dl class="faq-list">
-      <div class="faq-item">
+      <div class="faq-item" [class.faq-item--open]="isOpen('faq-4')">
         <dt>
-          <button
-            type="button"
-            class="faq-item__question"
-            aria-expanded="false"
+          <button type="button" class="faq-item__question"
+            [attr.aria-expanded]="isOpen('faq-4')"
             aria-controls="faq-4"
-            onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); document.getElementById('faq-4').hidden = !document.getElementById('faq-4').hidden">
+            (click)="toggle('faq-4')">
             Wird mein Lebenslauf gespeichert oder weitergegeben?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <lucide-icon name="chevron-down" [size]="18" class="faq-item__chevron" aria-hidden="true"></lucide-icon>
           </button>
         </dt>
-        <dd id="faq-4" class="faq-item__answer" hidden>
+        <dd id="faq-4" class="faq-item__answer" [hidden]="!isOpen('faq-4')">
           Hochgeladene und generierte Dokumente werden <strong>nie dauerhaft auf der Festplatte gespeichert</strong>.
           Die Verarbeitung findet ausschließlich im RAM statt. Strukturierte Daten (z. B. Berufserfahrung, Skills)
           werden verschlüsselt in deinem Account gespeichert. Du kannst alle Daten jederzeit über den
@@ -91,19 +83,17 @@
         </dd>
       </div>
 
-      <div class="faq-item">
+      <div class="faq-item" [class.faq-item--open]="isOpen('faq-5')">
         <dt>
-          <button
-            type="button"
-            class="faq-item__question"
-            aria-expanded="false"
+          <button type="button" class="faq-item__question"
+            [attr.aria-expanded]="isOpen('faq-5')"
             aria-controls="faq-5"
-            onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); document.getElementById('faq-5').hidden = !document.getElementById('faq-5').hidden">
+            (click)="toggle('faq-5')">
             Ist der Dienst DSGVO-konform?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <lucide-icon name="chevron-down" [size]="18" class="faq-item__chevron" aria-hidden="true"></lucide-icon>
           </button>
         </dt>
-        <dd id="faq-5" class="faq-item__answer" hidden>
+        <dd id="faq-5" class="faq-item__answer" [hidden]="!isOpen('faq-5')">
           Ja. Hireflow AI wird in Deutschland betrieben und verarbeitet Daten nach Art. 6 Abs. 1 lit. b
           und lit. a DSGVO. Sensible Profildaten (Art. 9) werden nur mit expliziter Einwilligung verarbeitet.
           KI-Anfragen werden mit Pseudonymisierungsdelimitern gesendet, und wir haben Auftragsverarbeitungsverträge
@@ -111,19 +101,17 @@
         </dd>
       </div>
 
-      <div class="faq-item">
+      <div class="faq-item" [class.faq-item--open]="isOpen('faq-6')">
         <dt>
-          <button
-            type="button"
-            class="faq-item__question"
-            aria-expanded="false"
+          <button type="button" class="faq-item__question"
+            [attr.aria-expanded]="isOpen('faq-6')"
             aria-controls="faq-6"
-            onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); document.getElementById('faq-6').hidden = !document.getElementById('faq-6').hidden">
+            (click)="toggle('faq-6')">
             Wie melde ich eine Sicherheitslücke?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <lucide-icon name="chevron-down" [size]="18" class="faq-item__chevron" aria-hidden="true"></lucide-icon>
           </button>
         </dt>
-        <dd id="faq-6" class="faq-item__answer" hidden>
+        <dd id="faq-6" class="faq-item__answer" [hidden]="!isOpen('faq-6')">
           Verantwortungsvolle Offenlegungen bitte per E-Mail an
           <a href="/.well-known/security.txt" rel="noopener">security.txt lesen</a> oder direkt an
           <a href="mailto:security@lebenslauf-agent.de">security@lebenslauf-agent.de</a>.
@@ -137,38 +125,34 @@
     <h2 id="faq-pricing" class="faq-section__heading">Preise & Abrechnung</h2>
 
     <dl class="faq-list">
-      <div class="faq-item">
+      <div class="faq-item" [class.faq-item--open]="isOpen('faq-7')">
         <dt>
-          <button
-            type="button"
-            class="faq-item__question"
-            aria-expanded="false"
+          <button type="button" class="faq-item__question"
+            [attr.aria-expanded]="isOpen('faq-7')"
             aria-controls="faq-7"
-            onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); document.getElementById('faq-7').hidden = !document.getElementById('faq-7').hidden">
+            (click)="toggle('faq-7')">
             Wie viele Bewerbungen kann ich kostenlos erstellen?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <lucide-icon name="chevron-down" [size]="18" class="faq-item__chevron" aria-hidden="true"></lucide-icon>
           </button>
         </dt>
-        <dd id="faq-7" class="faq-item__answer" hidden>
+        <dd id="faq-7" class="faq-item__answer" [hidden]="!isOpen('faq-7')">
           Neue Accounts erhalten <strong>eine kostenlose Testbewerbung</strong> ohne Kreditkarte. Danach kannst du
           entweder einzelne Bewerbungen im Pay-per-App-Modell kaufen oder auf den Pro-Plan upgraden, der
           unbegrenzte Bewerbungen enthält.
         </dd>
       </div>
 
-      <div class="faq-item">
+      <div class="faq-item" [class.faq-item--open]="isOpen('faq-8')">
         <dt>
-          <button
-            type="button"
-            class="faq-item__question"
-            aria-expanded="false"
+          <button type="button" class="faq-item__question"
+            [attr.aria-expanded]="isOpen('faq-8')"
             aria-controls="faq-8"
-            onclick="this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true'); document.getElementById('faq-8').hidden = !document.getElementById('faq-8').hidden">
+            (click)="toggle('faq-8')">
             Kann ich das Pro-Abo jederzeit kündigen?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <lucide-icon name="chevron-down" [size]="18" class="faq-item__chevron" aria-hidden="true"></lucide-icon>
           </button>
         </dt>
-        <dd id="faq-8" class="faq-item__answer" hidden>
+        <dd id="faq-8" class="faq-item__answer" [hidden]="!isOpen('faq-8')">
           Ja. Pro-Abos können jederzeit über das Kundenportal gekündigt werden. Du behältst den Zugang bis zum Ende
           des bezahlten Zeitraums. Eine Kündigung ist ohne Angabe von Gründen möglich.
         </dd>

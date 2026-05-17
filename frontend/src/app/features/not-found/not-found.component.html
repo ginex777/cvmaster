@@ -1,6 +1,9 @@
 <main id="main" class="not-found" aria-label="Seite nicht gefunden">
-  <p class="not-found__code">404</p>
-  <h1>Diese Seite existiert nicht.</h1>
-  <p class="not-found__message">Der Link ist abgelaufen oder die Adresse wurde falsch eingegeben.</p>
-  <a routerLink="/" class="btn btn--primary btn--md">Zur Startseite</a>
+  <p class="not-found__code" aria-hidden="true">404</p>
+  <h1>Seite nicht gefunden</h1>
+  <p class="not-found__message">Die Seite, die du suchst, existiert nicht oder wurde verschoben.</p>
+  <div class="not-found__actions">
+    <a routerLink="/" class="btn btn--cta btn--md">Zur Startseite</a>
+    <button type="button" class="btn btn--outline btn--md" onclick="history.back()">Zurück</button>
+  </div>
 </main>

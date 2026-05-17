@@ -1,4 +1,4 @@
-# Hireflow Atlas — Granulare Task-Liste
+﻿# Hireflow Atlas — Granulare Task-Liste
 
 **Eine Task = ein kleiner, testbarer Schritt.** Jede Komponente wird in mehrere Mikro-Tasks zerlegt — keine Task umfasst mehr als 1–2 Datei-Bereiche.
 
@@ -1299,7 +1299,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
 **📐 Verbindliche Quelle:** keine direkten JSX-Mockups — Styling-Pattern aus `redesign/shared.jsx` (Tokens + Btn + Panel) übernehmen.
 
-## ☐ OT-01 · Settings-Übersicht
+## ✅ OT-01 · Settings-Übersicht
 
 - **Dateien:** `features/settings/settings.component.{html,scss}`
 - **Aufgabe:**
@@ -1311,7 +1311,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Tile-Style: Card mit Icon-Capsule + Title + Beschreibung + Chevron-Right rechts.
 - **Verifikation:** `/app/settings` zeigt 3 Tiles, jede navigiert.
 
-## ☐ OT-02 · Settings-Billing umziehen
+## ✅ OT-02 · Settings-Billing umziehen
 
 - **Dateien:**
   - Quelle: `features/billing/billing.component.{ts,html,scss}`
@@ -1320,7 +1320,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 - **Aufgabe:** Inhalt vom alten Billing rüberkopieren. Page-Header bekommt Breadcrumb-Anweisung „Einstellungen / Abrechnung".
 - **Verifikation:** `/app/settings/billing` zeigt Plan-Karte + Paddle-Link.
 
-## ☐ OT-03 · Settings-Security
+## ✅ OT-03 · Settings-Security
 
 - **Dateien:** `features/settings/security.component.{html,scss,ts}`
 - **Aufgabe:** 3 Sektionen:
@@ -1329,7 +1329,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Aktive Sessions: Liste mit Device + Last-Active + Revoke-Button.
 - **Verifikation:** `/app/settings/security` zeigt alle 3 Sektionen.
 
-## ☐ OT-04 · Settings-Data
+## ✅ OT-04 · Settings-Data
 
 - **Dateien:** `features/settings/data.component.{html,scss,ts}`
 - **Aufgabe:** 3 Sektionen:
@@ -1338,13 +1338,13 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Konto löschen (Danger-Sektion mit zweistufiger Bestätigung).
 - **Verifikation:** Export funktioniert, Lösch-Flow erfordert doppelte Bestätigung.
 
-## ☐ OT-05 · Security alt LÖSCHEN
+## ✅ OT-05 · Security alt LÖSCHEN
 
 - **Dateien:** `features/security/` (gesamt)
 - **Aufgabe:** Inhalt nach OT-03 übernommen → komplettes Verzeichnis löschen. Route `/app/security` aus Routes entfernen.
 - **Verifikation:** `rg "features/security" frontend/src/app/` returnst 0.
 
-## ☐ OT-06 · LinkedIn-Page
+## ✅ OT-06 · LinkedIn-Page
 
 - **Dateien:** `features/linkedin/linkedin.component.{html,scss,ts}`
 - **Aufgabe:**
@@ -1352,7 +1352,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   2. Wenn Pro: Profile-URL-Input + Optimize-Btn + Result-Panel mit Vorschlägen als getintete Cards.
 - **Verifikation:** Free: gesperrt. Pro: nutzbar.
 
-## ☐ OT-07 · FAQ Akkordeon
+## ✅ OT-07 · FAQ Akkordeon
 
 - **Dateien:** `features/faq/faq.component.{html,scss,ts}`
 - **Aufgabe:**
@@ -1362,7 +1362,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   4. Expanded: rotate Chevron 180°.
 - **Verifikation:** FAQ ist navigierbar mit Akkordeon.
 
-## ☐ OT-08 · Not-Found
+## ✅ OT-08 · Not-Found
 
 - **Dateien:** `features/not-found/not-found.component.{html,scss}`
 - **Aufgabe:**
@@ -1373,7 +1373,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   5. 2 Aktionen: `btn--cta` zur Startseite, `btn--outline` „Zurück".
 - **Verifikation:** Falsche URL → schöne 404.
 
-## ☐ OT-09 · Legal-Seiten Type-Scale
+## ✅ OT-09 · Legal-Seiten Type-Scale
 
 - **Dateien:**
   - `features/legal/privacy.component.{html,scss}`
@@ -1386,7 +1386,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   4. Links in `--accent`.
 - **Verifikation:** Alle 3 Legal-Seiten gut lesbar.
 
-## ☐ OT-10 · Onboarding-Modal extrahieren
+## ✅ OT-10 · Onboarding-Modal extrahieren
 
 - **Dateien (NEU):** `shared/components/onboarding-modal/onboarding-modal.{ts,html,scss}`
 - **Aufgabe:**
@@ -1859,16 +1859,16 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | LS-05 | Testimonials | J | ☐ |
 | LS-06 | Pricing-Inline | J | ☐ |
 | LS-07 | CTA-Band | J | ☐ |
-| OT-01 | Settings-Übersicht | K | ☐ |
-| OT-02 | Settings-Billing umziehen | K | ☐ |
-| OT-03 | Settings-Security | K | ☐ |
-| OT-04 | Settings-Data | K | ☐ |
-| OT-05 | Security alt LÖSCHEN | K | ☐ |
-| OT-06 | LinkedIn-Page | K | ☐ |
-| OT-07 | FAQ Akkordeon | K | ☐ |
-| OT-08 | Not-Found | K | ☐ |
-| OT-09 | Legal-Type-Scale | K | ☐ |
-| OT-10 | Onboarding-Modal | K | ☐ |
+| OT-01 | Settings-Übersicht | K | ✅ |
+| OT-02 | Settings-Billing umziehen | K | ✅ |
+| OT-03 | Settings-Security | K | ✅ |
+| OT-04 | Settings-Data | K | ✅ |
+| OT-05 | Security alt LÖSCHEN | K | ✅ |
+| OT-06 | LinkedIn-Page | K | ✅ |
+| OT-07 | FAQ Akkordeon | K | ✅ |
+| OT-08 | Not-Found | K | ✅ |
+| OT-09 | Legal-Type-Scale | K | ✅ |
+| OT-10 | Onboarding-Modal | K | ✅ |
 | OT-11 | /try löschen | K | ☐ |
 | OT-12 | Pro-Lock Pattern | K | ☐ |
 | OT-13 | legal.component.scss tot | K | ☐ |
@@ -1908,3 +1908,4 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | Y-07 | Print-Stylesheet für CV-PDF | Editor |
 | Y-08 | app.component Reveal-Init | App |
 | Y-09 | 404.html für SSR-Fallback | Server |
+

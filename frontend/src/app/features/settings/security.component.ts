@@ -1,9 +1,10 @@
-import { type OnInit, Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
-import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
+import { type OnInit, ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ApiService } from '../../core/api/api.service';
-import { SeoService } from '../../core/seo/seo.service';
+import { IconsModule } from '../../shared/icons/icons.module';
 
 interface Session {
   id: string;
@@ -18,32 +19,27 @@ interface TotpSetupData {
 }
 
 @Component({
-  selector: 'lba-security',
+  selector: 'lba-settings-security',
   standalone: true,
-  imports: [ReactiveFormsModule, DatePipe],
+  imports: [ReactiveFormsModule, DatePipe, RouterLink, IconsModule],
   templateUrl: './security.component.html',
   styleUrl: './security.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SecurityComponent implements OnInit {
+export class SettingsSecurityComponent implements OnInit {
   private readonly api = inject(ApiService);
 
-  readonly loading = signal(false);
-  readonly error = signal<string | null>(null);
   readonly sessions = signal<Session[]>([]);
   readonly sessionsLoading = signal(false);
   readonly sessionsError = signal<string | null>(null);
-
   readonly passwordLoading = signal(false);
   readonly passwordError = signal<string | null>(null);
   readonly passwordSuccess = signal(false);
-
   readonly totpSetup = signal<TotpSetupData | null>(null);
   readonly totpEnabled = signal(false);
   readonly totpLoading = signal(false);
   readonly totpError = signal<string | null>(null);
   readonly totpSuccess = signal<string | null>(null);
-
   readonly revokingId = signal<string | null>(null);
 
   readonly passwordForm = new FormGroup({
@@ -59,10 +55,6 @@ export class SecurityComponent implements OnInit {
   readonly totpDisableForm = new FormGroup({
     password: new FormControl('', [Validators.required]),
   });
-
-  constructor() {
-    inject(SeoService).setPage('Sicherheit', 'Passwort, Zwei-Faktor-Authentifizierung und Sitzungen verwalten.', '/app/security');
-  }
 
   async ngOnInit(): Promise<void> {
     await this.loadSessions();
@@ -83,10 +75,7 @@ export class SecurityComponent implements OnInit {
   async changePassword(): Promise<void> {
     if (this.passwordForm.invalid) { this.passwordForm.markAllAsTouched(); return; }
     const { currentPassword, newPassword, confirmPassword } = this.passwordForm.value;
-    if (newPassword !== confirmPassword) {
-      this.passwordError.set('Die neuen Passwörter stimmen nicht überein.');
-      return;
-    }
+    if (newPassword !== confirmPassword) { this.passwordError.set('Die neuen Passwörter stimmen nicht überein.'); return; }
     this.passwordLoading.set(true);
     this.passwordError.set(null);
     this.passwordSuccess.set(false);
@@ -105,8 +94,7 @@ export class SecurityComponent implements OnInit {
     this.totpLoading.set(true);
     this.totpError.set(null);
     try {
-      const data = await this.api.post<TotpSetupData>('/users/me/totp/setup', {});
-      this.totpSetup.set(data);
+      this.totpSetup.set(await this.api.post<TotpSetupData>('/users/me/totp/setup', {}));
     } catch (e: unknown) {
       this.totpError.set(e instanceof HttpErrorResponse ? e.error.message : '2FA konnte nicht eingerichtet werden.');
     } finally {
@@ -147,10 +135,6 @@ export class SecurityComponent implements OnInit {
     }
   }
 
-  encodeURIComponent(value: string): string {
-    return encodeURIComponent(value);
-  }
-
   async revokeSession(id: string): Promise<void> {
     this.revokingId.set(id);
     try {
@@ -161,5 +145,9 @@ export class SecurityComponent implements OnInit {
     } finally {
       this.revokingId.set(null);
     }
+  }
+
+  encodeURIComponent(value: string): string {
+    return encodeURIComponent(value);
   }
 }

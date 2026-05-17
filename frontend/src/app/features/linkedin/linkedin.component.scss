@@ -1,30 +1,187 @@
+.linkedin-page {
+  padding: 28px;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.page-header { display: flex; flex-direction: column; gap: var(--space-1); }
+.page-title { font-size: 1.375rem; font-weight: 700; margin: 0; }
+.page-sub { font-size: 0.9375rem; color: var(--ink-2); margin: 0; }
+
+// ── Pro Gate ────────────────────────────────────────────────────────────────
+.pro-gate {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  min-height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__preview {
+    position: absolute;
+    inset: 0;
+    padding: var(--space-6);
+    filter: blur(6px);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  &__form-mock {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 500px;
+  }
+
+  &__field-mock {
+    height: 44px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+
+    &--tall { height: 180px; }
+  }
+
+  &__btn-mock {
+    height: 44px;
+    width: 160px;
+    background: var(--accent);
+    border-radius: var(--radius-md);
+    opacity: 0.6;
+  }
+
+  &__lock-card {
+    position: relative;
+    z-index: 1;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: var(--space-8);
+    max-width: 400px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    box-shadow: var(--shadow-lg);
+  }
+
+  &__lock-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-full);
+    background: color-mix(in oklch, var(--accent) 12%, var(--bg));
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  &__desc {
+    font-size: 0.9375rem;
+    color: var(--ink-2);
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+// ── Form ────────────────────────────────────────────────────────────────────
 .linkedin-error {
-  margin-bottom: var(--space-4);
+  color: var(--danger);
+  background: color-mix(in oklch, var(--danger) 8%, var(--bg));
+  border: 1px solid color-mix(in oklch, var(--danger) 25%, var(--line));
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.875rem;
 }
 
 .linkedin-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  max-width: 680px;
-  margin-bottom: var(--space-8);
+
+  textarea, input {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+
+    &:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+      border-color: var(--accent);
+    }
+  }
 }
 
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  label { font-weight: 600; font-size: 0.875rem; }
+  &__error { color: var(--danger); font-size: 0.8125rem; }
+}
+
+// ── Results ─────────────────────────────────────────────────────────────────
 .linkedin-results {
-  margin-top: var(--space-6);
-  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
-.linkedin-result-text {
-  font-size: 14px;
-  color: var(--ink);
-  line-height: 1.6;
-  margin-top: var(--space-3);
-  white-space: pre-wrap;
+.result-card {
+  background: color-mix(in oklch, var(--accent) 5%, var(--surface));
+  border: 1px solid color-mix(in oklch, var(--accent) 20%, var(--line));
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  &__label {
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__text {
+    font-size: 0.9375rem;
+    color: var(--ink);
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre-wrap;
+  }
 }
 
 .linkedin-experience {
   list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -52,5 +209,5 @@
   flex-direction: column;
   gap: var(--space-1);
 
-  li { font-size: 13px; color: var(--ink-2); }
+  li { font-size: 0.875rem; color: var(--ink-2); }
 }

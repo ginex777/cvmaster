@@ -4,6 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { EinstellungenModalComponent } from '../einstellungen-modal/einstellungen-modal.component';
+import { OnboardingModalComponent } from '../onboarding-modal/onboarding-modal';
 import { UpgradeService } from '../../services/upgrade.service';
 import { IconsModule } from '../../icons/icons.module';
 import { AppTopbarComponent, type BreadcrumbItem } from '../app-topbar/app-topbar';
@@ -23,7 +24,7 @@ const ROUTE_LABELS: Record<string, string> = {
 @Component({
   selector: 'lba-app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, EinstellungenModalComponent, IconsModule, AppTopbarComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, EinstellungenModalComponent, OnboardingModalComponent, IconsModule, AppTopbarComponent],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +35,7 @@ export class AppShellComponent {
   private readonly upgradeService = inject(UpgradeService);
 
   protected readonly einstellungenOpen = signal(false);
+  protected readonly onboardingOpen = computed(() => this.auth.user() !== null && !(this.auth.user()?.onboardingShown ?? true));
 
   readonly crumbs = toSignal(
     this.router.events.pipe(
@@ -102,6 +104,11 @@ export class AppShellComponent {
     } else {
       this.einstellungenOpen.set(true);
     }
+  }
+
+  protected dismissOnboarding(): void {
+    const user = this.auth.user();
+    if (user) this.auth.user.set({ ...user, onboardingShown: true });
   }
 
   protected async logout(): Promise<void> {

@@ -5,7 +5,7 @@
       Einstellungen
     </a>
     <div class="page-header__text">
-      <h1 class="page-title">Daten & Datenschutz</h1>
+      <h1 class="page-title">Daten &amp; Konto</h1>
       <p class="page-sub">Deine Daten exportieren oder Konto löschen</p>
     </div>
   </div>
@@ -18,17 +18,62 @@
   }
 
   <section class="data-section" aria-labelledby="export-heading">
-    <h2 id="export-heading">Daten exportieren</h2>
-    <p>Erhalte eine Kopie aller deiner gespeicherten Daten (Lebensläufe, Bewerbungen, Einstellungen) als ZIP-Datei.</p>
-    <button
-      type="button"
-      class="btn btn--outline btn--md"
-      [disabled]="loading()"
-      (click)="requestExport()"
-      aria-label="Datenexport anfordern"
-    >
-      <lucide-icon name="download" [size]="14" aria-hidden="true"></lucide-icon>
-      {{ loading() ? 'Wird vorbereitet…' : 'Export anfordern' }}
-    </button>
+    <div class="data-section__icon" aria-hidden="true">
+      <lucide-icon name="download" [size]="18"></lucide-icon>
+    </div>
+    <div class="data-section__body">
+      <h2 id="export-heading">Daten exportieren</h2>
+      <p>Erhalte eine Kopie aller deiner gespeicherten Daten (Lebensläufe, Bewerbungen, Einstellungen) als JSON-Datei.</p>
+      <button type="button" class="btn btn--outline btn--md" [disabled]="loading()" (click)="requestExport()">
+        @if (loading()) { Wird vorbereitet… } @else { Export anfordern }
+      </button>
+    </div>
+  </section>
+
+  <section class="data-section" aria-labelledby="consent-heading">
+    <div class="data-section__icon" aria-hidden="true">
+      <lucide-icon name="shield" [size]="18"></lucide-icon>
+    </div>
+    <div class="data-section__body">
+      <h2 id="consent-heading">Einwilligungen</h2>
+      <p>Du hast der Verarbeitung deiner Daten für folgende Zwecke zugestimmt:</p>
+      <ul class="consent-list">
+        <li>
+          <lucide-icon name="check" [size]="13" aria-hidden="true"></lucide-icon>
+          Notwendige Cookies (Login, CSRF-Schutz)
+        </li>
+        <li class="consent-list__optional">
+          <lucide-icon name="minus" [size]="13" aria-hidden="true"></lucide-icon>
+          Support-Chat (optional, widerrufbar)
+        </li>
+      </ul>
+      <a routerLink="/datenschutz" class="btn btn--ghost btn--sm">Datenschutzerklärung lesen</a>
+    </div>
+  </section>
+
+  <section class="data-section data-section--danger" aria-labelledby="delete-heading">
+    <div class="data-section__icon" aria-hidden="true">
+      <lucide-icon name="trash-2" [size]="18"></lucide-icon>
+    </div>
+    <div class="data-section__body">
+      <h2 id="delete-heading">Konto löschen</h2>
+      <p>Löscht dein Konto dauerhaft inklusive aller Lebensläufe, Bewerbungen und gespeicherten Daten. Diese Aktion kann nicht rückgängig gemacht werden.</p>
+
+      @if (deleteStep() === 0) {
+        <button type="button" class="btn btn--danger btn--md" [disabled]="loading()" (click)="confirmDeleteStep1()">
+          Konto löschen
+        </button>
+      } @else if (deleteStep() === 1) {
+        <div class="delete-confirm" role="alert">
+          <p class="delete-confirm__warning">Bist du sicher? Alle Daten werden unwiderruflich gelöscht.</p>
+          <div class="delete-confirm__actions">
+            <button type="button" class="btn btn--ghost btn--md" (click)="cancelDelete()">Abbrechen</button>
+            <button type="button" class="btn btn--danger btn--md" [disabled]="loading()" (click)="confirmDeleteStep2()">
+              Ja, Konto endgültig löschen
+            </button>
+          </div>
+        </div>
+      }
+    </div>
   </section>
 </div>
