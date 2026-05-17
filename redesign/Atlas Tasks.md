@@ -1454,7 +1454,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
 # PHASE M — Backend
 
-## ☐ BE-01 · Status-Migration Script
+## ✅ BE-01 · Status-Migration Script
 
 - **Dateien:** Backend-Migration (außerhalb `frontend/`)
 - **Aufgabe:**
@@ -1875,7 +1875,7 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | R-01 | app.routes vollständig | L | ✅ |
 | R-02 | CommandPalette wiring | L | ✅ |
 | R-03 | Status-Mapper | L | ✅ |
-| BE-01 | Status-Migration | M | ☐ |
+| BE-01 | Status-Migration | M | ✅ |
 | BE-02 | API-Validierung | M | ☐ |
 | BE-03 | Reminder-API | M | ☐ |
 | QA-01 | Axe-Smoke | N | ☐ |

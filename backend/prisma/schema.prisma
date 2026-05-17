@@ -172,13 +172,8 @@ enum Plan {
 
 enum AppStatus {
   DRAFT
-  OPEN
-  DONE
-  EXPORTED
-  SENT
-  REPLIED
+  APPLIED
   INTERVIEW
-  REJECTED
   OFFER
-  FAILED
+  REJECTED
 }
