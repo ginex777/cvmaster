@@ -721,7 +721,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
 **Fünf** Mikro-Tasks.
 
-## ☐ AU-01 · Login: Split-Screen-Layout
+## ✅ AU-01 · Login: Split-Screen-Layout
 
 - **📐 JSX-Quelle:** `redesign/screens-marketing.jsx` → `LoginScreen` → äußerer `<div>` mit `display: grid; gridTemplateColumns: '1fr 1fr'; height: '100%'`.
 - **Dateien:** `login.component.html` + `.scss`
@@ -733,7 +733,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   4. Mobile-Breakpoint (≤768 px): nur rechte Spalte, Brand-Panel ausgeblendet.
 - **Verifikation:** Desktop zeigt 50/50, Mobile zeigt nur Form.
 
-## ☐ AU-02 · Login: Brand-Panel
+## ✅ AU-02 · Login: Brand-Panel
 
 - **📐 JSX-Quelle:** `redesign/screens-marketing.jsx` → `LoginScreen` → linker Block (`background: TOKENS.ink` + SVG-Grid-Pattern + Accent-Glow + Testimonial-Quote). Alle Werte (font-size 22, letter-spacing -0.4, max-width 440) im JSX.
 - **Dateien:** `login.component.html` + `.scss`
@@ -768,7 +768,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   - Author: 36px round Avatar in Accent + Name + Sub
 - **Verifikation:** Linke Hälfte zeigt dunklen Hintergrund + Grid-Pattern + Glow + Testimonial.
 
-## ☐ AU-03 · Login: Form-Inhalte modernisieren
+## ✅ AU-03 · Login: Form-Inhalte modernisieren
 
 - **📐 JSX-Quelle:** `redesign/screens-marketing.jsx` → `LoginScreen` → rechter Block. H1 28 px, Inputs height 40, „Vergessen?"-Link, Submit primary mit ArrowRight, Google-Btn unterhalb.
 - **Dateien:** `login.component.html` + `.scss` + `.ts`
@@ -785,7 +785,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
      erst nach Submit + Server-Antwort `requires2fa: true` zweiter Step.
 - **Verifikation:** Login ohne 2FA-User: nie ein OTP-Feld sichtbar. Login mit 2FA-User: nach Submit erscheint OTP-Feld als zweiter Step.
 
-## ☐ AU-04 · Login: Google-OAuth-Btn (visuell)
+## ✅ AU-04 · Login: Google-OAuth-Btn (visuell)
 
 - **📐 JSX-Quelle:** `redesign/screens-marketing.jsx` → `LoginScreen` → Trenner-Zeile mit „oder" + Google-Button mit inline Multi-Color-SVG.
 - **Dateien:** `login.component.html` + `.scss`
@@ -795,7 +795,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Click-Handler: vorerst `console.log` (OAuth-Flow ist nicht Teil dieser Task).
 - **Verifikation:** Trenner + Google-Btn erscheinen unter Submit.
 
-## ☐ AU-05 · Register/Forgot/Reset Token-Update
+## ✅ AU-05 · Register/Forgot/Reset Token-Update
 
 - **📐 JSX-Quelle:** Für Register: analog `LoginScreen`-Split. Für Forgot/Reset: kein Mockup, single-column max-width 380 nach Spec.
 - **Dateien:**
