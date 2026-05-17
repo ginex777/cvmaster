@@ -5,7 +5,7 @@ import { PipelineBoard, type PipelineApplication } from './pipeline-board';
 
 const makeApp = (overrides?: Partial<PipelineApplication>): PipelineApplication => ({
   id: 'app-1',
-  status: 'OPEN',
+  status: 'APPLIED',
   matchScore: 85,
   createdAt: '2026-05-01T00:00:00Z',
   reminderAt: null,
@@ -52,18 +52,27 @@ describe('PipelineBoard', () => {
   });
 
   it('renders the Atlas column header controls', async () => {
-    await setup([makeApp({ status: 'OPEN' })]);
+    await setup([makeApp({ status: 'APPLIED' })]);
 
     expect(fixture.nativeElement.querySelectorAll('.pipeline__col-dot')).toHaveLength(5);
     expect(fixture.nativeElement.querySelectorAll('.pipeline__col-add')).toHaveLength(5);
-    expect(fixture.nativeElement.querySelector('.pipeline__col-count')?.textContent.trim()).toBe('0');
+    // DRAFT column (first) has 0 apps, APPLIED column has 1
+    const draftCount = fixture.nativeElement.querySelector('.pipeline__col-count');
+    expect(draftCount?.textContent.trim()).toBe('0');
   });
 
-  it('places OPEN application in Beworben column through legacy mapping', async () => {
-    await setup([makeApp({ status: 'OPEN' })]);
+  it('places APPLIED application in Beworben column', async () => {
+    await setup([makeApp({ status: 'APPLIED' })]);
     const cols = fixture.nativeElement.querySelectorAll('.pipeline__col') as NodeList;
     const appliedCol = Array.from(cols).find(col => (col as HTMLElement).getAttribute('aria-label') === 'Beworben');
     expect((appliedCol as HTMLElement)?.textContent).toContain('Frontend Dev');
+  });
+
+  it('places OPEN (legacy) application in Entwurf column through legacy mapping', async () => {
+    await setup([makeApp({ status: 'OPEN' })]);
+    const cols = fixture.nativeElement.querySelectorAll('.pipeline__col') as NodeList;
+    const draftCol = Array.from(cols).find(col => (col as HTMLElement).getAttribute('aria-label') === 'Entwurf');
+    expect((draftCol as HTMLElement)?.textContent).toContain('Frontend Dev');
   });
 
   it('places SENT application in Beworben column through legacy mapping', async () => {
@@ -81,34 +90,34 @@ describe('PipelineBoard', () => {
   });
 
   it('emits statusChange when moving to another column', async () => {
-    await setup([makeApp({ status: 'OPEN' })]);
+    await setup([makeApp({ status: 'APPLIED' })]);
     const statusChanges: Array<{ id: string; status: string }> = [];
     component.statusChange.subscribe(e => statusChanges.push(e));
 
     const interviewColumn = component.columns().find(col => col.key === 'INTERVIEW');
     if (!interviewColumn) throw new Error('INTERVIEW column missing');
-    component.moveToColumn(makeApp({ status: 'OPEN' }), interviewColumn);
+    component.moveToColumn(makeApp({ status: 'APPLIED' }), interviewColumn);
 
     expect(statusChanges).toHaveLength(1);
     expect(statusChanges[0]).toEqual({ id: 'app-1', status: 'INTERVIEW' });
   });
 
   it('emits statusChange when a card is dropped into a new column', async () => {
-    await setup([makeApp({ status: 'OPEN' })]);
+    await setup([makeApp({ status: 'APPLIED' })]);
     const statusChanges: Array<{ id: string; status: string }> = [];
     component.statusChange.subscribe(e => statusChanges.push(e));
     const offerColumn = component.columns().find(col => col.key === 'OFFER');
     if (!offerColumn) throw new Error('OFFER column missing');
 
     component.onCardDropped({
-      item: { data: makeApp({ status: 'OPEN' }) },
+      item: { data: makeApp({ status: 'APPLIED' }) },
     } as CdkDragDrop<PipelineApplication[], PipelineApplication[], PipelineApplication>, offerColumn);
 
     expect(statusChanges).toEqual([{ id: 'app-1', status: 'OFFER' }]);
   });
 
   it('emits applicationOpen when the card title is clicked', async () => {
-    await setup([makeApp({ status: 'OPEN' })]);
+    await setup([makeApp({ status: 'APPLIED' })]);
     const opened: string[] = [];
     component.applicationOpen.subscribe(id => opened.push(id));
 
@@ -185,7 +194,7 @@ describe('PipelineBoard', () => {
   });
 
   it('renders Atlas card layout with logo, date, role and score chip', async () => {
-    await setup([makeApp({ status: 'OPEN', matchScore: 85 })]);
+    await setup([makeApp({ status: 'APPLIED', matchScore: 85 })]);
 
     const card = fixture.nativeElement.querySelector('.pipeline__card') as HTMLElement;
     expect(card.style.getPropertyValue('--card-color')).toBe('var(--status-applied)');
@@ -197,7 +206,7 @@ describe('PipelineBoard', () => {
 
   describe('highlighting and dimming', () => {
     it('dims columns that have no applications', async () => {
-      await setup([makeApp({ status: 'OPEN' })]);
+      await setup([makeApp({ status: 'APPLIED' })]);
       fixture.componentRef.setInput('highlightQuery', '');
       fixture.detectChanges();
 
@@ -208,7 +217,7 @@ describe('PipelineBoard', () => {
     });
 
     it('does not dim the column that has apps', async () => {
-      await setup([makeApp({ status: 'OPEN' })]);
+      await setup([makeApp({ status: 'APPLIED' })]);
       fixture.componentRef.setInput('highlightQuery', '');
       fixture.detectChanges();
 
@@ -218,7 +227,7 @@ describe('PipelineBoard', () => {
     });
 
     it('highlights query text in card title using innerHTML', async () => {
-      await setup([makeApp({ status: 'OPEN' })]);
+      await setup([makeApp({ status: 'APPLIED' })]);
       fixture.componentRef.setInput('highlightQuery', 'Frontend');
       fixture.detectChanges();
 

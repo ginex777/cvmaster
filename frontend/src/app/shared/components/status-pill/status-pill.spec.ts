@@ -50,4 +50,11 @@ describe('StatusPillComponent', () => {
     const pill = fixture.nativeElement.querySelector('[role="status"]');
     expect(pill).not.toBeNull();
   });
+
+  it('exposes data-status attribute for Playwright selectors', () => {
+    fixture.componentRef.setInput('status', 'APPLIED');
+    fixture.detectChanges();
+    const pill = fixture.nativeElement.querySelector('[data-status="APPLIED"]');
+    expect(pill).not.toBeNull();
+  });
 });

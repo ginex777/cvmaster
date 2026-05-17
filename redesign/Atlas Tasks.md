@@ -1501,7 +1501,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Neue Status-Pill-Selektor: `[data-status="APPLIED"]` (data-attribute zur Komponente ergänzen).
 - **Verifikation:** `npm run test:e2e` grün.
 
-## ☐ QA-03 · Jest Component-Tests
+## ✅ QA-03 · Jest Component-Tests
 
 - **Dateien:** alle `frontend/src/**/*.spec.ts`
 - **Aufgabe:** Pro umgebauter Komponente Spec ergänzen:
@@ -1512,7 +1512,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   - Status-Utils: legacyToStatus mapt korrekt
 - **Verifikation:** `npm test` grün, Coverage steigt nicht ab.
 
-## ☐ QA-04 · Visual-Regression (optional)
+## ✅ QA-04 · Visual-Regression (optional)
 
 - **Dateien:** `frontend/visual-regression/` (NEU)
 - **Aufgabe:**
@@ -1880,8 +1880,8 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | BE-03 | Reminder-API | M | ✅ |
 | QA-01 | Axe-Smoke | N | ✅ |
 | QA-02 | Playwright | N | ✅ |
-| QA-03 | Jest | N | ☐ |
-| QA-04 | Visual-Regression | N | ☐ |
+| QA-03 | Jest | N | ✅ |
+| QA-04 | Visual-Regression | N | ✅ |
 | Z-01 | Grep-Check | Z | ☐ |
 | Z-02 | Build | Z | ☐ |
 | Z-03 | Tests | Z | ☐ |
