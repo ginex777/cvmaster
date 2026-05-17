@@ -24,6 +24,8 @@ interface DashboardData {
   recentApplications: RecentApplication[];
 }
 
+type Period = 'today' | '7d' | '30d' | 'all';
+
 interface PipelineColumn {
   key: ApplicationStatus;
   label: string;
@@ -50,6 +52,8 @@ export class DashboardComponent implements OnInit {
   readonly selectedAppId = signal<string | null>(null);
   readonly openMenuAppId = signal<string | null>(null);
   readonly statusSubmenuOpen = signal(false);
+  readonly period = signal<Period>('30d');
+  readonly periodMenuOpen = signal(false);
 
   protected readonly STATUS_OPTIONS: ApplicationStatus[] = ['DRAFT', 'APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED'];
   protected readonly statusMeta = STATUS_META;
@@ -66,18 +70,40 @@ export class DashboardComponent implements OnInit {
     return name;
   });
 
-  readonly appliedCount = computed(() => {
+  private static readonly PERIOD_MS: Record<Period, number> = {
+    today: 86_400_000,
+    '7d': 7 * 86_400_000,
+    '30d': 30 * 86_400_000,
+    all: Infinity,
+  };
+
+  private static readonly PERIOD_LABELS: Record<Period, string> = {
+    today: 'Heute',
+    '7d': 'Letzte 7 Tage',
+    '30d': 'Letzte 30 Tage',
+    all: 'Alle',
+  };
+
+  readonly periodLabel = computed(() => DashboardComponent.PERIOD_LABELS[this.period()]);
+
+  readonly filteredApplications = computed(() => {
     const apps = this.data()?.recentApplications ?? [];
-    return apps.filter(a => this.toApplicationStatus(a.status) !== 'DRAFT').length;
+    const ms = DashboardComponent.PERIOD_MS[this.period()];
+    if (ms === Infinity) return apps;
+    const now = Date.now();
+    return apps.filter(a => now - new Date(a.createdAt).getTime() <= ms);
   });
 
-  readonly interviewedCount = computed(() => {
-    const apps = this.data()?.recentApplications ?? [];
-    return apps.filter(a => {
+  readonly appliedCount = computed(() =>
+    this.filteredApplications().filter(a => this.toApplicationStatus(a.status) !== 'DRAFT').length
+  );
+
+  readonly interviewedCount = computed(() =>
+    this.filteredApplications().filter(a => {
       const s = this.toApplicationStatus(a.status);
       return s === 'INTERVIEW' || s === 'OFFER' || s === 'REJECTED';
-    }).length;
-  });
+    }).length
+  );
 
   readonly responseRate = computed(() => {
     const total = this.appliedCount();
@@ -132,6 +158,21 @@ export class DashboardComponent implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  setPeriod(p: Period, event: Event): void {
+    event.stopPropagation();
+    this.period.set(p);
+    this.periodMenuOpen.set(false);
+  }
+
+  togglePeriodMenu(event: Event): void {
+    event.stopPropagation();
+    this.periodMenuOpen.set(!this.periodMenuOpen());
+  }
+
+  closePeriodMenu(): void {
+    this.periodMenuOpen.set(false);
   }
 
   toggleMenu(appId: string, event: Event): void {

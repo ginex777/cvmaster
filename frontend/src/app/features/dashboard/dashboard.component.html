@@ -33,10 +33,32 @@
       </div>
       <div class="dashboard__greeting-actions">
         <span class="dashboard__period-label">Zeitraum:</span>
-        <button type="button" class="dashboard__period-btn">
-          Letzte 30 Tage
-          <lucide-icon name="chevron-down" [size]="12" aria-hidden="true"></lucide-icon>
-        </button>
+        <div class="period-wrap">
+          <button
+            type="button"
+            class="dashboard__period-btn"
+            [attr.aria-expanded]="periodMenuOpen()"
+            aria-haspopup="listbox"
+            (click)="togglePeriodMenu($event)"
+          >
+            {{ periodLabel() }}
+            <lucide-icon name="chevron-down" [size]="12" aria-hidden="true"></lucide-icon>
+          </button>
+          @if (periodMenuOpen()) {
+            <div class="period-dropdown" role="listbox" aria-label="Zeitraum wählen">
+              @for (opt of [['today','Heute'],['7d','Letzte 7 Tage'],['30d','Letzte 30 Tage'],['all','Alle']]; track opt[0]) {
+                <button
+                  type="button"
+                  class="period-dropdown__item"
+                  role="option"
+                  [attr.aria-selected]="period() === opt[0]"
+                  [class.period-dropdown__item--active]="period() === opt[0]"
+                  (click)="setPeriod($any(opt[0]), $event)"
+                >{{ opt[1] }}</button>
+              }
+            </div>
+          }
+        </div>
       </div>
     </div>
 
@@ -155,14 +177,18 @@
           <h2 id="activity-heading" class="panel__title">Letzte Aktivität</h2>
           <a routerLink="/app/applications" class="panel__action panel__action--muted">Alle Bewerbungen</a>
         </div>
-        @if (data()!.recentApplications.length === 0) {
+        @if (filteredApplications().length === 0) {
           <div class="panel__empty">
             <p>Noch keine Bewerbungen.</p>
-            <a routerLink="/app/wizard" class="btn btn--cta btn--sm">Erste Bewerbung erstellen</a>
+            @if (data()!.recentApplications.length === 0) {
+              <a routerLink="/app/wizard" class="btn btn--cta btn--sm">Erste Bewerbung erstellen</a>
+            } @else {
+              <p class="panel__empty-hint">Keine Einträge im gewählten Zeitraum.</p>
+            }
           </div>
         } @else {
           <div class="activity-list" role="list">
-            @for (app of data()!.recentApplications.slice(0, 5); track app.id; let i = $index; let last = $last) {
+            @for (app of filteredApplications().slice(0, 5); track app.id; let i = $index; let last = $last) {
               <div
                 class="activity-item"
                 role="listitem"
@@ -249,6 +275,9 @@
 
   @if (openMenuAppId()) {
     <div class="more-menu__backdrop" aria-hidden="true" (click)="closeMenu()"></div>
+  }
+  @if (periodMenuOpen()) {
+    <div class="more-menu__backdrop" aria-hidden="true" (click)="closePeriodMenu()"></div>
   }
 </main>
 
