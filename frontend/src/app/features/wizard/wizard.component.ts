@@ -9,6 +9,11 @@ import { CoverLetterTonePicker } from '../../shared/components/cover-letter-tone
 import type { CoverLetterTone } from '../../shared/components/cover-letter-tone-picker/cover-letter-tone-picker';
 import { UpgradeModal } from '../../shared/components/upgrade-modal/upgrade-modal';
 import { IconsModule } from '../../shared/icons/icons.module';
+import { CvMiniPreviewClassic } from '../../shared/components/cv-mini-preview/cv-mini-preview-classic/cv-mini-preview-classic';
+import { CvMiniPreviewEditorial } from '../../shared/components/cv-mini-preview/cv-mini-preview-editorial/cv-mini-preview-editorial';
+import { CvMiniPreviewExecutive } from '../../shared/components/cv-mini-preview/cv-mini-preview-executive/cv-mini-preview-executive';
+import { CvMiniPreviewMinimal } from '../../shared/components/cv-mini-preview/cv-mini-preview-minimal/cv-mini-preview-minimal';
+import { CvMiniPreviewModern } from '../../shared/components/cv-mini-preview/cv-mini-preview-modern/cv-mini-preview-modern';
 
 type JobInputMode = 'text' | 'url' | 'pdf' | 'screenshot';
 
@@ -29,7 +34,12 @@ export interface MasterCv {
 @Component({
   selector: 'lba-wizard',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, UpgradeModal, CoverLetterTonePicker, IconsModule],
+  imports: [
+    ReactiveFormsModule, RouterLink,
+    UpgradeModal, CoverLetterTonePicker, IconsModule,
+    CvMiniPreviewClassic, CvMiniPreviewEditorial, CvMiniPreviewExecutive,
+    CvMiniPreviewMinimal, CvMiniPreviewModern,
+  ],
   templateUrl: './wizard.component.html',
   styleUrl: './wizard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

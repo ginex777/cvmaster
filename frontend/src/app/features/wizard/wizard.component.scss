@@ -243,9 +243,10 @@
 .cv-select-card__btn {
   width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 14px 18px;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
   background: var(--surface);
   border: 1.5px solid var(--line);
   border-radius: 10px;
@@ -261,6 +262,36 @@
     border-color: var(--accent);
     background: oklch(97% 0.025 268);
   }
+}
+
+.cv-select-card__preview {
+  width: 80px;
+  height: 100px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 3px;
+  border: 1px solid var(--line-2);
+  background: #fff;
+
+  lba-cv-mini-preview-modern,
+  lba-cv-mini-preview-classic,
+  lba-cv-mini-preview-editorial,
+  lba-cv-mini-preview-minimal,
+  lba-cv-mini-preview-executive {
+    display: block;
+    width: 240px;
+    height: 300px;
+    transform: scale(0.3333);
+    transform-origin: top left;
+    pointer-events: none;
+  }
+}
+
+.cv-select-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
 .cv-select-card__name {

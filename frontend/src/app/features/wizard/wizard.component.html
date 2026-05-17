@@ -106,8 +106,19 @@
                     [attr.aria-pressed]="selectedCvId() === cv.id"
                     [attr.aria-label]="'Lebenslauf ' + cv.name + ' auswählen'"
                     (click)="selectCv(cv.id)">
-                    <strong class="cv-select-card__name">{{ cv.name }}</strong>
-                    <span class="cv-select-card__meta">{{ cv.sourceFilename }} · {{ cv.language.toUpperCase() }}</span>
+                    <div class="cv-select-card__preview" aria-hidden="true">
+                      @switch (cv.template) {
+                        @case ('classic')   { <lba-cv-mini-preview-classic /> }
+                        @case ('editorial') { <lba-cv-mini-preview-editorial /> }
+                        @case ('executive') { <lba-cv-mini-preview-executive /> }
+                        @case ('minimal')   { <lba-cv-mini-preview-minimal /> }
+                        @default            { <lba-cv-mini-preview-modern /> }
+                      }
+                    </div>
+                    <div class="cv-select-card__info">
+                      <strong class="cv-select-card__name">{{ cv.name }}</strong>
+                      <span class="cv-select-card__meta">{{ cv.sourceFilename }} · {{ cv.language.toUpperCase() }}</span>
+                    </div>
                   </button>
                 </li>
               }
