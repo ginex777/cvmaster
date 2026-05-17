@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+
+export interface MiniCvData {
+  name?: string;
+  summary?: string;
+  skills?: string[];
+}
 
 @Component({
   selector: 'lba-cv-mini-preview-modern',
@@ -8,4 +14,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './cv-mini-preview-modern.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CvMiniPreviewModern {}
+export class CvMiniPreviewModern {
+  readonly cv = input<MiniCvData | null>(null);
+}

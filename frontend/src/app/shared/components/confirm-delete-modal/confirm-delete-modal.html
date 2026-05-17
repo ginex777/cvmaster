@@ -7,6 +7,9 @@
       aria-labelledby="confirm-delete-title"
       aria-describedby="confirm-delete-body"
       (click)="$event.stopPropagation()">
+      <div class="modal__icon" aria-hidden="true">
+        <lucide-icon name="alert-circle" [size]="24"></lucide-icon>
+      </div>
       <h2 id="confirm-delete-title">{{ title() }}</h2>
       <p id="confirm-delete-body">{{ body() }}</p>
 

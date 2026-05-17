@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, HostListener, input, output } from '@angular/core';
+import { IconsModule } from '../../icons/icons.module';
 
 @Component({
   selector: 'lba-confirm-delete-modal',
+  imports: [IconsModule],
   templateUrl: './confirm-delete-modal.html',
   styleUrl: './confirm-delete-modal.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

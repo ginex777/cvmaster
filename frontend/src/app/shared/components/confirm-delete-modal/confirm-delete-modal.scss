@@ -31,6 +31,12 @@
   }
 }
 
+.modal__icon {
+  color: var(--danger);
+  margin-bottom: var(--space-3);
+  display: flex;
+}
+
 .modal__actions {
   display: flex;
   justify-content: flex-end;

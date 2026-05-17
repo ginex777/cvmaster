@@ -1,9 +1,10 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { IconsModule } from '../icons/icons.module';
 
 @Component({
   selector: 'lba-keyword-bar',
   standalone: true,
-  imports: [],
+  imports: [IconsModule],
   templateUrl: './keyword-bar.component.html',
   styleUrl: './keyword-bar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -11,4 +12,5 @@ import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 export class KeywordBarComponent {
   matched = input<string[]>([]);
   missing = input<string[]>([]);
+  readonly addKeyword = output<void>();
 }

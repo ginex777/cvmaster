@@ -995,7 +995,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
 **📐 Verbindliche Quelle:** `redesign/shared.jsx` für Tokens und Primitive (`StatusPill`, `ScoreRing`, `Btn`, `CompanyLogo`, `Sidebar`, `AppTopBar`, `Panel`).
 
-## ☐ SH-01 · Status-Pill: Dot-Größe & Padding
+## ✅ SH-01 · Status-Pill: Dot-Größe & Padding
 
 - **📐 JSX-Quelle:** `redesign/shared.jsx` → `StatusPill`-Komponente (Dot 5×5, Padding `2px 7px` sm / `3px 9px` md, Radius 5).
 - **Dateien:** `status-pill.component.{html,scss}`
@@ -1032,7 +1032,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 - **Aufgabe:** Avatar-Background = deterministischer Hash der `auth.user()?.name` (gleiche Palette wie CompanyLogo). Aktuell ist es einheitlich Accent.
 - **Verifikation:** Verschiedene User-Logins zeigen verschiedene Avatar-Farben.
 
-## ☐ SH-05 · AppTopBar: Crumb-Trennzeichen
+## ✅ SH-05 · AppTopBar: Crumb-Trennzeichen
 
 - **📐 JSX-Quelle:** `redesign/shared.jsx` → `AppTopBar` → Crumbs-Loop mit ChevronRight (size 14) zwischen Crumbs.
 - **Dateien:** `app-topbar.{html,scss}`
@@ -1113,7 +1113,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 - **Aufgabe:** Match-Pill links bekommt `<lucide-icon name="check" [size]="11">`. Miss-Pill: kein Icon. Plus-Add-Btn am Ende mit dashed Border in `--line`.
 - **Verifikation:** Keyword-Bar mit gemischten match/miss zeigt Checks nur auf Matches.
 
-## ☐ SH-12 · Company-Logo deterministische Palette
+## ✅ SH-12 · Company-Logo deterministische Palette
 
 - **📐 JSX-Quelle:** `redesign/shared.jsx` → `CompanyLogo`-Komponente (Palette + Hash-Logik).
 - **Dateien:** `company-logo.{ts,html,scss}`
@@ -1196,7 +1196,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Brand-Logo-Mark links mit Gradient.
 - **Verifikation:** Landing scrollen → Navbar fadet zu opak.
 
-## ☐ SH-20 · Footer Tokenize
+## ✅ SH-20 · Footer Tokenize
 
 - **📐 JSX-Quelle:** kein Mockup.
 - **Dateien:** `footer.component.{html,scss}`

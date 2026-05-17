@@ -1,8 +1,18 @@
 <section class="keyword-bar" aria-label="Skill-Übereinstimmung">
   @for (kw of matched(); track kw) {
-    <span class="keyword keyword--match" [attr.aria-label]="kw + ' (vorhanden)'">{{ kw }}</span>
+    <span class="keyword keyword--match" [attr.aria-label]="kw + ' (vorhanden)'">
+      <lucide-icon name="check" [size]="11" aria-hidden="true"></lucide-icon>
+      {{ kw }}
+    </span>
   }
   @for (kw of missing(); track kw) {
     <span class="keyword keyword--miss" [attr.aria-label]="kw + ' (fehlt)'">{{ kw }}</span>
   }
+  <button
+    type="button"
+    class="keyword keyword--add"
+    (click)="addKeyword.emit()"
+    aria-label="Keyword hinzufügen">
+    <lucide-icon name="plus" [size]="11" aria-hidden="true"></lucide-icon>
+  </button>
 </section>

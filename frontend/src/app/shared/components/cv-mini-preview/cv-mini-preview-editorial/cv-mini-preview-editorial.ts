@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import type { MiniCvData } from '../cv-mini-preview-modern/cv-mini-preview-modern';
 
 @Component({
   selector: 'lba-cv-mini-preview-editorial',
@@ -8,4 +9,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './cv-mini-preview-editorial.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CvMiniPreviewEditorial {}
+export class CvMiniPreviewEditorial {
+  readonly cv = input<MiniCvData | null>(null);
+}

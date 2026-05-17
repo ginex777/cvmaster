@@ -174,11 +174,15 @@
 }
 
 .ats-panel__diff-block--before {
-  border-left-color: var(--danger);
+  border-left-color: var(--ink-3);
+
+  p { color: var(--ink-3); }
 }
 
 .ats-panel__diff-block--after {
   border-left-color: var(--success);
+
+  p { color: var(--ink); }
 }
 
 @media (max-width: 720px) {
