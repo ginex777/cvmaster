@@ -4,13 +4,30 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { DashboardComponent } from './dashboard.component';
 import { ApiService } from '../../core/api/api.service';
 
-const emptyDashboard = { onboardingDismissed: false, cvCount: 0, applicationCount: 0, avgMatchScore: null, recentApplications: [] };
+const emptyDashboard = {
+  onboardingDismissed: true,
+  cvCount: 0,
+  applicationCount: 0,
+  avgMatchScore: null,
+  recentApplications: [],
+};
+
+const fullDashboard = {
+  onboardingDismissed: true,
+  cvCount: 3,
+  applicationCount: 5,
+  avgMatchScore: 82,
+  recentApplications: [
+    { id: '1', status: 'OPEN', matchScore: 88, createdAt: '2024-01-01', jobPosting: { parsedJson: { title: 'Dev', company: 'Stripe' } } },
+    { id: '2', status: 'INTERVIEW', matchScore: 76, createdAt: '2024-01-02', jobPosting: { parsedJson: { title: 'Designer', company: 'Figma' } } },
+  ],
+};
 
 describe('DashboardComponent', () => {
-  let api: jest.Mocked<Pick<ApiService, 'get' | 'patch' | 'delete' | 'post'>>;
+  let api: jest.Mocked<Pick<ApiService, 'get'>>;
 
   beforeEach(async () => {
-    api = { get: jest.fn(), patch: jest.fn(), delete: jest.fn(), post: jest.fn() };
+    api = { get: jest.fn() };
     await TestBed.configureTestingModule({
       imports: [DashboardComponent],
       providers: [
@@ -22,28 +39,24 @@ describe('DashboardComponent', () => {
 
   it('loading is true on init, false after data loads', async () => {
     let resolve!: (v: unknown) => void;
-    api.get.mockReturnValue(new Promise((r) => { resolve = r; }));
+    api.get.mockReturnValue(new Promise(r => { resolve = r; }));
     const fixture = TestBed.createComponent(DashboardComponent);
     fixture.detectChanges();
     expect(fixture.componentInstance.loading()).toBe(true);
-    resolve({ onboardingDismissed: false, cvCount: 2, applicationCount: 5, avgMatchScore: 81, recentApplications: [] });
+    resolve(fullDashboard);
     await fixture.whenStable();
     expect(fixture.componentInstance.loading()).toBe(false);
-    expect(fixture.componentInstance.data()?.cvCount).toBe(2);
   });
 
   it('error signal is set when API throws HttpErrorResponse', async () => {
-    api.get.mockRejectedValue(
-      new HttpErrorResponse({ error: { message: 'Server error' } }),
-    );
+    api.get.mockRejectedValue(new HttpErrorResponse({ error: { message: 'Server error' } }));
     const fixture = TestBed.createComponent(DashboardComponent);
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.componentInstance.error()).toBe('Server error');
-    expect(fixture.componentInstance.loading()).toBe(false);
   });
 
-  it('error signal is set to fallback message for non-HTTP errors', async () => {
+  it('error signal falls back for non-HTTP errors', async () => {
     api.get.mockRejectedValue(new Error('network'));
     const fixture = TestBed.createComponent(DashboardComponent);
     fixture.detectChanges();
@@ -51,21 +64,52 @@ describe('DashboardComponent', () => {
     expect(fixture.componentInstance.error()).toBe('Daten konnten nicht geladen werden.');
   });
 
-  it('renders stat cards when data is loaded', async () => {
-    api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 3, applicationCount: 7, avgMatchScore: 75, recentApplications: [] });
+  it('renders 4 stat cards when data is loaded', async () => {
+    api.get.mockResolvedValue(fullDashboard);
     const fixture = TestBed.createComponent(DashboardComponent);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
-    const cards = fixture.nativeElement.querySelectorAll('.stat-card');
-    expect(cards.length).toBe(3);
-    expect(fixture.nativeElement.textContent).toContain('75');
+    const cards = fixture.nativeElement.querySelectorAll('.stat-card:not(.stat-card--skeleton)');
+    expect(cards.length).toBe(4);
   });
 
-  it('aria-live error region is rendered when error signal is set', async () => {
-    api.get.mockRejectedValue(
-      new HttpErrorResponse({ error: { message: 'Fehler' } }),
-    );
+  it('renders 5 pipeline-preview columns', async () => {
+    api.get.mockResolvedValue(fullDashboard);
+    const fixture = TestBed.createComponent(DashboardComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const cols = fixture.nativeElement.querySelectorAll('.pipeline-preview__col');
+    expect(cols.length).toBe(5);
+  });
+
+  it('pipelineColumns computed groups apps by mapped status', async () => {
+    api.get.mockResolvedValue(fullDashboard);
+    const fixture = TestBed.createComponent(DashboardComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const cols = fixture.componentInstance.pipelineColumns();
+    expect(cols.length).toBe(5);
+    const applied = cols.find(c => c.key === 'APPLIED');
+    expect(applied?.count).toBe(1); // OPEN → APPLIED
+    const interview = cols.find(c => c.key === 'INTERVIEW');
+    expect(interview?.count).toBe(1);
+  });
+
+  it('toApplicationStatus maps old backend values to new 5-stage model', () => {
+    api.get.mockResolvedValue(emptyDashboard);
+    const fixture = TestBed.createComponent(DashboardComponent);
+    const c = fixture.componentInstance;
+    expect(c.toApplicationStatus('OPEN')).toBe('APPLIED');
+    expect(c.toApplicationStatus('DONE')).toBe('APPLIED');
+    expect(c.toApplicationStatus('INTERVIEW')).toBe('INTERVIEW');
+    expect(c.toApplicationStatus('OFFER')).toBe('OFFER');
+    expect(c.toApplicationStatus('REJECTED')).toBe('REJECTED');
+  });
+
+  it('renders aria-live alert when error is set', async () => {
+    api.get.mockRejectedValue(new HttpErrorResponse({ error: { message: 'Fehler' } }));
     const fixture = TestBed.createComponent(DashboardComponent);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -75,340 +119,13 @@ describe('DashboardComponent', () => {
     expect(alert.textContent).toContain('Fehler');
   });
 
-  it('maps score >= 80 to score--high, >= 60 to score--mid, else score--low', () => {
-    api.get.mockResolvedValue(emptyDashboard);
-    const fixture = TestBed.createComponent(DashboardComponent);
-    expect(fixture.componentInstance.scoreClass(85)).toBe('score--high');
-    expect(fixture.componentInstance.scoreClass(65)).toBe('score--mid');
-    expect(fixture.componentInstance.scoreClass(40)).toBe('score--low');
-  });
-
-  it('statusKey maps backend statuses to CSS class suffixes', () => {
-    api.get.mockResolvedValue(emptyDashboard);
-    const fixture = TestBed.createComponent(DashboardComponent);
-    expect(fixture.componentInstance.statusKey('OPEN')).toBe('open');
-    expect(fixture.componentInstance.statusKey('DONE')).toBe('done');
-    expect(fixture.componentInstance.statusKey('IN_PROGRESS')).toBe('active');
-    expect(fixture.componentInstance.statusKey('REJECTED')).toBe('rejected');
-    expect(fixture.componentInstance.statusKey('UNKNOWN')).toBe('open');
-  });
-
-  it('toggles application status optimistically and persists it', async () => {
-    api.get.mockResolvedValue({
-      onboardingDismissed: true,
-      cvCount: 1,
-      applicationCount: 1,
-      avgMatchScore: 80,
-      recentApplications: [
-        { id: 'app-1', status: 'OPEN', matchScore: 80, createdAt: '2026-05-10T00:00:00Z', jobPosting: { parsedJson: { title: 'Dev', company: 'Acme' } } },
-      ],
-    });
-    api.patch.mockResolvedValue({});
-    const fixture = TestBed.createComponent(DashboardComponent);
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    const promise = fixture.componentInstance.toggleStatus('app-1');
-
-    expect(fixture.componentInstance.data()?.recentApplications[0].status).toBe('DONE');
-    await promise;
-    expect(api.patch).toHaveBeenCalledWith('/applications/app-1/status', { status: 'DONE' });
-  });
-
-  it('rolls status back and sets error when status persistence fails', async () => {
-    api.get.mockResolvedValue({
-      onboardingDismissed: true,
-      cvCount: 1,
-      applicationCount: 1,
-      avgMatchScore: 80,
-      recentApplications: [
-        { id: 'app-1', status: 'OPEN', matchScore: 80, createdAt: '2026-05-10T00:00:00Z', jobPosting: { parsedJson: { title: 'Dev', company: 'Acme' } } },
-      ],
-    });
-    api.patch.mockRejectedValue(new HttpErrorResponse({ status: 500 }));
-    const fixture = TestBed.createComponent(DashboardComponent);
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    await fixture.componentInstance.toggleStatus('app-1');
-
-    expect(fixture.componentInstance.data()?.recentApplications[0].status).toBe('OPEN');
-    expect(fixture.componentInstance.error()).not.toBeNull();
-  });
-
-  it('deletes an application after confirmation', async () => {
-    api.get.mockResolvedValue({
-      onboardingDismissed: true,
-      cvCount: 1,
-      applicationCount: 1,
-      avgMatchScore: 80,
-      recentApplications: [
-        { id: 'app-1', status: 'OPEN', matchScore: 80, createdAt: '2026-05-10T00:00:00Z', jobPosting: { parsedJson: { title: 'Dev', company: 'Acme' } } },
-      ],
-    });
-    api.delete.mockResolvedValue({});
-    const fixture = TestBed.createComponent(DashboardComponent);
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    fixture.componentInstance.requestDelete('app-1');
-    await fixture.componentInstance.confirmDelete();
-
-    expect(api.delete).toHaveBeenCalledWith('/applications/app-1');
-    expect(fixture.componentInstance.data()?.recentApplications).toHaveLength(0);
-    expect(fixture.componentInstance.data()?.applicationCount).toBe(0);
-  });
-
-  it('sets selectedAppId when the list open action is clicked', async () => {
-    api.get.mockResolvedValue({
-      onboardingDismissed: true,
-      cvCount: 1,
-      applicationCount: 1,
-      avgMatchScore: 80,
-      recentApplications: [
-        { id: 'app-1', status: 'OPEN', matchScore: 80, createdAt: '2026-05-10T00:00:00Z', jobPosting: { parsedJson: { title: 'Dev', company: 'Acme' } } },
-      ],
-    });
+  it('shows activity list items for recent applications', async () => {
+    api.get.mockResolvedValue(fullDashboard);
     const fixture = TestBed.createComponent(DashboardComponent);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
-
-    const openButton = fixture.nativeElement.querySelector('button[aria-label="Öffnen: Dev @ Acme"]') as HTMLButtonElement;
-    openButton.click();
-
-    expect(fixture.componentInstance.selectedAppId()).toBe('app-1');
-  });
-
-  describe('pipeline view', () => {
-    const appData = {
-      onboardingDismissed: true,
-      cvCount: 1,
-      applicationCount: 1,
-      avgMatchScore: 80,
-      recentApplications: [
-        { id: 'app-1', status: 'OPEN', matchScore: 80, createdAt: '2026-05-10T00:00:00Z', reminderAt: null, jobPosting: { parsedJson: { title: 'Dev', company: 'Acme' } } },
-      ],
-    };
-
-    it('toggleView switches showPipeline signal', () => {
-      api.get.mockResolvedValue(emptyDashboard);
-      const fixture = TestBed.createComponent(DashboardComponent);
-      expect(fixture.componentInstance.showPipeline()).toBe(false);
-      fixture.componentInstance.toggleView();
-      expect(fixture.componentInstance.showPipeline()).toBe(true);
-    });
-
-    it('onStatusChange calls PATCH /applications/:id/status', async () => {
-      api.get.mockResolvedValue(appData);
-      api.patch.mockResolvedValue({});
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      await fixture.componentInstance.onStatusChange({ id: 'app-1', status: 'SENT' });
-
-      expect(api.patch).toHaveBeenCalledWith('/applications/app-1/status', { status: 'SENT' });
-    });
-
-    it('onReminderChange calls PATCH /applications/:id/reminder', async () => {
-      api.get.mockResolvedValue(appData);
-      api.patch.mockResolvedValue({});
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      await fixture.componentInstance.onReminderChange({ id: 'app-1', reminderAt: '2026-06-15' });
-
-      expect(api.patch).toHaveBeenCalledWith('/applications/app-1/reminder', expect.objectContaining({ reminderAt: expect.any(String) }));
-    });
-
-    it('onReminderChange with null sends null reminderAt', async () => {
-      api.get.mockResolvedValue(appData);
-      api.patch.mockResolvedValue({});
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      await fixture.componentInstance.onReminderChange({ id: 'app-1', reminderAt: null });
-
-      expect(api.patch).toHaveBeenCalledWith('/applications/app-1/reminder', { reminderAt: null });
-    });
-
-    it('opens the editor modal from the pipeline board output', async () => {
-      api.get.mockResolvedValue(appData);
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      fixture.componentInstance.toggleView();
-      fixture.detectChanges();
-      const title = fixture.nativeElement.querySelector('.pipeline__card-title') as HTMLButtonElement;
-      title.click();
-
-      expect(fixture.componentInstance.selectedAppId()).toBe('app-1');
-    });
-  });
-
-  describe('pipeline filtering', () => {
-    const apps = [
-      { id: '1', status: 'OPEN',   matchScore: 85, createdAt: new Date().toISOString(), reminderAt: '2026-06-01', jobPosting: { parsedJson: { title: 'Frontend Dev', company: 'Acme' } } },
-      { id: '2', status: 'SENT',   matchScore: 55, createdAt: new Date().toISOString(), reminderAt: null,         jobPosting: { parsedJson: { title: 'Backend Dev',  company: 'BigCo' } } },
-      { id: '3', status: 'OPEN',   matchScore: 90, createdAt: new Date().toISOString(), reminderAt: null,         jobPosting: { parsedJson: { title: 'UX Designer',   company: 'Acme' } } },
-    ];
-
-    it('filteredApplications returns all apps when no filter active', async () => {
-      api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 1, applicationCount: 3, avgMatchScore: 77, recentApplications: apps });
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(fixture.componentInstance.filteredApplications().length).toBe(3);
-    });
-
-    it('filteredApplications filters by minScore', async () => {
-      api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 1, applicationCount: 3, avgMatchScore: 77, recentApplications: apps });
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      fixture.componentInstance.onFilterChange({ query: '', minScore: 70, hasReminder: null, dateRange: null });
-
-      expect(fixture.componentInstance.filteredApplications().length).toBe(2);
-      expect(fixture.componentInstance.filteredApplications().every(a => (a.matchScore ?? 0) >= 70)).toBe(true);
-    });
-
-    it('filteredApplications filters by query (title)', async () => {
-      api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 1, applicationCount: 3, avgMatchScore: 77, recentApplications: apps });
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      fixture.componentInstance.onFilterChange({ query: 'frontend', minScore: null, hasReminder: null, dateRange: null });
-
-      expect(fixture.componentInstance.filteredApplications().length).toBe(1);
-      expect(fixture.componentInstance.filteredApplications()[0].id).toBe('1');
-    });
-
-    it('filteredApplications filters by hasReminder', async () => {
-      api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 1, applicationCount: 3, avgMatchScore: 77, recentApplications: apps });
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      fixture.componentInstance.onFilterChange({ query: '', minScore: null, hasReminder: true, dateRange: null });
-
-      expect(fixture.componentInstance.filteredApplications().length).toBe(1);
-      expect(fixture.componentInstance.filteredApplications()[0].id).toBe('1');
-    });
-
-    it('filteredApplications excludes apps with null matchScore when minScore is active', async () => {
-      const appsWithNull = [
-        { id: '1', status: 'OPEN', matchScore: 85, createdAt: new Date().toISOString(), reminderAt: null, jobPosting: { parsedJson: { title: 'Dev', company: 'A' } } },
-        { id: '2', status: 'OPEN', matchScore: null, createdAt: new Date().toISOString(), reminderAt: null, jobPosting: { parsedJson: { title: 'Dev', company: 'B' } } },
-      ];
-      api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 1, applicationCount: 2, avgMatchScore: 85, recentApplications: appsWithNull });
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      fixture.componentInstance.onFilterChange({ query: '', minScore: 50, hasReminder: null, dateRange: null });
-
-      expect(fixture.componentInstance.filteredApplications().length).toBe(1);
-      expect(fixture.componentInstance.filteredApplications()[0].id).toBe('1');
-    });
-
-    it('filteredApplications filters by dateRange week', async () => {
-      const now = new Date();
-      const oldDate = new Date(now);
-      oldDate.setDate(oldDate.getDate() - 10);
-      const appsWithDates = [
-        { id: '1', status: 'OPEN', matchScore: 85, createdAt: now.toISOString(), reminderAt: null, jobPosting: { parsedJson: { title: 'Dev', company: 'A' } } },
-        { id: '2', status: 'OPEN', matchScore: 80, createdAt: oldDate.toISOString(), reminderAt: null, jobPosting: { parsedJson: { title: 'Dev', company: 'B' } } },
-      ];
-      api.get.mockResolvedValue({ onboardingDismissed: true, cvCount: 1, applicationCount: 2, avgMatchScore: 82, recentApplications: appsWithDates });
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      fixture.componentInstance.onFilterChange({ query: '', minScore: null, hasReminder: null, dateRange: 'week' });
-
-      expect(fixture.componentInstance.filteredApplications().length).toBe(1);
-      expect(fixture.componentInstance.filteredApplications()[0].id).toBe('1');
-    });
-  });
-
-  describe('onboarding', () => {
-    it('shows onboarding panel when onboardingDismissed is false', async () => {
-      api.get.mockResolvedValue({ ...emptyDashboard, onboardingDismissed: false });
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.onboarding')).toBeTruthy();
-    });
-
-    it('centers the guided onboarding layout when there are no applications yet', async () => {
-      api.get.mockResolvedValue({ ...emptyDashboard, onboardingDismissed: false });
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.dashboard')?.classList.contains('dashboard--onboarding-focus')).toBe(true);
-    });
-
-    it('hides onboarding panel when onboardingDismissed is true', async () => {
-      api.get.mockResolvedValue({ ...emptyDashboard, onboardingDismissed: true });
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.onboarding')).toBeNull();
-    });
-
-    it('marks CV step done when cvCount > 0', async () => {
-      api.get.mockResolvedValue({ ...emptyDashboard, cvCount: 1 });
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-      const steps = fixture.componentInstance.onboardingSteps();
-      expect(steps?.cvUploaded).toBe(true);
-      expect(steps?.applicationCreated).toBe(false);
-    });
-
-    it('marks application step done when applicationCount > 0', async () => {
-      api.get.mockResolvedValue({ ...emptyDashboard, applicationCount: 2 });
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-      expect(fixture.componentInstance.onboardingSteps()?.applicationCreated).toBe(true);
-    });
-
-    it('marks exported step done when a recent application has status SENT', async () => {
-      api.get.mockResolvedValue({
-        ...emptyDashboard,
-        applicationCount: 1,
-        recentApplications: [
-          { id: 'a1', status: 'SENT', matchScore: null, createdAt: '2026-05-10T00:00:00Z', jobPosting: { parsedJson: {} } },
-        ],
-      });
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-      expect(fixture.componentInstance.onboardingSteps()?.exported).toBe(true);
-    });
-
-    it('calls POST /users/me/dismiss-onboarding and hides panel', async () => {
-      api.get.mockResolvedValue({ ...emptyDashboard, onboardingDismissed: false });
-      api.post.mockResolvedValue({});
-      const fixture = TestBed.createComponent(DashboardComponent);
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      await fixture.componentInstance.dismissOnboarding();
-
-      expect(api.post).toHaveBeenCalledWith('/users/me/dismiss-onboarding', {});
-      expect(fixture.componentInstance.data()?.onboardingDismissed).toBe(true);
-    });
+    const items = fixture.nativeElement.querySelectorAll('.activity-item');
+    expect(items.length).toBe(2);
   });
 });

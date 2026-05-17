@@ -1,182 +1,212 @@
 <main
   id="main"
   class="dashboard"
-  [class.dashboard--onboarding-focus]="data() && !data()!.onboardingDismissed && data()!.recentApplications.length === 0"
   tabindex="-1"
-  [attr.aria-busy]="loading()">
-
-  <div class="page-header">
-    <div class="page-header__text">
-      <h1 class="page-title">Bewerbungen</h1>
-      <p class="page-sub">Deine optimierten Bewerbungen im Überblick</p>
-    </div>
-    <div class="page-header__actions">
-      <a routerLink="/app/wizard" class="btn btn--cta btn--md">Neue Bewerbung</a>
-    </div>
-  </div>
+  [attr.aria-busy]="loading()"
+>
 
   @if (error()) {
-    <div role="alert" aria-live="polite" class="dashboard__error form-error">
+    <div role="alert" aria-live="polite" class="dashboard__error">
       <span>{{ error() }}</span>
       <button type="button" class="btn btn--ghost btn--sm" (click)="loadData()">Erneut versuchen</button>
     </div>
   }
 
   @if (loading()) {
-    <div class="stat-grid" aria-label="Statistiken werden geladen" aria-busy="true">
-      <div class="card-elevated stat-card stat-card--skeleton" aria-hidden="true"></div>
-      <div class="card-elevated stat-card stat-card--skeleton" aria-hidden="true"></div>
-      <div class="card-elevated stat-card stat-card--skeleton" aria-hidden="true"></div>
+    <div class="dashboard__skeleton" aria-label="Dashboard wird geladen" aria-busy="true">
+      <div class="dashboard__skeleton-header" aria-hidden="true"></div>
+      <div class="stat-grid" aria-hidden="true">
+        @for (_ of [1,2,3,4]; track $index) {
+          <div class="stat-card stat-card--skeleton"></div>
+        }
+      </div>
     </div>
   } @else if (data()) {
+
+    <!-- Greeting -->
+    <div class="dashboard__greeting">
+      <div>
+        <h1 class="dashboard__greeting-title">{{ greeting() }}, {{ firstName() }}</h1>
+        <p class="dashboard__greeting-sub">
+          {{ data()!.applicationCount }} Bewerbungen aktiv
+        </p>
+      </div>
+      <div class="dashboard__greeting-actions">
+        <span class="dashboard__period-label">Zeitraum:</span>
+        <button type="button" class="dashboard__period-btn">
+          Letzte 30 Tage
+          <lucide-icon name="chevron-down" [size]="12" aria-hidden="true"></lucide-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats strip — 4 cards -->
     <div class="stat-grid" aria-label="Statistiken">
-      <article class="card-elevated stat-card" aria-label="Lebensläufe">
-        <span class="stat-card__value">{{ data()!.cvCount }}</span>
-        <span class="stat-card__label">Lebensläufe</span>
+      <article class="stat-card" aria-label="Aktive Bewerbungen" style="--stat-tone: var(--status-applied); --stat-icon-bg: oklch(97% 0.030 240)">
+        <div class="stat-card__top-bar" aria-hidden="true"></div>
+        <div class="stat-card__header">
+          <div class="stat-card__icon-wrap">
+            <lucide-icon name="briefcase" [size]="14" aria-hidden="true"></lucide-icon>
+          </div>
+          <span class="stat-card__label">Aktive Bewerbungen</span>
+        </div>
+        <div class="stat-card__value-row">
+          <span class="stat-card__value num">{{ data()!.applicationCount }}</span>
+        </div>
+        <div class="stat-card__trend">
+          <lucide-icon name="trending-up" [size]="12" aria-hidden="true"></lucide-icon>
+          Diese Woche
+        </div>
       </article>
-      <article class="card-elevated stat-card" aria-label="Bewerbungen">
-        <span class="stat-card__value">{{ data()!.applicationCount }}</span>
-        <span class="stat-card__label">Bewerbungen</span>
+
+      <article class="stat-card" aria-label="Lebensläufe" style="--stat-tone: var(--status-interview); --stat-icon-bg: oklch(97% 0.025 295)">
+        <div class="stat-card__top-bar" aria-hidden="true"></div>
+        <div class="stat-card__header">
+          <div class="stat-card__icon-wrap">
+            <lucide-icon name="mail" [size]="14" aria-hidden="true"></lucide-icon>
+          </div>
+          <span class="stat-card__label">Lebensläufe</span>
+        </div>
+        <div class="stat-card__value-row">
+          <span class="stat-card__value num">{{ data()!.cvCount }}</span>
+        </div>
+        <div class="stat-card__trend">Gespeichert</div>
       </article>
-      <article class="card-elevated stat-card" aria-label="Durchschnittlicher Match-Score">
-        <span class="stat-card__value">{{ data()!.avgMatchScore ?? '—' }}</span>
-        <span class="stat-card__label">Ø Match-Score</span>
+
+      <article class="stat-card" aria-label="Durchschnittlicher Match-Score" style="--stat-tone: var(--status-offer); --stat-icon-bg: oklch(97% 0.030 155)">
+        <div class="stat-card__top-bar" aria-hidden="true"></div>
+        <div class="stat-card__header">
+          <div class="stat-card__icon-wrap">
+            <lucide-icon name="target" [size]="14" aria-hidden="true"></lucide-icon>
+          </div>
+          <span class="stat-card__label">Ø Match-Score</span>
+        </div>
+        <div class="stat-card__value-row">
+          <span class="stat-card__value num">{{ data()!.avgMatchScore ?? '—' }}</span>
+          @if (data()!.avgMatchScore !== null) {
+            <span class="stat-card__unit">%</span>
+          }
+        </div>
+        <div class="stat-card__trend">
+          <lucide-icon name="trending-up" [size]="12" aria-hidden="true"></lucide-icon>
+          Top Kohorte
+        </div>
+      </article>
+
+      <article class="stat-card" aria-label="Nächste Erinnerung" style="--stat-tone: var(--warn); --stat-icon-bg: oklch(97% 0.030 60)">
+        <div class="stat-card__top-bar" aria-hidden="true"></div>
+        <div class="stat-card__header">
+          <div class="stat-card__icon-wrap">
+            <lucide-icon name="bell" [size]="14" aria-hidden="true"></lucide-icon>
+          </div>
+          <span class="stat-card__label">Nächste Erinnerung</span>
+        </div>
+        <div class="stat-card__value-row">
+          <span class="stat-card__value">—</span>
+        </div>
+        <div class="stat-card__trend">Keine ausstehend</div>
       </article>
     </div>
 
-    @if (!data()!.onboardingDismissed) {
-      <section class="onboarding" aria-labelledby="onboarding-heading">
-        <div class="onboarding__header">
-          <h2 id="onboarding-heading">Erste Schritte</h2>
-          <button
-            type="button"
-            class="btn btn--ghost btn--sm"
-            [disabled]="dismissingOnboarding()"
-            (click)="dismissOnboarding()"
-            aria-label="Erste-Schritte-Hinweis ausblenden">
-            Nicht mehr anzeigen
-          </button>
-        </div>
-        <ol class="onboarding__steps" aria-label="Erste Schritte im Überblick">
-          <li class="onboarding__step" [class.onboarding__step--done]="onboardingSteps()!.cvUploaded">
-            <span class="onboarding__step-num" aria-hidden="true">
-              @if (onboardingSteps()!.cvUploaded) { ✓ } @else { 1 }
-            </span>
-            <div class="onboarding__step-body">
-              <strong>Lebenslauf hinzufügen</strong>
-              <p>Lade deinen Lebenslauf als PDF/DOCX hoch, füge ihn als Text ein oder erstelle direkt im Assistenten ein Kurzprofil.</p>
-              @if (!onboardingSteps()!.cvUploaded) {
-                <a routerLink="/app/cvs" class="btn btn--outline btn--sm">Lebenslauf hinzufügen</a>
-              }
+    <!-- Pipeline preview panel -->
+    <div class="panel" aria-labelledby="pipeline-preview-heading">
+      <div class="panel__header">
+        <h2 id="pipeline-preview-heading" class="panel__title">Pipeline</h2>
+        <a routerLink="/app/pipeline" class="panel__action">
+          Alle anzeigen
+          <lucide-icon name="chevron-right" [size]="12" aria-hidden="true"></lucide-icon>
+        </a>
+      </div>
+      <div class="pipeline-preview">
+        @for (col of pipelineColumns(); track col.key) {
+          <div
+            class="pipeline-preview__col"
+            [style.background]="col.bg"
+            [style.--col-color]="col.color"
+          >
+            <div class="pipeline-preview__col-top-bar" aria-hidden="true"></div>
+            <div class="pipeline-preview__col-header">
+              <span class="pipeline-preview__dot" aria-hidden="true"></span>
+              <span class="pipeline-preview__col-label">{{ col.label }}</span>
+              <span class="pipeline-preview__col-count num">{{ col.count }}</span>
             </div>
-          </li>
-          <li class="onboarding__step" [class.onboarding__step--done]="onboardingSteps()!.applicationCreated">
-            <span class="onboarding__step-num" aria-hidden="true">
-              @if (onboardingSteps()!.applicationCreated) { ✓ } @else { 2 }
-            </span>
-            <div class="onboarding__step-body">
-              <strong>Erste Bewerbung erstellen</strong>
-              <p>Füge eine Stellenanzeige ein und lass die KI deinen Lebenslauf optimieren und ein Anschreiben verfassen.</p>
-              @if (!onboardingSteps()!.applicationCreated) {
-                <a routerLink="/app/wizard" class="btn btn--outline btn--sm">Bewerbung erstellen</a>
-              }
-            </div>
-          </li>
-          <li class="onboarding__step" [class.onboarding__step--done]="onboardingSteps()!.exported">
-            <span class="onboarding__step-num" aria-hidden="true">
-              @if (onboardingSteps()!.exported) { ✓ } @else { 3 }
-            </span>
-            <div class="onboarding__step-body">
-              <strong>Bewerbung exportieren und versenden</strong>
-              <p>Lade Lebenslauf und Anschreiben als PDF herunter oder sende sie direkt per E-Mail an dich selbst.</p>
-            </div>
-          </li>
-        </ol>
-      </section>
-    }
-
-    @if (data()!.recentApplications.length > 0) {
-      <section class="applications" aria-label="Letzte Bewerbungen">
-        <div class="applications__heading">
-          <h2>Letzte Bewerbungen</h2>
-          <div class="applications__heading-actions">
-            <button
-              type="button"
-              class="btn btn--ghost btn--sm"
-              (click)="toggleView()"
-              [attr.aria-pressed]="showPipeline()"
-              aria-label="Ansicht wechseln">
-              @if (showPipeline()) { Listenansicht } @else { Pipeline-Ansicht }
-            </button>
-            <a routerLink="/app/wizard" class="btn btn--ghost btn--sm">Weitere erstellen</a>
-          </div>
-        </div>
-
-        @if (showPipeline()) {
-          <lba-pipeline-toolbar
-            [totalCount]="filteredApplications().length"
-            (filterChange)="onFilterChange($event)"
-          />
-          <lba-pipeline-board
-            [applications]="filteredApplications()"
-            [highlightQuery]="pipelineFilter().query"
-            (statusChange)="onStatusChange($event)"
-            (reminderChange)="onReminderChange($event)"
-            (applicationOpen)="selectedAppId.set($event)"
-          />
-        } @else {
-          <div class="card-list">
-            @for (app of data()!.recentApplications; track app.id) {
-              <div class="card-elevated">
-                <div class="card-row">
-                  <div class="card-meta">
-                    <p class="card-title">{{ jobTitle(app) }} @ {{ companyName(app) }}</p>
-                    <p class="card-sub">
-                      {{ app.createdAt | date:'dd. MMM' }}
-                      @if (app.matchScore !== null) {
-                        · <strong>{{ app.matchScore }}%</strong>
-                      }
-                      · <lba-status-pill [status]="toApplicationStatus(app.status)" />
-                    </p>
+            @if (col.count === 0) {
+              <div class="pipeline-preview__empty">Leer</div>
+            } @else {
+              <div class="pipeline-preview__cards">
+                @for (app of col.apps; track app.id) {
+                  <div class="pipeline-preview__card">
+                    <div class="pipeline-preview__card-title">{{ companyName(app) }}</div>
+                    <div class="pipeline-preview__card-meta">{{ jobTitle(app) }}</div>
                   </div>
-                  <div class="card-actions">
-                    <button
-                      type="button"
-                      class="btn btn--outline btn--sm"
-                      [attr.aria-label]="'Öffnen: ' + jobTitle(app) + ' @ ' + companyName(app)"
-                      (click)="selectedAppId.set(app.id)">
-                      Öffnen
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn--ghost btn--sm app-delete-btn"
-                      [attr.aria-label]="'Löschen: ' + jobTitle(app) + ' @ ' + companyName(app)"
-                      (click)="requestDelete(app.id)">
-                      Löschen
-                    </button>
-                  </div>
-                </div>
+                }
               </div>
             }
           </div>
         }
-      </section>
-    } @else {
-      <div class="empty-state">
-        <p class="empty-state__text">Noch keine Bewerbungen vorhanden.</p>
-        <a routerLink="/app/wizard" class="btn btn--cta btn--md">Erste Bewerbung erstellen</a>
       </div>
-    }
+    </div>
+
+    <!-- Two-col: recent activity + reminders -->
+    <div class="dashboard__two-col">
+      <div class="panel" aria-labelledby="activity-heading">
+        <div class="panel__header">
+          <h2 id="activity-heading" class="panel__title">Letzte Aktivität</h2>
+          <a routerLink="/app/applications" class="panel__action">Alle Bewerbungen</a>
+        </div>
+        @if (data()!.recentApplications.length === 0) {
+          <div class="panel__empty">
+            <p>Noch keine Bewerbungen.</p>
+            <a routerLink="/app/wizard" class="btn btn--cta btn--sm">Erste Bewerbung erstellen</a>
+          </div>
+        } @else {
+          <div class="activity-list" role="list">
+            @for (app of data()!.recentApplications.slice(0, 5); track app.id; let i = $index; let last = $last) {
+              <div
+                class="activity-item"
+                role="listitem"
+                [class.activity-item--last]="last"
+                [style.--item-color]="statusColor(app.status)"
+              >
+                <div class="activity-item__stripe" aria-hidden="true"></div>
+                <div class="activity-item__body">
+                  <div class="activity-item__title">{{ jobTitle(app) }}</div>
+                  <div class="activity-item__meta">{{ companyName(app) }}</div>
+                </div>
+                <lba-status-pill [status]="toApplicationStatus(app.status)" />
+                <div class="activity-item__score num">
+                  @if (app.matchScore !== null) {
+                    <span>{{ app.matchScore }}%</span>
+                  } @else {
+                    <span class="activity-item__score--na">—</span>
+                  }
+                </div>
+                <button
+                  type="button"
+                  class="activity-item__more"
+                  [attr.aria-label]="'Optionen für ' + jobTitle(app)"
+                  (click)="selectedAppId.set(app.id)"
+                >
+                  <lucide-icon name="more-horizontal" [size]="16" aria-hidden="true"></lucide-icon>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="panel" aria-labelledby="reminders-heading">
+        <div class="panel__header">
+          <h2 id="reminders-heading" class="panel__title">Anstehend</h2>
+        </div>
+        <div class="panel__empty">
+          <p>Keine anstehenden Erinnerungen.</p>
+        </div>
+      </div>
+    </div>
+
   }
 </main>
-
-<lba-confirm-delete-modal
-  [open]="deletingId() !== null"
-  title="Wirklich löschen?"
-  body="Diese Aktion kann nicht rückgängig gemacht werden."
-  (confirmed)="confirmDelete()"
-  (cancelled)="deletingId.set(null)"
-/>
 
 <lba-editor-modal
   [appId]="selectedAppId()"
