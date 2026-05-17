@@ -1,0 +1,11 @@
+<span
+  class="pill"
+  [class.pill--md]="size() === 'md'"
+  [style.color]="meta().color"
+  [style.background]="meta().bg"
+  [attr.aria-label]="'Status: ' + meta().label"
+  role="status"
+>
+  <span class="pill__dot" [style.background]="meta().color" aria-hidden="true"></span>
+  {{ meta().label }}
+</span>

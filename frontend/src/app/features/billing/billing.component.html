@@ -19,7 +19,7 @@
       <p class="settings-panel__metric">{{ planLabel(auth.user()?.plan) }}</p>
       <p>Planwechsel, Rechnungen und Kündigung laufen über Paddle.</p>
       <div class="settings-panel__actions">
-        <a routerLink="/preise" class="btn btn--secondary btn--md">Plan wechseln</a>
+        <a routerLink="/preise" class="btn btn--outline btn--md">Plan wechseln</a>
         @if (customerPortalUrl) {
           <a [href]="customerPortalUrl" class="btn btn--ghost btn--md" rel="noopener">Paddle Portal</a>
         }

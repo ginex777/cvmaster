@@ -136,7 +136,7 @@
                       @if (app.matchScore !== null) {
                         · <strong>{{ app.matchScore }}%</strong>
                       }
-                      · <span [class]="'status--' + statusKey(app.status)">{{ statusLabel(app.status) }}</span>
+                      · <lba-status-pill [status]="toApplicationStatus(app.status)" />
                     </p>
                   </div>
                   <div class="card-actions">

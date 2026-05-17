@@ -1,0 +1,118 @@
+:host {
+  display: block;
+}
+
+.topbar {
+  height: 56px;
+  flex: 0 0 56px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+  background: var(--surface);
+
+  &__crumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__sep {
+    color: var(--ink-4);
+    flex-shrink: 0;
+  }
+
+  &__crumb {
+    font-size: 13.5px;
+    color: var(--ink-3);
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &--current {
+      color: var(--ink);
+      font-weight: 500;
+    }
+  }
+
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px 6px 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--line-2);
+    border-radius: 8px;
+    color: var(--ink-3);
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    min-width: 200px;
+    transition: border-color 0.12s, background 0.12s;
+
+    &:hover {
+      border-color: var(--line);
+      background: var(--surface-3);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
+  }
+
+  &__search-hint {
+    flex: 1;
+    text-align: left;
+  }
+
+  &__kbd {
+    font-size: 10.5px;
+    font-family: var(--font-mono);
+    color: var(--ink-3);
+    background: var(--surface);
+    padding: 1px 5px;
+    border-radius: 3px;
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+
+  &__icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    border: 1px solid var(--line-2);
+    background: var(--surface);
+    color: var(--ink-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.12s, border-color 0.12s;
+
+    &:hover {
+      background: var(--surface-2);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
+  }
+
+  &__dot {
+    position: absolute;
+    top: 6px;
+    right: 7px;
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--accent);
+  }
+}

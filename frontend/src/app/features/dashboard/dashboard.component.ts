@@ -9,6 +9,8 @@ import type { StatusChangeEvent, ReminderChangeEvent } from '../../shared/compon
 import { PipelineToolbar, type PipelineFilter } from '../../shared/components/pipeline-toolbar/pipeline-toolbar';
 import { scoreClass } from '../../shared/utils/score.utils';
 import { EditorModalComponent } from '../application-editor/editor-modal/editor-modal';
+import { StatusPillComponent } from '../../shared/components/status-pill/status-pill';
+import { type ApplicationStatus } from '../../shared/utils/status.utils';
 
 interface RecentApplication {
   id: string;
@@ -30,7 +32,7 @@ interface DashboardData {
 @Component({
   selector: 'lba-dashboard',
   standalone: true,
-  imports: [RouterLink, DatePipe, ConfirmDeleteModal, PipelineBoard, PipelineToolbar, EditorModalComponent],
+  imports: [RouterLink, DatePipe, ConfirmDeleteModal, PipelineBoard, PipelineToolbar, EditorModalComponent, StatusPillComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -87,6 +89,21 @@ export class DashboardComponent implements OnInit {
       OFFER: 'Angebot',
     };
     return labels[status] ?? status;
+  }
+
+  toApplicationStatus(status: string): ApplicationStatus {
+    const map: Record<string, ApplicationStatus> = {
+      DRAFT: 'DRAFT',
+      OPEN: 'APPLIED',
+      DONE: 'APPLIED',
+      EXPORTED: 'APPLIED',
+      SENT: 'APPLIED',
+      REPLIED: 'INTERVIEW',
+      INTERVIEW: 'INTERVIEW',
+      OFFER: 'OFFER',
+      REJECTED: 'REJECTED',
+    };
+    return map[status] ?? 'DRAFT';
   }
 
   statusKey(status: string): string {

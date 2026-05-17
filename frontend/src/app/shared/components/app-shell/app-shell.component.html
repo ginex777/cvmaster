@@ -12,7 +12,7 @@
         class="shell__link"
         aria-label="Dashboard"
       >
-        <span class="shell__link-icon" aria-hidden="true">⊞</span>
+        <lucide-icon name="home" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
         Dashboard
       </a>
       <a
@@ -21,7 +21,7 @@
         class="shell__link"
         aria-label="Lebensläufe"
       >
-        <span class="shell__link-icon" aria-hidden="true">📄</span>
+        <lucide-icon name="file-text" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
         Lebensläufe
       </a>
       <button
@@ -30,7 +30,7 @@
         (click)="linkedInClick()"
         [attr.aria-label]="isPro() ? 'LinkedIn-Optimierung' : 'LinkedIn – nur für Pro-Nutzer'"
       >
-        <span class="shell__link-icon" aria-hidden="true">🔗</span>
+        <lucide-icon name="linkedin" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
         LinkedIn
         @if (!isPro()) {
           <span class="plan-lock" aria-hidden="true">Pro</span>
@@ -52,7 +52,7 @@
         (click)="openEinstellungen()"
         aria-label="Einstellungen öffnen"
       >
-        <span class="shell__link-icon" aria-hidden="true">⚙</span>
+        <lucide-icon name="settings" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
         Einstellungen
       </button>
       <button
@@ -61,7 +61,7 @@
         (click)="logout()"
         aria-label="Abmelden"
       >
-        <span class="shell__link-icon" aria-hidden="true">→</span>
+        <lucide-icon name="log-out" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
         Abmelden
       </button>
     </div>

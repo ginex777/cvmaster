@@ -121,7 +121,7 @@
       </form>
     } @else {
       <p class="security-card__desc">2FA ist nicht aktiv. Schütze deinen Account zusätzlich mit einer Authenticator-App.</p>
-      <button type="button" class="btn btn--secondary" (click)="setupTotp()" [disabled]="totpLoading()">
+      <button type="button" class="btn btn--outline" (click)="setupTotp()" [disabled]="totpLoading()">
         @if (totpLoading()) { Wird geladen… } @else { 2FA einrichten }
       </button>
     }

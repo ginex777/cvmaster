@@ -1,54 +1,84 @@
 @import '@fontsource/geist';
 @import '@fontsource/geist-mono';
 
-/* Design Tokens - extracted from Landing Page.html (SPEC 5) */
+/* Atlas Design Tokens */
 :root {
-  --bg:         oklch(98.6% 0.005 80);
-  --surface:    oklch(99.6% 0.003 80);
-  --surface-2:  oklch(96.5% 0.005 80);
+  /* Surfaces */
+  --bg:         oklch(98.2% 0.004 80);
+  --surface:    #ffffff;
+  --surface-2:  oklch(96.8% 0.005 80);
+  --surface-3:  oklch(94.5% 0.006 80);
   --bg-2:       var(--surface-2);
 
-  --ink:        oklch(20%  0.015 270);
-  --ink-2:      oklch(36%  0.012 270);
-  --ink-3:      oklch(52%  0.010 270);
+  /* Ink scale */
+  --ink:        oklch(16% 0.012 270);
+  --ink-2:      oklch(38% 0.010 270);
+  --ink-3:      oklch(56% 0.008 270);
+  --ink-4:      oklch(70% 0.006 270);
 
-  --line:       oklch(90%  0.005 270);
-  --line-2:     oklch(94%  0.004 270);
+  /* Borders */
+  --line:       oklch(92% 0.004 270);
+  --line-2:     oklch(95.5% 0.003 270);
 
-  --accent:     oklch(58%  0.20  255);
-  --accent-2:   oklch(70%  0.18  255);
-  --accent-ink: oklch(98%  0.01  255);
+  /* Accent */
+  --accent:     oklch(48% 0.17 268);
+  --accent-2:   oklch(58% 0.14 268);
+  --accent-soft:oklch(95% 0.035 268);
+  --accent-ink: oklch(98% 0.01 268);
 
-  --good:       oklch(64%  0.14  155);
-  --warn:       oklch(72%  0.16   60);
-  --bad:        oklch(60%  0.18   25);
-  --success:    var(--good);
-  --warning:    var(--warn);
-  --danger:     var(--bad);
+  /* Status colors */
+  --status-draft:     oklch(58% 0.02 270);
+  --status-applied:   oklch(54% 0.14 240);
+  --status-interview: oklch(54% 0.16 295);
+  --status-offer:     oklch(54% 0.14 155);
+  --status-rejected:  oklch(58% 0.16 25);
+
+  /* Status backgrounds */
+  --status-draft-bg:     oklch(96% 0.005 270);
+  --status-applied-bg:   oklch(95% 0.025 240);
+  --status-interview-bg: oklch(95% 0.025 295);
+  --status-offer-bg:     oklch(95% 0.025 155);
+  --status-rejected-bg:  oklch(96% 0.020 25);
+
+  /* Semantic */
+  --good:    var(--status-offer);
+  --warn:    oklch(60% 0.14 60);
+  --bad:     var(--status-rejected);
+  --success: var(--good);
+  --warning: var(--warn);
+  --danger:  var(--bad);
 
   --font-sans:    'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono:    'Geist Mono', 'Fira Code', ui-monospace, monospace;
 
+  /* Spacing */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
+  --space-5: 1.25rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
   --space-12: 3rem;
   --space-16: 4rem;
   --space-24: 6rem;
 
-  --radius-sm:   8px;
-  --radius-md:   14px;
-  --radius-lg:   22px;
-  --radius-xl:   28px;
+  /* Radii */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   20px;
   --radius-full: 9999px;
 
-  --shadow-sm:   0 1px 2px rgba(15,18,32,0.04), 0 1px 1px rgba(15,18,32,0.03);
-  --shadow-md:   0 1px 2px rgba(15,18,32,0.04), 0 8px 24px -8px rgba(15,18,32,0.10);
-  --shadow-lg:   0 1px 2px rgba(15,18,32,0.04), 0 24px 60px -20px rgba(15,18,32,0.18);
+  /* Shadows */
+  --shadow-xs:      0 1px 2px rgba(15,18,32,0.04);
+  --shadow-sm:      0 1px 2px rgba(15,18,32,0.04), 0 1px 1px rgba(15,18,32,0.03);
+  --shadow-md:      0 1px 2px rgba(15,18,32,0.04), 0 8px 24px -8px rgba(15,18,32,0.10);
+  --shadow-lg:      0 1px 2px rgba(15,18,32,0.04), 0 24px 60px -20px rgba(15,18,32,0.16);
+  --shadow-popover: 0 8px 28px rgba(15,18,32,0.10), 0 0 0 1px rgba(15,18,32,0.04);
+
   --shadow-glow: 0 0 0 1px color-mix(in oklch, var(--accent) 30%, transparent),
                  0 30px 80px -30px color-mix(in oklch, var(--accent) 60%, transparent);
 
@@ -72,6 +102,7 @@ html {
   line-height: 1.6;
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  font-feature-settings: 'cv11' 1, 'ss01' 1;
 }
 
 body {
@@ -106,62 +137,62 @@ a {
   border-radius: var(--radius-sm);
 }
 
+.num, .mono { font-variant-numeric: tabular-nums; }
+
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 44px;
   font-family: var(--font-sans);
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
   border: 1px solid transparent;
   white-space: nowrap;
-  transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.15s;
-}
-
-.btn:hover {
-  transform: translateY(-1px);
+  transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
 
 .btn--sm {
-  min-height: 36px;
-  padding: 7px 12px;
-  font-size: 13px;
+  min-height: 28px;
+  padding: 5px 10px;
+  font-size: 12.5px;
   border-radius: var(--radius-sm);
+  gap: 6px;
 }
 
 .btn--md {
-  padding: 10px 16px;
-  font-size: 14px;
-  border-radius: 10px;
+  min-height: 34px;
+  padding: 7px 12px;
+  font-size: 13.5px;
+  border-radius: 7px;
+  gap: 7px;
 }
 
 .btn--lg {
-  padding: 13px 20px;
-  font-size: 15px;
-  border-radius: 12px;
+  min-height: 40px;
+  padding: 10px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  gap: 8px;
 }
 
 .btn--primary {
   background: var(--ink);
-  color: var(--bg);
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
 }
 
 .btn--primary:hover {
-  background: oklch(28% 0.015 270);
+  background: oklch(24% 0.012 270);
 }
 
-/* DEPRECATED: .btn--secondary → use .btn--outline */
-.btn--secondary,
 .btn--outline {
-  background: transparent;
+  background: var(--surface);
   color: var(--ink);
   border-color: var(--line);
 }
 
-.btn--secondary:hover,
 .btn--outline:hover {
   background: var(--surface-2);
 }
@@ -176,23 +207,20 @@ a {
   color: var(--ink);
 }
 
-/* DEPRECATED: .btn--accent → use .btn--cta */
-.btn--accent,
 .btn--cta {
   background: var(--accent);
-  color: var(--accent-ink);
-  box-shadow: 0 4px 16px oklch(58% 0.20 255 / 0.35);
+  color: #fff;
+  box-shadow: 0 1px 2px color-mix(in oklch, var(--accent) 40%, transparent);
 }
 
-.btn--accent:hover,
 .btn--cta:hover {
   background: var(--accent-2);
-  box-shadow: 0 6px 20px oklch(58% 0.20 255 / 0.45);
 }
 
 .btn--danger {
-  background: var(--bad);
-  color: var(--accent-ink);
+  background: var(--surface);
+  color: var(--bad);
+  border-color: var(--line);
 }
 
 .btn:focus-visible {
@@ -292,12 +320,6 @@ mark.highlight {
   align-items: center;
   gap: var(--space-2);
 }
-
-/* ── Inline status (used inside .card-sub) ── */
-.status--open     { color: var(--good);    font-weight: 600; }
-.status--active   { color: var(--warn);    font-weight: 600; }
-.status--done     { color: var(--ink-2);   font-weight: 600; }
-.status--rejected { color: var(--danger);  font-weight: 600; }
 
 /* ── Empty state ── */
 .empty-state {

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Screen Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #f0eee9; font-family: 'Geist', sans-serif; overflow: hidden; }
+  #frame { background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,0.08); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="../icons.jsx"></script>
+<script type="text/babel" src="../shared.jsx"></script>
+<script type="text/babel" src="../screens-app.jsx"></script>
+<script type="text/babel" src="../screen-editor.jsx"></script>
+<script type="text/babel" src="../screens-marketing.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+  const SCREENS = {
+    landing:   { c: <LandingScreen/>,   w: 1440, h: 900 },
+    login:     { c: <LoginScreen/>,     w: 1200, h: 800 },
+    dashboard: { c: <DashboardScreen/>, w: 1280, h: 900 },
+    pipeline:  { c: <PipelineScreen/>,  w: 1280, h: 900 },
+    cvs:       { c: <CvsScreen/>,       w: 1280, h: 860 },
+    wizard:    { c: <WizardScreen/>,    w: 1280, h: 860 },
+    editor:    { c: <EditorScreen/>,    w: 1440, h: 900 },
+  };
+  const screen = (window.SCREEN || new URLSearchParams(location.search).get('s') || 'dashboard');
+  const def = SCREENS[screen] || SCREENS.dashboard;
+
+  const Wrapper = () => {
+    const [scale, setScale] = React.useState(1);
+    React.useEffect(() => {
+      const calc = () => setScale(Math.min(window.innerWidth / def.w, window.innerHeight / def.h, 1));
+      calc();
+      window.addEventListener('resize', calc);
+      return () => window.removeEventListener('resize', calc);
+    }, []);
+    return (
+      <div style={{ width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f0eee9' }}>
+        <div style={{ width: def.w * scale, height: def.h * scale }}>
+          <div id="frame" style={{ width: def.w, height: def.h, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+            {def.c}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<Wrapper/>);
+</script>
+</body>
+</html>

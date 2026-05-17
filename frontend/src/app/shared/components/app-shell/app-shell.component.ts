@@ -3,11 +3,12 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { AuthService } from '../../../core/auth/auth.service';
 import { EinstellungenModalComponent } from '../einstellungen-modal/einstellungen-modal.component';
 import { UpgradeService } from '../../services/upgrade.service';
+import { IconsModule } from '../../icons/icons.module';
 
 @Component({
   selector: 'lba-app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, EinstellungenModalComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, EinstellungenModalComponent, IconsModule],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

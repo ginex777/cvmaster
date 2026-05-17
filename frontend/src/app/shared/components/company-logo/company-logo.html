@@ -1,0 +1,19 @@
+@if (imageUrl()) {
+  <img
+    [src]="imageUrl()"
+    [alt]="name()"
+    class="logo__img"
+    [style.width.px]="size()"
+    [style.height.px]="size()"
+  />
+} @else {
+  <div
+    class="logo__mono"
+    [style.width.px]="size()"
+    [style.height.px]="size()"
+    [style.background]="bgColor()"
+    [style.color]="color()"
+    [style.font-size.px]="fontSize()"
+    aria-hidden="true"
+  >{{ initials() }}</div>
+}

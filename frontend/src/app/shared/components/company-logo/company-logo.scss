@@ -1,0 +1,20 @@
+:host {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.logo__img {
+  border-radius: 7px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.logo__mono {
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  flex-shrink: 0;
+  font-family: var(--font-sans);
+}

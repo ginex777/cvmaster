@@ -1,0 +1,52 @@
+<dialog
+  #dialog
+  class="palette"
+  (click)="onDialogClick($event)"
+  aria-label="Befehlspalette"
+  aria-modal="true"
+>
+  <div class="palette__panel" role="combobox" aria-haspopup="listbox" [attr.aria-expanded]="isOpen()">
+    <div class="palette__input-row">
+      <lucide-icon name="search" [size]="16" class="palette__search-icon" aria-hidden="true"></lucide-icon>
+      <input
+        #searchInput
+        class="palette__input"
+        type="text"
+        placeholder="Suchen oder springen zu…"
+        [value]="query()"
+        (input)="query.set($any($event.target).value)"
+        aria-label="Suche"
+        aria-autocomplete="list"
+        aria-controls="palette-list"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <kbd class="palette__kbd" aria-hidden="true">Esc</kbd>
+    </div>
+
+    <ul id="palette-list" class="palette__list" role="listbox" aria-label="Ergebnisse">
+      @if (filteredItems().length === 0) {
+        <li class="palette__empty" role="option" aria-selected="false">Keine Ergebnisse</li>
+      }
+      @for (item of filteredItems(); track item.label) {
+        <li
+          class="palette__item"
+          role="option"
+          aria-selected="false"
+          (click)="select(item)"
+          (keydown.enter)="select(item)"
+          (keydown.space)="select(item)"
+          tabindex="0"
+        >
+          <span class="palette__item-icon">
+            <lucide-icon [name]="item.icon" [size]="16" aria-hidden="true"></lucide-icon>
+          </span>
+          <span class="palette__item-label">{{ item.label }}</span>
+          @if (item.description) {
+            <span class="palette__item-desc">{{ item.description }}</span>
+          }
+        </li>
+      }
+    </ul>
+  </div>
+</dialog>

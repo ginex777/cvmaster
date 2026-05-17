@@ -1,0 +1,37 @@
+<header class="topbar" role="banner">
+  <div class="topbar__crumbs" aria-label="Breadcrumb">
+    @for (crumb of crumbs(); track crumb.label; let i = $index; let last = $last) {
+      @if (i > 0) {
+        <lucide-icon name="chevron-right" [size]="14" aria-hidden="true" class="topbar__sep"></lucide-icon>
+      }
+      <span class="topbar__crumb" [class.topbar__crumb--current]="last" [attr.aria-current]="last ? 'page' : null">
+        {{ crumb.label }}
+      </span>
+    }
+  </div>
+
+  <button
+    type="button"
+    class="topbar__search"
+    (click)="commandPaletteRequested.emit()"
+    aria-label="Suche öffnen (⌘K)"
+  >
+    <lucide-icon name="search" [size]="14" aria-hidden="true"></lucide-icon>
+    <span class="topbar__search-hint">Suchen oder springen zu…</span>
+    <kbd class="topbar__kbd" aria-hidden="true">⌘ K</kbd>
+  </button>
+
+  <button
+    type="button"
+    class="topbar__icon-btn"
+    (click)="notificationsRequested.emit()"
+    aria-label="Benachrichtigungen"
+  >
+    <lucide-icon name="bell" [size]="16" aria-hidden="true"></lucide-icon>
+    @if (hasUnread()) {
+      <span class="topbar__dot" aria-hidden="true"></span>
+    }
+  </button>
+
+  <ng-content></ng-content>
+</header>

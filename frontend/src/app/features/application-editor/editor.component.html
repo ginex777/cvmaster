@@ -44,10 +44,10 @@
     </div>
 
     <div class="editor__topbar-group" role="group" aria-label="Downloads">
-      <button class="btn btn--secondary btn--sm" type="button" (click)="downloadCvPdf()" [disabled]="downloading()">
+      <button class="btn btn--outline btn--sm" type="button" (click)="downloadCvPdf()" [disabled]="downloading()">
         CV
       </button>
-      <button class="btn btn--secondary btn--sm" type="button" (click)="downloadLetterPdf()" [disabled]="downloading()">
+      <button class="btn btn--outline btn--sm" type="button" (click)="downloadLetterPdf()" [disabled]="downloading()">
         Anschreiben
       </button>
       <button class="btn btn--primary btn--sm" type="button" (click)="downloadBundle()" [disabled]="downloading()">
@@ -132,7 +132,7 @@
 
         <footer class="editor__bottom-strip">
           <div class="editor__bottom-actions">
-            <button type="button" class="btn btn--secondary btn--sm" (click)="showAnalyse.update(value => !value)">
+            <button type="button" class="btn btn--outline btn--sm" (click)="showAnalyse.update(value => !value)">
               @if (showAnalyse()) { Lebenslauf anzeigen } @else { Analyse anzeigen }
             </button>
             @if (followUpTemplates(); as templates) {
@@ -232,7 +232,7 @@
             autocomplete="email"
           />
           <div class="send-row__actions">
-            <button type="button" class="btn btn--secondary btn--sm" (click)="sendToSelf()" [disabled]="sending()">
+            <button type="button" class="btn btn--outline btn--sm" (click)="sendToSelf()" [disabled]="sending()">
               @if (sending()) { Sendet… } @else { An mich senden }
             </button>
             <button type="button" class="btn btn--ghost btn--sm" (click)="openMailto()">
