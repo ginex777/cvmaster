@@ -620,7 +620,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 
 **Sechs** Mikro-Tasks.
 
-## ☐ MC-01 · CVs: Text-Form als Inline-Expandable
+## ✅ MC-01 · CVs: Text-Form als Inline-Expandable
 
 - **📐 JSX-Quelle:** Im Mockup gibt es kein separates Text-Form-Layout — sie sollte als zusätzliche Grid-Karte erscheinen (analog zur Plus-Tile am Ende).
 - **Dateien:** `master-cvs.component.html` + `.scss`
@@ -631,7 +631,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Schließen-Button (X-Icon oben rechts) statt „Schließen"-Btn unten.
 - **Verifikation:** Click „Text einfügen" → Form erscheint als Karten-Tile in Grid (nicht als Block-Banner darüber).
 
-## ☐ MC-02 · CVs: Template-spezifische Mini-Preview Wiring
+## ✅ MC-02 · CVs: Template-spezifische Mini-Preview Wiring
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `CvsScreen` → Preview-Block pro Karte (Mini-CV-Layout mit Name, Rolle, Sections — wird per Mock im JSX hartkodiert, in Angular pro Template ausgelagert).
 - **Dateien:** `master-cvs.component.html` + `.ts`
@@ -650,7 +650,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
      ```
 - **Verifikation:** Template-Wechsel auf einer Karte ändert Mini-Preview-Stil sofort.
 
-## ☐ MC-03 · CVs: Template-Akzentfarben
+## ✅ MC-03 · CVs: Template-Akzentfarben
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `CvsScreen` → `cvs`-Array oben mit `accent` + `accentBg` pro Template (Modern indigo, Classic grün, Editorial violett).
 - **Dateien:** `master-cvs.component.ts` (cvAccentColor, cvAccentBg)
@@ -677,7 +677,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   ```
 - **Verifikation:** Template-Wechsel auf einer Karte ändert Top-Bar-Farbe + Preview-bg-Tönung passend.
 
-## ☐ MC-04 · CVs: Primär-Badge in Accent gefüllt
+## ✅ MC-04 · CVs: Primär-Badge in Accent gefüllt
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `CvsScreen` → Primary-Badge mit `background: cv.accent`, `color: '#fff'`, `boxShadow`.
 - **Dateien:** `master-cvs.component.html` + `.scss`
@@ -690,7 +690,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   - `padding: 3px 8px`
 - **Verifikation:** Erste Karte (Primär) zeigt vollflächig getintete Badge.
 
-## ☐ MC-05 · CVs: Logik „Primär" persistieren
+## ✅ MC-05 · CVs: Logik „Primär" persistieren
 
 - **📐 JSX-Quelle:** kein expliziter Mockup für Action, nur visuell die Badge (siehe MC-04).
 - **Dateien:** `master-cvs.component.ts`
@@ -701,7 +701,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
   3. Primary-Karte zuerst gerendert + Badge.
 - **Verifikation:** Aktion auf Karte 3 → Badge wandert zu Karte 3, sie steht jetzt vorne.
 
-## ☐ MC-06 · CVs: Action-Row Buttons
+## ✅ MC-06 · CVs: Action-Row Buttons
 
 - **📐 JSX-Quelle:** `redesign/screens-app.jsx` → `CvsScreen` → Action-Row unten („Bearbeiten" als `default`, „Anwenden" als `primary` mit Sparkles-Icon).
 - **Dateien:** `master-cvs.component.html`
