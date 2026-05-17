@@ -1,0 +1,117 @@
+.pipeline-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.pipeline-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 20px 28px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.pipeline-toolbar__left { flex: 1; }
+
+.pipeline-toolbar__title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  margin: 0;
+  color: var(--ink);
+}
+
+.pipeline-toolbar__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.view-toggle {
+  display: flex;
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 3px;
+  border: 1px solid var(--line-2);
+  gap: 2px;
+}
+
+.view-toggle__btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ink-3);
+  border: none;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: none;
+  transition: background 0.1s, color 0.1s;
+
+  &--active {
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+
+  &:focus-visible { outline: 3px solid var(--accent); }
+}
+
+.pipeline-filter {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.pipeline-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: var(--space-4) 28px 0;
+  padding: var(--space-3) var(--space-4);
+  background: oklch(97% 0.025 25);
+  border: 1px solid var(--status-rejected);
+  border-radius: var(--radius-md);
+  color: var(--status-rejected);
+  font-size: 13.5px;
+}
+
+.pipeline-loading {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  padding: 16px;
+  flex: 1;
+}
+
+.pipeline-loading__col {
+  border-radius: 12px;
+  min-height: 200px;
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite;
+}
+
+.pipeline-board-wrap {
+  flex: 1;
+  overflow: auto;
+  background: var(--bg);
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pipeline-loading__col,
+  .view-toggle__btn { animation: none; transition: none; }
+}

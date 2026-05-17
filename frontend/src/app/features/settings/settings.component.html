@@ -1,0 +1,43 @@
+<div class="settings-page">
+  <div class="page-header">
+    <div class="page-header__text">
+      <h1 class="page-title">Einstellungen</h1>
+      <p class="page-sub">Konto, Abrechnung, Sicherheit und Datenschutz</p>
+    </div>
+  </div>
+
+  <nav class="settings-nav" aria-label="Einstellungen-Bereiche">
+    <a routerLink="/app/settings/security" class="settings-nav__item">
+      <div class="settings-nav__icon">
+        <lucide-icon name="lock" [size]="20" aria-hidden="true"></lucide-icon>
+      </div>
+      <div class="settings-nav__text">
+        <strong>Sicherheit</strong>
+        <span>Passwort, Zwei-Faktor-Authentifizierung und Sitzungen</span>
+      </div>
+      <lucide-icon name="chevron-right" [size]="16" class="settings-nav__arrow" aria-hidden="true"></lucide-icon>
+    </a>
+
+    <a routerLink="/app/settings/billing" class="settings-nav__item">
+      <div class="settings-nav__icon">
+        <lucide-icon name="briefcase" [size]="20" aria-hidden="true"></lucide-icon>
+      </div>
+      <div class="settings-nav__text">
+        <strong>Abrechnung</strong>
+        <span>Plan, Zahlungsmethode und Rechnungen</span>
+      </div>
+      <lucide-icon name="chevron-right" [size]="16" class="settings-nav__arrow" aria-hidden="true"></lucide-icon>
+    </a>
+
+    <a routerLink="/app/settings/data" class="settings-nav__item">
+      <div class="settings-nav__icon">
+        <lucide-icon name="file-text" [size]="20" aria-hidden="true"></lucide-icon>
+      </div>
+      <div class="settings-nav__text">
+        <strong>Daten & Datenschutz</strong>
+        <span>Daten exportieren oder Konto löschen</span>
+      </div>
+      <lucide-icon name="chevron-right" [size]="16" class="settings-nav__arrow" aria-hidden="true"></lucide-icon>
+    </a>
+  </nav>
+</div>

@@ -1,0 +1,34 @@
+<div class="data-page">
+  <div class="page-header">
+    <a routerLink="/app/settings" class="page-back">
+      <lucide-icon name="chevron-left" [size]="14" aria-hidden="true"></lucide-icon>
+      Einstellungen
+    </a>
+    <div class="page-header__text">
+      <h1 class="page-title">Daten & Datenschutz</h1>
+      <p class="page-sub">Deine Daten exportieren oder Konto löschen</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div role="alert" aria-live="polite" class="data-alert data-alert--error">{{ error() }}</div>
+  }
+  @if (success()) {
+    <div role="status" aria-live="polite" class="data-alert data-alert--success">{{ success() }}</div>
+  }
+
+  <section class="data-section" aria-labelledby="export-heading">
+    <h2 id="export-heading">Daten exportieren</h2>
+    <p>Erhalte eine Kopie aller deiner gespeicherten Daten (Lebensläufe, Bewerbungen, Einstellungen) als ZIP-Datei.</p>
+    <button
+      type="button"
+      class="btn btn--outline btn--md"
+      [disabled]="loading()"
+      (click)="requestExport()"
+      aria-label="Datenexport anfordern"
+    >
+      <lucide-icon name="download" [size]="14" aria-hidden="true"></lucide-icon>
+      {{ loading() ? 'Wird vorbereitet…' : 'Export anfordern' }}
+    </button>
+  </section>
+</div>

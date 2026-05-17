@@ -1,0 +1,132 @@
+<div class="apps-page" [attr.aria-busy]="loading()">
+
+  <!-- Toolbar -->
+  <div class="apps-toolbar">
+    <div class="apps-toolbar__left">
+      <h1 class="apps-toolbar__title">Bewerbungen</h1>
+    </div>
+    <div class="apps-toolbar__right">
+      <!-- View toggle -->
+      <div class="view-toggle" role="group" aria-label="Ansicht wählen">
+        <button
+          type="button"
+          class="view-toggle__btn"
+          [class.view-toggle__btn--active]="!showPipeline()"
+          (click)="showPipeline.set(false)"
+          aria-label="Listenansicht"
+        >
+          <lucide-icon name="layers" [size]="14" aria-hidden="true"></lucide-icon>
+          Liste
+        </button>
+        <button
+          type="button"
+          class="view-toggle__btn"
+          [class.view-toggle__btn--active]="showPipeline()"
+          (click)="showPipeline.set(true)"
+          aria-label="Pipeline-Ansicht"
+        >
+          <lucide-icon name="kanban" [size]="14" aria-hidden="true"></lucide-icon>
+          Pipeline
+        </button>
+      </div>
+      <a routerLink="/app/wizard" class="btn btn--cta btn--md">
+        <lucide-icon name="plus" [size]="14" aria-hidden="true"></lucide-icon>
+        Neue Bewerbung
+      </a>
+    </div>
+  </div>
+
+  <!-- Error -->
+  @if (error()) {
+    <div role="alert" aria-live="polite" class="apps-error">
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn--ghost btn--sm" (click)="loadData()">Erneut versuchen</button>
+    </div>
+  }
+
+  <!-- Loading skeleton -->
+  @if (loading()) {
+    <div class="apps-skeleton" aria-label="Bewerbungen werden geladen" aria-busy="true">
+      @for (_ of [1,2,3]; track $index) {
+        <div class="apps-skeleton__row" aria-hidden="true"></div>
+      }
+    </div>
+  } @else {
+    @if (showPipeline()) {
+      <div class="apps-pipeline">
+        <lba-pipeline-toolbar
+          [totalCount]="filteredApplications().length"
+          (filterChange)="onFilterChange($event)"
+        />
+        <lba-pipeline-board
+          [applications]="filteredApplications()"
+          [highlightQuery]="pipelineFilter().query"
+          (statusChange)="onStatusChange($event)"
+          (reminderChange)="onReminderChange($event)"
+          (applicationOpen)="selectedAppId.set($event)"
+        />
+      </div>
+    } @else {
+      <!-- Filter strip -->
+      <div class="apps-filter" role="search">
+        <div class="apps-filter__meta num">{{ filteredApplications().length }} Bewerbungen</div>
+      </div>
+
+      <!-- List -->
+      @if (filteredApplications().length === 0) {
+        <div class="apps-empty">
+          <p>Noch keine Bewerbungen vorhanden.</p>
+          <a routerLink="/app/wizard" class="btn btn--cta btn--md">Erste Bewerbung erstellen</a>
+        </div>
+      } @else {
+        <div class="card-list" role="list" aria-label="Bewerbungsliste">
+          @for (app of filteredApplications(); track app.id) {
+            <div class="card-elevated apps-card" role="listitem">
+              <div class="card-row">
+                <div class="card-meta">
+                  <p class="card-title">{{ jobTitle(app) }} @ {{ companyName(app) }}</p>
+                  <p class="card-sub">
+                    {{ app.createdAt | date:'dd. MMM' }}
+                    @if (app.matchScore !== null) {
+                      · <strong class="num">{{ app.matchScore }}%</strong>
+                    }
+                    · <lba-status-pill [status]="toApplicationStatus(app.status)" />
+                  </p>
+                </div>
+                <div class="card-actions">
+                  <button
+                    type="button"
+                    class="btn btn--outline btn--sm"
+                    [attr.aria-label]="'Öffnen: ' + jobTitle(app) + ' @ ' + companyName(app)"
+                    (click)="selectedAppId.set(app.id)">
+                    Öffnen
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn--ghost btn--sm"
+                    [attr.aria-label]="'Löschen: ' + jobTitle(app) + ' @ ' + companyName(app)"
+                    (click)="requestDelete(app.id)">
+                    Löschen
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  }
+</div>
+
+<lba-confirm-delete-modal
+  [open]="deletingId() !== null"
+  title="Wirklich löschen?"
+  body="Diese Aktion kann nicht rückgängig gemacht werden."
+  (confirmed)="confirmDelete()"
+  (cancelled)="deletingId.set(null)"
+/>
+
+<lba-editor-modal
+  [appId]="selectedAppId()"
+  (closed)="selectedAppId.set(null)"
+/>

@@ -1,0 +1,66 @@
+<div class="pipeline-page" [attr.aria-busy]="loading()">
+
+  <!-- Toolbar -->
+  <div class="pipeline-toolbar">
+    <div class="pipeline-toolbar__left">
+      <h1 class="pipeline-toolbar__title">Bewerbungen</h1>
+    </div>
+    <div class="pipeline-toolbar__right">
+      <!-- View toggle -->
+      <div class="view-toggle" role="group" aria-label="Ansicht wählen">
+        <a routerLink="/app/applications" class="view-toggle__btn" aria-label="Listenansicht">
+          <lucide-icon name="layers" [size]="14" aria-hidden="true"></lucide-icon>
+          Liste
+        </a>
+        <button type="button" class="view-toggle__btn view-toggle__btn--active" aria-label="Pipeline-Ansicht" aria-pressed="true">
+          <lucide-icon name="kanban" [size]="14" aria-hidden="true"></lucide-icon>
+          Pipeline
+        </button>
+      </div>
+      <a routerLink="/app/wizard" class="btn btn--cta btn--md">
+        <lucide-icon name="plus" [size]="14" aria-hidden="true"></lucide-icon>
+        Neue Bewerbung
+      </a>
+    </div>
+  </div>
+
+  <!-- Filter strip -->
+  <div class="pipeline-filter">
+    <lba-pipeline-toolbar
+      [totalCount]="filteredApplications().length"
+      (filterChange)="onFilterChange($event)"
+    />
+  </div>
+
+  <!-- Error -->
+  @if (error()) {
+    <div role="alert" aria-live="polite" class="pipeline-error">
+      <span>{{ error() }}</span>
+      <button type="button" class="btn btn--ghost btn--sm" (click)="loadData()">Erneut versuchen</button>
+    </div>
+  }
+
+  <!-- Board -->
+  @if (loading()) {
+    <div class="pipeline-loading" aria-label="Pipeline wird geladen" aria-busy="true">
+      @for (_ of [1,2,3,4,5]; track $index) {
+        <div class="pipeline-loading__col" aria-hidden="true"></div>
+      }
+    </div>
+  } @else {
+    <div class="pipeline-board-wrap">
+      <lba-pipeline-board
+        [applications]="filteredApplications()"
+        [highlightQuery]="pipelineFilter().query"
+        (statusChange)="onStatusChange($event)"
+        (reminderChange)="onReminderChange($event)"
+        (applicationOpen)="selectedAppId.set($event)"
+      />
+    </div>
+  }
+</div>
+
+<lba-editor-modal
+  [appId]="selectedAppId()"
+  (closed)="selectedAppId.set(null)"
+/>
