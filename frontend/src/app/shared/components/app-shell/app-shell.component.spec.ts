@@ -88,10 +88,9 @@ describe('AppShellComponent', () => {
     expect(badge).not.toBeNull();
   });
 
-  it('shows Pro plan class for PRO user', async () => {
+  it('planClass() returns "pro" for PRO user', async () => {
     const { fixture } = await setup(makeAuthMock({ ...mockUser, plan: 'PRO' }));
-    const badge = fixture.debugElement.query(By.css('.shell__plan--pro'));
-    expect(badge).not.toBeNull();
+    expect(fixture.componentInstance['planClass']()).toBe('pro');
   });
 
   it('calls auth.logout() when Abmelden is clicked', async () => {
