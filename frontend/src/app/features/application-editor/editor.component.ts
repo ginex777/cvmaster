@@ -57,7 +57,7 @@ const POLL_MAX_ATTEMPTS = 40;
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, ConfirmDeleteModal, CvSectionEditorComponent, AtsPanel, IconsModule, ScoreRingComponent, StatusPillComponent],
   templateUrl: './editor.component.html',
-  styleUrl: './editor.component.scss',
+  styleUrls: ['./editor.component.scss', './print.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditorComponent implements OnInit, OnDestroy {

@@ -1,0 +1,73 @@
+@media print {
+  /* Hide app chrome — only CV content prints */
+  lba-app-shell .shell__sidebar,
+  lba-app-topbar,
+  .editor__controls,
+  .editor__strip,
+  .editor__outline,
+  .editor__right,
+  .editor__alert,
+  .editor__status-msg,
+  .editor__score-widget,
+  lba-toast-host,
+  lba-command-palette,
+  lba-consent-banner {
+    display: none !important;
+  }
+
+  /* Reset page layout so only center pane fills the page */
+  .shell {
+    display: block !important;
+  }
+
+  .shell__content {
+    padding-bottom: 0 !important;
+  }
+
+  .editor,
+  .editor__body {
+    display: block !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .editor__center {
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  /* A4 typography */
+  body {
+    font-size: 10pt;
+    color: #000;
+    background: #fff;
+  }
+
+  h1 { font-size: 18pt; }
+  h2 { font-size: 14pt; }
+  h3 { font-size: 12pt; }
+
+  /* Don't print tinted section backgrounds — keep only left accent stripe */
+  .cv-section-editor__card,
+  [class*='section-card'] {
+    background: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-left: 3px solid currentColor !important;
+    padding-left: 10pt !important;
+  }
+
+  /* Avoid breaking section cards across pages */
+  .cv-section-editor__card,
+  [class*='section-card'] {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Print margins — approx A4 */
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+  }
+}
