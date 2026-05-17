@@ -129,9 +129,12 @@
 
   </aside>
 
-  <main class="shell__content">
-    <router-outlet />
-  </main>
+  <div class="shell__content">
+    <lba-app-topbar [crumbs]="crumbs()"></lba-app-topbar>
+    <div class="shell__page">
+      <router-outlet />
+    </div>
+  </div>
 </div>
 
 <lba-einstellungen-modal

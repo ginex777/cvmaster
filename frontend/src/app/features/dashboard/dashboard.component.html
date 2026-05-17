@@ -59,18 +59,19 @@
         </div>
       </article>
 
-      <article class="stat-card" aria-label="Lebensläufe" style="--stat-tone: var(--status-interview); --stat-icon-bg: oklch(97% 0.025 295)">
+      <article class="stat-card" aria-label="Antwortquote" style="--stat-tone: var(--status-interview); --stat-icon-bg: oklch(97% 0.025 295)">
         <div class="stat-card__top-bar" aria-hidden="true"></div>
         <div class="stat-card__header">
           <div class="stat-card__icon-wrap">
             <lucide-icon name="mail" [size]="14" aria-hidden="true"></lucide-icon>
           </div>
-          <span class="stat-card__label">Lebensläufe</span>
+          <span class="stat-card__label">Antwortquote</span>
         </div>
         <div class="stat-card__value-row">
           <span class="stat-card__value num">{{ data()!.cvCount }}</span>
+          <span class="stat-card__unit">CVs</span>
         </div>
-        <div class="stat-card__trend">Gespeichert</div>
+        <div class="stat-card__trend">Lebensläufe gespeichert</div>
       </article>
 
       <article class="stat-card" aria-label="Durchschnittlicher Match-Score" style="--stat-tone: var(--status-offer); --stat-icon-bg: oklch(97% 0.030 155)">
@@ -152,7 +153,7 @@
       <div class="panel" aria-labelledby="activity-heading">
         <div class="panel__header">
           <h2 id="activity-heading" class="panel__title">Letzte Aktivität</h2>
-          <a routerLink="/app/applications" class="panel__action">Alle Bewerbungen</a>
+          <a routerLink="/app/applications" class="panel__action panel__action--muted">Alle Bewerbungen</a>
         </div>
         @if (data()!.recentApplications.length === 0) {
           <div class="panel__empty">
@@ -169,6 +170,7 @@
                 [style.--item-color]="statusColor(app.status)"
               >
                 <div class="activity-item__stripe" aria-hidden="true"></div>
+                <div class="activity-item__logo" aria-hidden="true">{{ companyInitials(app) }}</div>
                 <div class="activity-item__body">
                   <div class="activity-item__title">{{ jobTitle(app) }}</div>
                   <div class="activity-item__meta">{{ companyName(app) }}</div>

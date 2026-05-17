@@ -1,14 +1,29 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map, startWith } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { EinstellungenModalComponent } from '../einstellungen-modal/einstellungen-modal.component';
 import { UpgradeService } from '../../services/upgrade.service';
 import { IconsModule } from '../../icons/icons.module';
+import { AppTopbarComponent, type BreadcrumbItem } from '../app-topbar/app-topbar';
+
+const ROUTE_LABELS: Record<string, string> = {
+  '':             'Dashboard',
+  'applications': 'Bewerbungen',
+  'pipeline':     'Pipeline',
+  'cvs':          'Lebensläufe',
+  'linkedin':     'LinkedIn',
+  'settings':     'Einstellungen',
+  'wizard':       'Neue Bewerbung',
+  'billing':      'Abrechnung',
+  'security':     'Sicherheit',
+};
 
 @Component({
   selector: 'lba-app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, EinstellungenModalComponent, IconsModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, EinstellungenModalComponent, IconsModule, AppTopbarComponent],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,6 +34,19 @@ export class AppShellComponent {
   private readonly upgradeService = inject(UpgradeService);
 
   protected readonly einstellungenOpen = signal(false);
+
+  readonly crumbs = toSignal(
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd),
+      startWith(null),
+      map(() => {
+        const segment = this.router.url.split('/').filter(Boolean).at(-1) ?? '';
+        const label = ROUTE_LABELS[segment] ?? segment;
+        return [{ label: 'Workspace' }, { label }] as BreadcrumbItem[];
+      }),
+    ),
+    { initialValue: [{ label: 'Workspace' }, { label: 'Dashboard' }] as BreadcrumbItem[] },
+  );
 
   readonly initials = computed(() => {
     const name = this.auth.user()?.name ?? '';

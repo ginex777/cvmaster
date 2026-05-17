@@ -113,6 +113,15 @@ export class DashboardComponent implements OnInit {
     return app.jobPosting.parsedJson.company ?? 'Unbekannt';
   }
 
+  companyInitials(app: RecentApplication): string {
+    return this.companyName(app)
+      .split(' ')
+      .map(w => w[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  }
+
   jobTitle(app: RecentApplication): string {
     return app.jobPosting.parsedJson.title ?? 'Position offen';
   }
