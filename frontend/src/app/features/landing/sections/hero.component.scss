@@ -104,6 +104,27 @@ h1 {
   font-size: 13px;
 }
 
+.hero__proof-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+
+.hero__proof-count {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hero__proof-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
 .avatars {
   display: flex;
   margin-right: 2px;

@@ -16,13 +16,14 @@
     </p>
 
     <div class="hero__actions" [lbaReveal]="200">
-      <button type="button" class="btn btn--primary btn--lg" (click)="optimizeRequested.emit()">
-        Bewerbung optimieren →
+      <button type="button" class="btn btn--cta btn--lg" (click)="optimizeRequested.emit()">
+        Bewerbung optimieren
+        <lucide-icon name="arrow-right" [size]="16" aria-hidden="true"></lucide-icon>
       </button>
       <a href="#workflow" class="btn btn--outline btn--lg">So funktioniert's</a>
     </div>
 
-    <div class="hero__proof" [lbaReveal]="250" aria-label="4.900 Bewerbungen eingereicht, Bewertung 4.7 von 5">
+    <div class="hero__proof" [lbaReveal]="250" aria-label="4.900+ Bewerbungen optimiert, Bewertung 4,7 von 5">
       <div class="avatars" aria-hidden="true">
         <span class="avatar avatar--orange"></span>
         <span class="avatar avatar--green"></span>
@@ -30,15 +31,19 @@
         <span class="avatar avatar--purple"></span>
         <span class="avatar avatar--teal"></span>
       </div>
-      <span>4.900 Bewerbungen eingereicht</span>
-      <span class="stars" aria-hidden="true">
-        <lucide-icon name="star" [size]="14" [strokeWidth]="0" style="fill:currentColor" class="star--filled"></lucide-icon>
-        <lucide-icon name="star" [size]="14" [strokeWidth]="0" style="fill:currentColor" class="star--filled"></lucide-icon>
-        <lucide-icon name="star" [size]="14" [strokeWidth]="0" style="fill:currentColor" class="star--filled"></lucide-icon>
-        <lucide-icon name="star" [size]="14" [strokeWidth]="0" style="fill:currentColor" class="star--filled"></lucide-icon>
-        <lucide-icon name="star" [size]="14" [strokeWidth]="1.6" class="star--empty"></lucide-icon>
-      </span>
-      <span>4.7 / 5</span>
+      <div class="hero__proof-text">
+        <span class="hero__proof-count">4.900+ Bewerbungen optimiert</span>
+        <span class="hero__proof-rating">
+          <span class="stars" aria-hidden="true">
+            <lucide-icon name="star" [size]="13" [strokeWidth]="0" style="fill:currentColor" class="star--filled"></lucide-icon>
+            <lucide-icon name="star" [size]="13" [strokeWidth]="0" style="fill:currentColor" class="star--filled"></lucide-icon>
+            <lucide-icon name="star" [size]="13" [strokeWidth]="0" style="fill:currentColor" class="star--filled"></lucide-icon>
+            <lucide-icon name="star" [size]="13" [strokeWidth]="0" style="fill:currentColor" class="star--filled"></lucide-icon>
+            <lucide-icon name="star" [size]="13" [strokeWidth]="1.6" class="star--empty"></lucide-icon>
+          </span>
+          4,7 / 5 · 312 Bewertungen
+        </span>
+      </div>
     </div>
 
     <div class="editor-peek" [lbaReveal]="300" aria-label="Produktvorschau Editor">
