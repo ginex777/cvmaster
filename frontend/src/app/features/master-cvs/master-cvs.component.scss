@@ -325,6 +325,15 @@
   100% { background-position: -200% 0; }
 }
 
+/* ── Mobile breakpoints ── */
+@media (max-width: 900px) {
+  .cv-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .cv-grid { grid-template-columns: 1fr; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cv-card--skeleton { animation: none; }
 }
