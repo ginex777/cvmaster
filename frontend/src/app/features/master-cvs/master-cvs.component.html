@@ -112,15 +112,13 @@
           <!-- Mini preview area -->
           <div class="cv-card__preview-area" aria-hidden="true">
             <div class="cv-card__preview">
-              <div class="cv-card__preview-name">{{ cv.name }}</div>
-              <div class="cv-card__preview-role">Frontend Developer · Berlin</div>
-              <div class="cv-card__preview-divider"></div>
-              <div class="cv-card__preview-section-label">Erfahrung</div>
-              <div class="cv-card__preview-line cv-card__preview-line--job"></div>
-              <div class="cv-card__preview-line cv-card__preview-line--sub"></div>
-              <div class="cv-card__preview-line cv-card__preview-line--full"></div>
-              <div class="cv-card__preview-line cv-card__preview-line--wide"></div>
-              <div class="cv-card__preview-line cv-card__preview-line--half"></div>
+              @switch (cv.template) {
+                @case ('classic') { <lba-cv-mini-preview-classic /> }
+                @case ('editorial') { <lba-cv-mini-preview-editorial /> }
+                @case ('executive') { <lba-cv-mini-preview-executive /> }
+                @case ('minimal') { <lba-cv-mini-preview-minimal /> }
+                @default { <lba-cv-mini-preview-modern /> }
+              }
             </div>
             @if (i === 0) {
               <div class="cv-card__primary-badge">
