@@ -1472,7 +1472,7 @@ Komplett-Rewrite. **Sechs** Mikro-Tasks.
 - **Aufgabe:** `PATCH /applications/:id` akzeptiert `status: 'DRAFT'|'APPLIED'|'INTERVIEW'|'OFFER'|'REJECTED'`. Andere Werte → 400 Bad Request.
 - **Verifikation:** API-Tests grün.
 
-## ☐ BE-03 · Reminder-API
+## ✅ BE-03 · Reminder-API
 
 - **Dateien:** Backend-Endpoints
 - **Aufgabe:** `PATCH /applications/:id/reminder` mit `{ reminderAt: ISO-String | null }`. Wenn null → reminder removed.
@@ -1877,7 +1877,7 @@ Lighthouse auf `/` und `/app` (Mobile + Desktop):
 | R-03 | Status-Mapper | L | ✅ |
 | BE-01 | Status-Migration | M | ✅ |
 | BE-02 | API-Validierung | M | ✅ |
-| BE-03 | Reminder-API | M | ☐ |
+| BE-03 | Reminder-API | M | ✅ |
 | QA-01 | Axe-Smoke | N | ☐ |
 | QA-02 | Playwright | N | ☐ |
 | QA-03 | Jest | N | ☐ |
