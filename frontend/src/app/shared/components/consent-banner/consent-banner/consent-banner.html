@@ -1,7 +1,3 @@
-<button type="button" class="consent-settings" (click)="consent.openSettings()">
-  Cookie-Einstellungen
-</button>
-
 @if (consent.needsBanner()) {
   <section class="consent-panel" role="dialog" aria-modal="false" aria-labelledby="consent-title">
     <div class="consent-panel__icon" aria-hidden="true">
@@ -16,6 +12,11 @@
     </div>
 
     <div class="consent-panel__actions" aria-label="Cookie-Auswahl">
+      @if (consent.consent()) {
+        <button type="button" class="btn btn--ghost btn--md" (click)="consent.revoke()">
+          Widerrufen
+        </button>
+      }
       <button type="button" class="btn btn--outline btn--md" (click)="consent.acceptNecessary()">
         Nur notwendige
       </button>

@@ -8,8 +8,8 @@
 .pipeline-toolbar {
   display: flex;
   align-items: center;
-  padding: 20px 28px 16px;
-  border-bottom: 1px solid var(--line);
+  padding: 20px 28px 14px;
+  border-bottom: none;
   background: var(--surface);
   gap: 12px;
   flex-shrink: 0;
@@ -67,6 +67,7 @@
 .pipeline-filter {
   background: var(--surface);
   border-bottom: 1px solid var(--line);
+  padding: 0 28px 16px;
   flex-shrink: 0;
 }
 

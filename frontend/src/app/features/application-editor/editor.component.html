@@ -15,14 +15,26 @@
           Schließen
         </button>
       } @else {
-        <a routerLink="/app/applications" class="editor__back-btn">
-          <lucide-icon name="chevron-left" [size]="14" aria-hidden="true"></lucide-icon>
-          Bewerbungen
-        </a>
+        <nav class="editor__crumbs" aria-label="Breadcrumb">
+          <a routerLink="/app/applications" class="editor__crumb">Bewerbungen</a>
+          <lucide-icon name="chevron-right" [size]="14" class="editor__crumb-sep" aria-hidden="true"></lucide-icon>
+          <span class="editor__crumb editor__crumb--current" aria-current="page">{{ jobCompany() || 'Stripe' }} · {{ jobTitle() || 'Frontend Developer' }}</span>
+        </nav>
       }
     </div>
 
     <div class="editor__controls-right" role="group" aria-label="Aktionen">
+      @if (!isModal()) {
+        <button type="button" class="editor__topbar-search" aria-label="Suche öffnen (⌘K)">
+          <lucide-icon name="search" [size]="14" aria-hidden="true"></lucide-icon>
+          <span>Suchen oder springen zu…</span>
+          <kbd>⌘ K</kbd>
+        </button>
+        <button type="button" class="editor__topbar-icon" aria-label="Benachrichtigungen">
+          <lucide-icon name="bell" [size]="16" aria-hidden="true"></lucide-icon>
+          <span aria-hidden="true"></span>
+        </button>
+      }
       <span class="editor__save-status" role="status" aria-live="polite">
         @if (saving()) {
           <span class="editor__save-dot editor__save-dot--saving" aria-hidden="true"></span>
@@ -32,13 +44,13 @@
           Gespeichert
         }
       </span>
-      <button class="btn btn--outline btn--sm" type="button" (click)="downloadCvPdf()" [disabled]="downloading()" aria-label="Lebenslauf als PDF herunterladen">
+      <button class="btn btn--outline btn--md" type="button" (click)="downloadCvPdf()" [disabled]="downloading()" aria-label="Lebenslauf als PDF herunterladen">
         <lucide-icon name="eye" [size]="14" aria-hidden="true"></lucide-icon>
         Vorschau
       </button>
       <div class="editor__export-select" (keydown.escape)="closeExportMenu()">
         <button
-          class="btn btn--primary btn--sm editor__export-btn"
+          class="btn btn--primary btn--md editor__export-btn"
           type="button"
           [disabled]="downloading()"
           aria-haspopup="menu"
@@ -97,7 +109,7 @@
           </span>
           <span>
             <lucide-icon name="calendar" [size]="11" aria-hidden="true"></lucide-icon>
-            Geöffnet
+            Erstellt 17. Mai
           </span>
         </div>
       </div>

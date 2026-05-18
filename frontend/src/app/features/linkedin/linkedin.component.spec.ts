@@ -58,7 +58,7 @@ describe('LinkedInComponent', () => {
     await setupWithPlan('FREE');
     const f = TestBed.createComponent(LinkedInComponent);
     f.detectChanges();
-    const gate = f.nativeElement.querySelector('.empty-state');
+    const gate = f.nativeElement.querySelector('.pro-gate');
     const form = f.nativeElement.querySelector('form');
     expect(gate).not.toBeNull();
     expect(form).toBeNull();
@@ -68,7 +68,7 @@ describe('LinkedInComponent', () => {
     await setupWithPlan('PRO');
     const f = TestBed.createComponent(LinkedInComponent);
     f.detectChanges();
-    const gate = f.nativeElement.querySelector('.empty-state');
+    const gate = f.nativeElement.querySelector('.pro-gate');
     const form = f.nativeElement.querySelector('form');
     expect(gate).toBeNull();
     expect(form).not.toBeNull();
@@ -80,7 +80,7 @@ describe('LinkedInComponent', () => {
     const spy = jest.spyOn(upgradeService, 'request');
     const f = TestBed.createComponent(LinkedInComponent);
     f.detectChanges();
-    const upgradeBtn = f.nativeElement.querySelector('button[aria-label="Jetzt upgraden"]') as HTMLButtonElement;
+    const upgradeBtn = f.nativeElement.querySelector('button[aria-label="Auf Pro upgraden"]') as HTMLButtonElement;
     upgradeBtn.click();
     expect(spy).toHaveBeenCalledTimes(1);
   });

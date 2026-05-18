@@ -13,24 +13,24 @@
   /* Ink scale */
   --ink:        oklch(16% 0.012 270);
   --ink-2:      oklch(38% 0.010 270);
-  --ink-3:      oklch(56% 0.008 270);
-  --ink-4:      oklch(70% 0.006 270);
+  --ink-3:      #55585f;
+  --ink-4:      #62656d;
 
   /* Borders */
   --line:       oklch(92% 0.004 270);
   --line-2:     oklch(95.5% 0.003 270);
 
   /* Accent */
-  --accent:     oklch(48% 0.17 268);
-  --accent-2:   oklch(58% 0.14 268);
+  --accent:     #32459a;
+  --accent-2:   #3d50a8;
   --accent-soft:oklch(95% 0.035 268);
-  --accent-ink: oklch(98% 0.01 268);
+  --accent-ink: #ffffff;
 
   /* Status colors */
   --status-draft:     oklch(58% 0.02 270);
   --status-applied:   oklch(54% 0.14 240);
   --status-interview: oklch(54% 0.16 295);
-  --status-offer:     oklch(54% 0.14 155);
+  --status-offer:     #006d3b;
   --status-rejected:  oklch(58% 0.16 25);
 
   /* Status backgrounds */
@@ -42,7 +42,7 @@
 
   /* Semantic */
   --good:    var(--status-offer);
-  --warn:    oklch(60% 0.14 60);
+  --warn:    #7a5100;
   --bad:     var(--status-rejected);
   --success: var(--good);
   --warning: var(--warn);
@@ -236,13 +236,11 @@ a {
 }
 
 .reveal {
-  opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: transform 0.5s ease;
 }
 
 .reveal--visible {
-  opacity: 1;
   transform: none;
 }
 
@@ -254,7 +252,6 @@ a {
   }
 
   .reveal {
-    opacity: 1;
     transform: none;
     transition: none;
   }

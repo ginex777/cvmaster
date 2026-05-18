@@ -15,11 +15,12 @@ describe('NavbarComponent', () => {
     fixture.detectChanges();
     const text = fixture.nativeElement.textContent;
 
-    expect(text).toContain('Hireflow AI');
+    expect(text).toContain('Hireflow');
     expect(text).toContain('Features');
-    expect(text).toContain("So funktioniert's");
+    expect(text).toContain('Workflow');
     expect(text).toContain('Beispiel');
     expect(text).toContain('Preise');
+    expect(text).toContain('FAQ');
     expect(text).toContain('Anmelden');
     expect(text).toContain('Kostenlos starten');
   });

@@ -171,10 +171,10 @@ describe('ApplicationsService', () => {
     it('calls prisma.application.update with merged data', async () => {
       mockPrisma.application.findUnique.mockResolvedValue({ id: 'a1', userId: 'u1' } as never);
       mockPrisma.application.update.mockResolvedValue({ id: 'a1' } as never);
-      await service.update('a1', 'u1', { status: 'SENT' });
+      await service.update('a1', 'u1', { status: 'APPLIED' });
       expect(mockPrisma.application.update).toHaveBeenCalledWith({
         where: { id: 'a1' },
-        data: { status: 'SENT' },
+        data: { status: 'APPLIED' },
         include: { masterCv: true, jobPosting: true },
       });
     });

@@ -1,20 +1,24 @@
 <nav class="nav" [class.scrolled]="scrolled()" aria-label="Hauptnavigation">
   <div class="nav__inner">
-    <a routerLink="/" class="nav__logo" aria-label="Hireflow AI Startseite">
-      <span class="nav__logo-mark" aria-hidden="true"></span>
-      Hireflow AI
+    <a routerLink="/" class="nav__logo" aria-label="Hireflow Startseite">
+      <span class="nav__logo-mark" aria-hidden="true">H</span>
+      Hireflow
     </a>
 
     <nav class="nav__links" aria-label="Seitennavigation">
       <a href="#features">Features</a>
-      <a href="#workflow">So funktioniert's</a>
+      <a href="#workflow">Workflow</a>
       <a href="#beispiel">Beispiel</a>
       <a href="#preise">Preise</a>
+      <a routerLink="/faq">FAQ</a>
     </nav>
 
     <div class="nav__actions">
       <button type="button" class="btn btn--ghost btn--sm" (click)="loginRequested.emit()">Anmelden</button>
-      <button type="button" class="btn btn--primary btn--sm" (click)="registerRequested.emit()">Kostenlos starten →</button>
+      <button type="button" class="btn btn--primary btn--sm" (click)="registerRequested.emit()">
+        Kostenlos starten
+        <lucide-icon name="arrow-right" [size]="13" aria-hidden="true"></lucide-icon>
+      </button>
     </div>
   </div>
 </nav>

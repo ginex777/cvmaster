@@ -5,7 +5,7 @@ import { ApiService } from '../../core/api/api.service';
 import { EditorModalComponent } from '../application-editor/editor-modal/editor-modal';
 import { StatusPillComponent } from '../../shared/components/status-pill/status-pill';
 import { IconsModule } from '../../shared/icons/icons.module';
-import { STATUS_META, type ApplicationStatus } from '../../shared/utils/status.utils';
+import { legacyToStatus, STATUS_META, type ApplicationStatus } from '../../shared/utils/status.utils';
 
 interface RecentApplication {
   id: string;
@@ -33,6 +33,17 @@ interface PipelineColumn {
   bg: string;
   count: number;
   apps: RecentApplication[];
+}
+
+interface DashboardReminder {
+  id: string;
+  company: string;
+  role: string;
+  date: string;
+  time: string;
+  kind: string;
+  color: string;
+  icon: 'mail' | 'calendar' | 'bell';
 }
 
 @Component({
@@ -122,6 +133,28 @@ export class DashboardComponent implements OnInit {
     return { label, sub: `${this.companyName(first)} nachfassen` };
   });
 
+  readonly reminders = computed((): DashboardReminder[] => {
+    const apps = this.data()?.recentApplications ?? [];
+    return apps
+      .filter(a => !!a.reminderAt)
+      .sort((a, b) => new Date(a.reminderAt ?? '').getTime() - new Date(b.reminderAt ?? '').getTime())
+      .slice(0, 3)
+      .map((app, index) => {
+        const d = new Date(app.reminderAt ?? '');
+        const status = this.toApplicationStatus(app.status);
+        return {
+          id: app.id,
+          company: this.companyName(app),
+          role: this.jobTitle(app),
+          date: d.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'short' }),
+          time: d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }),
+          kind: index === 0 ? 'Follow-up' : status === 'INTERVIEW' ? 'Interview' : 'Antwort',
+          color: STATUS_META[status].color,
+          icon: index === 0 ? 'mail' : status === 'INTERVIEW' ? 'calendar' : 'bell',
+        };
+      });
+  });
+
   readonly pipelineColumns = computed((): PipelineColumn[] => {
     const apps = this.data()?.recentApplications ?? [];
     const statuses: ApplicationStatus[] = ['DRAFT', 'APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED'];
@@ -189,12 +222,7 @@ export class DashboardComponent implements OnInit {
   }
 
   toApplicationStatus(status: string): ApplicationStatus {
-    const map: Record<string, ApplicationStatus> = {
-      DRAFT: 'DRAFT', OPEN: 'APPLIED', DONE: 'APPLIED', EXPORTED: 'APPLIED',
-      SENT: 'APPLIED', REPLIED: 'INTERVIEW', INTERVIEW: 'INTERVIEW',
-      OFFER: 'OFFER', REJECTED: 'REJECTED',
-    };
-    return map[status] ?? 'DRAFT';
+    return legacyToStatus(status, true);
   }
 
   statusColor(status: string): string {

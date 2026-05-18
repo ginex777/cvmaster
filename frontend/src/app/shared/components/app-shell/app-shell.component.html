@@ -17,11 +17,10 @@
     >
       <div class="shell__workspace-avatar"
         aria-hidden="true"
-        [style.background]="avatarBgColor()"
-        [style.color]="avatarColor()">{{ initials() }}</div>
+        [style.background]="avatarBgColor()">{{ initials() }}</div>
       <div class="shell__workspace-text">
         <span class="shell__username">{{ auth.user()?.name }}</span>
-        <span class="shell__workspace-meta">{{ planLabel() }} · DE</span>
+        <span class="shell__workspace-meta">Frontend · DE</span>
       </div>
       <lucide-icon name="chevron-down" [size]="14" aria-hidden="true"></lucide-icon>
     </button>
@@ -93,16 +92,17 @@
 
     <!-- Bottom: usage bar + settings + logout -->
     <div class="shell__bottom">
-      @if (!isPro()) {
+      @if (true) {
         <div class="shell__usage" aria-label="Plan-Nutzung">
           <div class="shell__usage-head">
-            <span class="shell__plan shell__plan--{{ planClass() }}">{{ planLabel() }}</span>
+            <span class="shell__plan shell__plan--free">Plan</span>
             <span class="shell__usage-count num">{{ counts().used }} / {{ counts().limit }}</span>
           </div>
           <div class="shell__usage-bar" role="progressbar" [attr.aria-valuenow]="counts().percent" aria-valuemin="0" aria-valuemax="100">
             <span class="shell__usage-fill" [style.width.%]="counts().percent"></span>
           </div>
           <div class="shell__usage-foot">
+            <span class="shell__usage-plan">Free</span>
             <a routerLink="/preise" class="shell__usage-cta">Upgrade →</a>
           </div>
         </div>
@@ -132,7 +132,16 @@
   </aside>
 
   <div class="shell__content">
-    <lba-app-topbar [crumbs]="crumbs()"></lba-app-topbar>
+    @if (!isEditorRoute()) {
+      <lba-app-topbar [crumbs]="crumbs()">
+        @if (isDashboardRoute()) {
+          <a routerLink="/app/wizard" class="btn btn--cta btn--md shell__topbar-cta">
+            <lucide-icon name="plus" [size]="14" aria-hidden="true"></lucide-icon>
+            Neue Bewerbung
+          </a>
+        }
+      </lba-app-topbar>
+    }
     <div class="shell__page">
       <router-outlet />
     </div>

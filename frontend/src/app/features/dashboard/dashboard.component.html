@@ -28,7 +28,7 @@
       <div>
         <h1 class="dashboard__greeting-title">{{ greeting() }}, {{ firstName() }}</h1>
         <p class="dashboard__greeting-sub">
-          {{ data()!.applicationCount }} Bewerbungen aktiv
+          {{ data()!.applicationCount }} Bewerbungen aktiv · {{ reminders().length }} erwarten dein Follow-up
         </p>
       </div>
       <div class="dashboard__greeting-actions">
@@ -265,9 +265,28 @@
         <div class="panel__header">
           <h2 id="reminders-heading" class="panel__title">Anstehend</h2>
         </div>
-        <div class="panel__empty">
-          <p>Keine anstehenden Erinnerungen.</p>
-        </div>
+        @if (reminders().length === 0) {
+          <div class="panel__empty">
+            <p>Keine anstehenden Erinnerungen.</p>
+          </div>
+        } @else {
+          <div class="reminder-list" role="list">
+            @for (reminder of reminders(); track reminder.id; let last = $last) {
+              <div class="reminder-item" role="listitem" [class.reminder-item--last]="last" [style.--reminder-color]="reminder.color">
+                <div class="reminder-item__icon" aria-hidden="true">
+                  <lucide-icon [name]="reminder.icon" [size]="14"></lucide-icon>
+                </div>
+                <div class="reminder-item__body">
+                  <div class="reminder-item__top">
+                    <span>{{ reminder.kind }}: {{ reminder.company }}</span>
+                    <span class="num">{{ reminder.time }}</span>
+                  </div>
+                  <div class="reminder-item__meta">{{ reminder.role }} · <span class="num">{{ reminder.date }}</span></div>
+                </div>
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
 

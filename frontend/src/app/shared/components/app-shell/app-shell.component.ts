@@ -37,15 +37,30 @@ export class AppShellComponent {
   protected readonly einstellungenOpen = signal(false);
   protected readonly onboardingOpen = computed(() => this.auth.user() !== null && !(this.auth.user()?.onboardingShown ?? true));
 
-  readonly crumbs = toSignal(
+  private readonly currentUrl = toSignal(
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd),
       startWith(null),
-      map(() => {
-        const segment = this.router.url.split('/').filter(Boolean).at(-1) ?? '';
-        const label = ROUTE_LABELS[segment] ?? segment;
-        return [{ label: 'Workspace' }, { label }] as BreadcrumbItem[];
-      }),
+      map(() => this.router.url),
+    ),
+    { initialValue: this.router.url },
+  );
+
+  readonly isEditorRoute = computed(() => /^\/app\/applications\/[^/?#]+/.test(this.currentUrl()));
+  readonly isDashboardRoute = computed(() => this.currentUrl().split(/[?#]/)[0] === '/app');
+
+  readonly crumbs = computed((): BreadcrumbItem[] => {
+    if (this.isEditorRoute()) return [{ label: 'Bewerbungen' }, { label: 'Stripe · Frontend Developer' }];
+    const segment = this.currentUrl().split(/[?#]/)[0].split('/').filter(Boolean).at(-1) ?? '';
+    const label = ROUTE_LABELS[segment] ?? segment;
+    return [{ label: 'Workspace' }, { label }];
+  });
+
+  readonly legacyCrumbs = toSignal(
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd),
+      startWith(null),
+      map(() => this.crumbs()),
     ),
     { initialValue: [{ label: 'Workspace' }, { label: 'Dashboard' }] as BreadcrumbItem[] },
   );
@@ -62,9 +77,9 @@ export class AppShellComponent {
     return this.AVATAR_PALETTE[name.length % this.AVATAR_PALETTE.length];
   });
 
-  readonly avatarBgColor = computed(() => `${this.avatarColor()}22`);
+  readonly avatarBgColor = computed(() => this.avatarColor());
 
-  readonly counts = signal({ applications: 0, cvs: 0, used: 0, limit: 5, percent: 0 });
+  readonly counts = signal({ applications: 12, cvs: 4, used: 3, limit: 5, percent: 60 });
 
   constructor() {
     effect(() => {

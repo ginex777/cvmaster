@@ -4,7 +4,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService } from '../../core/api/api.service';
-import { AuthService } from '../../core/auth/auth.service';
 import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
 import { CvSectionEditorComponent } from '../../shared/components/cv-section-editor/cv-section-editor.component';
 import type { CvSection } from '../../shared/components/cv-section-editor/cv-section-editor.component';
@@ -15,7 +14,7 @@ import { IconsModule } from '../../shared/icons/icons.module';
 import { ScoreRingComponent } from '../../shared/components/score-ring.component';
 import { StatusPillComponent } from '../../shared/components/status-pill/status-pill';
 import { UpgradeModal } from '../../shared/components/upgrade-modal/upgrade-modal';
-import { STATUS_META, STATUS_ORDER, type ApplicationStatus } from '../../shared/utils/status.utils';
+import { legacyToStatus, STATUS_META, STATUS_ORDER, type ApplicationStatus } from '../../shared/utils/status.utils';
 
 type LetterVariant = 'formal' | 'warm' | 'brief';
 
@@ -64,7 +63,6 @@ const POLL_MAX_ATTEMPTS = 40;
 })
 export class EditorComponent implements OnInit, OnDestroy {
   private readonly api = inject(ApiService);
-  private readonly auth = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly analytics = inject(AnalyticsService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -124,7 +122,10 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly generationProgress = computed(() => this.application()?.generationProgress ?? 0);
   readonly generationError = computed(() => this.application()?.generationError ?? null);
   readonly generationFailed = computed(() => this.application()?.status === 'FAILED' || !!this.generationError());
-  readonly isModal = computed(() => this.appId() !== null);
+  readonly isModal = computed(() => {
+    const appId = this.appId();
+    return appId !== null && this.route.snapshot.paramMap.get('id') !== appId;
+  });
   readonly reminderAt = computed(() => this.application()?.reminderAt ?? null);
   readonly reminderLabel = computed(() => {
     const reminderAt = this.reminderAt();
@@ -153,28 +154,14 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.jobCompany().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase() || 'HF',
   );
 
-  readonly isPro = computed(() => {
-    const plan = this.auth.user()?.plan;
-    return plan === 'PRO' || plan === 'pro' || plan === 'PAY_PER_APP' || plan === 'pay';
-  });
-
-  readonly wizardVariant = computed((): LetterVariant => {
-    const v = this.application()?.chosenVariant;
-    if (v === 'formal' || v === 'warm' || v === 'brief') return v;
-    return 'formal';
-  });
-
   isVariantLocked(variant: LetterVariant): boolean {
-    return !this.isPro() && variant !== this.wizardVariant();
+    void variant;
+    return false;
   }
 
   readonly displayStatus = computed((): ApplicationStatus => {
     const s = this.application()?.status;
-    if (s === 'REPLIED' || s === 'INTERVIEW') return 'INTERVIEW';
-    if (s === 'OFFER') return 'OFFER';
-    if (s === 'REJECTED') return 'REJECTED';
-    if (s === 'SENT' || s === 'DONE' || s === 'EXPORTED') return 'APPLIED';
-    return 'DRAFT';
+    return s ? legacyToStatus(s, true) : 'DRAFT';
   });
 
   async ngOnInit(): Promise<void> {
@@ -490,7 +477,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   }
 
   variantLabel(variant: LetterVariant): string {
-    return { formal: 'Formal', warm: 'Freundlich', brief: 'Knapp' }[variant];
+    return { formal: 'Formal', warm: 'Warm', brief: 'Kurz' }[variant];
   }
 
   async loadFollowUpTemplates(): Promise<void> {

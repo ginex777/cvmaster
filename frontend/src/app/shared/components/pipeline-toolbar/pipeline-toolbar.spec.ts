@@ -17,19 +17,19 @@ describe('PipelineToolbar', () => {
     await TestBed.configureTestingModule({ imports: [PipelineToolbar] }).compileComponents();
   });
 
-  it('renders search input', () => {
+  it('renders the Atlas filter chips', () => {
     create();
-    expect(fixture.nativeElement.querySelector('.toolbar__search')).toBeTruthy();
+    expect(fixture.nativeElement.textContent).toContain('Alle Stati');
+    expect(fixture.nativeElement.textContent).toContain('Score ≥ 80');
+    expect(fixture.nativeElement.textContent).toContain('Mit Erinnerung');
   });
 
-  it('emits filterChange with updated query when search input changes', () => {
+  it('emits filterChange with updated query when onQueryInput is called', () => {
     create();
     const emitted: PipelineFilter[] = [];
     component.filterChange.subscribe((v: PipelineFilter) => emitted.push(v));
 
-    const input = fixture.nativeElement.querySelector('.toolbar__search') as HTMLInputElement;
-    input.value = 'Acme';
-    input.dispatchEvent(new Event('input'));
+    component.onQueryInput({ target: { value: 'Acme' } } as unknown as Event);
 
     expect(emitted).toHaveLength(1);
     expect(emitted[0].query).toBe('Acme');
@@ -55,6 +55,6 @@ describe('PipelineToolbar', () => {
     create();
     component.toggleMinScore();
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.toolbar__active-chip')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.toolbar__chip--active')).toBeTruthy();
   });
 });

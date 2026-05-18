@@ -29,7 +29,7 @@ describe('ConsentBanner', () => {
   it('renders support consent settings and stores necessary-only consent', () => {
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Support-Cookies verwalten');
+    expect(fixture.nativeElement.textContent).toContain('Datenschutz & Cookies');
 
     const buttons = Array.from(fixture.nativeElement.querySelectorAll('button')) as HTMLButtonElement[];
     buttons.find(button => button.textContent?.includes('Nur notwendige'))?.click();
@@ -68,7 +68,7 @@ describe('ConsentBanner', () => {
     fixture.detectChanges();
 
     expect(component.consent.needsBanner()).toBe(false);
-    (fixture.nativeElement.querySelector('.consent-settings') as HTMLButtonElement).click();
+    component.consent.openSettings();
     fixture.detectChanges();
 
     expect(component.consent.needsBanner()).toBe(true);

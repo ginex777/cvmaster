@@ -27,7 +27,7 @@
   <!-- Filter strip -->
   <div class="pipeline-filter">
     <lba-pipeline-toolbar
-      [totalCount]="filteredApplications().length"
+      [totalCount]="totalCount()"
       (filterChange)="onFilterChange($event)"
     />
   </div>

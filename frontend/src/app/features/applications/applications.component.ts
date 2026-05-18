@@ -10,7 +10,7 @@ import { PipelineToolbar, type PipelineFilter } from '../../shared/components/pi
 import { EditorModalComponent } from '../application-editor/editor-modal/editor-modal';
 import { StatusPillComponent } from '../../shared/components/status-pill/status-pill';
 import { IconsModule } from '../../shared/icons/icons.module';
-import { type ApplicationStatus } from '../../shared/utils/status.utils';
+import { legacyToStatus, type ApplicationStatus } from '../../shared/utils/status.utils';
 
 interface Application {
   id: string;
@@ -93,12 +93,7 @@ export class ApplicationsComponent implements OnInit {
   }
 
   toApplicationStatus(status: string): ApplicationStatus {
-    const map: Record<string, ApplicationStatus> = {
-      DRAFT: 'DRAFT', OPEN: 'APPLIED', DONE: 'APPLIED', EXPORTED: 'APPLIED',
-      SENT: 'APPLIED', REPLIED: 'INTERVIEW', INTERVIEW: 'INTERVIEW',
-      OFFER: 'OFFER', REJECTED: 'REJECTED',
-    };
-    return map[status] ?? 'DRAFT';
+    return legacyToStatus(status, true);
   }
 
   jobTitle(app: Application): string {

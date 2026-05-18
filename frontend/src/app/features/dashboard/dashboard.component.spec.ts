@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DashboardComponent } from './dashboard.component';
 import { ApiService } from '../../core/api/api.service';
+import { LEGACY_DONE_STATUS, LEGACY_OPEN_STATUS } from '../../shared/utils/status.utils';
 
 const emptyDashboard = {
   onboardingDismissed: true,
@@ -12,14 +13,16 @@ const emptyDashboard = {
   recentApplications: [],
 };
 
+const recentDate = new Date().toISOString();
+
 const fullDashboard = {
   onboardingDismissed: true,
   cvCount: 3,
   applicationCount: 5,
   avgMatchScore: 82,
   recentApplications: [
-    { id: '1', status: 'OPEN', matchScore: 88, createdAt: '2024-01-01', jobPosting: { parsedJson: { title: 'Dev', company: 'Stripe' } } },
-    { id: '2', status: 'INTERVIEW', matchScore: 76, createdAt: '2024-01-02', jobPosting: { parsedJson: { title: 'Designer', company: 'Figma' } } },
+    { id: '1', status: LEGACY_OPEN_STATUS, matchScore: 88, createdAt: recentDate, jobPosting: { parsedJson: { title: 'Dev', company: 'Stripe' } } },
+    { id: '2', status: 'INTERVIEW', matchScore: 76, createdAt: recentDate, jobPosting: { parsedJson: { title: 'Designer', company: 'Figma' } } },
   ],
 };
 
@@ -101,8 +104,8 @@ describe('DashboardComponent', () => {
     api.get.mockResolvedValue(emptyDashboard);
     const fixture = TestBed.createComponent(DashboardComponent);
     const c = fixture.componentInstance;
-    expect(c.toApplicationStatus('OPEN')).toBe('APPLIED');
-    expect(c.toApplicationStatus('DONE')).toBe('APPLIED');
+    expect(c.toApplicationStatus(LEGACY_OPEN_STATUS)).toBe('APPLIED');
+    expect(c.toApplicationStatus(LEGACY_DONE_STATUS)).toBe('APPLIED');
     expect(c.toApplicationStatus('INTERVIEW')).toBe('INTERVIEW');
     expect(c.toApplicationStatus('OFFER')).toBe('OFFER');
     expect(c.toApplicationStatus('REJECTED')).toBe('REJECTED');

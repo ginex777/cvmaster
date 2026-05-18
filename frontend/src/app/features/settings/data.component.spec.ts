@@ -26,7 +26,7 @@ describe('DataComponent', () => {
 
   it('renders the page title', () => {
     const h1 = fixture.nativeElement.querySelector('h1');
-    expect(h1.textContent.trim()).toBe('Daten & Datenschutz');
+    expect(h1.textContent.trim()).toBe('Daten & Konto');
   });
 
   it('has no error initially', () => {

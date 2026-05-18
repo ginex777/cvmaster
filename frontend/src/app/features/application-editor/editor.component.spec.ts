@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { EditorComponent } from './editor.component';
 import { ApiService } from '../../core/api/api.service';
+import { LEGACY_OPEN_STATUS } from '../../shared/utils/status.utils';
 
 describe('EditorComponent', () => {
   let api: jest.Mocked<Pick<ApiService, 'get' | 'patch' | 'post' | 'getBlob'>>;
@@ -12,7 +13,7 @@ describe('EditorComponent', () => {
     api = { get: jest.fn(), patch: jest.fn(), post: jest.fn(), getBlob: jest.fn() };
     api.get.mockResolvedValue({
       id: 'a1',
-      status: 'OPEN',
+      status: LEGACY_OPEN_STATUS,
       matchScore: 88,
       optimizedCv: { sections: [{ heading: 'Erfahrung', lines: ['Stripe - 2 Jahre'] }] },
       coverLetter: { formal: 'x', warm: 'y', brief: 'z' },
@@ -330,7 +331,7 @@ describe('EditorComponent', () => {
     f.detectChanges();
 
     const tag = f.nativeElement.querySelector('.send-row__variant-tag') as HTMLElement | null;
-    expect(tag?.textContent?.trim()).toBe('Freundlich-Variante');
+    expect(tag?.textContent?.trim()).toBe('Warm-Variante');
   });
 
   it('sends generated documents to the user email address', async () => {
@@ -386,7 +387,7 @@ describe('EditorComponent', () => {
 
     it('loads templates and sets signal on success', async () => {
       api.get
-        .mockResolvedValueOnce({ id: 'a1', status: 'OPEN', matchScore: 88, optimizedCv: { text: 'cv' }, coverLetter: {}, chosenVariant: 'formal', jobPosting: { parsedJson: { title: 'Dev', company: 'Acme' } } })
+        .mockResolvedValueOnce({ id: 'a1', status: LEGACY_OPEN_STATUS, matchScore: 88, optimizedCv: { text: 'cv' }, coverLetter: {}, chosenVariant: 'formal', jobPosting: { parsedJson: { title: 'Dev', company: 'Acme' } } })
         .mockResolvedValueOnce(mockTemplates);
       const f = TestBed.createComponent(EditorComponent);
       f.detectChanges();
@@ -411,7 +412,7 @@ describe('EditorComponent', () => {
 
     it('sets followUpError on load failure', async () => {
       api.get
-        .mockResolvedValueOnce({ id: 'a1', status: 'OPEN', matchScore: 88, optimizedCv: { text: 'cv' }, coverLetter: {}, chosenVariant: 'formal', jobPosting: {} })
+        .mockResolvedValueOnce({ id: 'a1', status: LEGACY_OPEN_STATUS, matchScore: 88, optimizedCv: { text: 'cv' }, coverLetter: {}, chosenVariant: 'formal', jobPosting: {} })
         .mockRejectedValueOnce(new HttpErrorResponse({ error: { message: 'Fehler' } }));
       const f = TestBed.createComponent(EditorComponent);
       f.detectChanges();

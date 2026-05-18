@@ -148,7 +148,7 @@ export class AiPipelineProcessor implements OnModuleInit {
         matchScore: result.score,
         matchReport,
         optimizationDiff,
-        status: 'OPEN',
+        status: 'APPLIED',
         generationProgress: 100,
         generationError: null,
       },
@@ -202,7 +202,6 @@ export class AiPipelineProcessor implements OnModuleInit {
     await this.prisma.application.update({
       where: { id: applicationId },
       data: {
-        status: job.name === 'regenerate-letter' ? undefined : 'FAILED',
         generationError: 'Die KI-Generierung ist fehlgeschlagen. Bitte versuche es erneut.',
       },
     });

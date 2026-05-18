@@ -15,12 +15,12 @@ describe('HeroComponent', () => {
     fixture.detectChanges();
     const text = fixture.nativeElement.textContent;
 
-    expect(text).toContain('Bewerbungen, die zur');
+    expect(text).toContain('Bewerbungen,die zur');
     expect(text).toContain('Bewerbung optimieren');
     expect(text).toContain("So funktioniert's");
-    expect(text).toContain('4.900 Bewerbungen eingereicht');
-    expect(text).toContain('Bewerbungs-Wizard');
-    expect(text).toContain('Optimierter Lebenslauf');
-    expect(text).toContain('Match Report');
+    expect(text).toContain('4.900+ Bewerbungen optimiert');
+    expect(text).toContain('ATS');
+    expect(text).toContain('Treffer');
+    expect(text).toContain('Anschreiben');
   });
 });

@@ -3,6 +3,7 @@ import type { ComponentFixture } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { ApplicationsComponent } from './applications.component';
 import { ApiService } from '../../core/api/api.service';
+import { LEGACY_OPEN_STATUS } from '../../shared/utils/status.utils';
 
 const mockApi = {
   get: jest.fn().mockResolvedValue({
@@ -11,7 +12,7 @@ const mockApi = {
     avgMatchScore: 82,
     onboardingDismissed: true,
     recentApplications: [
-      { id: '1', status: 'OPEN', matchScore: 88, createdAt: '2024-01-01', jobPosting: { parsedJson: { title: 'Dev', company: 'Stripe' } } },
+      { id: '1', status: LEGACY_OPEN_STATUS, matchScore: 88, createdAt: '2024-01-01', jobPosting: { parsedJson: { title: 'Dev', company: 'Stripe' } } },
       { id: '2', status: 'INTERVIEW', matchScore: 76, createdAt: '2024-01-02', jobPosting: { parsedJson: { title: 'Designer', company: 'Figma' } } },
     ],
   }),
@@ -67,7 +68,7 @@ describe('ApplicationsComponent', () => {
   });
 
   it('maps OPEN status to APPLIED for status pill', () => {
-    expect(component.toApplicationStatus('OPEN')).toBe('APPLIED');
+    expect(component.toApplicationStatus(LEGACY_OPEN_STATUS)).toBe('APPLIED');
     expect(component.toApplicationStatus('INTERVIEW')).toBe('INTERVIEW');
     expect(component.toApplicationStatus('OFFER')).toBe('OFFER');
   });

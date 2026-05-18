@@ -1,110 +1,117 @@
 <section class="hero" aria-labelledby="hero-heading">
   <div class="hero__glow" aria-hidden="true"></div>
   <div class="hero__inner">
-    <div class="hero__eyebrow" [lbaReveal]="0">
-      <span class="hero__eyebrow-icon" aria-hidden="true">
-        <lucide-icon name="sparkles" [size]="11"></lucide-icon>
-      </span>
-      KI-Bewerbungsagent · Beta
-    </div>
-
-    <h1 id="hero-heading" [lbaReveal]="100">Bewerbungen,<br>die zur <em>Stelle</em> passen.</h1>
-
-    <p class="hero__subline" [lbaReveal]="150">
-      Lade deinen Lebenslauf hoch, füge eine Stellenanzeige an - bekomme in Sekunden eine maßgeschneiderte
-      Bewerbung mit passenden Keywords, poliertem Anschreiben und ATS-tauglichem Layout.
-    </p>
-
-    <div class="hero__actions" [lbaReveal]="200">
-      <button type="button" class="btn btn--cta btn--lg" (click)="optimizeRequested.emit()">
-        Bewerbung optimieren
-        <lucide-icon name="arrow-right" [size]="16" aria-hidden="true"></lucide-icon>
-      </button>
-      <a href="#workflow" class="btn btn--outline btn--lg">So funktioniert's</a>
-    </div>
-
-    <div class="hero__proof" [lbaReveal]="250" aria-label="4.900+ Bewerbungen optimiert, Bewertung 4,7 von 5">
-      <div class="avatars" aria-hidden="true">
-        <span class="avatar avatar--orange"></span>
-        <span class="avatar avatar--green"></span>
-        <span class="avatar avatar--blue"></span>
-        <span class="avatar avatar--purple"></span>
-        <span class="avatar avatar--teal"></span>
-      </div>
-      <div class="hero__proof-text">
-        <span class="hero__proof-count">4.900+ Bewerbungen optimiert</span>
-        <span class="hero__proof-rating">
-          <span class="stars" aria-hidden="true">
-            <lucide-icon name="star" [size]="13" [strokeWidth]="0" style="fill:currentColor" class="star--filled"></lucide-icon>
-            <lucide-icon name="star" [size]="13" [strokeWidth]="0" style="fill:currentColor" class="star--filled"></lucide-icon>
-            <lucide-icon name="star" [size]="13" [strokeWidth]="0" style="fill:currentColor" class="star--filled"></lucide-icon>
-            <lucide-icon name="star" [size]="13" [strokeWidth]="0" style="fill:currentColor" class="star--filled"></lucide-icon>
-            <lucide-icon name="star" [size]="13" [strokeWidth]="1.6" class="star--empty"></lucide-icon>
-          </span>
-          4,7 / 5 · 312 Bewertungen
+    <div class="hero__copy">
+      <div class="hero__eyebrow" [lbaReveal]="0">
+        <span class="hero__eyebrow-icon" aria-hidden="true">
+          <lucide-icon name="sparkles" [size]="11"></lucide-icon>
         </span>
+        KI-Bewerbungsagent · Beta
+      </div>
+
+      <h1 id="hero-heading" [lbaReveal]="100">Bewerbungen,<br>die zur <em>Stelle</em> passen.</h1>
+
+      <p class="hero__subline" [lbaReveal]="150">
+        Lade deinen Lebenslauf hoch, füge die Stellenanzeige an — bekomme in 60 Sekunden eine maßgeschneiderte
+        Bewerbung mit passenden Keywords, poliertem Anschreiben und ATS-tauglichem Layout.
+      </p>
+
+      <div class="hero__actions" [lbaReveal]="200">
+        <button type="button" class="btn btn--cta btn--lg" (click)="optimizeRequested.emit()">
+          Bewerbung optimieren
+          <lucide-icon name="arrow-right" [size]="15" aria-hidden="true"></lucide-icon>
+        </button>
+        <a href="#workflow" class="btn btn--outline btn--lg">So funktioniert's</a>
+      </div>
+
+      <div class="hero__proof" [lbaReveal]="250" aria-label="4.900+ Bewerbungen optimiert, Bewertung 4,7 von 5">
+        <div class="avatars" aria-hidden="true">
+          <span class="avatar avatar--blue"></span>
+          <span class="avatar avatar--green"></span>
+          <span class="avatar avatar--orange"></span>
+          <span class="avatar avatar--red"></span>
+          <span class="avatar avatar--purple"></span>
+        </div>
+        <div class="hero__proof-text">
+          <span class="hero__proof-count">4.900+ Bewerbungen optimiert</span>
+          <span class="hero__proof-rating">
+            <span class="stars" aria-hidden="true">★★★★★</span>
+            4,7 / 5 · 312 Bewertungen
+          </span>
+        </div>
       </div>
     </div>
 
-    <div class="editor-peek" [lbaReveal]="300" aria-label="Produktvorschau Editor">
-      <div class="editor-peek__tab-bar" aria-hidden="true">
-        <div class="editor-peek__dots">
-          <span class="editor-peek__dot editor-peek__dot--red"></span>
-          <span class="editor-peek__dot editor-peek__dot--yellow"></span>
-          <span class="editor-peek__dot editor-peek__dot--green"></span>
+    <div class="hero__visual">
+      <div class="editor-peek" [lbaReveal]="300" aria-label="Produktvorschau Editor">
+        <div class="editor-peek__tab-bar" aria-hidden="true">
+          <div class="editor-peek__dots">
+            <span class="editor-peek__dot editor-peek__dot--red"></span>
+            <span class="editor-peek__dot editor-peek__dot--yellow"></span>
+            <span class="editor-peek__dot editor-peek__dot--green"></span>
+          </div>
+          <span class="editor-peek__tab-title">Stripe — Frontend Developer</span>
+          <span class="editor-peek__ats-pill"><span>ATS</span><strong>88</strong><small>%</small></span>
         </div>
-        <span class="editor-peek__tab-title">Stripe — Frontend Developer</span>
-        <span class="editor-peek__ats-pill">ATS-optimiert</span>
-      </div>
 
-      <div class="editor-peek__body">
-        <div class="editor-peek__content">
-          <p class="editor-peek__section-label">PROFIL</p>
-          <p class="editor-peek__text">
-            Angular-Entwicklerin mit Fokus auf
-            <mark class="editor-peek__mark">React</mark>,
-            <mark class="editor-peek__mark">TypeScript</mark> und
-            <mark class="editor-peek__mark">Accessibility</mark> —
-            maßgeschneiderte Lösungen für modernes Frontend.
+        <div class="editor-peek__body">
+          <div class="editor-peek__content">
+            <p class="editor-peek__section-label">Profil</p>
+            <p class="editor-peek__text">
+              Frontend-Entwicklerin mit Fokus auf
+              <mark class="editor-peek__mark">React</mark> und
+              <mark class="editor-peek__mark">TypeScript</mark>. Erfahrung mit
+              <mark class="editor-peek__mark">Accessibility</mark> und automatisierten Tests.
+            </p>
+            <p class="editor-peek__section-label">Erfahrung</p>
+            <div class="editor-peek__job">
+              <strong>Frontend Developer</strong>
+              <span class="num">2023 – heute</span>
+            </div>
+            <p class="editor-peek__company">Mediahaus GmbH · Berlin</p>
+            <ul class="editor-peek__bullets">
+              <li>Checkout-Flow produktionsreif ausgeliefert</li>
+              <li>WCAG 2.2 AAA-Audit durchgeführt</li>
+            </ul>
+          </div>
+
+          <div class="editor-peek__score-side">
+            <div class="editor-peek__score-head">
+              <p class="editor-peek__section-label">Match</p>
+              <div class="editor-peek__score-ring" aria-label="Match-Score 88 Prozent">
+                <span>88</span>
+              </div>
+            </div>
+            <p class="editor-peek__section-label">Treffer</p>
+            <div class="editor-peek__tags">
+              <span class="editor-peek__tag editor-peek__tag--ok">React</span>
+              <span class="editor-peek__tag editor-peek__tag--ok">TypeScript</span>
+              <span class="editor-peek__tag editor-peek__tag--ok">a11y</span>
+              <span class="editor-peek__tag editor-peek__tag--ok">Tests</span>
+            </div>
+            <p class="editor-peek__section-label">Lücken</p>
+            <div class="editor-peek__tags">
+              <span class="editor-peek__tag editor-peek__tag--warn">RxJS</span>
+              <span class="editor-peek__tag editor-peek__tag--warn">GraphQL</span>
+            </div>
+            <div class="editor-peek__suggestion">
+              <strong>Vorschlag</strong>
+              <p>Füge RxJS in deiner Erfahrung ein — die Stelle nennt es als Muss.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-peek__letter-card" aria-hidden="true">
+          <div class="editor-peek__letter-header">
+            <lucide-icon name="mail" [size]="14"></lucide-icon>
+            <span>Anschreiben · Formal</span>
+            <small>3 Varianten</small>
+          </div>
+          <p class="editor-peek__letter-text">
+            Sehr geehrtes Stripe-Team,<br><br>
+            als Frontend-Entwicklerin mit Fokus auf barrierefreie SaaS-Oberflächen verfolge ich Ihre Arbeit am Stripe Dashboard…
           </p>
-          <p class="editor-peek__section-label">ERFAHRUNG</p>
-          <p class="editor-peek__company">Mediahaus GmbH · Frontend Developer</p>
-          <p class="editor-peek__text">Checkout-Flow mit Angular, NestJS und Webhooks produktionsreif ausgeliefert.</p>
         </div>
-
-        <div class="editor-peek__score-side">
-          <div class="editor-peek__score-ring" aria-label="Match-Score 88 Prozent">
-            <span>88%</span>
-          </div>
-          <p class="editor-peek__section-label">TREFFER</p>
-          <div class="editor-peek__tags">
-            <span class="editor-peek__tag editor-peek__tag--ok">React</span>
-            <span class="editor-peek__tag editor-peek__tag--ok">TypeScript</span>
-            <span class="editor-peek__tag editor-peek__tag--ok">A11y</span>
-          </div>
-          <p class="editor-peek__section-label">LÜCKEN</p>
-          <div class="editor-peek__tags">
-            <span class="editor-peek__tag editor-peek__tag--warn">RxJS</span>
-            <span class="editor-peek__tag editor-peek__tag--warn">Testing</span>
-          </div>
-          <div class="editor-peek__suggestion">
-            <strong>Vorschlag</strong>
-            <p>RxJS und Testing Library ergänzen.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="editor-peek__letter-card" aria-hidden="true">
-        <div class="editor-peek__letter-header">
-          <lucide-icon name="mail" [size]="13"></lucide-icon>
-          <span>Anschreiben · Formal</span>
-        </div>
-        <div class="editor-peek__letter-variants">
-          <span class="editor-peek__letter-variant editor-peek__letter-variant--active">Formal</span>
-          <span class="editor-peek__letter-variant">Warm</span>
-          <span class="editor-peek__letter-variant">Kurz</span>
-        </div>
-        <p class="editor-peek__letter-text">Sehr geehrte Damen und Herren, mit großem Interesse bewerbe ich mich auf die ausgeschriebene Stelle als Frontend Developer bei Stripe.</p>
       </div>
     </div>
   </div>

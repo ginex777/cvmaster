@@ -18,11 +18,18 @@ describe('LoginComponent', () => {
     }).compileComponents();
   });
 
-  it('renders email, password, and two-factor fields', () => {
+  it('renders email and password fields before two-factor is required', () => {
     const fixture = TestBed.createComponent(LoginComponent);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('#login-email')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('#login-password')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('#login-totp')).toBeNull();
+  });
+
+  it('renders the two-factor field when required', () => {
+    const fixture = TestBed.createComponent(LoginComponent);
+    fixture.componentInstance.requiresTotp.set(true);
+    fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('#login-totp')).toBeTruthy();
   });
 

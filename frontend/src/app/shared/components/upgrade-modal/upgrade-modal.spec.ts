@@ -30,9 +30,8 @@ describe('UpgradeModal', () => {
   it('emits upgradeRequested from the primary action', () => {
     const emit = jest.spyOn(component.upgradeRequested, 'emit');
 
-    const button = Array.from(fixture.nativeElement.querySelectorAll('button'))
-      .find((item): item is HTMLButtonElement => item instanceof HTMLButtonElement && item.textContent?.includes('upgraden'));
-    button?.dispatchEvent(new Event('click'));
+    const button = fixture.nativeElement.querySelector('.modal__cta') as HTMLButtonElement;
+    button.click();
 
     expect(emit).toHaveBeenCalled();
   });

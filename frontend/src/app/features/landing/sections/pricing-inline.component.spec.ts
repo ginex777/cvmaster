@@ -15,8 +15,8 @@ describe('PricingInlineComponent', () => {
     fixture.detectChanges();
     const text = fixture.nativeElement.textContent;
 
-    expect(text).toContain('4,90 €');
-    expect(text).toContain('14 €');
+    expect(text).toContain('2,49 €');
+    expect(text).toContain('9,99 €');
     expect(text).toContain('EMPFOHLEN');
   });
 });

@@ -27,6 +27,7 @@ export const routes: Routes = [
           { path: 'pipeline', loadComponent: () => import('./features/pipeline/pipeline.component').then(m => m.PipelineComponent) },
           { path: 'cvs', loadComponent: () => import('./features/master-cvs/master-cvs.component').then(m => m.MasterCvsComponent) },
           { path: 'wizard', loadComponent: () => import('./features/wizard/wizard.component').then(m => m.WizardComponent) },
+          { path: 'applications/:id', loadComponent: () => import('./features/application-editor/editor.component').then(m => m.EditorComponent) },
           { path: 'linkedin', loadComponent: () => import('./features/linkedin/linkedin.component').then(m => m.LinkedInComponent) },
           { path: 'settings', loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent) },
           { path: 'settings/billing', loadComponent: () => import('./features/settings/billing.component').then(m => m.SettingsBillingComponent) },
@@ -34,8 +35,6 @@ export const routes: Routes = [
           { path: 'settings/data', loadComponent: () => import('./features/settings/data.component').then(m => m.DataComponent) },
         ],
       },
-      // Editor: full-screen, no shell
-      { path: 'applications/:id', loadComponent: () => import('./features/application-editor/editor.component').then(m => m.EditorComponent) },
     ],
   },
 

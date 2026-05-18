@@ -1,11 +1,12 @@
 import type { OnDestroy, OnInit } from '@angular/core';
 import { ChangeDetectionStrategy, Component, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { IconsModule } from '../icons/icons.module';
 
 @Component({
   selector: 'lba-navbar',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, IconsModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

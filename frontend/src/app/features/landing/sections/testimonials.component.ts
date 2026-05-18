@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { IconsModule } from '../../../shared/icons/icons.module';
 import { RevealDirective } from '../../../shared/directives/reveal.directive';
 
-const PALETTE = ['#5B6CFF', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EC4899'];
+const PALETTE = ['#32459A', '#006D3B', '#7A5100', '#A62626', '#5B3BB5', '#006B7A', '#A12665'];
 
 @Component({
   selector: 'lba-testimonials',

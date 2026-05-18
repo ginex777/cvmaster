@@ -1,11 +1,17 @@
 :host {
   display: block;
+  height: 100%;
+}
+
+.pipeline {
+  height: 100%;
 }
 
 .pipeline__columns {
   display: grid;
   grid-template-columns: repeat(5, minmax(160px, 1fr));
   gap: var(--space-3);
+  height: 100%;
   overflow-x: auto;
   padding-bottom: var(--space-4);
 }
@@ -17,7 +23,7 @@
   border: 1px solid color-mix(in oklch, var(--col-color) 13%, transparent);
   border-radius: 12px;
   padding: 0 8px 8px;
-  min-height: 320px;
+  min-height: 0;
 
   &::before {
     content: '';

@@ -2,6 +2,7 @@ import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import type { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { provideRouter } from '@angular/router';
 import { PipelineBoard, type PipelineApplication } from './pipeline-board';
+import { LEGACY_OPEN_STATUS } from '../../utils/status.utils';
 
 const makeApp = (overrides?: Partial<PipelineApplication>): PipelineApplication => ({
   id: 'app-1',
@@ -69,7 +70,7 @@ describe('PipelineBoard', () => {
   });
 
   it('places OPEN (legacy) application in Entwurf column through legacy mapping', async () => {
-    await setup([makeApp({ status: 'OPEN' })]);
+    await setup([makeApp({ status: LEGACY_OPEN_STATUS })]);
     const cols = fixture.nativeElement.querySelectorAll('.pipeline__col') as NodeList;
     const draftCol = Array.from(cols).find(col => (col as HTMLElement).getAttribute('aria-label') === 'Entwurf');
     expect((draftCol as HTMLElement)?.textContent).toContain('Frontend Dev');
@@ -128,7 +129,7 @@ describe('PipelineBoard', () => {
   });
 
   it('does not emit statusChange if app is already in the target column', async () => {
-    await setup([makeApp({ status: 'OPEN' })]);
+    await setup([makeApp({ status: LEGACY_OPEN_STATUS })]);
     const statusChanges: unknown[] = [];
     component.statusChange.subscribe(e => statusChanges.push(e));
 

@@ -15,6 +15,12 @@ describe('CvTemplatePicker', () => {
     fixture.detectChanges();
   }
 
+  function openDropdown(): void {
+    const trigger = fixture.nativeElement.querySelector('.picker__trigger') as HTMLButtonElement;
+    trigger.click();
+    fixture.detectChanges();
+  }
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CvTemplatePicker],
@@ -29,21 +35,24 @@ describe('CvTemplatePicker', () => {
 
   it('renders five template cards', () => {
     create('modern');
+    openDropdown();
 
     expect(fixture.nativeElement.querySelectorAll('.picker__card')).toHaveLength(5);
   });
 
-  it('marks the active template with aria-pressed', () => {
+  it('marks the active template with aria-selected', () => {
     create('minimal');
+    openDropdown();
 
     const active = Array.from(fixture.nativeElement.querySelectorAll('.picker__card'))
-      .find((button): button is HTMLButtonElement => button instanceof HTMLButtonElement && button.getAttribute('aria-pressed') === 'true');
+      .find((button): button is HTMLButtonElement => button instanceof HTMLButtonElement && button.getAttribute('aria-selected') === 'true');
 
     expect(active?.getAttribute('aria-label')).toContain('Minimal');
   });
 
   it('emits templateChange when a different option is clicked', () => {
     create('modern');
+    openDropdown();
     const emitted: string[] = [];
     component.templateChange.subscribe(value => emitted.push(value));
 
@@ -58,7 +67,8 @@ describe('CvTemplatePicker', () => {
 
   it('renders a mini-preview for every template option', () => {
     create('classic');
+    openDropdown();
 
-    expect(fixture.nativeElement.querySelectorAll('.picker__preview')).toHaveLength(5);
+    expect(fixture.nativeElement.querySelectorAll('.picker__card-preview')).toHaveLength(5);
   });
 });

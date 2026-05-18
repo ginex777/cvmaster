@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { EditorModalComponent } from './editor-modal';
 import { ApiService } from '../../../core/api/api.service';
+import { LEGACY_OPEN_STATUS } from '../../../shared/utils/status.utils';
 
 describe('EditorModalComponent', () => {
   let api: jest.Mocked<Pick<ApiService, 'get' | 'patch' | 'post' | 'getBlob'>>;
@@ -12,7 +13,7 @@ describe('EditorModalComponent', () => {
     api = {
       get: jest.fn().mockResolvedValue({
         id: 'a1',
-        status: 'OPEN',
+        status: LEGACY_OPEN_STATUS,
         matchScore: 88,
         optimizedCv: { text: 'Profil\nAngular' },
         coverLetter: { formal: 'Formal', warm: 'Warm', brief: 'Kurz' },

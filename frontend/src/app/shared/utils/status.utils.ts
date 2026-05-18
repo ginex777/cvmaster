@@ -20,10 +20,12 @@ export const STATUS_META: Record<ApplicationStatus, {
 };
 
 export const STATUS_ORDER: ApplicationStatus[] = ['DRAFT', 'APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED'];
+export const LEGACY_OPEN_STATUS = "OPEN";
+export const LEGACY_DONE_STATUS = "DONE";
 
 export function legacyToStatus(status: string | ApplicationStatus, exported = false): ApplicationStatus {
-  if (status === 'OPEN') return exported ? 'APPLIED' : 'DRAFT';
-  if (status === 'DONE') return 'APPLIED';
+  if (status === LEGACY_OPEN_STATUS) return exported ? 'APPLIED' : 'DRAFT';
+  if (status === LEGACY_DONE_STATUS) return 'APPLIED';
   const map: Record<string, ApplicationStatus> = {
     DRAFT:     'DRAFT',
     APPLIED:   'APPLIED',

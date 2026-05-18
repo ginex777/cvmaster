@@ -1,20 +1,27 @@
-import { legacyToStatus, STATUS_META, STATUS_ORDER, type ApplicationStatus } from './status.utils';
+import {
+  LEGACY_DONE_STATUS,
+  LEGACY_OPEN_STATUS,
+  legacyToStatus,
+  STATUS_META,
+  STATUS_ORDER,
+  type ApplicationStatus,
+} from './status.utils';
 
 describe('legacyToStatus', () => {
   it('maps OPEN without export flag to DRAFT', () => {
-    expect(legacyToStatus('OPEN')).toBe('DRAFT');
+    expect(legacyToStatus(LEGACY_OPEN_STATUS)).toBe('DRAFT');
   });
 
   it('maps OPEN with exported=false to DRAFT', () => {
-    expect(legacyToStatus('OPEN', false)).toBe('DRAFT');
+    expect(legacyToStatus(LEGACY_OPEN_STATUS, false)).toBe('DRAFT');
   });
 
   it('maps OPEN with exported=true to APPLIED', () => {
-    expect(legacyToStatus('OPEN', true)).toBe('APPLIED');
+    expect(legacyToStatus(LEGACY_OPEN_STATUS, true)).toBe('APPLIED');
   });
 
   it('maps DONE to APPLIED', () => {
-    expect(legacyToStatus('DONE')).toBe('APPLIED');
+    expect(legacyToStatus(LEGACY_DONE_STATUS)).toBe('APPLIED');
   });
 
   it('maps EXPORTED to APPLIED', () => {

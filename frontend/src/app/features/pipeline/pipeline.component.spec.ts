@@ -3,6 +3,7 @@ import type { ComponentFixture } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { PipelineComponent } from './pipeline.component';
 import { ApiService } from '../../core/api/api.service';
+import { LEGACY_OPEN_STATUS } from '../../shared/utils/status.utils';
 
 const mockApi = {
   get: jest.fn().mockResolvedValue({
@@ -11,7 +12,7 @@ const mockApi = {
     avgMatchScore: 80,
     onboardingDismissed: true,
     recentApplications: [
-      { id: '1', status: 'OPEN', matchScore: 88, createdAt: '2024-01-01', jobPosting: { parsedJson: { title: 'Dev', company: 'Stripe' } } },
+      { id: '1', status: LEGACY_OPEN_STATUS, matchScore: 88, createdAt: '2024-01-01', jobPosting: { parsedJson: { title: 'Dev', company: 'Stripe' } } },
     ],
   }),
   patch: jest.fn().mockResolvedValue({}),
