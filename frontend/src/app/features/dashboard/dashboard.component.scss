@@ -26,7 +26,7 @@
 .dashboard__skeleton {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-5);
 }
 
 .dashboard__skeleton-header {
@@ -43,7 +43,7 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin-bottom: 22px;
+  margin-bottom: var(--space-6);
 }
 
 .dashboard__greeting-title {
@@ -135,8 +135,8 @@
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 22px;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
 }
 
 .stat-card {
@@ -233,7 +233,7 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 22px;
+  margin-bottom: var(--space-6);
 }
 
 .panel__header {
@@ -271,14 +271,14 @@
 }
 
 .panel__empty {
-  padding: 28px 16px;
+  padding: var(--space-8) var(--space-6);
   text-align: center;
   color: var(--ink-3);
   font-size: 13px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .reminder-list {

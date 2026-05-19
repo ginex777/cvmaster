@@ -114,7 +114,7 @@
   padding: var(--space-8);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-3);
 }
 
 .apps-card {

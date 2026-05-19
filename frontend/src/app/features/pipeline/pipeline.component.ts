@@ -5,7 +5,6 @@ import { ApiService } from '../../core/api/api.service';
 import { PipelineBoard } from '../../shared/components/pipeline-board/pipeline-board';
 import type { StatusChangeEvent, ReminderChangeEvent } from '../../shared/components/pipeline-board/pipeline-board';
 import { PipelineToolbar, type PipelineFilter } from '../../shared/components/pipeline-toolbar/pipeline-toolbar';
-import { EditorModalComponent } from '../application-editor/editor-modal/editor-modal';
 import { IconsModule } from '../../shared/icons/icons.module';
 import { legacyToStatus, type ApplicationStatus } from '../../shared/utils/status.utils';
 import type { Application } from '../../shared/models/dashboard.model';
@@ -13,7 +12,7 @@ import type { Application } from '../../shared/models/dashboard.model';
 @Component({
   selector: 'lba-pipeline',
   standalone: true,
-  imports: [RouterLink, PipelineBoard, PipelineToolbar, EditorModalComponent, IconsModule],
+  imports: [RouterLink, PipelineBoard, PipelineToolbar, IconsModule],
   templateUrl: './pipeline.component.html',
   styleUrl: './pipeline.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,7 +24,6 @@ export class PipelineComponent implements OnInit {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly applications = signal<Application[]>([]);
-  readonly selectedAppId = signal<string | null>(null);
 
   readonly pipelineFilter = signal<PipelineFilter>({ query: '', minScore: null, hasReminder: null, dateRange: null, statuses: null });
 
@@ -72,6 +70,10 @@ export class PipelineComponent implements OnInit {
 
   onFilterChange(filter: PipelineFilter): void {
     this.pipelineFilter.set(filter);
+  }
+
+  openApplication(id: string): void {
+    void this.router.navigate(['/app/applications', id]);
   }
 
   openWizardForStatus(status: string): void {

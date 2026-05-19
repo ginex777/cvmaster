@@ -54,14 +54,9 @@
         [highlightQuery]="pipelineFilter().query"
         (statusChange)="onStatusChange($event)"
         (reminderChange)="onReminderChange($event)"
-        (applicationOpen)="selectedAppId.set($event)"
+        (applicationOpen)="openApplication($event)"
         (columnAdd)="openWizardForStatus($event)"
       />
     </div>
   }
 </div>
-
-<lba-editor-modal
-  [appId]="selectedAppId()"
-  (closed)="selectedAppId.set(null)"
-/>

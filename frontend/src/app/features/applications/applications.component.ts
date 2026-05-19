@@ -1,10 +1,9 @@
 import { type OnInit, Component, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApiService } from '../../core/api/api.service';
 import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
-import { EditorModalComponent } from '../application-editor/editor-modal/editor-modal';
 import { StatusPillComponent } from '../../shared/components/status-pill/status-pill';
 import { CompanyLogoComponent } from '../../shared/components/company-logo/company-logo';
 import { IconsModule } from '../../shared/icons/icons.module';
@@ -14,20 +13,20 @@ import type { Application } from '../../shared/models/dashboard.model';
 @Component({
   selector: 'lba-applications',
   standalone: true,
-  imports: [RouterLink, DatePipe, ConfirmDeleteModal, EditorModalComponent, StatusPillComponent, CompanyLogoComponent, IconsModule],
+  imports: [RouterLink, DatePipe, ConfirmDeleteModal, StatusPillComponent, CompanyLogoComponent, IconsModule],
   templateUrl: './applications.component.html',
   styleUrl: './applications.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ApplicationsComponent implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly router = inject(Router);
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly applications = signal<Application[]>([]);
 
   readonly deletingId = signal<string | null>(null);
-  readonly selectedAppId = signal<string | null>(null);
   readonly searchQuery = signal('');
 
   readonly filteredApplications = computed(() => {
@@ -69,6 +68,10 @@ export class ApplicationsComponent implements OnInit {
 
   companyName(app: Application): string {
     return app.jobPosting.parsedJson.company ?? 'Unbekannt';
+  }
+
+  openApplication(id: string): void {
+    void this.router.navigate(['/app/applications', id]);
   }
 
   onListSearch(event: Event): void {
