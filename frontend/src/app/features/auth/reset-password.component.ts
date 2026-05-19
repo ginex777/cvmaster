@@ -29,7 +29,7 @@ export class ResetPasswordComponent {
   get tokenMissing(): boolean { return !this.token; }
 
   constructor() {
-    inject(SeoService).setPage('Neues Passwort setzen', 'Neues Passwort für deinen Account setzen.', '/reset-password');
+    inject(SeoService).setPage('Neues Passwort setzen', 'Neues Passwort für dein Konto setzen.', '/reset-password');
   }
 
   async submit(): Promise<void> {
@@ -45,7 +45,7 @@ export class ResetPasswordComponent {
       await this.api.post('/auth/reset-password', { token: this.token, newPassword });
       await this.router.navigate(['/login'], { queryParams: { reset: '1' } });
     } catch (e: unknown) {
-      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Der Reset-Link ist ungültig oder abgelaufen.');
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Der Link zum Zurücksetzen ist ungültig oder abgelaufen.');
     } finally {
       this.loading.set(false);
     }

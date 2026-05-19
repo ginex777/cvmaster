@@ -169,13 +169,13 @@
             </button>
           </form>
 
-          <button type="button" class="modal__switch" (click)="openDialog('register')">Noch keinen Account? Kostenlos starten</button>
+          <button type="button" class="modal__switch" (click)="openDialog('register')">Noch kein Konto? Kostenlos starten</button>
         }
 
         @case ('register') {
           <div class="modal__header">
             <p class="eyebrow">Kostenlos starten</p>
-            <h2 id="register-dialog-title">Account erstellen</h2>
+            <h2 id="register-dialog-title">Konto erstellen</h2>
             <p>Nach der Registrierung bestätigst du deine E-Mail-Adresse und kannst dich einloggen.</p>
           </div>
 
@@ -220,11 +220,11 @@
               <span>Ich stimme der Verarbeitung meiner Bewerbungsdaten für diesen Test zu.</span>
             </label>
             <button type="submit" class="btn btn--primary btn--md" [disabled]="!canSubmitRegister() || authLoading()">
-              {{ authLoading() ? 'Account wird erstellt…' : 'Account erstellen' }}
+              {{ authLoading() ? 'Konto wird erstellt…' : 'Konto erstellen' }}
             </button>
           </form>
 
-          <button type="button" class="modal__switch" (click)="openDialog('login')">Ich habe schon einen Account</button>
+          <button type="button" class="modal__switch" (click)="openDialog('login')">Ich habe schon ein Konto</button>
         }
       }
 

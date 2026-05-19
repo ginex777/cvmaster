@@ -36,8 +36,8 @@
         <p id="form-error" role="alert" aria-live="polite" class="form-error">{{ error() }}</p>
       }
 
-      <h1 class="auth-form-inner__title">Account erstellen</h1>
-      <p class="auth-form-inner__sub">Kostenlos starten — kein Kreditkarte erforderlich.</p>
+      <h1 class="auth-form-inner__title">Konto erstellen</h1>
+      <p class="auth-form-inner__sub">Kostenlos starten — keine Kreditkarte erforderlich.</p>
 
       <form [formGroup]="form" (ngSubmit)="submit()" aria-label="Registrierungsformular" novalidate>
 
@@ -98,7 +98,7 @@
         </p>
 
         <button type="submit" class="btn btn--primary btn--lg btn--full" [disabled]="loading()">
-          @if (loading()) { Account wird erstellt… } @else { Account erstellen }
+          @if (loading()) { Konto wird erstellt… } @else { Konto erstellen }
         </button>
 
       </form>
