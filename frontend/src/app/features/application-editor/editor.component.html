@@ -25,15 +25,36 @@
 
     <div class="editor__controls-right" role="group" aria-label="Aktionen">
       @if (!isModal()) {
-        <button type="button" class="editor__topbar-search" aria-label="Suche öffnen (⌘K)">
+        <button type="button" class="editor__topbar-search" aria-label="Suche öffnen (⌘K)" (click)="openCommandPalette()">
           <lucide-icon name="search" [size]="14" aria-hidden="true"></lucide-icon>
           <span>Suchen oder springen zu…</span>
           <kbd>⌘ K</kbd>
         </button>
-        <button type="button" class="editor__topbar-icon" aria-label="Benachrichtigungen">
+        <button
+          type="button"
+          class="editor__topbar-icon"
+          aria-label="Benachrichtigungen"
+          aria-haspopup="dialog"
+          aria-controls="editor-notifications"
+          [attr.aria-expanded]="editorNotificationsOpen()"
+          (click)="toggleEditorNotifications()">
           <lucide-icon name="bell" [size]="16" aria-hidden="true"></lucide-icon>
           <span aria-hidden="true"></span>
         </button>
+        @if (editorNotificationsOpen()) {
+          <section id="editor-notifications" class="editor__notifications" role="dialog" aria-label="Benachrichtigungen">
+            <div class="editor__notifications-head">
+              <h2>Benachrichtigungen</h2>
+              <button type="button" class="editor__notifications-close" aria-label="Benachrichtigungen schließen" (click)="toggleEditorNotifications()">
+                <lucide-icon name="x" [size]="16" aria-hidden="true"></lucide-icon>
+              </button>
+            </div>
+            <div class="editor__notifications-empty">
+              <lucide-icon name="bell" [size]="18" aria-hidden="true"></lucide-icon>
+              <p>Keine neuen Benachrichtigungen.</p>
+            </div>
+          </section>
+        }
       }
       <span class="editor__save-status" role="status" aria-live="polite">
         @if (saving()) {
@@ -282,9 +303,9 @@
           @if (structuredCv().length === 0) {
             <span class="editor__outline-empty">Keine Abschnitte</span>
           }
-          <button type="button" class="editor__outline-add" aria-label="Neuen Abschnitt hinzufügen">
+          <button type="button" class="editor__outline-add" aria-label="Neuen Abschnitt hinzufügen" (click)="addCvSection()">
             <lucide-icon name="plus" [size]="12" aria-hidden="true"></lucide-icon>
-            Sektion
+            Abschnitt
           </button>
         </nav>
 
@@ -298,9 +319,8 @@
             </div>
             <div class="editor__template-meta">
               <div class="editor__template-name">Modern</div>
-              <div class="editor__template-sub">1 Spalte · Geist</div>
+              <div class="editor__template-sub">1 Spalte · Hell</div>
             </div>
-            <lucide-icon name="chevron-down" [size]="12" aria-hidden="true"></lucide-icon>
           </div>
         </div>
       </aside>

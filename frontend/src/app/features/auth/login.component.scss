@@ -209,34 +209,6 @@ form { display: flex; flex-direction: column; gap: var(--space-4); }
 /* ── Full-width btn helper ───────────────────────────────── */
 .btn--full { width: 100%; justify-content: center; }
 
-/* ── Divider + Google btn (AU-04) ───────────────────────── */
-.auth-divider {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  margin: var(--space-1) 0;
-
-  &__line {
-    flex: 1;
-    height: 1px;
-    background: var(--line);
-  }
-
-  &__text {
-    font-size: 12px;
-    color: var(--ink-3);
-    white-space: nowrap;
-  }
-}
-
-.auth-google-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13.5px;
-  font-weight: 500;
-}
-
 /* ── Status / error banners ─────────────────────────────── */
 .form-error {
   color: var(--danger);

@@ -9,6 +9,7 @@ import type { StatusChangeEvent, ReminderChangeEvent } from '../../shared/compon
 import { PipelineToolbar, type PipelineFilter } from '../../shared/components/pipeline-toolbar/pipeline-toolbar';
 import { EditorModalComponent } from '../application-editor/editor-modal/editor-modal';
 import { StatusPillComponent } from '../../shared/components/status-pill/status-pill';
+import { CompanyLogoComponent } from '../../shared/components/company-logo/company-logo';
 import { IconsModule } from '../../shared/icons/icons.module';
 import { legacyToStatus, type ApplicationStatus } from '../../shared/utils/status.utils';
 
@@ -32,7 +33,7 @@ interface DashboardData {
 @Component({
   selector: 'lba-applications',
   standalone: true,
-  imports: [RouterLink, DatePipe, ConfirmDeleteModal, PipelineBoard, PipelineToolbar, EditorModalComponent, StatusPillComponent, IconsModule],
+  imports: [RouterLink, DatePipe, ConfirmDeleteModal, PipelineBoard, PipelineToolbar, EditorModalComponent, StatusPillComponent, CompanyLogoComponent, IconsModule],
   templateUrl: './applications.component.html',
   styleUrl: './applications.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,20 +49,22 @@ export class ApplicationsComponent implements OnInit {
   readonly deletingId = signal<string | null>(null);
   readonly selectedAppId = signal<string | null>(null);
   readonly showPipeline = signal(false);
-  readonly pipelineFilter = signal<PipelineFilter>({ query: '', minScore: null, hasReminder: null, dateRange: null });
+  readonly pipelineFilter = signal<PipelineFilter>({ query: '', minScore: null, hasReminder: null, dateRange: null, statuses: null });
 
   readonly filteredApplications = computed(() => {
     const apps = this.applications();
-    const { query, minScore, hasReminder, dateRange } = this.pipelineFilter();
+    const { query, minScore, hasReminder, dateRange, statuses } = this.pipelineFilter();
     const q = query.trim().toLowerCase();
 
     return apps.filter(app => {
       if (minScore !== null && (app.matchScore ?? 0) < minScore) return false;
       if (hasReminder === true && !app.reminderAt) return false;
+      if (statuses && !statuses.includes(this.toApplicationStatus(app.status))) return false;
       if (q) {
         const title   = (app.jobPosting?.parsedJson?.title   ?? '').toLowerCase();
         const company = (app.jobPosting?.parsedJson?.company ?? '').toLowerCase();
-        if (!title.includes(q) && !company.includes(q)) return false;
+        const score = app.matchScore !== null ? String(app.matchScore) : '';
+        if (!title.includes(q) && !company.includes(q) && !score.includes(q)) return false;
       }
       if (dateRange) {
         const cutoff = new Date();
@@ -110,6 +113,11 @@ export class ApplicationsComponent implements OnInit {
 
   onFilterChange(filter: PipelineFilter): void {
     this.pipelineFilter.set(filter);
+  }
+
+  onListSearch(event: Event): void {
+    const query = (event.target as HTMLInputElement).value;
+    this.pipelineFilter.update(filter => ({ ...filter, query }));
   }
 
   requestDelete(id: string): void {

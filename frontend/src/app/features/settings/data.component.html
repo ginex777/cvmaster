@@ -59,21 +59,18 @@
       <h2 id="delete-heading">Konto löschen</h2>
       <p>Löscht dein Konto dauerhaft inklusive aller Lebensläufe, Bewerbungen und gespeicherten Daten. Diese Aktion kann nicht rückgängig gemacht werden.</p>
 
-      @if (deleteStep() === 0) {
-        <button type="button" class="btn btn--danger btn--md" [disabled]="loading()" (click)="confirmDeleteStep1()">
-          Konto löschen
-        </button>
-      } @else if (deleteStep() === 1) {
-        <div class="delete-confirm" role="alert">
-          <p class="delete-confirm__warning">Bist du sicher? Alle Daten werden unwiderruflich gelöscht.</p>
-          <div class="delete-confirm__actions">
-            <button type="button" class="btn btn--ghost btn--md" (click)="cancelDelete()">Abbrechen</button>
-            <button type="button" class="btn btn--danger btn--md" [disabled]="loading()" (click)="confirmDeleteStep2()">
-              Ja, Konto endgültig löschen
-            </button>
-          </div>
-        </div>
-      }
+      <button type="button" class="btn btn--danger btn--md" [disabled]="loading()" (click)="requestDelete()">
+        Konto löschen
+      </button>
     </div>
   </section>
 </div>
+
+<lba-confirm-delete-modal
+  [open]="deleteConfirmOpen()"
+  title="Konto löschen?"
+  body="Alle Lebensläufe, Bewerbungen und gespeicherten Daten werden dauerhaft entfernt."
+  confirmLabel="Ja, Konto endgültig löschen"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()"
+/>

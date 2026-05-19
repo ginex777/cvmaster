@@ -64,11 +64,22 @@
           (statusChange)="onStatusChange($event)"
           (reminderChange)="onReminderChange($event)"
           (applicationOpen)="selectedAppId.set($event)"
+          (columnAdd)="showPipeline.set(false)"
         />
       </div>
     } @else {
       <!-- Filter strip -->
       <div class="apps-filter" role="search">
+        <label class="apps-filter__search" for="applications-search">
+          <lucide-icon name="search" [size]="14" aria-hidden="true"></lucide-icon>
+          <input
+            id="applications-search"
+            type="search"
+            placeholder="Firma, Rolle oder Score suchen"
+            [value]="pipelineFilter().query"
+            (input)="onListSearch($event)"
+          />
+        </label>
         <div class="apps-filter__meta num">{{ filteredApplications().length }} Bewerbungen</div>
       </div>
 
@@ -82,10 +93,12 @@
         <div class="card-list" role="list" aria-label="Bewerbungsliste">
           @for (app of filteredApplications(); track app.id) {
             <div class="card-elevated apps-card" role="listitem">
-              <div class="card-row">
-                <div class="card-meta">
-                  <p class="card-title">{{ jobTitle(app) }} @ {{ companyName(app) }}</p>
-                  <p class="card-sub">
+              <div class="apps-card__row">
+                <lba-company-logo [name]="companyName(app)" [size]="40" />
+                <div class="apps-card__meta">
+                  <p class="apps-card__company">{{ companyName(app) }}</p>
+                  <p class="apps-card__role">{{ jobTitle(app) }}</p>
+                  <p class="apps-card__sub">
                     {{ app.createdAt | date:'dd. MMM' }}
                     @if (app.matchScore !== null) {
                       · <strong class="num">{{ app.matchScore }}%</strong>
@@ -93,7 +106,7 @@
                     · <lba-status-pill [status]="toApplicationStatus(app.status)" />
                   </p>
                 </div>
-                <div class="card-actions">
+                <div class="apps-card__actions">
                   <button
                     type="button"
                     class="btn btn--outline btn--sm"

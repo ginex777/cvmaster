@@ -4,11 +4,12 @@ import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { IconsModule } from '../../shared/icons/icons.module';
+import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
 
 @Component({
   selector: 'lba-settings-data',
   standalone: true,
-  imports: [RouterLink, IconsModule],
+  imports: [RouterLink, IconsModule, ConfirmDeleteModal],
   templateUrl: './data.component.html',
   styleUrl: './data.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,7 +22,7 @@ export class DataComponent {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly success = signal<string | null>(null);
-  readonly deleteStep = signal<0 | 1 | 2>(0);
+  readonly deleteConfirmOpen = signal(false);
 
   async requestExport(): Promise<void> {
     this.loading.set(true);
@@ -29,7 +30,7 @@ export class DataComponent {
     this.success.set(null);
     try {
       await this.api.post('/users/me/export', {});
-      this.success.set('Dein Datenexport wird vorbereitet und per E-Mail zugeschickt.');
+      this.success.set('Du erhältst eine E-Mail mit deinen Daten.');
     } catch (e: unknown) {
       this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Export fehlgeschlagen.');
     } finally {
@@ -37,15 +38,15 @@ export class DataComponent {
     }
   }
 
-  confirmDeleteStep1(): void {
-    this.deleteStep.set(1);
+  requestDelete(): void {
+    this.deleteConfirmOpen.set(true);
   }
 
   cancelDelete(): void {
-    this.deleteStep.set(0);
+    this.deleteConfirmOpen.set(false);
   }
 
-  async confirmDeleteStep2(): Promise<void> {
+  async confirmDelete(): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
     try {
@@ -54,9 +55,9 @@ export class DataComponent {
       await this.router.navigate(['/']);
     } catch (e: unknown) {
       this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Konto konnte nicht gelöscht werden.');
-      this.deleteStep.set(0);
     } finally {
       this.loading.set(false);
+      this.deleteConfirmOpen.set(false);
     }
   }
 }

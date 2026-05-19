@@ -17,4 +17,12 @@ describe('NotFoundComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('404');
     expect(fixture.nativeElement.querySelector('a[routerLink="/"]')).toBeTruthy();
   });
+
+  it('uses Angular for the back button action', () => {
+    const fixture = TestBed.createComponent(NotFoundComponent);
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector('button');
+    expect(button.getAttribute('onclick')).toBeNull();
+  });
 });

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
@@ -8,6 +8,7 @@ import { OnboardingModalComponent } from '../onboarding-modal/onboarding-modal';
 import { UpgradeService } from '../../services/upgrade.service';
 import { IconsModule } from '../../icons/icons.module';
 import { AppTopbarComponent, type BreadcrumbItem } from '../app-topbar/app-topbar';
+import { CommandPaletteComponent } from '../command-palette/command-palette';
 
 const ROUTE_LABELS: Record<string, string> = {
   '':             'Dashboard',
@@ -24,17 +25,21 @@ const ROUTE_LABELS: Record<string, string> = {
 @Component({
   selector: 'lba-app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, EinstellungenModalComponent, OnboardingModalComponent, IconsModule, AppTopbarComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, EinstellungenModalComponent, OnboardingModalComponent, IconsModule, AppTopbarComponent, CommandPaletteComponent],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppShellComponent {
+  @ViewChild(CommandPaletteComponent) private commandPalette?: CommandPaletteComponent;
+
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly upgradeService = inject(UpgradeService);
 
   protected readonly einstellungenOpen = signal(false);
+  protected readonly workspaceMenuOpen = signal(false);
+  protected readonly notificationsOpen = signal(false);
   protected readonly onboardingOpen = computed(() => this.auth.user() !== null && !(this.auth.user()?.onboardingShown ?? true));
 
   private readonly currentUrl = toSignal(
@@ -87,7 +92,7 @@ export class AppShellComponent {
         this.einstellungenOpen.set(true);
         this.upgradeService.clear();
       }
-    }, { allowSignalWrites: true });
+    });
   }
 
   protected isPro(): boolean {
@@ -109,16 +114,27 @@ export class AppShellComponent {
     return 'free';
   }
 
-  protected openWorkspaceSwitcher(): void {
-    // workspace switcher — stub for Phase 3, full implementation in Phase 6
+  protected toggleWorkspaceSwitcher(): void {
+    this.workspaceMenuOpen.update(open => !open);
+    this.notificationsOpen.set(false);
   }
 
-  protected linkedInClick(): void {
-    if (this.isPro()) {
-      void this.router.navigate(['/app/linkedin']);
-    } else {
-      this.einstellungenOpen.set(true);
-    }
+  protected closeWorkspaceSwitcher(): void {
+    this.workspaceMenuOpen.set(false);
+  }
+
+  protected toggleNotifications(): void {
+    this.notificationsOpen.update(open => !open);
+    this.workspaceMenuOpen.set(false);
+  }
+
+  protected openCommandPalette(): void {
+    void this.commandPalette?.open();
+  }
+
+  protected editProfile(): void {
+    this.einstellungenOpen.set(true);
+    this.closeWorkspaceSwitcher();
   }
 
   protected dismissOnboarding(): void {

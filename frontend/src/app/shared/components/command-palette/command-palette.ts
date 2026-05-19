@@ -52,9 +52,9 @@ export class CommandPaletteComponent {
   private readonly staticItems: PaletteItem[] = [
     { label: 'Neue Bewerbung erstellen', icon: 'plus', action: () => void this.router.navigate(['/app/wizard']) },
     { label: 'Lebenslauf hochladen', icon: 'upload', action: () => void this.router.navigate(['/app/cvs']) },
-    { label: 'Pipeline öffnen', icon: 'kanban', action: () => void this.router.navigate(['/app/pipeline']) },
+    { label: 'Pipeline öffnen', icon: 'columns-3', action: () => void this.router.navigate(['/app/pipeline']) },
     { label: 'Bewerbungen', icon: 'briefcase', action: () => void this.router.navigate(['/app/applications']) },
-    { label: 'Lebensläufe', icon: 'file-text', action: () => void this.router.navigate(['/app/cvs']) },
+    { label: 'Lebensläufe', icon: 'file', action: () => void this.router.navigate(['/app/cvs']) },
     { label: 'Einstellungen', icon: 'settings', action: () => void this.router.navigate(['/app/settings']) },
     { label: 'Dashboard', icon: 'home', action: () => void this.router.navigate(['/app']) },
   ];
@@ -134,6 +134,13 @@ export class CommandPaletteComponent {
     }
     if (event.key === 'Escape' && this.isOpen()) {
       this.close();
+    }
+  }
+
+  @HostListener('document:lba-command-palette-open')
+  onOpenRequested(): void {
+    if (!this.isOpen()) {
+      void this.open();
     }
   }
 

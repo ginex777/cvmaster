@@ -15,6 +15,7 @@
   align-items: center;
   gap: var(--space-2);
   flex-wrap: wrap;
+  position: relative;
 }
 
 .toolbar__right {
@@ -39,6 +40,76 @@
 
   &:hover { background: var(--surface-2); color: var(--ink); }
   &:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+}
+
+.toolbar__filter-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 320;
+  width: min(320px, calc(100vw - 32px));
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.toolbar__filter-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.toolbar__filter-panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.toolbar__filter-close {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-2);
+  cursor: pointer;
+
+  &:hover { background: var(--surface-2); }
+  &:focus-visible { outline: 3px solid var(--accent); }
+}
+
+.toolbar__filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.toolbar__status-chip {
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--ink-3);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+
+  &:hover { border-color: var(--accent); color: var(--ink); }
+  &:focus-visible { outline: 3px solid var(--accent); }
+
+  &--active {
+    background: color-mix(in oklch, var(--accent) 12%, transparent);
+    border-color: color-mix(in oklch, var(--accent) 40%, transparent);
+    color: var(--accent);
+    font-weight: 600;
+  }
 }
 
 .toolbar__chips {

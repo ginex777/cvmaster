@@ -51,4 +51,12 @@ describe('CommandPaletteComponent', () => {
     const dialog = fixture.nativeElement.querySelector('dialog');
     expect(dialog.getAttribute('aria-modal')).toBe('true');
   });
+
+  it('opens when the shared document event is requested', () => {
+    const open = jest.spyOn(component, 'open').mockResolvedValue(undefined);
+
+    component.onOpenRequested();
+
+    expect(open).toHaveBeenCalledTimes(1);
+  });
 });

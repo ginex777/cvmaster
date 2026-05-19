@@ -1,5 +1,5 @@
 import { type OnInit, Component, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApiService } from '../../core/api/api.service';
 import { PipelineBoard } from '../../shared/components/pipeline-board/pipeline-board';
@@ -7,6 +7,7 @@ import type { StatusChangeEvent, ReminderChangeEvent } from '../../shared/compon
 import { PipelineToolbar, type PipelineFilter } from '../../shared/components/pipeline-toolbar/pipeline-toolbar';
 import { EditorModalComponent } from '../application-editor/editor-modal/editor-modal';
 import { IconsModule } from '../../shared/icons/icons.module';
+import { legacyToStatus, type ApplicationStatus } from '../../shared/utils/status.utils';
 
 interface Application {
   id: string;
@@ -35,6 +36,7 @@ interface DashboardData {
 })
 export class PipelineComponent implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly router = inject(Router);
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -42,16 +44,17 @@ export class PipelineComponent implements OnInit {
   readonly totalCount = signal(0);
   readonly selectedAppId = signal<string | null>(null);
 
-  readonly pipelineFilter = signal<PipelineFilter>({ query: '', minScore: null, hasReminder: null, dateRange: null });
+  readonly pipelineFilter = signal<PipelineFilter>({ query: '', minScore: null, hasReminder: null, dateRange: null, statuses: null });
 
   readonly filteredApplications = computed(() => {
     const apps = this.applications();
-    const { query, minScore, hasReminder, dateRange } = this.pipelineFilter();
+    const { query, minScore, hasReminder, dateRange, statuses } = this.pipelineFilter();
     const q = query.trim().toLowerCase();
 
     return apps.filter(app => {
       if (minScore !== null && (app.matchScore ?? 0) < minScore) return false;
       if (hasReminder === true && !app.reminderAt) return false;
+      if (statuses && !statuses.includes(this.toApplicationStatus(app.status))) return false;
       if (q) {
         const title   = (app.jobPosting?.parsedJson?.title   ?? '').toLowerCase();
         const company = (app.jobPosting?.parsedJson?.company ?? '').toLowerCase();
@@ -88,6 +91,14 @@ export class PipelineComponent implements OnInit {
 
   onFilterChange(filter: PipelineFilter): void {
     this.pipelineFilter.set(filter);
+  }
+
+  openWizardForStatus(status: string): void {
+    void this.router.navigate(['/app/wizard'], { queryParams: { status } });
+  }
+
+  private toApplicationStatus(status: string): ApplicationStatus {
+    return legacyToStatus(status, true);
   }
 
   async onStatusChange(event: StatusChangeEvent): Promise<void> {

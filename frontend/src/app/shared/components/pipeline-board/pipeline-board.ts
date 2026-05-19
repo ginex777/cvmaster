@@ -49,6 +49,7 @@ export class PipelineBoard {
   readonly statusChange = output<StatusChangeEvent>();
   readonly reminderChange = output<ReminderChangeEvent>();
   readonly applicationOpen = output<string>();
+  readonly columnAdd = output<ApplicationStatus>();
 
   readonly columns = computed<PipelineColumn[]>(() =>
     STATUS_ORDER.map(key => {

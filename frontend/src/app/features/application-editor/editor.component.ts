@@ -97,6 +97,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly activeOutlineSectionId = signal<string | null>(null);
   readonly statusMenuOpen = signal(false);
   readonly exportMenuOpen = signal(false);
+  readonly editorNotificationsOpen = signal(false);
   readonly upgradeModalOpen = signal(false);
   readonly reminderPopoverOpen = signal(false);
   readonly reminderDate = signal('');
@@ -185,6 +186,12 @@ export class EditorComponent implements OnInit, OnDestroy {
     if (this.exportMenuOpen() && !this.host.nativeElement.querySelector('.editor__export-select')?.contains(target)) {
       this.exportMenuOpen.set(false);
     }
+
+    const notificationButton = this.host.nativeElement.querySelector('.editor__topbar-icon');
+    const notificationsPanel = this.host.nativeElement.querySelector('.editor__notifications');
+    if (this.editorNotificationsOpen() && !notificationButton?.contains(target) && !notificationsPanel?.contains(target)) {
+      this.editorNotificationsOpen.set(false);
+    }
   }
 
   async load(): Promise<void> {
@@ -234,6 +241,22 @@ export class EditorComponent implements OnInit, OnDestroy {
   onSectionsChange(sections: CvSection[]): void {
     this.structuredCv.set(sections);
     void this.saveStructuredCv();
+  }
+
+  addCvSection(): void {
+    const section: CvSection = { id: crypto.randomUUID(), heading: 'Neuer Abschnitt', bullets: [] };
+    this.structuredCv.update(sections => [...sections, section]);
+    this.activeOutlineSectionId.set(section.id);
+    void this.saveStructuredCv();
+  }
+
+  openCommandPalette(): void {
+    if (typeof document === 'undefined') return;
+    document.dispatchEvent(new Event('lba-command-palette-open'));
+  }
+
+  toggleEditorNotifications(): void {
+    this.editorNotificationsOpen.update(open => !open);
   }
 
   async saveStructuredCv(): Promise<void> {

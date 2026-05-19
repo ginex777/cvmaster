@@ -4,6 +4,6 @@
   <p class="not-found__message">Die Seite, die du suchst, existiert nicht oder wurde verschoben.</p>
   <div class="not-found__actions">
     <a routerLink="/" class="btn btn--cta btn--md">Zur Startseite</a>
-    <button type="button" class="btn btn--outline btn--md" onclick="history.back()">Zurück</button>
+    <button type="button" class="btn btn--outline btn--md" (click)="goBack()">Zurück</button>
   </div>
 </main>

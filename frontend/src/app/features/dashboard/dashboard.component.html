@@ -236,20 +236,39 @@
                           <div class="more-menu__submenu" role="menu" aria-label="Status wählen">
                             @for (s of STATUS_OPTIONS; track s) {
                               <button type="button" class="more-menu__item" role="menuitem"
-                                (click)="closeMenu()">
+                                (click)="onStatusChange(app.id, s); closeMenu()">
                                 {{ statusMeta[s].label }}
                               </button>
                             }
                           </div>
                         }
                       </div>
-                      <button type="button" class="more-menu__item" role="menuitem"
-                        (click)="closeMenu()">
-                        Erinnerung setzen…
-                      </button>
+                      @if (!reminderPickerOpen()) {
+                        <button type="button" class="more-menu__item" role="menuitem" (click)="openReminderPicker($event)">
+                          Erinnerung setzen…
+                        </button>
+                      } @else {
+                        <div class="more-menu__reminder-picker" (click)="$event.stopPropagation()">
+                          <label class="more-menu__reminder-label" for="reminder-date-{{ app.id }}">Datum und Uhrzeit</label>
+                          <input
+                            id="reminder-date-{{ app.id }}"
+                            class="more-menu__reminder-input"
+                            type="datetime-local"
+                            [value]="reminderDate()"
+                            (input)="reminderDate.set($any($event.target).value)"
+                          />
+                          <div class="more-menu__reminder-actions">
+                            <button type="button" class="btn btn--ghost btn--sm" (click)="closeMenu()">Abbrechen</button>
+                            <button type="button" class="btn btn--primary btn--sm" [disabled]="!reminderDate()" (click)="setReminder(app.id)">Speichern</button>
+                          </div>
+                          @if (app.reminderAt) {
+                            <button type="button" class="more-menu__reminder-clear" (click)="clearReminder(app.id)">Erinnerung löschen</button>
+                          }
+                        </div>
+                      }
                       <div class="more-menu__separator" role="separator" aria-hidden="true"></div>
                       <button type="button" class="more-menu__item more-menu__item--danger" role="menuitem"
-                        (click)="closeMenu()">
+                        (click)="requestDelete(app.id)">
                         Löschen
                       </button>
                     </div>
@@ -303,4 +322,12 @@
 <lba-editor-modal
   [appId]="selectedAppId()"
   (closed)="selectedAppId.set(null)"
+/>
+
+<lba-confirm-delete-modal
+  [open]="deletingAppId() !== null"
+  title="Bewerbung löschen?"
+  body="Diese Bewerbung wird dauerhaft entfernt."
+  (confirmed)="confirmDelete()"
+  (cancelled)="deletingAppId.set(null)"
 />

@@ -12,10 +12,10 @@
           <lucide-icon name="layers" [size]="14" aria-hidden="true"></lucide-icon>
           Liste
         </a>
-        <button type="button" class="view-toggle__btn view-toggle__btn--active" aria-label="Pipeline-Ansicht" aria-pressed="true">
+        <a routerLink="/app/pipeline" class="view-toggle__btn view-toggle__btn--active" aria-label="Pipeline-Ansicht" aria-current="page">
           <lucide-icon name="kanban" [size]="14" aria-hidden="true"></lucide-icon>
           Pipeline
-        </button>
+        </a>
       </div>
       <a routerLink="/app/wizard" class="btn btn--cta btn--md">
         <lucide-icon name="plus" [size]="14" aria-hidden="true"></lucide-icon>
@@ -27,7 +27,7 @@
   <!-- Filter strip -->
   <div class="pipeline-filter">
     <lba-pipeline-toolbar
-      [totalCount]="totalCount()"
+      [totalCount]="filteredApplications().length"
       (filterChange)="onFilterChange($event)"
     />
   </div>
@@ -55,6 +55,7 @@
         (statusChange)="onStatusChange($event)"
         (reminderChange)="onReminderChange($event)"
         (applicationOpen)="selectedAppId.set($event)"
+        (columnAdd)="openWizardForStatus($event)"
       />
     </div>
   }

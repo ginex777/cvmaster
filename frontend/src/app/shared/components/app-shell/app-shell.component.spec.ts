@@ -96,6 +96,8 @@ describe('AppShellComponent', () => {
   it('calls auth.logout() when Abmelden is clicked', async () => {
     const authMock = makeAuthMock();
     const { fixture } = await setup(authMock);
+    fixture.componentInstance['toggleWorkspaceSwitcher']();
+    fixture.detectChanges();
     const btn = fixture.debugElement.query(By.css('button[aria-label="Abmelden"]'));
     (btn.nativeElement as HTMLButtonElement).click();
     await fixture.whenStable();
@@ -120,5 +122,27 @@ describe('AppShellComponent', () => {
     await fixture.whenStable();
     expect(fixture.componentInstance['einstellungenOpen']()).toBe(true);
     expect(upgradeService.requested()).toBe(false);
+  });
+
+  it('opens the command palette from the topbar search button', async () => {
+    const showModal = jest.fn();
+    Object.defineProperty(HTMLDialogElement.prototype, 'showModal', { configurable: true, value: showModal });
+    const { fixture } = await setup();
+
+    const searchButton = fixture.debugElement.query(By.css('.topbar__search'));
+    (searchButton.nativeElement as HTMLButtonElement).click();
+    await fixture.whenStable();
+
+    expect(showModal).toHaveBeenCalledTimes(1);
+  });
+
+  it('toggles notifications from the topbar bell button', async () => {
+    const { fixture } = await setup();
+
+    const bellButton = fixture.debugElement.query(By.css('.topbar__icon-btn'));
+    (bellButton.nativeElement as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.shell__notifications')).not.toBeNull();
   });
 });

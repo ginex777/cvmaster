@@ -12,8 +12,10 @@
     <button
       class="shell__workspace"
       type="button"
-      (click)="openWorkspaceSwitcher()"
+      (click)="toggleWorkspaceSwitcher()"
       [attr.aria-label]="'Workspace: ' + auth.user()?.name"
+      [attr.aria-expanded]="workspaceMenuOpen()"
+      aria-haspopup="menu"
     >
       <div class="shell__workspace-avatar"
         aria-hidden="true"
@@ -24,6 +26,26 @@
       </div>
       <lucide-icon name="chevron-down" [size]="14" aria-hidden="true"></lucide-icon>
     </button>
+    @if (workspaceMenuOpen()) {
+      <div class="shell__workspace-menu" role="menu" aria-label="Workspace-Menü">
+        <div class="shell__workspace-card">
+          <div class="shell__workspace-avatar shell__workspace-avatar--large" aria-hidden="true" [style.background]="avatarBgColor()">{{ initials() }}</div>
+          <div>
+            <p class="shell__workspace-name">{{ auth.user()?.name }}</p>
+            <p class="shell__workspace-email">{{ auth.user()?.email }}</p>
+          </div>
+        </div>
+        <button type="button" class="shell__workspace-item" role="menuitem" (click)="editProfile()">
+          <lucide-icon name="user-pen" [size]="15" aria-hidden="true"></lucide-icon>
+          Profil bearbeiten
+        </button>
+        <button type="button" class="shell__workspace-item shell__workspace-item--danger" role="menuitem" aria-label="Abmelden" (click)="logout()">
+          <lucide-icon name="log-out" [size]="15" aria-hidden="true"></lucide-icon>
+          Abmelden
+        </button>
+      </div>
+      <button type="button" class="shell__popover-backdrop" aria-label="Workspace-Menü schließen" (click)="closeWorkspaceSwitcher()"></button>
+    }
 
     <!-- Nav -->
     <nav class="shell__nav" aria-label="App-Navigation">
@@ -59,7 +81,7 @@
         class="shell__link"
         aria-label="Pipeline"
       >
-        <lucide-icon name="kanban" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
+        <lucide-icon name="columns-3" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
         <span>Pipeline</span>
       </a>
 
@@ -69,17 +91,17 @@
         class="shell__link"
         aria-label="Lebensläufe"
       >
-        <lucide-icon name="file-text" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
+        <lucide-icon name="file" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
         <span>Lebensläufe</span>
         @if (counts().cvs > 0) {
           <span class="shell__count num" aria-hidden="true">{{ counts().cvs }}</span>
         }
       </a>
 
-      <button
-        type="button"
+      <a
+        routerLink="/app/linkedin"
+        routerLinkActive="is-active"
         class="shell__link shell__link--linkedin"
-        (click)="linkedInClick()"
         [attr.aria-label]="isPro() ? 'LinkedIn-Optimierung' : 'LinkedIn – nur für Pro-Nutzer'"
       >
         <lucide-icon name="linkedin" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
@@ -87,10 +109,10 @@
         @if (!isPro()) {
           <span class="plan-lock" aria-hidden="true">Pro</span>
         }
-      </button>
+      </a>
     </nav>
 
-    <!-- Bottom: usage bar + settings + logout -->
+    <!-- Bottom: usage bar + settings -->
     <div class="shell__bottom">
       @if (true) {
         <div class="shell__usage" aria-label="Plan-Nutzung">
@@ -118,22 +140,17 @@
         <span>Einstellungen</span>
       </a>
 
-      <button
-        type="button"
-        class="shell__link shell__link--logout"
-        (click)="logout()"
-        aria-label="Abmelden"
-      >
-        <lucide-icon name="log-out" [size]="18" class="shell__link-icon" aria-hidden="true"></lucide-icon>
-        <span>Abmelden</span>
-      </button>
     </div>
 
   </aside>
 
   <div class="shell__content">
     @if (!isEditorRoute()) {
-      <lba-app-topbar [crumbs]="crumbs()">
+      <lba-app-topbar
+        [crumbs]="crumbs()"
+        (commandPaletteRequested)="openCommandPalette()"
+        (notificationsRequested)="toggleNotifications()"
+      >
         @if (isDashboardRoute()) {
           <a routerLink="/app/wizard" class="btn btn--cta btn--md shell__topbar-cta">
             <lucide-icon name="plus" [size]="14" aria-hidden="true"></lucide-icon>
@@ -141,12 +158,28 @@
           </a>
         }
       </lba-app-topbar>
+      @if (notificationsOpen()) {
+        <section class="shell__notifications" role="dialog" aria-label="Benachrichtigungen">
+          <div class="shell__notifications-head">
+            <h2>Benachrichtigungen</h2>
+            <button type="button" class="shell__icon-btn" aria-label="Benachrichtigungen schließen" (click)="toggleNotifications()">
+              <lucide-icon name="x" [size]="16" aria-hidden="true"></lucide-icon>
+            </button>
+          </div>
+          <div class="shell__notifications-empty">
+            <lucide-icon name="bell" [size]="18" aria-hidden="true"></lucide-icon>
+            <p>Keine neuen Benachrichtigungen.</p>
+          </div>
+        </section>
+      }
     }
     <div class="shell__page">
       <router-outlet />
     </div>
   </div>
 </div>
+
+<lba-command-palette />
 
 <lba-einstellungen-modal
   [open]="einstellungenOpen()"

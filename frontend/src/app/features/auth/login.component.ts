@@ -52,8 +52,4 @@ export class LoginComponent {
       this.loading.set(false);
     }
   }
-
-  loginWithGoogle(): void {
-    console.warn('Google OAuth — not yet implemented');
-  }
 }

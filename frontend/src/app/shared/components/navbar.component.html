@@ -14,11 +14,11 @@
     </nav>
 
     <div class="nav__actions">
-      <button type="button" class="btn btn--ghost btn--sm" (click)="loginRequested.emit()">Anmelden</button>
-      <button type="button" class="btn btn--primary btn--sm" (click)="registerRequested.emit()">
+      <a routerLink="/login" class="btn btn--ghost btn--sm">Anmelden</a>
+      <a routerLink="/register" class="btn btn--primary btn--sm">
         Kostenlos starten
         <lucide-icon name="arrow-right" [size]="13" aria-hidden="true"></lucide-icon>
-      </button>
+      </a>
     </div>
   </div>
 </nav>

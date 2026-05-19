@@ -11,7 +11,11 @@
           <span class="pipeline__col-dot" aria-hidden="true"></span>
           <span class="pipeline__col-label">{{ col.label }}</span>
           <span class="pipeline__col-count" aria-hidden="true">{{ appsForColumn(col).length }}</span>
-          <button type="button" class="pipeline__col-add" [attr.aria-label]="'Bewerbung in ' + col.label + ' hinzufügen'">
+          <button
+            type="button"
+            class="pipeline__col-add"
+            [attr.aria-label]="'Bewerbung in ' + col.label + ' hinzufügen'"
+            (click)="columnAdd.emit(col.key)">
             <lucide-icon name="plus" [size]="14" aria-hidden="true"></lucide-icon>
           </button>
         </h3>

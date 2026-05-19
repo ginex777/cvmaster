@@ -1,12 +1,54 @@
 <div class="toolbar" role="search" aria-label="Bewerbungen filtern">
   <div class="toolbar__left">
-    <button type="button" class="toolbar__filter-btn" aria-label="Filter öffnen">
+    <button
+      type="button"
+      class="toolbar__filter-btn"
+      aria-label="Filter öffnen"
+      [attr.aria-expanded]="filterPanelOpen()"
+      aria-haspopup="dialog"
+      (click)="toggleFilterPanel()">
       <lucide-icon name="filter" [size]="12" aria-hidden="true"></lucide-icon>
       Filter
     </button>
+    @if (filterPanelOpen()) {
+      <div class="toolbar__filter-panel" role="dialog" aria-label="Filter">
+        <div class="toolbar__filter-panel-header">
+          <span class="toolbar__filter-panel-title">Filter</span>
+          <button type="button" class="toolbar__filter-close" aria-label="Filter schließen" (click)="toggleFilterPanel()">
+            <lucide-icon name="x" [size]="14" aria-hidden="true"></lucide-icon>
+          </button>
+        </div>
+        <div class="toolbar__filter-group" aria-label="Status auswählen">
+          <button
+            type="button"
+            class="toolbar__status-chip"
+            [class.toolbar__status-chip--active]="allStatusesSelected()"
+            [attr.aria-pressed]="allStatusesSelected()"
+            (click)="toggleAllStatuses()">
+            Alle Stati
+          </button>
+          @for (status of statusOptions; track status) {
+            <button
+              type="button"
+              class="toolbar__status-chip"
+              [class.toolbar__status-chip--active]="selectedStatuses().includes(status)"
+              [attr.aria-pressed]="selectedStatuses().includes(status)"
+              (click)="toggleStatus(status)">
+              {{ statusMeta[status].label }}
+            </button>
+          }
+        </div>
+      </div>
+    }
 
     <div class="toolbar__chips" role="group" aria-label="Schnellfilter">
-      <button type="button" data-filter="allStatuses" class="toolbar__chip" aria-pressed="true">
+      <button
+        type="button"
+        data-filter="allStatuses"
+        class="toolbar__chip"
+        [class.toolbar__chip--active]="!allStatusesSelected()"
+        [attr.aria-pressed]="!allStatusesSelected()"
+        (click)="toggleFilterPanel()">
         Alle Stati
       </button>
 

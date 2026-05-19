@@ -15,9 +15,9 @@
         <li>CV-Analyse & ATS-Score</li>
         <li>PDF-Export</li>
       </ul>
-      <button type="button" class="btn btn--outline btn--md" (click)="singleRequested.emit()">
+      <a routerLink="/register" class="btn btn--outline btn--md">
         Kostenlos starten
-      </button>
+      </a>
     </article>
 
     <article class="price-card" [lbaReveal]="80">
@@ -29,9 +29,9 @@
         <li>1 Anschreiben in deinem Tonfall</li>
         <li>ATS-Match-Report inkl. Keywords</li>
       </ul>
-      <button type="button" class="btn btn--outline btn--md" (click)="singleRequested.emit()">
+      <a routerLink="/preise" class="btn btn--outline btn--md">
         Einzelbewerbung starten
-      </button>
+      </a>
     </article>
 
     <article class="price-card price-card--featured" [lbaReveal]="160">
@@ -45,7 +45,7 @@
         <li>LinkedIn-Profil-Optimierung</li>
         <li>Versand-Tracking & Follow-ups</li>
       </ul>
-      <button type="button" class="btn btn--cta btn--md" (click)="proRequested.emit()">7 Tage gratis testen →</button>
+      <a routerLink="/register" class="btn btn--cta btn--md">7 Tage gratis testen →</a>
     </article>
   </div>
 </section>

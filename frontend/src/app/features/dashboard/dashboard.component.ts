@@ -2,7 +2,9 @@ import { type OnInit, Component, signal, computed, inject, ChangeDetectionStrate
 import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApiService } from '../../core/api/api.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { EditorModalComponent } from '../application-editor/editor-modal/editor-modal';
+import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal/confirm-delete-modal';
 import { StatusPillComponent } from '../../shared/components/status-pill/status-pill';
 import { IconsModule } from '../../shared/icons/icons.module';
 import { legacyToStatus, STATUS_META, type ApplicationStatus } from '../../shared/utils/status.utils';
@@ -49,20 +51,24 @@ interface DashboardReminder {
 @Component({
   selector: 'lba-dashboard',
   standalone: true,
-  imports: [RouterLink, EditorModalComponent, StatusPillComponent, IconsModule],
+  imports: [RouterLink, EditorModalComponent, ConfirmDeleteModal, StatusPillComponent, IconsModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly auth = inject(AuthService);
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly data = signal<DashboardData | null>(null);
   readonly selectedAppId = signal<string | null>(null);
   readonly openMenuAppId = signal<string | null>(null);
+  readonly deletingAppId = signal<string | null>(null);
   readonly statusSubmenuOpen = signal(false);
+  readonly reminderPickerOpen = signal(false);
+  readonly reminderDate = signal('');
   readonly period = signal<Period>('30d');
   readonly periodMenuOpen = signal(false);
 
@@ -77,8 +83,8 @@ export class DashboardComponent implements OnInit {
   });
 
   readonly firstName = computed(() => {
-    const name = this.data() ? 'Lina' : '';
-    return name;
+    const name = this.auth.user()?.name?.trim() ?? '';
+    return name.split(/\s+/)[0] ?? '';
   });
 
   private static readonly PERIOD_MS: Record<Period, number> = {
@@ -219,6 +225,99 @@ export class DashboardComponent implements OnInit {
   closeMenu(): void {
     this.openMenuAppId.set(null);
     this.statusSubmenuOpen.set(false);
+    this.reminderPickerOpen.set(false);
+    this.reminderDate.set('');
+  }
+
+  requestDelete(id: string): void {
+    this.deletingAppId.set(id);
+    this.closeMenu();
+  }
+
+  async confirmDelete(): Promise<void> {
+    const id = this.deletingAppId();
+    if (!id) return;
+    this.error.set(null);
+    try {
+      await this.api.delete(`/applications/${id}`);
+      this.data.update(d => d
+        ? {
+            ...d,
+            applicationCount: Math.max(0, d.applicationCount - 1),
+            recentApplications: d.recentApplications.filter(a => a.id !== id),
+          }
+        : d
+      );
+    } catch (e: unknown) {
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Bewerbung konnte nicht gelöscht werden.');
+    } finally {
+      this.deletingAppId.set(null);
+    }
+  }
+
+  async onStatusChange(id: string, status: ApplicationStatus): Promise<void> {
+    const previous = this.data()?.recentApplications.find(a => a.id === id)?.status;
+    this.data.update(d => d ? {
+      ...d,
+      recentApplications: d.recentApplications.map(a => a.id === id ? { ...a, status } : a),
+    } : d);
+    try {
+      await this.api.patch(`/applications/${id}/status`, { status });
+    } catch (e: unknown) {
+      if (previous) {
+        this.data.update(d => d ? {
+          ...d,
+          recentApplications: d.recentApplications.map(a => a.id === id ? { ...a, status: previous } : a),
+        } : d);
+      }
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Status konnte nicht geändert werden.');
+    }
+  }
+
+  openReminderPicker(event: Event): void {
+    event.stopPropagation();
+    this.statusSubmenuOpen.set(false);
+    this.reminderPickerOpen.set(true);
+    this.reminderDate.set('');
+  }
+
+  async setReminder(appId: string): Promise<void> {
+    const date = this.reminderDate();
+    if (!date) return;
+    const reminderAt = new Date(date).toISOString();
+    const previous = this.data()?.recentApplications.find(a => a.id === appId)?.reminderAt ?? null;
+    this.data.update(d => d ? {
+      ...d,
+      recentApplications: d.recentApplications.map(a => a.id === appId ? { ...a, reminderAt } : a),
+    } : d);
+    try {
+      await this.api.patch(`/applications/${appId}/reminder`, { reminderAt });
+      this.closeMenu();
+    } catch (e: unknown) {
+      this.data.update(d => d ? {
+        ...d,
+        recentApplications: d.recentApplications.map(a => a.id === appId ? { ...a, reminderAt: previous } : a),
+      } : d);
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Erinnerung konnte nicht gespeichert werden.');
+    }
+  }
+
+  async clearReminder(appId: string): Promise<void> {
+    const previous = this.data()?.recentApplications.find(a => a.id === appId)?.reminderAt ?? null;
+    this.data.update(d => d ? {
+      ...d,
+      recentApplications: d.recentApplications.map(a => a.id === appId ? { ...a, reminderAt: null } : a),
+    } : d);
+    try {
+      await this.api.patch(`/applications/${appId}/reminder`, { reminderAt: null });
+      this.closeMenu();
+    } catch (e: unknown) {
+      this.data.update(d => d ? {
+        ...d,
+        recentApplications: d.recentApplications.map(a => a.id === appId ? { ...a, reminderAt: previous } : a),
+      } : d);
+      this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Erinnerung konnte nicht gelöscht werden.');
+    }
   }
 
   toApplicationStatus(status: string): ApplicationStatus {

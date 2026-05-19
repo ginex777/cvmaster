@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoginComponent } from './login.component';
 import { AuthService } from '../../core/auth/auth.service';
@@ -24,6 +25,14 @@ describe('LoginComponent', () => {
     expect(fixture.nativeElement.querySelector('#login-email')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('#login-password')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('#login-totp')).toBeNull();
+  });
+
+  it('links password reset to the real forgot-password route', () => {
+    const fixture = TestBed.createComponent(LoginComponent);
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('.field__forgot');
+    expect(link.getAttribute('href')).toBe('/forgot-password');
   });
 
   it('renders the two-factor field when required', () => {
@@ -97,6 +106,18 @@ describe('LoginComponent', () => {
     await fixture.componentInstance.submit();
 
     expect(authService.login).toHaveBeenCalledWith('a@b.de', 'validpass', '123456');
+  });
+
+  it('navigates to the app after successful login', async () => {
+    authService.login.mockResolvedValue(undefined);
+    const router = TestBed.inject(Router);
+    const navigate = jest.spyOn(router, 'navigate').mockResolvedValue(true);
+    const fixture = TestBed.createComponent(LoginComponent);
+    fixture.componentInstance.form.setValue({ email: 'a@b.de', password: 'validpass', totp: '' });
+
+    await fixture.componentInstance.submit();
+
+    expect(navigate).toHaveBeenCalledWith(['/app']);
   });
 
   it('does not call AuthService when TOTP has an invalid format', async () => {

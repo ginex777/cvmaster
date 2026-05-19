@@ -90,6 +90,46 @@ describe('EditorComponent', () => {
     expect(api.patch).toHaveBeenCalledWith('/applications/a1/cv', { sections });
   });
 
+  it('adds a CV section from the outline action and saves it', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+    api.patch.mockClear();
+
+    f.componentInstance.addCvSection();
+    await f.whenStable();
+
+    const sections = f.componentInstance.structuredCv();
+    const added = sections.at(-1);
+    expect(added?.heading).toBe('Neuer Abschnitt');
+    expect(f.componentInstance.activeOutlineSectionId()).toBe(added?.id);
+    expect(api.patch).toHaveBeenCalledWith('/applications/a1/cv', { sections });
+  });
+
+  it('dispatches the shared command palette event from editor search', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+    const dispatch = jest.spyOn(document, 'dispatchEvent');
+
+    f.componentInstance.openCommandPalette();
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: 'lba-command-palette-open' }));
+    dispatch.mockRestore();
+  });
+
+  it('toggles the editor notifications popover', async () => {
+    const f = TestBed.createComponent(EditorComponent);
+    f.detectChanges();
+    await f.whenStable();
+
+    f.componentInstance.toggleEditorNotifications();
+    f.detectChanges();
+
+    expect(f.componentInstance.editorNotificationsOpen()).toBe(true);
+    expect(f.nativeElement.querySelector('.editor__notifications')).not.toBeNull();
+  });
+
   it('switches cover letter selection and persists chosenVariant', async () => {
     const f = TestBed.createComponent(EditorComponent);
     f.detectChanges();
