@@ -15,22 +15,9 @@ import { CvMiniPreviewEditorial } from '../../shared/components/cv-mini-preview/
 import { CvMiniPreviewExecutive } from '../../shared/components/cv-mini-preview/cv-mini-preview-executive/cv-mini-preview-executive';
 import { CvMiniPreviewMinimal } from '../../shared/components/cv-mini-preview/cv-mini-preview-minimal/cv-mini-preview-minimal';
 import { CvMiniPreviewModern } from '../../shared/components/cv-mini-preview/cv-mini-preview-modern/cv-mini-preview-modern';
+import type { MasterCv } from '../../shared/models/cv.model';
 
 type JobInputMode = 'text' | 'url' | 'pdf' | 'screenshot';
-
-export interface MasterCv {
-  id: string;
-  name: string;
-  language: string;
-  sourceFilename: string;
-  parsedJson?: {
-    summary?: string;
-    skills?: string[];
-  };
-  template?: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 @Component({
   selector: 'lba-wizard',

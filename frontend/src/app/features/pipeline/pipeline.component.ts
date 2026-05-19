@@ -8,23 +8,7 @@ import { PipelineToolbar, type PipelineFilter } from '../../shared/components/pi
 import { EditorModalComponent } from '../application-editor/editor-modal/editor-modal';
 import { IconsModule } from '../../shared/icons/icons.module';
 import { legacyToStatus, type ApplicationStatus } from '../../shared/utils/status.utils';
-
-interface Application {
-  id: string;
-  status: string;
-  matchScore: number | null;
-  createdAt: string;
-  reminderAt?: string | null;
-  jobPosting: { parsedJson: { title?: string; company?: string } };
-}
-
-interface DashboardData {
-  applicationCount: number;
-  recentApplications: Application[];
-  cvCount: number;
-  avgMatchScore: number | null;
-  onboardingDismissed: boolean;
-}
+import type { Application, DashboardData } from '../../shared/models/dashboard.model';
 
 @Component({
   selector: 'lba-pipeline',
@@ -41,7 +25,6 @@ export class PipelineComponent implements OnInit {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly applications = signal<Application[]>([]);
-  readonly totalCount = signal(0);
   readonly selectedAppId = signal<string | null>(null);
 
   readonly pipelineFilter = signal<PipelineFilter>({ query: '', minScore: null, hasReminder: null, dateRange: null, statuses: null });
@@ -79,7 +62,6 @@ export class PipelineComponent implements OnInit {
     try {
       const data = await this.api.get<DashboardData>('/users/me/dashboard');
       this.applications.set(data.recentApplications);
-      this.totalCount.set(data.applicationCount);
     } catch (e: unknown) {
       this.error.set(
         e instanceof HttpErrorResponse ? e.error.message : 'Pipeline konnte nicht geladen werden.',

@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
-import { ApiService } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { IconsModule } from '../../shared/icons/icons.module';
 
@@ -18,8 +17,6 @@ interface BillingRuntimeConfig {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsBillingComponent {
-  private readonly api = inject(ApiService);
-  private readonly router = inject(Router);
   readonly auth = inject(AuthService);
 
   readonly loading = signal(false);

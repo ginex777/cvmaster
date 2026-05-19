@@ -14,19 +14,9 @@ import { CvMiniPreviewModern } from '../../shared/components/cv-mini-preview/cv-
 import { CvSectionEditorComponent, type CvSection } from '../../shared/components/cv-section-editor/cv-section-editor.component';
 import { CvTemplatePicker, type CvTemplate } from '../../shared/components/cv-template-picker/cv-template-picker';
 import { IconsModule } from '../../shared/icons/icons.module';
+import type { MasterCv } from '../../shared/models/cv.model';
 
 type CvLanguage = 'de' | 'en';
-
-export interface MasterCv {
-  id: string;
-  name: string;
-  language: string;
-  sourceFilename: string;
-  template: CvTemplate;
-  isPrimary?: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
 
 @Component({
   selector: 'lba-master-cvs',

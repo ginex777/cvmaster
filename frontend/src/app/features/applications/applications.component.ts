@@ -12,23 +12,7 @@ import { StatusPillComponent } from '../../shared/components/status-pill/status-
 import { CompanyLogoComponent } from '../../shared/components/company-logo/company-logo';
 import { IconsModule } from '../../shared/icons/icons.module';
 import { legacyToStatus, type ApplicationStatus } from '../../shared/utils/status.utils';
-
-interface Application {
-  id: string;
-  status: string;
-  matchScore: number | null;
-  createdAt: string;
-  reminderAt?: string | null;
-  jobPosting: { parsedJson: { title?: string; company?: string } };
-}
-
-interface DashboardData {
-  cvCount: number;
-  applicationCount: number;
-  avgMatchScore: number | null;
-  recentApplications: Application[];
-  onboardingDismissed: boolean;
-}
+import type { Application, DashboardData } from '../../shared/models/dashboard.model';
 
 @Component({
   selector: 'lba-applications',
@@ -44,7 +28,6 @@ export class ApplicationsComponent implements OnInit {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly applications = signal<Application[]>([]);
-  readonly totalCount = signal(0);
 
   readonly deletingId = signal<string | null>(null);
   readonly selectedAppId = signal<string | null>(null);
@@ -85,7 +68,6 @@ export class ApplicationsComponent implements OnInit {
     try {
       const data = await this.api.get<DashboardData>('/users/me/dashboard');
       this.applications.set(data.recentApplications);
-      this.totalCount.set(data.applicationCount);
     } catch (e: unknown) {
       this.error.set(
         e instanceof HttpErrorResponse ? e.error.message : 'Bewerbungen konnten nicht geladen werden.',
@@ -131,7 +113,6 @@ export class ApplicationsComponent implements OnInit {
     try {
       await this.api.delete(`/applications/${id}`);
       this.applications.update(list => list.filter(a => a.id !== id));
-      this.totalCount.update(n => Math.max(0, n - 1));
     } catch (e: unknown) {
       this.error.set(e instanceof HttpErrorResponse ? e.error.message : 'Löschen fehlgeschlagen.');
     } finally {

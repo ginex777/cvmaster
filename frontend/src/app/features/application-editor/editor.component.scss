@@ -1140,11 +1140,6 @@
   min-height: 200px;
 }
 
-@keyframes skeleton-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
 /* ── Mobile: 3-pane stacks vertically ≤ 1024px ── */
 @media (max-width: 1024px) {
   .editor__body {

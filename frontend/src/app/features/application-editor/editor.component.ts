@@ -58,7 +58,7 @@ const POLL_MAX_ATTEMPTS = 40;
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, ConfirmDeleteModal, CvSectionEditorComponent, AtsPanel, IconsModule, ScoreRingComponent, StatusPillComponent, UpgradeModal],
   templateUrl: './editor.component.html',
-  styleUrls: ['./editor.component.scss', './print.scss'],
+  styleUrl: './editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditorComponent implements OnInit, OnDestroy {
@@ -92,7 +92,6 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly followUpError = signal<string | null>(null);
   readonly copiedType = signal<string | null>(null);
   readonly structuredCv = signal<CvSection[]>([]);
-  readonly showAnalyse = signal(false);
   readonly rightTab = signal<'letter' | 'analyse' | 'followup'>('letter');
   readonly activeOutlineSectionId = signal<string | null>(null);
   readonly statusMenuOpen = signal(false);

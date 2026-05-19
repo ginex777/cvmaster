@@ -433,8 +433,6 @@
 }
 
 /* Activity list */
-.activity-list { }
-
 .activity-item {
   display: flex;
   align-items: center;
@@ -633,11 +631,6 @@
   position: fixed;
   inset: 0;
   z-index: 300;
-}
-
-@keyframes skeleton-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
 }
 
 /* ── Mobile breakpoints ── */

@@ -359,6 +359,115 @@ mark.highlight {
 .page-header__text { flex: 1; }
 .page-header__actions { flex-shrink: 0; }
 
+/* ── View toggle (list / pipeline switcher) ── */
+.view-toggle {
+  display: flex;
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 3px;
+  border: 1px solid var(--line-2);
+  gap: 2px;
+}
+
+.view-toggle__btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  min-height: 44px;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ink-3);
+  border: none;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  text-decoration: none;
+  transition: background 0.1s, color 0.1s;
+}
+
+.view-toggle__btn--active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.view-toggle__btn:focus-visible {
+  outline: 3px solid var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-toggle__btn { transition: none; }
+}
+
+/* ── Skeleton loader ── */
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
+/* ── Print: editor CV export ── */
+@media print {
+  lba-app-shell .shell__sidebar,
+  lba-app-topbar,
+  .editor__controls,
+  .editor__strip,
+  .editor__outline,
+  .editor__right,
+  .editor__alert,
+  .editor__status-msg,
+  .editor__score-widget,
+  lba-toast-host,
+  lba-command-palette,
+  lba-consent-banner {
+    display: none !important;
+  }
+
+  .shell { display: block !important; }
+  .shell__content { padding-bottom: 0 !important; }
+
+  .editor,
+  .editor__body {
+    display: block !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .editor__center {
+    padding: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  body { font-size: 10pt; color: #000; background: #fff; }
+  h1 { font-size: 18pt; }
+  h2 { font-size: 14pt; }
+  h3 { font-size: 12pt; }
+
+  .cv-section-editor__card,
+  [class*='section-card'] {
+    background: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-left: 3px solid currentColor !important;
+    padding-left: 10pt !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  @page { size: A4; margin: 18mm 16mm; }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

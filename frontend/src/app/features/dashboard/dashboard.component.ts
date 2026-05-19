@@ -8,23 +8,7 @@ import { ConfirmDeleteModal } from '../../shared/components/confirm-delete-modal
 import { StatusPillComponent } from '../../shared/components/status-pill/status-pill';
 import { IconsModule } from '../../shared/icons/icons.module';
 import { legacyToStatus, STATUS_META, type ApplicationStatus } from '../../shared/utils/status.utils';
-
-interface RecentApplication {
-  id: string;
-  status: string;
-  matchScore: number | null;
-  createdAt: string;
-  reminderAt?: string | null;
-  jobPosting: { parsedJson: { title?: string; company?: string } };
-}
-
-interface DashboardData {
-  onboardingDismissed: boolean;
-  cvCount: number;
-  applicationCount: number;
-  avgMatchScore: number | null;
-  recentApplications: RecentApplication[];
-}
+import type { Application as RecentApplication, DashboardData } from '../../shared/models/dashboard.model';
 
 type Period = 'today' | '7d' | '30d' | 'all';
 
