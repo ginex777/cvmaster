@@ -187,7 +187,7 @@
 
 /* Step content */
 .wizard-step {
-  padding: 40px 56px;
+  padding: var(--space-12) var(--space-16);
   max-width: 720px;
   width: 100%;
   margin: 0 auto;
@@ -513,4 +513,23 @@
 
   &__note  { color: var(--ink-3); font-size: 12px; }
   &__error { color: var(--status-rejected); font-size: 12px; }
+}
+
+@media (max-width: 768px) {
+  .wizard-layout { flex-direction: column; }
+
+  .wizard-rail {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    padding: var(--space-4) var(--space-6);
+  }
+
+  .wizard-step {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .wizard-alert {
+    margin: var(--space-4) var(--space-4) 0;
+  }
 }
