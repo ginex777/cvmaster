@@ -1,5 +1,5 @@
 import type { OnInit } from '@angular/core';
-import { ChangeDetectionStrategy, Component, HostListener, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { type ElementRef, ChangeDetectionStrategy, Component, HostListener, PLATFORM_ID, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { DatePipe, isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -11,10 +11,11 @@ import { CvMiniPreviewEditorial } from '../../shared/components/cv-mini-preview/
 import { CvMiniPreviewExecutive } from '../../shared/components/cv-mini-preview/cv-mini-preview-executive/cv-mini-preview-executive';
 import { CvMiniPreviewMinimal } from '../../shared/components/cv-mini-preview/cv-mini-preview-minimal/cv-mini-preview-minimal';
 import { CvMiniPreviewModern } from '../../shared/components/cv-mini-preview/cv-mini-preview-modern/cv-mini-preview-modern';
-import { CvSectionEditorComponent, type CvSection } from '../../shared/components/cv-section-editor/cv-section-editor.component';
+import { CvSectionEditorComponent } from '../../shared/components/cv-section-editor/cv-section-editor.component';
 import { CvTemplatePicker, type CvTemplate } from '../../shared/components/cv-template-picker/cv-template-picker';
 import { IconsModule } from '../../shared/icons/icons.module';
 import type { MasterCv } from '../../shared/models/cv.model';
+import type { CvSection } from '../../shared/components/cv-section-editor/cv-section-editor.component';
 
 type CvLanguage = 'de' | 'en';
 
@@ -40,6 +41,8 @@ type CvLanguage = 'de' | 'en';
 })
 export class MasterCvsComponent implements OnInit {
   private static readonly PRIMARY_STORAGE_KEY = 'hireflow.primaryMasterCvId';
+
+  @ViewChild('cvEditorPanel') private cvEditorPanelRef?: ElementRef<HTMLElement>;
 
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
@@ -77,6 +80,17 @@ export class MasterCvsComponent implements OnInit {
     }),
   });
 
+  constructor() {
+    effect(() => {
+      if (this.editingCv()) {
+        queueMicrotask(() => {
+          const panel = this.cvEditorPanelRef?.nativeElement;
+          if (panel) panel.focus();
+        });
+      }
+    });
+  }
+
   async ngOnInit(): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
@@ -108,6 +122,31 @@ export class MasterCvsComponent implements OnInit {
 
     if (this.editingCv()) {
       this.closeEditor();
+    }
+  }
+
+  @HostListener('document:keydown.tab', ['$event'])
+  onTab(event: Event): void {
+    const ke = event as KeyboardEvent;
+    const panel = this.cvEditorPanelRef?.nativeElement;
+    if (!panel || !this.editingCv()) return;
+
+    const focusable = Array.from(panel.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    )).filter(el => !el.hasAttribute('aria-hidden'));
+
+    if (focusable.length === 0) { ke.preventDefault(); panel.focus(); return; }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+
+    if (ke.shiftKey && active === first) {
+      ke.preventDefault();
+      last.focus();
+    } else if (!ke.shiftKey && active === last) {
+      ke.preventDefault();
+      first.focus();
     }
   }
 
@@ -294,29 +333,62 @@ export class MasterCvsComponent implements OnInit {
   }
 
   private sectionsForCv(cv: MasterCv): CvSection[] {
-    const language = cv.language.toUpperCase();
-    return [
-      {
-        id: `${cv.id}-profile`,
-        heading: 'Profil',
-        bullets: [
-          {
-            id: `${cv.id}-profile-summary`,
-            text: `${cv.name} (${language})`,
-          },
-        ],
-      },
-      {
+    const p = cv.parsedJson;
+    const sections: CvSection[] = [];
+
+    sections.push({
+      id: `${cv.id}-profile`,
+      heading: 'Profil',
+      bullets: p?.summary
+        ? [{ id: `${cv.id}-profile-summary`, text: p.summary }]
+        : [{ id: `${cv.id}-profile-empty`, text: '' }],
+    });
+
+    if (p?.experience?.length) {
+      sections.push({
         id: `${cv.id}-experience`,
         heading: 'Erfahrung',
-        bullets: [
-          {
-            id: `${cv.id}-source`,
-            text: `Quelle: ${this.sourceLabel(cv)} · Template: ${cv.template}`,
-          },
-        ],
-      },
-    ];
+        bullets: p.experience.map((exp, i) => ({
+          id: `${cv.id}-exp-${i}`,
+          text: [exp.role, exp.company, exp.period].filter(Boolean).join(' · '),
+        })),
+      });
+    }
+
+    if (p?.education?.length) {
+      sections.push({
+        id: `${cv.id}-education`,
+        heading: 'Ausbildung',
+        bullets: p.education.map((edu, i) => ({
+          id: `${cv.id}-edu-${i}`,
+          text: [edu.degree, edu.institution, edu.period].filter(Boolean).join(' · '),
+        })),
+      });
+    }
+
+    if (p?.skills?.length) {
+      sections.push({
+        id: `${cv.id}-skills`,
+        heading: 'Skills',
+        bullets: p.skills.map((skill, i) => ({
+          id: `${cv.id}-skill-${i}`,
+          text: skill,
+        })),
+      });
+    }
+
+    if (p?.languages?.length) {
+      sections.push({
+        id: `${cv.id}-languages`,
+        heading: 'Sprachen',
+        bullets: p.languages.map((lang, i) => ({
+          id: `${cv.id}-lang-${i}`,
+          text: lang,
+        })),
+      });
+    }
+
+    return sections;
   }
 
   private loadPrimaryCvId(): string | null {

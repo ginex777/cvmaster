@@ -3,12 +3,14 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } fro
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
+import { ApiService } from '../../../core/api/api.service';
 import { EinstellungenModalComponent } from '../einstellungen-modal/einstellungen-modal.component';
 import { OnboardingModalComponent } from '../onboarding-modal/onboarding-modal';
 import { UpgradeService } from '../../services/upgrade.service';
 import { IconsModule } from '../../icons/icons.module';
 import { AppTopbarComponent, type BreadcrumbItem } from '../app-topbar/app-topbar';
 import { CommandPaletteComponent } from '../command-palette/command-palette';
+import type { DashboardData } from '../../models/dashboard.model';
 
 const ROUTE_LABELS: Record<string, string> = {
   '':             'Dashboard',
@@ -34,6 +36,7 @@ export class AppShellComponent {
   @ViewChild(CommandPaletteComponent) private commandPalette?: CommandPaletteComponent;
 
   protected readonly auth = inject(AuthService);
+  private readonly api = inject(ApiService);
   private readonly router = inject(Router);
   private readonly upgradeService = inject(UpgradeService);
 
@@ -55,20 +58,11 @@ export class AppShellComponent {
   readonly isDashboardRoute = computed(() => this.currentUrl().split(/[?#]/)[0] === '/app');
 
   readonly crumbs = computed((): BreadcrumbItem[] => {
-    if (this.isEditorRoute()) return [{ label: 'Bewerbungen' }, { label: 'Stripe · Frontend Developer' }];
+    if (this.isEditorRoute()) return [{ label: 'Bewerbungen' }];
     const segment = this.currentUrl().split(/[?#]/)[0].split('/').filter(Boolean).at(-1) ?? '';
     const label = ROUTE_LABELS[segment] ?? segment;
     return [{ label: 'Workspace' }, { label }];
   });
-
-  readonly legacyCrumbs = toSignal(
-    this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd),
-      startWith(null),
-      map(() => this.crumbs()),
-    ),
-    { initialValue: [{ label: 'Workspace' }, { label: 'Dashboard' }] as BreadcrumbItem[] },
-  );
 
   private readonly AVATAR_PALETTE = ['#5B6CFF', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#EC4899'];
 
@@ -84,7 +78,7 @@ export class AppShellComponent {
 
   readonly avatarBgColor = computed(() => this.avatarColor());
 
-  readonly counts = signal({ applications: 12, cvs: 4, used: 3, limit: 5, percent: 60 });
+  readonly counts = signal({ applications: 0, cvs: 0 });
 
   constructor() {
     effect(() => {
@@ -93,6 +87,17 @@ export class AppShellComponent {
         this.upgradeService.clear();
       }
     });
+
+    void this.loadStats();
+  }
+
+  private async loadStats(): Promise<void> {
+    try {
+      const data = await this.api.get<DashboardData>('/users/me/dashboard');
+      this.counts.set({ applications: data.applicationCount, cvs: data.cvCount });
+    } catch {
+      // sidebar badges stay at 0 — non-critical, page-level components show their own errors
+    }
   }
 
   protected isPro(): boolean {

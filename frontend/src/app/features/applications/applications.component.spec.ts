@@ -5,17 +5,13 @@ import { ApplicationsComponent } from './applications.component';
 import { ApiService } from '../../core/api/api.service';
 import { LEGACY_OPEN_STATUS } from '../../shared/utils/status.utils';
 
+const mockApplications = [
+  { id: '1', status: LEGACY_OPEN_STATUS, matchScore: 88, createdAt: '2024-01-01', jobPosting: { parsedJson: { title: 'Dev', company: 'Stripe' } } },
+  { id: '2', status: 'INTERVIEW', matchScore: 76, createdAt: '2024-01-02', jobPosting: { parsedJson: { title: 'Designer', company: 'Figma' } } },
+];
+
 const mockApi = {
-  get: jest.fn().mockResolvedValue({
-    cvCount: 2,
-    applicationCount: 2,
-    avgMatchScore: 82,
-    onboardingDismissed: true,
-    recentApplications: [
-      { id: '1', status: LEGACY_OPEN_STATUS, matchScore: 88, createdAt: '2024-01-01', jobPosting: { parsedJson: { title: 'Dev', company: 'Stripe' } } },
-      { id: '2', status: 'INTERVIEW', matchScore: 76, createdAt: '2024-01-02', jobPosting: { parsedJson: { title: 'Designer', company: 'Figma' } } },
-    ],
-  }),
+  get: jest.fn().mockResolvedValue(mockApplications),
   patch: jest.fn().mockResolvedValue({}),
   delete: jest.fn().mockResolvedValue({}),
 };
@@ -54,17 +50,15 @@ describe('ApplicationsComponent', () => {
     expect(btn).not.toBeNull();
   });
 
-  it('shows view toggle buttons', () => {
+  it('shows view toggle with Liste and Pipeline links', () => {
     const btns = fixture.nativeElement.querySelectorAll('.view-toggle__btn');
     expect(btns.length).toBe(2);
   });
 
-  it('switches to pipeline view when Pipeline button clicked', () => {
-    expect(component.showPipeline()).toBe(false);
-    component.showPipeline.set(true);
-    fixture.detectChanges();
-    const board = fixture.nativeElement.querySelector('lba-pipeline-board');
-    expect(board).not.toBeNull();
+  it('filters applications by search query', () => {
+    component.searchQuery.set('stripe');
+    expect(component.filteredApplications().length).toBe(1);
+    expect(component.filteredApplications()[0].id).toBe('1');
   });
 
   it('maps OPEN status to APPLIED for status pill', () => {

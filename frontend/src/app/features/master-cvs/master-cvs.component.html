@@ -232,7 +232,7 @@
 
 @if (editingCv()) {
   <div class="cv-editor-overlay" role="dialog" aria-modal="true" [attr.aria-label]="'Lebenslauf bearbeiten: ' + editingCv()!.name" (click)="closeEditor()">
-    <div class="cv-editor-panel" (click)="$event.stopPropagation()">
+    <div class="cv-editor-panel" #cvEditorPanel tabindex="-1" (click)="$event.stopPropagation()">
       <div class="cv-editor-panel__header">
         <h2 class="cv-editor-panel__title">{{ editingCv()!.name }}</h2>
         <button type="button" class="cv-card__close-btn" aria-label="Editor schließen" (click)="closeEditor()">

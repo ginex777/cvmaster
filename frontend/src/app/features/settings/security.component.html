@@ -37,7 +37,12 @@
       </div>
       <div class="field">
         <label for="confirm-new-password">Neues Passwort bestätigen</label>
-        <input id="confirm-new-password" type="password" formControlName="confirmPassword" autocomplete="new-password" aria-required="true" />
+        <input id="confirm-new-password" type="password" formControlName="confirmPassword" autocomplete="new-password" aria-required="true"
+          [attr.aria-invalid]="passwordError() !== null && passwordForm.controls.confirmPassword.touched"
+          [attr.aria-describedby]="passwordError() !== null && passwordForm.controls.confirmPassword.touched ? 'confirm-pw-error' : null" />
+        @if (passwordError() !== null && passwordForm.controls.confirmPassword.touched) {
+          <span id="confirm-pw-error" role="alert" class="field__error">{{ passwordError() }}</span>
+        }
       </div>
       <button type="submit" class="btn btn--primary btn--md" [disabled]="passwordLoading()">
         @if (passwordLoading()) { Wird gespeichert… } @else { Passwort speichern }

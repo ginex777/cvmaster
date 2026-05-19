@@ -22,7 +22,7 @@
         [style.background]="avatarBgColor()">{{ initials() }}</div>
       <div class="shell__workspace-text">
         <span class="shell__username">{{ auth.user()?.name }}</span>
-        <span class="shell__workspace-meta">Frontend · DE</span>
+        <span class="shell__workspace-meta">{{ planLabel() }}</span>
       </div>
       <lucide-icon name="chevron-down" [size]="14" aria-hidden="true"></lucide-icon>
     </button>
@@ -114,18 +114,14 @@
 
     <!-- Bottom: usage bar + settings -->
     <div class="shell__bottom">
-      @if (true) {
+      @if (!isPro()) {
         <div class="shell__usage" aria-label="Plan-Nutzung">
           <div class="shell__usage-head">
-            <span class="shell__plan shell__plan--free">Plan</span>
-            <span class="shell__usage-count num">{{ counts().used }} / {{ counts().limit }}</span>
-          </div>
-          <div class="shell__usage-bar" role="progressbar" [attr.aria-valuenow]="counts().percent" aria-valuemin="0" aria-valuemax="100">
-            <span class="shell__usage-fill" [style.width.%]="counts().percent"></span>
+            <span class="shell__plan shell__plan--free">Free</span>
+            <span class="shell__usage-count num">{{ counts().applications }} Bewerbungen</span>
           </div>
           <div class="shell__usage-foot">
-            <span class="shell__usage-plan">Free</span>
-            <a routerLink="/preise" class="shell__usage-cta">Upgrade →</a>
+            <a routerLink="/app/settings/billing" class="shell__usage-cta">Upgrade →</a>
           </div>
         </div>
       }
@@ -168,7 +164,7 @@
           </div>
           <div class="shell__notifications-empty">
             <lucide-icon name="bell" [size]="18" aria-hidden="true"></lucide-icon>
-            <p>Keine neuen Benachrichtigungen.</p>
+            <p>Benachrichtigungen folgen in Kürze.</p>
           </div>
         </section>
       }

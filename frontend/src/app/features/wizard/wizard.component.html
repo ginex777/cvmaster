@@ -123,6 +123,14 @@
                 </li>
               }
             </ul>
+            @if (selectedCvId()) {
+              <div class="wizard-step__actions wizard-step__actions--list">
+                <button type="button" class="btn btn--cta btn--md" (click)="step.set(2)">
+                  Mit diesem Lebenslauf weiter
+                  <lucide-icon name="arrow-right" [size]="14" aria-hidden="true"></lucide-icon>
+                </button>
+              </div>
+            }
           }
 
           <section class="quickstart" aria-labelledby="quickstart-heading">
@@ -219,7 +227,7 @@
                 class="job-input-tabs__tab job-input-tabs__tab--soon"
                 aria-selected="false"
                 aria-disabled="true"
-                (click)="selectJobInputMode('pdf')">
+                disabled>
                 <lucide-icon name="upload" [size]="14" aria-hidden="true"></lucide-icon>
                 PDF
                 <span class="job-input-tabs__soon-badge">BALD</span>
@@ -230,7 +238,7 @@
                 class="job-input-tabs__tab job-input-tabs__tab--soon"
                 aria-selected="false"
                 aria-disabled="true"
-                (click)="selectJobInputMode('screenshot')">
+                disabled>
                 <lucide-icon name="eye" [size]="14" aria-hidden="true"></lucide-icon>
                 Screenshot
                 <span class="job-input-tabs__soon-badge">BALD</span>

@@ -8,7 +8,7 @@ import { PipelineToolbar, type PipelineFilter } from '../../shared/components/pi
 import { EditorModalComponent } from '../application-editor/editor-modal/editor-modal';
 import { IconsModule } from '../../shared/icons/icons.module';
 import { legacyToStatus, type ApplicationStatus } from '../../shared/utils/status.utils';
-import type { Application, DashboardData } from '../../shared/models/dashboard.model';
+import type { Application } from '../../shared/models/dashboard.model';
 
 @Component({
   selector: 'lba-pipeline',
@@ -60,8 +60,7 @@ export class PipelineComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     try {
-      const data = await this.api.get<DashboardData>('/users/me/dashboard');
-      this.applications.set(data.recentApplications);
+      this.applications.set(await this.api.get<Application[]>('/applications'));
     } catch (e: unknown) {
       this.error.set(
         e instanceof HttpErrorResponse ? e.error.message : 'Pipeline konnte nicht geladen werden.',

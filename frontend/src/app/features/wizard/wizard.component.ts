@@ -95,7 +95,6 @@ export class WizardComponent implements OnInit {
   selectCv(id: string): void {
     this.selectedCvId.set(id);
     this.quickstartPreview.set(this.cvs().find(cv => cv.id === id && cv.sourceFilename === 'quickstart') ?? null);
-    this.step.set(2);
   }
 
   async createQuickstartCv(): Promise<void> {

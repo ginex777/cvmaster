@@ -1,4 +1,4 @@
-<main id="main" class="billing-page" tabindex="-1" aria-labelledby="billing-title" [attr.aria-busy]="loading()">
+<main id="main" class="billing-page" tabindex="-1" aria-labelledby="billing-title">
   <div class="page-header">
     <a routerLink="/app/settings" class="page-back">
       <lucide-icon name="chevron-left" [size]="14" aria-hidden="true"></lucide-icon>
@@ -9,13 +9,6 @@
       <p class="page-sub">Plan, Zahlungsmethode und Rechnungen</p>
     </div>
   </div>
-
-  @if (error()) {
-    <p class="billing-page__alert" role="alert">{{ error() }}</p>
-  }
-  @if (message()) {
-    <p class="billing-page__status" aria-live="polite">{{ message() }}</p>
-  }
 
   <section class="settings-grid">
     <article class="settings-panel" aria-labelledby="plan-heading">

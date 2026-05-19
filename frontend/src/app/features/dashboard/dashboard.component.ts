@@ -59,6 +59,13 @@ export class DashboardComponent implements OnInit {
   protected readonly STATUS_OPTIONS: ApplicationStatus[] = ['DRAFT', 'APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED'];
   protected readonly statusMeta = STATUS_META;
 
+  protected readonly statCardStyles = [
+    { tone: 'var(--status-applied)',   iconBg: 'oklch(97% 0.030 240)' },
+    { tone: 'var(--status-interview)', iconBg: 'oklch(97% 0.025 295)' },
+    { tone: 'var(--status-offer)',     iconBg: 'oklch(97% 0.030 155)' },
+    { tone: 'var(--warn)',             iconBg: 'oklch(97% 0.030 60)'  },
+  ] as const;
+
   readonly greeting = computed(() => {
     const h = new Date().getHours();
     if (h < 12) return 'Guten Morgen';

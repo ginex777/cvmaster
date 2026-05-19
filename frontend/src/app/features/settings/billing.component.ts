@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth/auth.service';
@@ -18,10 +18,6 @@ interface BillingRuntimeConfig {
 })
 export class SettingsBillingComponent {
   readonly auth = inject(AuthService);
-
-  readonly loading = signal(false);
-  readonly error = signal<string | null>(null);
-  readonly message = signal<string | null>(null);
 
   get customerPortalUrl(): string {
     const overrides = (globalThis as { __LBA_CONFIG__?: BillingRuntimeConfig }).__LBA_CONFIG__;

@@ -64,7 +64,9 @@
 
     <!-- Stats strip — 4 cards -->
     <div class="stat-grid" aria-label="Statistiken">
-      <article class="stat-card" aria-label="Aktive Bewerbungen" style="--stat-tone: var(--status-applied); --stat-icon-bg: oklch(97% 0.030 240)">
+      <article class="stat-card" aria-label="Aktive Bewerbungen"
+        [style.--stat-tone]="statCardStyles[0].tone"
+        [style.--stat-icon-bg]="statCardStyles[0].iconBg">
         <div class="stat-card__top-bar" aria-hidden="true"></div>
         <div class="stat-card__header">
           <div class="stat-card__icon-wrap">
@@ -81,7 +83,9 @@
         </div>
       </article>
 
-      <article class="stat-card" aria-label="Antwortquote" style="--stat-tone: var(--status-interview); --stat-icon-bg: oklch(97% 0.025 295)">
+      <article class="stat-card" aria-label="Antwortquote"
+        [style.--stat-tone]="statCardStyles[1].tone"
+        [style.--stat-icon-bg]="statCardStyles[1].iconBg">
         <div class="stat-card__top-bar" aria-hidden="true"></div>
         <div class="stat-card__header">
           <div class="stat-card__icon-wrap">
@@ -96,7 +100,9 @@
         <div class="stat-card__trend">{{ interviewedCount() }} von {{ appliedCount() }} Bewerbungen</div>
       </article>
 
-      <article class="stat-card" aria-label="Durchschnittlicher Match-Score" style="--stat-tone: var(--status-offer); --stat-icon-bg: oklch(97% 0.030 155)">
+      <article class="stat-card" aria-label="Durchschnittlicher Match-Score"
+        [style.--stat-tone]="statCardStyles[2].tone"
+        [style.--stat-icon-bg]="statCardStyles[2].iconBg">
         <div class="stat-card__top-bar" aria-hidden="true"></div>
         <div class="stat-card__header">
           <div class="stat-card__icon-wrap">
@@ -116,7 +122,9 @@
         </div>
       </article>
 
-      <article class="stat-card" aria-label="Nächste Erinnerung" style="--stat-tone: var(--warn); --stat-icon-bg: oklch(97% 0.030 60)">
+      <article class="stat-card" aria-label="Nächste Erinnerung"
+        [style.--stat-tone]="statCardStyles[3].tone"
+        [style.--stat-icon-bg]="statCardStyles[3].iconBg">
         <div class="stat-card__top-bar" aria-hidden="true"></div>
         <div class="stat-card__header">
           <div class="stat-card__icon-wrap">
